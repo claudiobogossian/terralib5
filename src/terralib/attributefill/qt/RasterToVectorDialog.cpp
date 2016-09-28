@@ -456,11 +456,9 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
       if (idx != std::string::npos)
         outputdataset=outputdataset.substr(0,idx);
 
-      std::map<std::string, std::string> dsinfo;
-      dsinfo["URI"] = uri.string();
+      std::string dsinfo("File://" + uri.string());
 
-      te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
-      dsOGR->setConnectionInfo(dsinfo);
+      te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR", dsinfo).release());
       dsOGR->open();
       if (dsOGR->dataSetExists(outputdataset))
       {
