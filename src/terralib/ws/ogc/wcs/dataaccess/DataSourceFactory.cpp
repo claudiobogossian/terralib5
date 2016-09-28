@@ -18,34 +18,16 @@
  */
 
 /*!
-  \file terralib/ws/ogc/wcs/dataaccess/DataSourceFactory.h
+  \file terralib/ws/ogc/wcs/dataaccess/DataSourceFactory.cpp
 
   \brief This is the factory for WCS data sources.
-
-    \author Vinicius Campanha
 */
 
-#ifndef __TERRALIB_OGC_WCS_INTERNAL_DATASOURCEFACTORY_H
-#define __TERRALIB_OGC_WCS_INTERNAL_DATASOURCEFACTORY_H
-
 // TerraLib
-#include "DataSource.h"
+#include "DataSourceFactory.h"
 
-namespace te
+te::da::DataSource * te::ws::ogc::wcs::da::Build(const te::core::URI & uri)
 {
-  namespace ws
-  {
-    namespace ogc
-    {
-      namespace wcs
-      {
-        namespace da
-        {
-          te::da::DataSource* Build(const te::core::URI& uri);
-        }
-      }
-    }
-  }   // end namespace wcs
-}     // end namespace te
-
-#endif  // __TERRALIB_OGC_WCS_INTERNAL_DATASOURCEFACTORY_H
+  te::da::DataSource* ds = new DataSource(uri);
+  return ds;
+}

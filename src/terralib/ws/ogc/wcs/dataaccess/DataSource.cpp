@@ -25,10 +25,11 @@
   \author Vinicius Campanha
 */
 
-
 // TerraLib
 #include "../../../../common/StringUtils.h"
 #include "../../../../core/translator/Translator.h"
+#include "../../../../core/uri/URI.h"
+#include "../../../../core/utils/URI.h"
 #include "../../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "DataSource.h"
 #include "Exception.h"
@@ -37,8 +38,15 @@
 
 te::da::DataSourceCapabilities te::ws::ogc::wcs::da::DataSource::sm_capabilities;
 
-te::ws::ogc::wcs::da::DataSource::DataSource()
-  : m_isOpened(false)
+te::ws::ogc::wcs::da::DataSource::DataSource(const std::string& connInfo)
+  : te::da::DataSource(connInfo), 
+  m_isOpened(false)
+{
+}
+
+te::ws::ogc::wcs::da::DataSource::DataSource(const te::core::URI& uri)
+  : te::da::DataSource(uri),
+  m_isOpened(false)
 {
 }
 
@@ -49,16 +57,6 @@ te::ws::ogc::wcs::da::DataSource::~DataSource()
 std::string te::ws::ogc::wcs::da::DataSource::getType() const
 {
   return TE_OGC_WCS_DRIVER_IDENTIFIER;
-}
-
-const std::map<std::string, std::string>& te::ws::ogc::wcs::da::DataSource::getConnectionInfo() const
-{
-  return m_connectionInfo;
-}
-
-void te::ws::ogc::wcs::da::DataSource::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
-{
-  m_connectionInfo = connInfo;
 }
 
 std::auto_ptr<te::da::DataSourceTransactor> te::ws::ogc::wcs::da::DataSource::getTransactor()
@@ -78,7 +76,9 @@ void te::ws::ogc::wcs::da::DataSource::open()
 
   try
   {
-    m_wcs = std::shared_ptr<te::ws::ogc::WCSClient>(new te::ws::ogc::WCSClient(m_connectionInfo.find("USERDATADIR")->second, m_connectionInfo.find("URI")->second, m_connectionInfo.find("VERSION")->second));
+    std::map<std::string, std::string> kvp = te::core::expand(m_uri.query());
+
+    m_wcs = std::shared_ptr<te::ws::ogc::WCSClient>(new te::ws::ogc::WCSClient(kvp["USERDATADIR"], m_uri.uri(), kvp["VERSION"]));
 
     m_wcs->updateCapabilities();
   }
@@ -113,7 +113,9 @@ bool te::ws::ogc::wcs::da::DataSource::isValid() const
   {
     verifyConnectionInfo();
 
-    te::ws::ogc::WCSClient wcs(m_connectionInfo.find("USERDATADIR")->second, m_connectionInfo.find("URI")->second, m_connectionInfo.find("VERSION")->second);
+    std::map<std::string, std::string> kvp = te::core::expand(m_uri.query());
+
+    te::ws::ogc::WCSClient wcs(kvp["USERDATADIR"], m_uri.uri(), kvp["VERSION"]);
 
     wcs.updateCapabilities();
   }
@@ -140,38 +142,51 @@ const te::da::SQLDialect* te::ws::ogc::wcs::da::DataSource::getDialect() const
   return 0;
 }
 
-void te::ws::ogc::wcs::da::DataSource::create(const std::map<std::string, std::string>& /*dsInfo*/)
+void te::ws::ogc::wcs::da::DataSource::create(const std::string& /*connInfo*/)
 {
   throw Exception(TE_TR("The create() method is not supported by the WCS driver!"));
 }
 
-void te::ws::ogc::wcs::da::DataSource::drop(const std::map<std::string, std::string>& /*dsInfo*/)
+void te::ws::ogc::wcs::da::DataSource::drop(const std::string& /*connInfo*/)
 {
   throw Exception(TE_TR("The drop() method is not supported by the WCS driver!"));
 }
 
-bool te::ws::ogc::wcs::da::DataSource::exists(const std::map<std::string, std::string>& dsInfo)
+bool te::ws::ogc::wcs::da::DataSource::exists(const std::string& connInfo)
 {
-  if(dsInfo.empty())
+  if (connInfo.empty())
     return false;
 
-  std::map<std::string, std::string>::const_iterator usrDataDir = dsInfo.find("USERDATADIR");
-  if(usrDataDir == dsInfo.end())
+  const te::core::URI aux(connInfo);
+  if (!aux.isValid())
     return false;
 
-  std::map<std::string, std::string>::const_iterator uri = dsInfo.find("URI");
-  if(uri == dsInfo.end())
+  std::string uri = aux.uri();
+  if (uri.empty())
     return false;
 
-  std::map<std::string, std::string>::const_iterator version = dsInfo.find("VERSION");
-  if(version == dsInfo.end())
+  std::map<std::string, std::string> kvp = te::core::expand(m_uri.query());
+  std::map<std::string, std::string>::const_iterator it = kvp.begin();
+  std::map<std::string, std::string>::const_iterator itend = kvp.end();
+  std::string usrDataDir, version;
+
+  it = kvp.find("USERDATADIR");
+  if (it == itend || it->second.empty())
     return false;
+  else
+    usrDataDir = it->second;
+
+  it = kvp.find("VERSION");
+  if (it == itend || it->second.empty())
+    return false;
+  else
+    version = it->second;
 
   try
   {
     verifyConnectionInfo();
 
-    te::ws::ogc::WCSClient wcs(usrDataDir->second, uri->second, version->second);
+    te::ws::ogc::WCSClient wcs(usrDataDir, uri, version);
 
     wcs.updateCapabilities();
   }
@@ -183,33 +198,33 @@ bool te::ws::ogc::wcs::da::DataSource::exists(const std::map<std::string, std::s
   return true;
 }
 
-std::vector<std::string> te::ws::ogc::wcs::da::DataSource::getDataSourceNames(const std::map<std::string, std::string>& /*dsInfo*/)
+std::vector<std::string> te::ws::ogc::wcs::da::DataSource::getDataSourceNames(const std::string& /*connInfo*/)
 {
   return std::vector<std::string>();
 }
 
-std::vector<te::core::EncodingType> te::ws::ogc::wcs::da::DataSource::getEncodings(const std::map<std::string, std::string>& /*dsInfo*/)
+std::vector<te::core::EncodingType> te::ws::ogc::wcs::da::DataSource::getEncodings(const std::string& /*connInfo*/)
 {
   return std::vector<te::core::EncodingType>();
 }
 
 void te::ws::ogc::wcs::da::DataSource::verifyConnectionInfo() const
 {
-  if(m_connectionInfo.empty())
-    throw Exception(TE_TR("The connection information is empty!"));
+  if(!m_uri.isValid())
+    throw Exception(TE_TR("The connection information is invalid!"));
 
-  std::map<std::string, std::string>::const_iterator uri = m_connectionInfo.find("URI");
-  if(uri == m_connectionInfo.end())
-    throw Exception(TE_TR("The connection information is invalid. Missing URI parameter!"));
+  std::map<std::string, std::string> kvp = te::core::expand(m_uri.query());
+  std::map<std::string, std::string>::const_iterator it = kvp.begin();
+  std::map<std::string, std::string>::const_iterator itend = kvp.end();
 
-  std::map<std::string, std::string>::const_iterator version = m_connectionInfo.find("VERSION");
-  if(version == m_connectionInfo.end())
+  if(m_uri.path().empty())
+    throw Exception(TE_TR("The connection information is invalid. Missing the path parameter!"));
+
+  it = kvp.find("VERSION");
+  if (it == itend || it->second.empty())
     throw Exception(TE_TR("The connection information is invalid. Missing VERSION parameter!"));
 
-  std::map<std::string, std::string>::const_iterator usrDataDir = m_connectionInfo.find("USERDATADIR");
-  if(usrDataDir == m_connectionInfo.end())
+  it = kvp.find("USERDATADIR");
+  if (it == itend || it->second.empty())
     throw Exception(TE_TR("The connection information is invalid. Missing USERDATADIR parameter!"));
-
-  std::string dataDir = usrDataDir->second + "/wcs/";
-
 }
