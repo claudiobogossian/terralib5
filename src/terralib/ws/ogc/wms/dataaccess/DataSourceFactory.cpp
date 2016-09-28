@@ -18,34 +18,16 @@
  */
 
 /*!
-  \file terralib/ws/ogc/wms/dataaccess/DataSourceFactory.h
+  \file terralib/ws/ogc/wms/dataaccess/DataSourceFactory.cpp
 
   \brief This is the factory for WMS data sources.
-
-    \author Emerson Moraes
 */
 
-#ifndef __TERRALIB_OGC_WMS_INTERNAL_DATASOURCEFACTORY_H
-#define __TERRALIB_OGC_WMS_INTERNAL_DATASOURCEFACTORY_H
-
 // TerraLib
-#include "DataSource.h"
+#include "DataSourceFactory.h"
 
-namespace te
+te::da::DataSource * te::ws::ogc::wms::da::Build(const te::core::URI & uri)
 {
-  namespace ws
-  {
-    namespace ogc
-    {
-      namespace wms
-      {
-        namespace da
-        {
-          te::da::DataSource* Build(const te::core::URI& uri);
-        }
-      }
-    }
-  }   // end namespace wms
-}     // end namespace te
-
-#endif  // __TERRALIB_OGC_WCS_INTERNAL_DATASOURCEFACTORY_H
+  te::da::DataSource* ds = new DataSource(uri);
+  return ds;
+}
