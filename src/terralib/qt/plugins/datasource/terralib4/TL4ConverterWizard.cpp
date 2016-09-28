@@ -692,28 +692,6 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
           continue;
         }
 
-        // Check Geometry Type
-        te::dt::Property* p = te::da::GetFirstSpatialProperty(input_dataset_type.get());
-        te::gm::GeometryProperty* geomP = dynamic_cast<te::gm::GeometryProperty*>(p);
-        te::gm::GeomType typeAux = geomP->getGeometryType();
-        if (typeAux == te::gm::GeometryCollectionType)
-        {
-          std::pair<std::string, std::string> dproblem;
-          dproblem.first = sourceName;
-
-          boost::format err_msg(TE_TR(
-            "Layer '%1%' has more than one representation(Polygon / Line / Point) -"
-            " it will not be converted.\nIt must be exported from TerraView4.2.2 as "
-            "shapefiles and added afterwards."
-            "\nCheck HELP for more details."));
-
-          dproblem.second = (err_msg % sourceName).str();
-
-          problematicDatasets.push_back(dproblem);
-
-          continue;
-        }
-
         std::auto_ptr<te::da::DataSetTypeConverter> dt_adapter(new te::da::DataSetTypeConverter(input_dataset_type.get(), tl5ds->getCapabilities()));
 
         std::auto_ptr<te::da::DataSet> ds(m_tl4Database->getDataSet(sourceName));
