@@ -19,22 +19,15 @@
 
 /*!
   \file terralib/wfs/DataSourceFactory.h
- 
+
   \brief This is the factory for WFS data sources.
 */
 
-#ifndef __TERRALIB_WFS_INTERNAL_DATASOURCEFACTORY_H
-#define __TERRALIB_WFS_INTERNAL_DATASOURCEFACTORY_H
-
 // TerraLib
-#include "DataSource.h"
+#include "DataSourceFactory.h"
 
-namespace te
+te::da::DataSource* te::wfs::Build(const te::core::URI& uri)
 {
-  namespace wfs
-  {
-    te::da::DataSource* Build(const te::core::URI& uri);
-  }   // end namespace wfs
-}     // end namespace te
-
-#endif  // __TERRALIB_WFS_INTERNAL_DATASOURCEFACTORY_H
+  te::da::DataSource* ds = new DataSource(uri);
+  return ds;
+}
