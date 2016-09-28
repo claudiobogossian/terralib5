@@ -564,6 +564,18 @@ void te::map::DrawRaster(te::rst::Raster* raster, Canvas* canvas, const te::gm::
     double min = cmin->real();
     double max = cmax->real();
 
+    for (int b = 1; b < rsMin->size(); b++)
+    {
+      const std::complex<double>* cmin1 = rsMin->at(b).m_minVal;
+      const std::complex<double>* cmax1 = rsMax->at(b).m_maxVal;
+
+      double min1 = cmin1->real();
+      double max1 = cmax1->real();
+
+      min = std::min(min, min1);
+      max = std::max(max, max1);
+    }
+
     // *** aqui temos a quest�o da vari�vel global que diz se � para normalizar ou n�o os valores do raster ***
     rasterTransform.setLinearTransfParameters(min, max, 0, 255);
   }

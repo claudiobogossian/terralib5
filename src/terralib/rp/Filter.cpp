@@ -140,6 +140,17 @@ namespace te
 
     Filter::~Filter()
     {
+      if (m_convBuffer != 0) {
+        for (unsigned int line = 0; line < m_convBufferLines; ++line) {
+          delete[] m_convBuffer[line];
+        }
+
+        delete[] m_convBuffer;
+
+        m_convBuffer = 0;
+        m_convBufferLines = 0;
+        m_convBufferColumns = 0;
+      }
     }
 
     bool Filter::execute( AlgorithmOutputParameters& outputParams )
@@ -360,6 +371,10 @@ namespace te
     {
       m_isInitialized = false;
       m_inputParameters.reset();
+
+      m_convBuffer = 0;
+      m_convBufferLines = 0;
+      m_convBufferColumns = 0;
     }
 
     bool Filter::initialize( const AlgorithmInputParameters& inputParams )
@@ -562,12 +577,12 @@ namespace te
         "Internal error" );
 
       const unsigned int nRows = (unsigned int)( srcRaster.getNumberOfRows() );
-      const unsigned int rowsBound = (unsigned int)( nRows ?
-        ( nRows - 1 ) : 0 );
+      const unsigned int rowsBound = (unsigned int)( nRows - 2 );
 
       const unsigned int nCols = (unsigned int)( srcRaster.getNumberOfColumns() );
-      const unsigned int colsBound = (unsigned int)( nCols ?
-        ( nCols - 1 ) : 0 );
+      const unsigned int colsBound = (unsigned int)( nCols - 2 );
+
+      ResetConvBuffer(3, nCols);
 
       std::auto_ptr< te::common::TaskProgress > task;
       if( useProgress )
@@ -601,85 +616,41 @@ namespace te
       double gX = 0;
       double outValue = 0;
 
-      for( unsigned int row = 0; row < nRows ; ++row )
+      /* Fills the convolution buffer with the first "mask_lines" from the raster */
+
+      for (unsigned int line = 0; line < 2; ++line) {
+        UpdateConvBuffer(srcBand, line);
+      }
+
+      /* raster convolution */
+
+      for( unsigned int row = 0; row < rowsBound ; ++row )
       {
-        for( col = 0 ; col < nCols ; ++col )
+        /* Getting one more line from the source raster and adding to buffer */
+        UpdateConvBuffer(srcBand, row + 2);
+
+        for( col = 0 ; col < colsBound ; ++col )
         {
-          if( ( row > 0 ) && ( col > 0 ) && ( row < rowsBound ) &&
-            ( col < colsBound ) )
-          {
-            srcBand.getValue( col - 1, row - 1, value1 );
-            if( value1 == srcNoDataValue )
-            {
-              dstBand.setValue( col, row, dstNoDataValue );
-              continue;
-            }
+          gX = m_convBuffer[2][col] +
+            (2 * m_convBuffer[2][col + 1]) +
+            m_convBuffer[2][col + 2] -
+            m_convBuffer[0][col] -
+            (2 * m_convBuffer[0][col + 1]) -
+            m_convBuffer[0][col + 2];
 
-            srcBand.getValue( col, row - 1, value2 );
-            if( value2 == srcNoDataValue )
-            {
-              dstBand.setValue( col, row, dstNoDataValue );
-              continue;
-            }
+          gY = m_convBuffer[0][col + 2] +
+            (2 * m_convBuffer[1][col + 2]) +
+            m_convBuffer[2][col + 2] -
+            m_convBuffer[0][col] -
+            (2 * m_convBuffer[1][col]) -
+            m_convBuffer[2][col];
 
-            srcBand.getValue( col + 1, row - 1, value3 );
-            if( value3 == srcNoDataValue )
-            {
-              dstBand.setValue( col, row, dstNoDataValue );
-              continue;
-            }
+          outValue = std::sqrt( ( gY * gY ) +
+            ( gX * gX ) );
+          outValue = std::max( outValue, dstBandAllowedMin );
+          outValue = std::min( outValue, dstBandAllowedMax );
 
-            srcBand.getValue( col - 1, row, value4 );
-            if( value4 == srcNoDataValue )
-            {
-              dstBand.setValue( col, row, dstNoDataValue );
-              continue;
-            }
-
-            srcBand.getValue( col + 1, row, value5 );
-            if( value5 == srcNoDataValue )
-            {
-              dstBand.setValue( col, row, dstNoDataValue );
-              continue;
-            }
-
-            srcBand.getValue( col - 1, row + 1, value6 );
-            if( value6 == srcNoDataValue )
-            {
-              dstBand.setValue( col, row, dstNoDataValue );
-              continue;
-            }
-
-            srcBand.getValue( col, row + 1, value7 );
-            if( value7 == srcNoDataValue )
-            {
-              dstBand.setValue( col, row, dstNoDataValue );
-              continue;
-            }
-
-            srcBand.getValue( col + 1, row + 1, value8 );
-            if( value8 == srcNoDataValue )
-            {
-              dstBand.setValue( col, row, dstNoDataValue );
-              continue;
-            }
-
-            gY = value6 + ( 2.0 * value7 ) + value8 -
-              ( value1 + ( 2.0 * value2 ) + value3 );
-            gX = value3 + ( 2.0 * value5 ) + value8 -
-              ( value1 + ( 2.0 * value4 ) + value6 );
-
-            outValue = std::sqrt( ( gY * gY ) +
-              ( gX * gX ) );
-            outValue = std::max( outValue, dstBandAllowedMin );
-            outValue = std::min( outValue, dstBandAllowedMax );
-
-            dstBand.setValue( col, row, outValue );
-          }
-          else
-          {
-            dstBand.setValue( col, row, dstNoDataValue );
-          }
+          dstBand.setValue( col, row, outValue );
         }
 
         if( useProgress )
@@ -1227,6 +1198,78 @@ namespace te
       return (i < j);
     }
 
+    void Filter::ResetConvBuffer(unsigned int lines, unsigned int columns)
+    {
+      if (m_convBuffer != 0) {
+        for (unsigned int line = 0; line < m_convBufferLines; ++line) {
+          delete[] m_convBuffer[line];
+        }
+
+        delete[] m_convBuffer;
+
+        m_convBuffer = 0;
+        m_convBufferLines = 0;
+        m_convBufferColumns = 0;
+      }
+
+      if ((lines > 0) && (columns > 0)) {
+        m_convBuffer = new double*[lines];
+
+        TERP_DEBUG_TRUE_OR_THROW(m_convBuffer != 0, "Memory allocation error");
+
+        for (unsigned int line = 0; line < lines; ++line) {
+          m_convBuffer[line] = new double[columns];
+
+          TERP_DEBUG_TRUE_OR_THROW(m_convBuffer[line] != 0, "Memory allocation error");
+        }
+
+        m_convBufferLines = lines;
+        m_convBufferColumns = columns;
+      }
+    }
+
+    void Filter::UpdateConvBuffer(const te::rst::Band& inRaster, unsigned int line)
+    {
+      TERP_DEBUG_TRUE_OR_THROW((inRaster.getRaster()->getNumberOfRows() > (int)line),
+        "Trying to get a non existent line from raster");
+      TERP_DEBUG_TRUE_OR_THROW((inRaster.getRaster()->getNumberOfColumns() ==
+        (int)m_convBufferColumns),
+        "Buffer columns number not equal to raster columns");
+
+      double dummyValue = inRaster.getProperty()->m_noDataValue;
+
+      /* Buffer roll up */
+
+      ConvBufferRoolup(1);
+
+      /* Updating the last line */
+
+      unsigned int convBufferLastLine = m_convBufferLines - 1;
+
+      for (unsigned int bufcolumn = 0; bufcolumn < m_convBufferColumns; ++bufcolumn) {
+        inRaster.getValue(bufcolumn, line,
+          m_convBuffer[convBufferLastLine][bufcolumn]);
+      }
+    }
+
+    void Filter::ConvBufferRoolup(unsigned int count)
+    {
+      TERP_DEBUG_TRUE_OR_THROW((m_convBufferLines > 0), "Invalid convolution buffer lines");
+
+      double* firstBufferLinePtr;
+      unsigned int convBufferLastLine = m_convBufferLines - 1;
+      unsigned int bufline;
+
+      for (unsigned int curCount = 0; curCount < count; ++curCount) {
+        firstBufferLinePtr = m_convBuffer[0];
+
+        for (bufline = 1; bufline < m_convBufferLines; ++bufline) {
+          m_convBuffer[bufline - 1] = m_convBuffer[bufline];
+        }
+
+        m_convBuffer[convBufferLastLine] = firstBufferLinePtr;
+      }
+    }
   } // end namespace rp
 }   // end namespace te
 
