@@ -18,23 +18,16 @@
  */
 
 /*!
-  \file terralib/ado/DataSourceFactory.h
+  \file terralib/ado/DataSourceFactory.cpp
 
-  \brief This is the factory for ADO data sources.
+  \brief This is the factory for the ADO data sources.
 */
 
-#ifndef __TERRALIB_ADO_INTERNAL_DATASOURCEFACTORY_H
-#define __TERRALIB_ADO_INTERNAL_DATASOURCEFACTORY_H
-
 // TerraLib
-#include "DataSource.h"
+#include "DataSourceFactory.h"
 
-namespace te
+te::da::DataSource* te::ado::Build(const te::core::URI& uri)
 {
-  namespace ado
-  {
-    te::da::DataSource* Build(const te::core::URI& uri);
-  }   // end namespace ado
-}     // end namespace te
-
-#endif  // __TERRALIB_ADO_INTERNAL_DATASOURCEFACTORY_H
+  te::da::DataSource* ds = new DataSource(uri);
+  return ds;
+}

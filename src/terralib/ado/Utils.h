@@ -43,6 +43,7 @@
 
 namespace te
 {
+  namespace core { class URI; }
 
   namespace da
   {
@@ -88,7 +89,7 @@ namespace te
 
       \return ADO connection string
     */
-    std::string MakeConnectionStr(const std::map<std::string, std::string>& dsInfo);
+    std::string MakeConnectionStr(const te::core::URI& connInfo);
 
     /*!
       \brief Convert a variant to a blob
@@ -271,7 +272,6 @@ namespace te
       \return A formatted DateTime string.
     */
     std::string GetFormattedDateTime(te::dt::DateTime* dateTime);
-
   } // end namespace ado
 }   // end namespace te
 
