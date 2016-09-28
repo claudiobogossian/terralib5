@@ -1,7 +1,8 @@
 /*
   Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-  This file is part of the TerraLib - a Framework for building GIS enabled applications.
+  This file is part of the TerraLib - a Framework for building GIS enabled
+  applications.
 
   TerraLib is free software: you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as published by
@@ -36,14 +37,18 @@ TERRALIB_CPP_PLUGIN_BEGIN(Plugin1)
 
 TERRALIB_CPP_PLUGIN_STARTUP
 {
+  if(m_initialized)
+    return;
   std::cout << "Plugin1 startup" << std::endl;
+  m_initialized = true;
 }
 
 TERRALIB_CPP_PLUGIN_SHUTDOWN
 {
   std::cout << "Plugin1 shutdown" << std::endl;
+  m_initialized = false;
 }
 
 TERRALIB_CPP_PLUGIN_END
-  
+
 TERRALIB_PLUGIN_CALL_BACK_IMPL(Plugin1)
