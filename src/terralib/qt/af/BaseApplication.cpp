@@ -79,13 +79,13 @@ te::qt::af::BaseApplication::~BaseApplication()
   while(!m_tables.empty())
     delete *m_tables.begin();
 
+  if(m_app)
+    m_app->finalize();
+
   delete m_layerExplorer;
 
   delete m_display;
   delete m_styleExplorer;
-
-  if(m_app)
-    m_app->finalize();
 
   delete m_ui;
 }
