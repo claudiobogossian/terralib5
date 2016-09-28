@@ -192,7 +192,7 @@ bool te::qt::widgets::MixtureModelWizard::execute()
 
       emit addLayer(m_outputLayer);
 
-      QMessageBox::information(this, tr("Mixture Model"), tr("Mixture Model ended sucessfully"));
+      QMessageBox::information(this, tr("Mixture Model"), tr("Mixture Model ended sucessfully."));
     }
     else
     {
