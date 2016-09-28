@@ -39,6 +39,7 @@
 
 // TerraLib
 #include "../../../../dataaccess/dataset/DataSet.h"
+#include "../../../../common/progress/TaskProgress.h"
 #include "../../../../core/uri/URI.h"
 #include "../../../core/CurlWrapper.h"
 #include "XMLParser.h"
@@ -99,7 +100,7 @@ namespace te
 
           \return Returns a DataSet that contains the coverage
         */
-        std::string getCoverage(const te::ws::ogc::wcs::CoverageRequest coverageRequest) const;
+        std::string getCoverage(const te::ws::ogc::wcs::CoverageRequest coverageRequest, te::common::TaskProgress* taskProgress = 0) const;
 
         /*!
           \brief Executes a request on a WCS server
@@ -108,7 +109,7 @@ namespace te
 
           \return Returns a path to a file
         */
-        std::string makeFileRequest(const std::string url, const std::string fileName) const;
+        std::string makeFileRequest(const std::string url, const std::string fileName, te::common::TaskProgress* taskProgress = 0) const;
 
 
         /*!
