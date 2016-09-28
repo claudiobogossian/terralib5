@@ -39,9 +39,8 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-
-te::map::AbstractLayerPtr te::qt::widgets::createLayer(const std::string& driverName, 
-                                                       const std::map<std::string, std::string>& connInfo)
+te::map::AbstractLayerPtr te::qt::widgets::createLayer(const std::string& driverName,
+                                                       const te::core::URI& connInfo)
 {
   te::map::AbstractLayerPtr layer;
 
@@ -50,8 +49,7 @@ te::map::AbstractLayerPtr te::qt::widgets::createLayer(const std::string& driver
   boost::uuids::uuid valU = gen();
   std::string id = boost::uuids::to_string(valU);
 
-  std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make(driverName));
-  ds->setConnectionInfo(connInfo);
+  std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make(driverName, connInfo));
   ds->open();
 
   std::vector<std::string> dsNames = ds->getDataSetNames();
@@ -89,27 +87,78 @@ te::map::AbstractLayerPtr te::qt::widgets::createLayer(const std::string& driver
   return layer;
 }
 
-/*
-  te::map::RasterLayer* rLayer = new te::map::RasterLayer(layerId, layerName);
+te::map::AbstractLayerPtr te::qt::widgets::createLayer(const std::string& driverName,
+                                                       const std::string& connInfo)
+{
+  const te::core::URI uri(connInfo);
+  return createLayer(driverName, uri);
+}
 
-  rLayer->setRasterInfo(connInfo);
-  rLayer->setVisibility(te::map::VISIBLE);
-  rLayer->setRendererType("RASTER_LAYER_RENDERER");
+te::map::AbstractLayerPtr te::qt::widgets::createLayer(const std::string& driverName,
+                                                       const std::map<std::string, std::string>& connInfo)
+{
+  te::map::AbstractLayerPtr layer;
 
-  layer.reset(rLayer);
+  static boost::uuids::basic_random_generator<boost::mt19937> gen;
 
-  std::auto_ptr<te::rst::Raster> rst(rLayer->getRaster());
+  boost::uuids::uuid valU = gen();
+  std::string id = boost::uuids::to_string(valU);
 
-  te::se::Style* style = layer->getStyle();
-  if(style == 0)
+  //Adjusting the URI based on the connection info parameters
+  std::string connStr("File://");
+
+  std::map<std::string, std::string>::const_iterator it = connInfo.begin();
+  std::map<std::string, std::string>::const_iterator itend = connInfo.end();
+  
+  while (it != itend)
   {
-    // Try create an appropriate style. i.e. a CoverageStyle
-    style = te::se::CreateCoverageStyle(rst->getNumberOfBands());
+    if (it->first == "URI" || it->first == "SOURCE")
+    {
+      connStr += it->second + "?";
+      continue;
+    }
 
-    if(style != 0)
-      layer->setStyle(style);
+    connStr += it->first + "=" + it->second + "&";
+    ++it;
   }
-*/
+
+  std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make(driverName, connStr));
+  ds->open();
+
+  std::vector<std::string> dsNames = ds->getDataSetNames();
+  assert(!dsNames.empty());
+
+  //add ds info
+  te::da::DataSourceInfoPtr dsInfoPtr(new te::da::DataSourceInfo);
+  dsInfoPtr->setConnInfo(connStr);
+  dsInfoPtr->setId(id);
+  dsInfoPtr->setTitle(dsNames[0]);
+  dsInfoPtr->setAccessDriver(driverName);
+  dsInfoPtr->setType(driverName);
+
+  te::da::DataSourcePtr dsPtr(ds.release());
+
+  if (!te::da::DataSourceInfoManager::getInstance().add(dsInfoPtr))
+  {
+    //Datasource already exist - use its id
+    dsInfoPtr = te::da::DataSourceInfoManager::getInstance().getByConnInfo(dsInfoPtr->getConnInfoAsString());
+    dsPtr->setId(dsInfoPtr->getId());
+  }
+  else
+  {
+    dsPtr->setId(id);
+    te::da::DataSourceManager::getInstance().insert(dsPtr);
+  }
+
+  //create layer
+  te::da::DataSetTypePtr dsType(dsPtr->getDataSetType(dsNames[0]).release());
+
+  te::qt::widgets::DataSet2Layer ds2l(dsPtr->getId());
+
+  layer = ds2l(dsType);
+
+  return layer;
+}
 
 te::rst::Raster* te::qt::widgets::getRasterVisibleArea(te::map::AbstractLayerPtr layer, te::gm::Envelope boxDisplay, int displaySRID)
 {

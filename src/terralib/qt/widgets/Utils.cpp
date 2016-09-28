@@ -404,7 +404,7 @@ QString te::qt::widgets::GetDiskRasterFileSelFilter()
   
   if( te::da::DataSourceFactory::find( "GDAL" ) )
   {
-    std::auto_ptr< te::da::DataSource > dsPtr = te::da::DataSourceFactory::make( "GDAL" );
+    std::auto_ptr< te::da::DataSource > dsPtr = te::da::DataSourceFactory::make( "GDAL", "File://" );
     
     if( dsPtr.get() )
     {

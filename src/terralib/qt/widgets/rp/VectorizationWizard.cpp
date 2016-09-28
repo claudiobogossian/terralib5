@@ -144,8 +144,7 @@ bool te::qt::widgets::VectorizationWizard::execute()
     if(idx != std::string::npos)
       outputdataset = outputdataset.substr(0,idx);
 
-    std::map<std::string, std::string> dsinfo;
-    dsinfo["URI"] = uri.string();
+    const std::string connInfo("File://" + uri.string());
 
     // let's include the new datasource in the managers
     boost::uuids::basic_random_generator<boost::mt19937> gen;
@@ -153,7 +152,7 @@ bool te::qt::widgets::VectorizationWizard::execute()
     std::string id = boost::uuids::to_string(u);
 
     te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
-    ds->setConnInfo(dsinfo);
+    ds->setConnInfo(connInfo);
     ds->setTitle(uri.stem().string());
     ds->setAccessDriver("OGR");
     ds->setType("OGR");

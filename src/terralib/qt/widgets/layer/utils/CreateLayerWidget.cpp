@@ -130,11 +130,9 @@ bool te::qt::widgets::CreateLayerWidget::createLayer(std::string& errorMessage)
   if (m_toFile)
   {
     boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
-    std::map<std::string, std::string> dsinfo;
-    dsinfo["URI"] = uri.string();
 
-    te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
-    dsOGR->setConnectionInfo(dsinfo);
+    const std::string connInfo("File://" + uri.string());
+    te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR", connInfo).release());
     dsOGR->open();
 
     try
@@ -297,11 +295,8 @@ void te::qt::widgets::CreateLayerWidget::onTargetFileToolButtonPressed()
   //create new data source
   boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
-  std::map<std::string, std::string> dsInfo;
-  dsInfo["URI"] = uri.string();
-
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
-  ds->setConnectionInfo(dsInfo);
+  const std::string connInfo("File://" + uri.string());
+  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", connInfo);
   ds->open();
 
   boost::uuids::basic_random_generator<boost::mt19937> gen;
@@ -309,7 +304,7 @@ void te::qt::widgets::CreateLayerWidget::onTargetFileToolButtonPressed()
   std::string id_ds = boost::uuids::to_string(u);
 
   te::da::DataSourceInfoPtr dsInfoPtr(new te::da::DataSourceInfo);
-  dsInfoPtr->setConnInfo(dsInfo);
+  dsInfoPtr->setConnInfo(connInfo);
   dsInfoPtr->setTitle(uri.stem().string());
   dsInfoPtr->setAccessDriver("OGR");
   dsInfoPtr->setType("OGR");

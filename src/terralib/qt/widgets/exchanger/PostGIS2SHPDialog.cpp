@@ -125,14 +125,8 @@ void te::qt::widgets::PostGIS2SHPDialog::onOkPushButtonClicked()
     if(dsType->size() == 0)
       te::da::LoadProperties(dsType.get(), layer->getDataSourceId());
 
-
     //create data source
-    std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = m_ui->m_dataSetLineEdit->text().toUtf8().data();
-    connInfo["DRIVER"] = "ESRI Shapefile"; // MUITO TENSO
-  
-    std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR"); // TENSO
-    dsOGR->setConnectionInfo(connInfo);
+    std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR", ("File://" + std::string(m_ui->m_dataSetLineEdit->text().toUtf8().data())));
     dsOGR->open();
 
     te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(dsType.get(), dsOGR->getCapabilities());
@@ -151,7 +145,7 @@ void te::qt::widgets::PostGIS2SHPDialog::onOkPushButtonClicked()
     std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(dataset.get(), converter));
 
     if(dataset->moveBeforeFirst())
-      dsOGR->add(dsTypeResult->getName(), dsAdapter.get(), dsOGR->getConnectionInfo());
+      dsOGR->add(dsTypeResult->getName(), dsAdapter.get(), nopt);
 
     dsOGR->close();
 
