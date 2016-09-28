@@ -187,12 +187,16 @@ bool te::qt::widgets::MixtureModelWizard::execute()
       algoOutputParams.reset();
       
       //set output layer
-      m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 
+      m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(),
                                                    m_rasterInfoPage->getWidget()->getInfo());
 
-      emit addLayer(m_outputLayer);
+      int addOutPutLayer = QMessageBox::question(this, tr("Mixture Model"), tr("Would you like to add layer on active project?"),
+                                                 QMessageBox::Yes | QMessageBox::No);
 
-      QMessageBox::information(this, tr("Mixture Model"), tr("Mixture Model ended sucessfully"));
+      if(addOutPutLayer == QMessageBox::Yes)
+          emit addLayer(m_outputLayer);
+
+      QMessageBox::information(this, tr("Mixture Model"), tr("Mixture Model ended sucessfully."));
     }
     else
     {
