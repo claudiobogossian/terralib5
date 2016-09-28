@@ -26,6 +26,7 @@
 // TerraLib
 #include "../../../Version.h"
 #include "../../../common/BoostUtils.h"
+#include "../../../core/uri/URI.h"
 #include "../../../core/utils/Platform.h"
 #include "../../../datatype/AbstractData.h"
 #include "../../../datatype/Enums.h"
@@ -159,41 +160,12 @@ te::da::DataSourceInfo* te::serialize::xml::ReadDataSourceInfo(te::xml::Reader& 
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "ConnectionInfo");
+  reader.next();
 
-  std::map<std::string, std::string> conninfo;
-
-  while(reader.next() &&
-        (reader.getNodeType() == te::xml::START_ELEMENT) &&
-        (reader.getElementLocalName() == "Parameter"))
+  if (reader.getNodeType() == te::xml::VALUE)
   {
-    // Parameter Name
+    ds->setConnInfo(reader.getElementValue());
     reader.next();
-    assert(reader.getNodeType() == te::xml::START_ELEMENT);
-    assert(reader.getElementLocalName() == "Name");
-    reader.next();
-    assert(reader.getNodeType() == te::xml::VALUE);
-    std::string paramName = reader.getElementValue();
-    reader.next();
-    assert(reader.getNodeType() == te::xml::END_ELEMENT);
-
-    // Parameter Value
-    reader.next();
-    assert(reader.getNodeType() == te::xml::START_ELEMENT);
-    assert(reader.getElementLocalName() == "Value");
-    reader.next();
-    std::string paramValue;
-    if (reader.getNodeType() != te::xml::END_ELEMENT)
-    {
-      assert(reader.getNodeType() == te::xml::VALUE);
-      paramValue = reader.getElementValue();
-      reader.next();
-    }
-    assert(reader.getNodeType() == te::xml::END_ELEMENT);
-
-    conninfo[paramName] = paramValue;
-
-    reader.next();
-    assert(reader.getNodeType() == te::xml::END_ELEMENT);
   }
 
   assert(reader.getNodeType() == te::xml::END_ELEMENT); // End of ConnectionInfo Element
@@ -201,8 +173,6 @@ te::da::DataSourceInfo* te::serialize::xml::ReadDataSourceInfo(te::xml::Reader& 
 
   assert(reader.getNodeType() == te::xml::END_ELEMENT); // End of DataSource Element
   reader.next();
-
-  ds->setConnInfo(conninfo);
 
   return ds.release();
 }
@@ -258,23 +228,7 @@ void te::serialize::xml::Save(te::xml::AbstractWriter& writer)
     writer.writeEndElement("te_da:Description");
 
     writer.writeStartElement("te_da:ConnectionInfo");
-    std::map<std::string, std::string> info = it->second->getConnInfo();
-    std::map<std::string, std::string>::iterator conIt;
-
-    for(conIt=info.begin(); conIt!=info.end(); ++conIt)
-    {
-      writer.writeStartElement("te_common:Parameter");
-
-      writer.writeStartElement("te_common:Name");
-      writer.writeValue(conIt->first);
-      writer.writeEndElement("te_common:Name");
-
-      writer.writeStartElement("te_common:Value");
-      writer.writeValue(conIt->second);
-      writer.writeEndElement("te_common:Value");
-
-      writer.writeEndElement("te_common:Parameter");
-    }
+    writer.writeValue(it->second->getConnInfoAsString());
     writer.writeEndElement("te_da:ConnectionInfo");
 
     writer.writeEndElement("te_da:DataSource");

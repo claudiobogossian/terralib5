@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../common/StringUtils.h"
+#include "../../core/uri/URI.h"
 #include "DataSourceInfo.h"
 
 // STL
@@ -88,57 +89,26 @@ void te::da::DataSourceInfo::setDescription(const std::string& d)
   m_description = d;
 }
 
-const std::map<std::string, std::string>& te::da::DataSourceInfo::getConnInfo() const
+const te::core::URI& te::da::DataSourceInfo::getConnInfo() const
 {
-  return m_conninfo;
+  return m_connInfo;
 }
 
-std::map<std::string, std::string>& te::da::DataSourceInfo::getConnInfo()
+const std::string te::da::DataSourceInfo::getConnInfoAsString() const
 {
-  return m_conninfo;
+  return m_connInfo.uri();
 }
 
-std::string te::da::DataSourceInfo::getConnInfoAsString()
+void te::da::DataSourceInfo::setConnInfo(const te::core::URI& connInfo)
 {
-  std::string connInfo;
-  std::map<std::string, std::string>::iterator connIt = m_conninfo.begin();
-  while (connIt != m_conninfo.end())
-  {
-    connInfo += connIt->first;
-    connInfo += "=";
-    connInfo += connIt->second;
-    connInfo += ";";
-    ++connIt;
-  }
-  return connInfo;
+  m_connInfo = connInfo;
 }
 
-void te::da::DataSourceInfo::setConnInfo(const std::map<std::string, std::string>& conninfo)
+void te::da::DataSourceInfo::setConnInfo(const std::string& connInfo)
 {
-  m_conninfo = conninfo;
-}
-
-void te::da::DataSourceInfo::setConnInfoFromString(const std::string& connInfo)
-{
-  m_conninfo.clear();
-
-  std::vector<std::string> vec;
-
-  te::common::Tokenize(connInfo, vec, ";");
-
-  for (std::size_t t = 0; t < vec.size(); ++t)
-  {
-    std::string pairStr = vec[t];
-
-    std::vector<std::string> pairVec;
-
-    te::common::Tokenize(pairStr, pairVec, "=");
-
-    if (pairVec.size() == 2)
-    {
-      m_conninfo[pairVec[0]] = pairVec[1];
-    }
-  }
+  te::core::URI aux(connInfo);
+  if(aux.isValid())
+    m_connInfo = aux;
 }
 
 bool te::da::DataSourceInfo::operator<(const DataSourceInfo& rhs) const

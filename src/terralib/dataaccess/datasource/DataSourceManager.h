@@ -38,6 +38,7 @@
 
 namespace te
 {
+  namespace core { class URI; }
   namespace da
   {
     /*!
@@ -72,42 +73,41 @@ namespace te
         typedef std::map<std::string, DataSourcePtr>::iterator iterator;
 
         /*!
-          \brief It creates a new data source, stores a reference to it in the manager and then returns a pointer to it.
+        \brief It creates a new data source, stores a reference to it in the manager and then returns a pointer to it.
 
-          \param id       The identification to be assigned to the data source.
-          \param dsType   The data source type name (example: PostGIS, Oracle, WFS).
+        \param id       The identification to be assigned to the data source.
+        \param dsType   The data source type name (example: PostGIS, Oracle, WFS).
+        \param connInfo The URI, as a valid string, used to set up the underlying access channel to the repository.
 
-          \return A pointer to the new data source.
+        \return A pointer to the new data source.
 
-          \exception Exception It throws an exception if a data source with the same identification already exist.
-
-          \note Thread-safe!
+        \exception Exception It throws an exception if a data source with the same identification already exist.
+        
+        \note Thread-safe!
         */
-        DataSourcePtr make(const std::string& id, const std::string& dsType);
+        DataSourcePtr make(const std::string& id, const std::string& dsType, const std::string& connInfo);
+
+        /*!
+        \brief It creates a new data source, stores a reference to it in the manager and then returns a pointer to it.
+
+        \param id       The identification to be assigned to the data source.
+        \param dsType   The data source type name (example: PostGIS, Oracle, WFS).
+        \param connInfo The URI used to set up the underlying access channel to the repository.
+
+        \return A pointer to the new data source.
+
+        \exception Exception It throws an exception if a data source with the same identification already exist.
+
+        \note Thread-safe!
+        */
+        DataSourcePtr make(const std::string& id, const std::string& dsType, const te::core::URI& connInfo);
 
         /*!
           \brief It opens the data source, makes it ready for use, stores a reference to it in the manager and returns a pointer to it.
 
           \param id       The identification to be assigned to the data source.
           \param dsType   The data source type name (example: PostGIS, Oracle, WFS).
-          \param connInfo The set of parameters used to set up the underlying access channel to the repository.
-
-          \return A pointer to the new opened data source.
-
-          \exception Exception It throws an exception if the data source can not be opened or if a data source with the same identification already exist.
-
-          \note This method doesn't load the data source catalog.
-
-          \note Thread-safe!
-        */
-        DataSourcePtr open(const std::string& id, const std::string& dsType, const std::map<std::string, std::string>& connInfo);
-
-        /*!
-          \brief It opens the data source, makes it ready for use, store a reference to it in the manager and return a pointer to it.
-
-          \param id       The identification to be assigned to the data source.
-          \param dsType   The data source type name (example: PostGIS, Oracle, WFS).
-          \param connInfo The set of parameters used to set up the underlying access channel to the repository using a string notation with key-value-pairs delimited by '&' (ampersand).
+          \param connInfo The URI, as a valid string, used to set up the underlying access channel to the repository.
 
           \return A pointer to the new opened data source.
 
@@ -120,11 +120,28 @@ namespace te
         DataSourcePtr open(const std::string& id, const std::string& dsType, const std::string& connInfo);
 
         /*!
+        \brief It opens the data source, makes it ready for use, stores a reference to it in the manager and returns a pointer to it.
+
+        \param id       The identification to be assigned to the data source.
+        \param dsType   The data source type name (example: PostGIS, Oracle, WFS).
+        \param connInfo The URI used to set up the underlying access channel to the repository.
+
+        \return A pointer to the new opened data source.
+
+        \exception Exception It throws an exception if the data source can not be opened or if a data source with the same identification already exist.
+
+        \note This method doesn't load the data source catalog.
+
+        \note Thread-safe!
+        */
+        DataSourcePtr open(const std::string& id, const std::string& dsType, const te::core::URI& connInfo);
+
+        /*!
           \brief It searches for an opened data source with the given id or it opens a new one if it doesn't exists
 
           \param id       The data source identification.
           \param dsType   The data source type name (example: PostGIS, Oracle, WFS).
-          \param connInfo The set of parameters used to set up the underlying access channel to the repository.
+          \param connInfo The set of parameters, as a valid URI string, used to set up the underlying access channel to the repository.
 
           \return A pointer to the new opened data source.
 
@@ -134,7 +151,24 @@ namespace te
 
           \note Thread-safe!
         */
-        DataSourcePtr get(const std::string& id, const std::string& dsType, const std::map<std::string, std::string>& connInfo);
+        DataSourcePtr get(const std::string& id, const std::string& dsType, const std::string& connInfo);
+
+        /*!
+        \brief It searches for an opened data source with the given id or it opens a new one if it doesn't exists
+
+        \param id       The data source identification.
+        \param dsType   The data source type name (example: PostGIS, Oracle, WFS).
+        \param connInfo The set of parameters used to set up the underlying access channel to the repository.
+
+        \return A pointer to the new opened data source.
+
+        \exception Exception It throws an exception if the data source can not be opened.
+
+        \note This method doesn't load the data source catalog.
+
+        \note Thread-safe!
+        */
+        DataSourcePtr get(const std::string& id, const std::string& dsType, const te::core::URI& connInfo);
 
         /*!
           \brief It returns the number of data sources that the manager are keeping track of.

@@ -40,7 +40,15 @@
 #include "DataSourceFactory.h"
 #include "DataSourceTransactor.h"
 
-te::da::DataSource::DataSource()
+te::da::DataSource::DataSource(const std::string& connInfo) :
+  m_id(""),
+  m_uri(te::core::URI(connInfo))
+{
+}
+
+te::da::DataSource::DataSource(const te::core::URI& uri)
+  : m_id(""),
+  m_uri(uri)
 {
 }
 
@@ -56,6 +64,11 @@ const std::string& te::da::DataSource::getId() const
 void te::da::DataSource::setId(const std::string& id)
 {
   m_id = id;
+}
+
+const te::core::URI& te::da::DataSource::getConnectionInfo() const
+{
+  return m_uri;
 }
 
 std::auto_ptr<te::da::DataSet> te::da::DataSource::getDataSet(const std::string& name, 
@@ -511,44 +524,44 @@ void te::da::DataSource::setEncoding(const te::core::EncodingType& et)
 
 }
 
-std::auto_ptr<te::da::DataSource> te::da::DataSource::create(const std::string& dsType, const std::map<std::string, std::string>& dsInfo)
+std::auto_ptr<te::da::DataSource> te::da::DataSource::create(const std::string& dsType, const std::string& connInfo)
 {
-  std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
+  std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType, connInfo));
 
   if(ds.get() == 0)
     throw Exception(TE_TR("Could not find the appropriate factory to create a data source instance!"));
 
-  ds->create(dsInfo);
+  ds->create(connInfo);
 
   return ds;
 }
 
-void te::da::DataSource::drop(const std::string& dsType, const std::map<std::string, std::string>& dsInfo)
+void te::da::DataSource::drop(const std::string& dsType, const std::string& connInfo)
 {
-  std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
+  std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType, connInfo));
 
   if(ds.get() == 0)
     throw Exception(TE_TR("Could not find the appropriate factory to create a data source instance!"));
 
-  ds->drop(dsInfo);
+  ds->drop(connInfo);
 }
 
-bool te::da::DataSource::exists(const std::string& dsType, const std::map<std::string, std::string>& dsInfo)
+bool te::da::DataSource::exists(const std::string& dsType, const std::string& connInfo)
 {
-  std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
+  std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType, connInfo));
 
   if(ds.get() == 0)
     throw Exception(TE_TR("Could not find the appropriate factory in order to create a data source instance!"));
 
-  return ds->exists(dsInfo);
+  return ds->exists(connInfo);
 }
 
-std::vector<std::string> te::da::DataSource::getDataSourceNames(const std::string& dsType, const std::map<std::string, std::string>& dsInfo)
+std::vector<std::string> te::da::DataSource::getDataSourceNames(const std::string& dsType, const std::string& connInfo)
 {
-  std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
+  std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType, connInfo));
 
   if(ds.get() == 0)
     throw Exception(TE_TR("Could not find the appropriate factory to create a data source instance!"));
 
-  return ds->getDataSourceNames(dsInfo);
+  return ds->getDataSourceNames(connInfo);
 }

@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../common/Enums.h"
+#include "../../core/uri/URI.h"
 #include "../../geometry/Enums.h"
 #include "../dataset/CheckConstraint.h"
 #include "../dataset/DataSet.h"
@@ -119,8 +120,12 @@ namespace te
     {
       public:
 
+        DataSource(const std::string& connInfo);
+
         /*! \brief Default constructor that can be called by subclasses. */
-        DataSource();
+        DataSource(const te::core::URI& uri);
+
+        //DataSource(te::core::URI uri);
 
         /*! \brief Virtual destructor. */
         virtual ~DataSource();
@@ -138,6 +143,13 @@ namespace te
           \param id An identification value.
         */
         void setId(const std::string& id);
+
+        /*!
+        \brief An Uniform Resource Identifier used to describe the datasource connection.
+
+        \return A reference to the URI of the datasource.
+        */
+        const te::core::URI& getConnectionInfo() const;
 
         /** @name Data Source Basic Methods
           *  Basic Methods for operating a data source.
@@ -170,14 +182,14 @@ namespace te
 
           \note Thread-safe!
         */
-        virtual const std::map<std::string, std::string>& getConnectionInfo() const = 0;
+        //virtual const te::core::URI& getConnectionInfo() const = 0;
 
         /*!
           \brief It sets the connection information to be used when connecting to the data source.
 
-          \param connInfo Key-value-pairs (kvp) with the connection information.
+          \param connInfo The connection information.
         */
-        virtual void setConnectionInfo(const std::map<std::string, std::string>& connInfo) = 0;
+        //virtual void setConnectionInfo(const std::string& connInfo) = 0;
 
         /*!
           \brief It returns an object that can execute transactions in the context of a data source.
@@ -982,7 +994,7 @@ namespace te
           \note Thread-safe!
         */
         virtual void addIndex(const std::string& datasetName, Index* idx,
-                              const std::map<std::string, std::string>& options); 
+                              const std::map<std::string, std::string>& options);
 
         /*!
           \brief It removes the index from the given dataset.
@@ -1304,7 +1316,7 @@ namespace te
           \brief It creates a new repository for a data source.
 
           \param dsType The type of data source to be created (example: POSTGIS, ORACLE, SQLITE).
-          \param dsInfo The information for creating a new data source.
+          \param connInfo The information for creating a new data source.
 
           \exception Exception An exception can be thrown, if the data source could not be created.
 
@@ -1312,7 +1324,9 @@ namespace te
 
           \note Thread-safe!
         */
-        static std::auto_ptr<DataSource> create(const std::string& dsType, const std::map<std::string, std::string>& dsInfo);
+        static std::auto_ptr<DataSource> create(const std::string& dsType, const std::string& connInfo);
+
+       /* static std::unique_ptr<DataSource> create(const std::string& dsType, const std::string& uri);*/
 
         /*!
           \brief It removes a data source identified by its connection information and the driver type.
@@ -1326,7 +1340,7 @@ namespace te
 
           \note Thread-safe!
         */
-        static void drop(const std::string& dsType, const std::map<std::string, std::string>& dsInfo);
+        static void drop(const std::string& dsType, const std::string& connInfo);
 
         /*!
           \brief It checks if the data source exists with the connection information and the driver type.
@@ -1340,7 +1354,7 @@ namespace te
 
           \note Thread-safe!
         */
-        static bool exists(const std::string& dsType, const std::map<std::string, std::string>& dsInfo);
+        static bool exists(const std::string& dsType, const std::string& connInfo);
 
         /*!
           \brief It returns the data source names available in the driver.
@@ -1354,7 +1368,7 @@ namespace te
 
           \exception Exception An exception can be thrown, if the list of data source names could not be retrieved.
         */
-        static std::vector<std::string> getDataSourceNames(const std::string& dsType, const std::map<std::string, std::string>& info);
+        static std::vector<std::string> getDataSourceNames(const std::string& dsType, const std::string& connInfo);
 
         //@}
 
@@ -1368,29 +1382,29 @@ namespace te
         /*!
           \brief It creates a new data source.
 
-          \param dsInfo The information for creating a new data source.
+          \param connInfo The information for creating a new data source.
 
           \exception Exception An exception can be thrown, if the data source could not be created.
 
           \note Not thread-safe!
         */
-        virtual void create(const std::map<std::string, std::string>& dsInfo) = 0;
+        virtual void create(const std::string& connInfo) = 0;
 
         /*!
           \brief It removes the data source with the connection information from a driver.
 
-          \param dsInfo The information for removing a data source from a driver.
+          \param connInfo The information for removing a data source from a driver.
 
           \exception Exception An exception can be thrown, if the data source could not be removed.
 
           \note Not thread-safe!
         */
-        virtual void drop(const std::map<std::string, std::string>& dsInfo) = 0;
+        virtual void drop(const std::string& connInfo) = 0;
 
         /*!
           \brief Check the existence of a data source in a driver.
 
-          \param dsInfo The data source information.
+          \param connInfo The data source information.
 
           \exception Exception An exception can be thrown, if the existence of a data source in a driver could not be determined.
 
@@ -1398,7 +1412,7 @@ namespace te
 
           \note Thread-safe!
         */
-        virtual bool exists(const std::map<std::string, std::string>& dsInfo) = 0;
+        virtual bool exists(const std::string& connInfo) = 0;
 
         /*!
           \brief  It gets the data source names available in a driver.
@@ -1411,13 +1425,14 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& dsInfo) = 0;
+        virtual std::vector<std::string> getDataSourceNames(const std::string& connInfo) = 0;
 
         //@}
 
       protected:
 
-        std::string m_id;  //!< The data source identification.
+        std::string    m_id;   //!< The data source identification.
+        te::core::URI  m_uri;  //!< The URI used to describe the datasource connection;
     };
 
     typedef boost::shared_ptr<DataSource> DataSourcePtr;
