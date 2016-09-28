@@ -31,9 +31,9 @@
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "Config.h"
 
-
 namespace te
 {
+  namespace core { class URI; }
   namespace gm  { class GeometryProperty; }
   namespace rst { class RasterProperty; }
 
@@ -60,15 +60,13 @@ namespace te
          */
         //@{
 
-        DataSource();
+        DataSource(const std::string& connInfo);
+
+        DataSource(const te::core::URI& uri);
 
         ~DataSource();
 
         std::string getType() const;
-
-        const std::map<std::string, std::string>& getConnectionInfo() const;
-
-        void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
 
         std::auto_ptr<te::da::DataSourceTransactor> getTransactor();
 
@@ -149,22 +147,21 @@ namespace te
 
       protected:
 
-        void create(const std::map<std::string, std::string>& dsInfo);
+        void create(const std::string& connInfo);
 
-        void drop(const std::map<std::string, std::string>& dsInfo);
+        void drop(const std::string& connInfo);
 
-        bool exists(const std::map<std::string, std::string>& dsInfo);
+        bool exists(const std::string& connInfo);
 
-        std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& dsInfo);
+        std::vector<std::string> getDataSourceNames(const std::string& connInfo);
 
       private:
 
-        std::map<std::string, std::string> m_connInfo;    //!< Connection information.
-        ConnectionPool* m_pool;                           //!< The connection pool.
-        unsigned int m_geomTypeOid;                       //!< PostGIS Geometry type OID.
-        unsigned int m_rasterTypeOid;                     //!< PostGIS Raster type OID.
-        std::string m_currentSchema;                      //!< The default schema used when no one is provided.
-        bool m_timeIsInteger;                             //!< It indicates if the postgis stores, internally, time and timestamp as an integer.
+        ConnectionPool*                     m_pool;           //!< The connection pool.
+        unsigned int                        m_geomTypeOid;    //!< PostGIS Geometry type OID.
+        unsigned int                        m_rasterTypeOid;  //!< PostGIS Raster type OID.
+        std::string                         m_currentSchema;  //!< The default schema used when no one is provided.
+        bool                                m_timeIsInteger;  //!< It indicates if the postgis stores, internally, time and timestamp as an integer.
 
         static te::da::DataSourceCapabilities sm_capabilities;  //!< PostGIS capabilities.
         static te::da::SQLDialect* sm_dialect;                  //!< PostGIS SQL dialect.

@@ -49,6 +49,7 @@
 // STL
 #include <cstdlib>
 #include <cstring>
+#include <string>
 #include <vector>
 
 #include <boost/date_time/time_zone_base.hpp>
@@ -65,7 +66,9 @@ extern "C"
 
 namespace te
 {
-// Forward declarations
+  // Forward declarations
+  namespace core { class URI; }
+
   namespace da
   {
     class DataSet;
@@ -947,7 +950,7 @@ namespace te
       }
     }
 
-    std::string MakeConnectionStr(const std::map<std::string, std::string>& dsInfo);    
+    std::string MakeConnectionStr(const te::core::URI& connInfo);
 
     void SplitTableName(const std::string& fullName,
                         const std::string* defaultSchema,

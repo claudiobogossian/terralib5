@@ -69,59 +69,59 @@ namespace te
       switch(propertyDataType)
       {
         case te::dt::CHAR_TYPE :
-          pq->bind(i, d->getChar(propertyPos));
+          pq->bind((int)i, d->getChar(propertyPos));
         break;
 
         case te::dt::INT16_TYPE :
-          pq->bind(i, d->getInt16(propertyPos));
+          pq->bind((int)i, d->getInt16(propertyPos));
         break;
 
         case te::dt::INT32_TYPE :
-          pq->bind(i, d->getInt32(propertyPos));
+          pq->bind((int)i, d->getInt32(propertyPos));
         break;
 
         case te::dt::INT64_TYPE :
-          pq->bind(i, d->getInt64(propertyPos));
+          pq->bind((int)i, d->getInt64(propertyPos));
         break;
 
         case te::dt::BOOLEAN_TYPE :
-          pq->bind(i, d->getBool(propertyPos));
+          pq->bind((int)i, d->getBool(propertyPos));
         break;
 
         case te::dt::FLOAT_TYPE :
-          pq->bind(i, d->getFloat(propertyPos));
+          pq->bind((int)i, d->getFloat(propertyPos));
         break;
 
         case te::dt::DOUBLE_TYPE :
-          pq->bind(i, d->getDouble(propertyPos));
+          pq->bind((int)i, d->getDouble(propertyPos));
         break;
 
         case te::dt::NUMERIC_TYPE :
-          pq->bindNumeric(i, d->getNumeric(propertyPos));
+          pq->bindNumeric((int)i, d->getNumeric(propertyPos));
         break;
 
         case te::dt::STRING_TYPE :
-          pq->bind(i, d->getString(propertyPos));
+          pq->bind((int)i, d->getString(propertyPos));
         break;
 
         case te::dt::BYTE_ARRAY_TYPE :
           {
             std::auto_ptr<te::dt::ByteArray> ba(d->getByteArray(propertyPos));
-            pq->bind(i, *ba);
+            pq->bind((int)i, *ba);
           }
         break;
 
         case te::dt::GEOMETRY_TYPE :
           {
             std::auto_ptr<te::gm::Geometry> geom(d->getGeometry(propertyPos));
-            pq->bind(i, *geom);
+            pq->bind((int)i, *geom);
           }
         break;
 
         case te::dt::DATETIME_TYPE :
           {
             std::auto_ptr<te::dt::DateTime> dt(d->getDateTime(propertyPos));
-            pq->bind(i, *dt);
+            pq->bind((int)i, *dt);
           }
         break;
 
@@ -185,7 +185,7 @@ void te::pgis::PreparedQuery::execute()
 {
   PQclear(m_result);
 
-  m_result = PQexecPrepared(m_conn, m_qname.c_str(), m_nparams, m_paramValues, m_paramLengths, m_paramFormats, 1);
+  m_result = PQexecPrepared(m_conn, m_qname.c_str(), (int)m_nparams, m_paramValues, m_paramLengths, m_paramFormats, 1);
 
 // release param values data and set it to a null value
   for(std::size_t i = 0; i < m_nparams; ++i)
@@ -360,7 +360,7 @@ void te::pgis::PreparedQuery::bind(int i, const te::dt::ByteArray& value)
 
   memcpy(m_paramValues[i], value.getData(), value.bytesUsed());
 
-  m_paramLengths[i] = value.bytesUsed();
+  m_paramLengths[i] = (int)value.bytesUsed();
   m_paramFormats[i] = 1;
 }
 
@@ -413,7 +413,7 @@ void te::pgis::PreparedQuery::bind(int i, const te::dt::DateTime& value)
 
   memcpy(m_paramValues[i], dvalue.c_str(), dvalue.length() + 1);
 
-  m_paramLengths[i] = dvalue.length() + 1;
+  m_paramLengths[i] = (int)dvalue.length() + 1;
 }
 
 void te::pgis::PreparedQuery::bind(int /*i*/, const te::da::DataSet& /*value*/)
@@ -452,7 +452,7 @@ void te::pgis::PreparedQuery::prepare(const std::string& query, const std::vecto
   memset(m_paramFormats, 0, m_nparams * sizeof(int));
 
 // make prepared query
-  m_result = PQprepare(m_conn, m_qname.c_str(), query.c_str(), m_nparams, 0);
+  m_result = PQprepare(m_conn, m_qname.c_str(), query.c_str(), (int)m_nparams, 0);
 
 // check result
   if((PQresultStatus(m_result) != PGRES_COMMAND_OK) &&
