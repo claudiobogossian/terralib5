@@ -130,6 +130,10 @@ namespace te
         void setCurlWrapper(te::ws::core::CurlWrapper* curlWrapper);
 
       private:
+
+        std::string getFileExtension(const std::string& format) const;
+
+      private:
         std::string m_version;
         std::string m_dataDir;
         te::core::URI m_uri;

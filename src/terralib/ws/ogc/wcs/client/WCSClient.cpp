@@ -140,6 +140,18 @@ te::ws::ogc::wcs::CoverageDescription te::ws::ogc::WCSClient::describeCoverage(c
   return describeCoverage;
 }
 
+std::string te::ws::ogc::WCSClient::getFileExtension(const std::string& format) const
+{
+  std::string fileExtension = "";
+
+  if(format == "image/tiff")
+  {
+    fileExtension = ".tif";
+  }
+
+  return fileExtension;
+}
+
 
 std::string te::ws::ogc::WCSClient::getCoverage(const te::ws::ogc::wcs::CoverageRequest coverageRequest) const
 {
@@ -198,7 +210,9 @@ std::string te::ws::ogc::WCSClient::getCoverage(const te::ws::ogc::wcs::Coverage
 
   m_curl->setTaskMessage(TE_TR("Getting Coverage"));
 
-  coveragePath = makeFileRequest(url, coverageRequest.coverageID);
+  std::string fileName = coverageRequest.coverageID + getFileExtension(coverageRequest.format);
+
+  coveragePath = makeFileRequest(url, fileName);
 
   return coveragePath;
 }
