@@ -43,10 +43,18 @@ te::map::AbstractLayer* te::wms::serialize::LayerReader(te::xml::Reader& reader)
   /* Title Element */
   reader.next();
   std::string title = te::map::serialize::ReadLayerTitle(reader);
+  reader.next();
 
   /* Visible Element */
-  reader.next();
   std::string visible = te::map::serialize::ReadLayerVisibility(reader);
+  reader.next();
+
+  /* Encoding Element */
+  std::string encoding = te::map::serialize::ReadLayerEncoding(reader);
+  if (!encoding.empty())
+    reader.next();
+  else
+    encoding = te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8);
 
   /* Grouping */
   te::map::Grouping* grouping = te::map::serialize::ReadLayerGrouping(reader);
@@ -55,15 +63,14 @@ te::map::AbstractLayer* te::wms::serialize::LayerReader(te::xml::Reader& reader)
   std::auto_ptr<te::map::Chart> chart(te::map::serialize::ReadLayerChart(reader));
 
   /* DataSetName Element */
-  reader.next();
   std::string dataset = te::map::serialize::ReadDataSetName(reader);
+  reader.next();
 
   /* DataSourceId Element */
-  reader.next();
   std::string datasourceId = te::map::serialize::ReadDataSourceId(reader);
+  reader.next();
 
   /* SRID Element */
-  reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "SRID");
   reader.next();

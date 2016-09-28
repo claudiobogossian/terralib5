@@ -37,10 +37,18 @@
 
 te::da::DataSourceCapabilities te::wms::DataSource::sm_capabilities;
 
-te::wms::DataSource::DataSource()
-  : m_isOpened(false)
+te::wms::DataSource::DataSource(const std::string& connInfo)
+  : te::da::DataSource(connInfo),
+  m_isOpened(false)
 {
 }
+
+te::wms::DataSource::DataSource(const te::core::URI& uri)
+  : te::da::DataSource(uri),
+  m_isOpened(false)
+{
+}
+
 
 te::wms::DataSource::~DataSource()
 {}
@@ -50,22 +58,12 @@ std::string te::wms::DataSource::getType() const
   return TE_WMS_DRIVER_IDENTIFIER;
 }
 
-const std::map<std::string, std::string>& te::wms::DataSource::getConnectionInfo() const
-{
-  return m_connectionInfo;
-}
-
-void te::wms::DataSource::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
-{
-  m_connectionInfo = connInfo;
-}
-
 std::auto_ptr<te::da::DataSourceTransactor> te::wms::DataSource::getTransactor()
 {
   if(!m_isOpened)
     throw Exception(TE_TR("The data source is not opened!"));
 
-  return std::auto_ptr<te::da::DataSourceTransactor>(new Transactor(m_connectionInfo.find("URI")->second, m_layersInfo));
+  return std::auto_ptr<te::da::DataSourceTransactor>(new Transactor(m_uri.uri(), m_layersInfo));
 }
 
 void te::wms::DataSource::open()
@@ -75,7 +73,7 @@ void te::wms::DataSource::open()
 
   verifyConnectionInfo();
 
-  GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(m_connectionInfo.find("URI")->second.c_str(), GA_ReadOnly));
+  GDALDataset* gds = (GDALDataset*)GDALOpenEx(m_uri.uri().c_str(), GDAL_OF_READONLY, NULL, NULL, NULL);;
   if(gds == 0)
     throw Exception(TE_TR("Error establishing connection with the informed server!"));
 
@@ -103,14 +101,12 @@ bool te::wms::DataSource::isOpened() const
 
 bool te::wms::DataSource::isValid() const
 {
-  if(m_connectionInfo.empty())
-    return false;
+  if (m_isOpened)
+    return true;
 
-  std::map<std::string, std::string>::const_iterator it = m_connectionInfo.find("URI");
-  if(it == m_connectionInfo.end())
-    return false;
+  verifyConnectionInfo();
 
-  GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(it->second.c_str(), GA_ReadOnly));
+  GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(m_uri.uri().c_str(), GA_ReadOnly));
   if(gds == 0)
     return false;
 
@@ -139,27 +135,31 @@ const std::map<std::string, te::wms::WMSLayerInfo>& te::wms::DataSource::getLaye
   return m_layersInfo;
 }
 
-void te::wms::DataSource::create(const std::map<std::string, std::string>& /*dsInfo*/)
+void te::wms::DataSource::create(const std::string& /*connInfo*/)
 {
   throw Exception(TE_TR("The create() method is not supported by the WMS driver!"));
 }
 
-void te::wms::DataSource::drop(const std::map<std::string, std::string>& /*dsInfo*/)
+void te::wms::DataSource::drop(const std::string& /*connInfo*/)
 {
   throw Exception(TE_TR("The drop() method is not supported by the WMS driver!"));
 }
 
-bool te::wms::DataSource::exists(const std::map<std::string, std::string>& dsInfo)
+bool te::wms::DataSource::exists(const std::string& connInfo)
 {
-  if(dsInfo.empty())
+  if (connInfo.empty())
     return false;
 
-  std::map<std::string, std::string>::const_iterator it = dsInfo.find("URI");
-  if(it == dsInfo.end())
+  const te::core::URI aux(connInfo);
+  if (!aux.isValid())
     return false;
 
-  GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(it->second.c_str(), GA_ReadOnly));
-  if(gds == 0)
+  std::string path = aux.path();
+  if (path.empty())
+    return false;
+
+  GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.c_str(), GA_ReadOnly));
+  if (gds == 0)
     return false;
 
   GDALClose(gds);
@@ -167,17 +167,16 @@ bool te::wms::DataSource::exists(const std::map<std::string, std::string>& dsInf
   return true;
 }
 
-std::vector<std::string> te::wms::DataSource::getDataSourceNames(const std::map<std::string, std::string>& /*dsInfo*/)
+std::vector<std::string> te::wms::DataSource::getDataSourceNames(const std::string& /*connInfo*/)
 {
   return std::vector<std::string>();
 }
 
 void te::wms::DataSource::verifyConnectionInfo() const
 {
-  if(m_connectionInfo.empty())
-    throw Exception(TE_TR("The connection information is empty!"));
+  if (!m_uri.isValid())
+    throw Exception(TE_TR("The connection information is invalid!"));
 
-  std::map<std::string, std::string>::const_iterator it = m_connectionInfo.find("URI");
-  if(it == m_connectionInfo.end())
-    throw Exception(TE_TR("The connection information is invalid. Missing URI parameter!"));
+  if (m_uri.path().empty())
+    throw Exception(TE_TR("The connection information is invalid. Missing the path parameter!"));
 }
