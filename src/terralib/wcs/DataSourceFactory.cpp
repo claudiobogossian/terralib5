@@ -19,22 +19,15 @@
 
 /*!
   \file terralib/wcs/DataSourceFactory.h
- 
+
   \brief This is the factory for WCS data sources.
 */
 
-#ifndef __TERRALIB_WCS_INTERNAL_DATASOURCEFACTORY_H
-#define __TERRALIB_WCS_INTERNAL_DATASOURCEFACTORY_H
-
 // TerraLib
-#include "DataSource.h"
+#include "DataSourceFactory.h"
 
-namespace te
+te::da::DataSource* te::wcs::Build(const te::core::URI& uri)
 {
-  namespace wcs
-  {
-    te::da::DataSource* Build(const te::core::URI& uri);
-  }   // end namespace wcs
-}     // end namespace te
-
-#endif  // __TERRALIB_WCS_INTERNAL_DATASOURCEFACTORY_H
+  te::da::DataSource* ds = new DataSource(uri);
+  return ds;
+}
