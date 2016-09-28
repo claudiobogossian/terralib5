@@ -1138,6 +1138,7 @@ endif()
 
 if(TERRALIB_MOD_WS_OGC_WCS_CLIENT_ENABLED)
   add_subdirectory(terralib_mod_ws_ogc_wcs_client)
+  list(APPEND TERRALIB_MODULES ws_ogc_wcs_client)
 endif()
 
 if(TERRALIB_MOD_WS_OGC_WCS_DATAACCESS_ENABLED)

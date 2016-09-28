@@ -47,6 +47,10 @@ target_link_libraries(terralib_mod_ws_ogc_wcs_client terralib_mod_dataaccess
                                                       terralib_mod_common
                                                       terralib_mod_ws_core
                                                       ${CURL_LIBRARIES})
+													  
+set_target_properties(terralib_mod_ws_ogc_wcs_client
+                      PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
+                                 SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
 
 install(TARGETS terralib_mod_ws_ogc_wcs_client
         EXPORT terralib-targets
