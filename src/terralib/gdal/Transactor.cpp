@@ -271,7 +271,7 @@ std::auto_ptr<te::da::DataSetType> te::gdal::Transactor::getDataSetType(const bo
             std::string sds_name = std::string(*i);
             std::string sds_desc = std::string(*(i+1));
             
-            unsigned pos = sds_name.find("=");
+            unsigned pos = (unsigned)sds_name.find("=");
             std::string val = sds_name.substr(++pos);
             if(GetSubDataSetName(val, te::gdal::GetDriverName(path.string())) == name)
             {
@@ -281,7 +281,7 @@ std::auto_ptr<te::da::DataSetType> te::gdal::Transactor::getDataSetType(const bo
               std::auto_ptr<te::da::DataSetType> dsty = getType(val);
               dsty->setName(name);
               
-              pos = sds_desc.find("=");
+              pos = (unsigned)sds_desc.find("=");
               val = sds_desc.substr(++pos);
               dsty->setTitle(val);
               

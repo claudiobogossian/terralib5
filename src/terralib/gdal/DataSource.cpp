@@ -26,6 +26,8 @@
 // TerraLib
 #include "../common/StringUtils.h"
 #include "../core/translator/Translator.h"
+#include "../core/uri/URI.h"
+#include "../core/utils/URI.h"
 #include "../geometry/Envelope.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../raster/Grid.h"
@@ -47,7 +49,15 @@
 
 te::da::DataSourceCapabilities te::gdal::DataSource::sm_capabilities;
 
-te::gdal::DataSource::DataSource():
+te::gdal::DataSource::DataSource(const std::string& connInfo)
+  : te::da::DataSource(connInfo),
+  m_straccess(""),
+  m_isOpened(false)
+{
+}
+
+te::gdal::DataSource::DataSource(const te::core::URI& uri)
+  : te::da::DataSource(uri),
   m_straccess(""),
   m_isOpened(false)
 {
@@ -61,36 +71,22 @@ std::string te::gdal::DataSource::getType() const
   return TE_GDAL_DRIVER_IDENTIFIER;
 }
 
-const std::map<std::string, std::string>& te::gdal::DataSource::getConnectionInfo() const
-{
-  return m_connectionInfo;
-}
-
-void te::gdal::DataSource::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
-{ 
-  m_connectionInfo = connInfo;
-}
-
 // open methods retrieves the names of the datasets in the data source
 void te::gdal::DataSource::open()
 {
   if (m_isOpened)
     return;
 
-  if (m_connectionInfo.empty())
-      throw Exception((boost::format(TE_TR("Empty data source connection information"))).str());
-  
-  std::map<std::string, std::string>::const_iterator it = m_connectionInfo.find("SOURCE");
-  if (it != m_connectionInfo.end())
-    m_straccess = it->second;
+  if (!m_uri.isValid())
+    throw Exception((boost::format(TE_TR("Invalid data source connection information"))).str());
+
+  std::string source = m_uri.host() + m_uri.path();
+
+  if(source.empty())
+    throw Exception((boost::format(TE_TR("Not enough information to open the data source."))).str());
   else
-  {
-    it = m_connectionInfo.find("URI");
-    if (it != m_connectionInfo.end())
-      m_straccess = it->second;
-    else
-      throw Exception((boost::format(TE_TR("Invalid data source connection information"))).str());
-  }
+    m_straccess = source;
+
   m_isOpened = true;
 }
 
@@ -105,33 +101,29 @@ bool te::gdal::DataSource::isOpened() const
 
 bool te::gdal::DataSource::isValid() const
 {
-  if(m_connectionInfo.empty())
+  if (!m_uri.isValid())
     return false;
-  
-  std::map<std::string, std::string>::const_iterator it = m_connectionInfo.find("SOURCE");
-  
-  // if URI used, check if it is a valid directory or file name
-  if(it != m_connectionInfo.end())
+
+  std::string source = m_uri.host() + m_uri.path();
+
+  if(!source.empty())
   {
-    if(boost::filesystem::is_directory(it->second))
-      return true;    
-  }
-  else  // if it is another GDAL string let's check it
-  {
-    it = m_connectionInfo.find("URI");
-    
-    if(it == m_connectionInfo.end())
-      return false;
-    
-    DataSetUseCounter dsUseCounter( GetParentDataSetName( it->second ), 
-                                    DataSetsManager::MultipleAccessType );
-    
-    GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(it->second.c_str(), GA_ReadOnly));
-    
-    if(gds)
+    //Checking if it is a valid directory or file name
+    if(boost::filesystem::is_directory(source))
+      return true;
+    else if(boost::filesystem::is_regular_file(source))
+      return true;
+
+    // if it is another GDAL string let's check it
+    DataSetUseCounter dsUseCounter(GetParentDataSetName(source),
+      DataSetsManager::MultipleAccessType);
+
+    GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(source.c_str(), GA_ReadOnly));
+
+    if (gds)
     {
       GDALClose(gds);
-      
+
       return true;
     }
   }
@@ -143,11 +135,10 @@ const te::da::DataSourceCapabilities& te::gdal::DataSource::getCapabilities() co
   return sm_capabilities;
 }
 
-
 std::auto_ptr<te::da::DataSourceTransactor> te::gdal::DataSource::getTransactor()
 {
   if (!m_isOpened)
-    throw Exception((boost::format(TE_TR("Data source is not open."))).str());    
+    throw Exception((boost::format(TE_TR("Data source is not open."))).str());
   
   return std::auto_ptr<te::da::DataSourceTransactor>(new te::gdal::Transactor(m_straccess));
 }
@@ -157,18 +148,26 @@ void te::gdal::DataSource::setCapabilities(const te::da::DataSourceCapabilities&
   sm_capabilities = capabilities;
 }
 
-void te::gdal::DataSource::create(const std::map<std::string, std::string>& dsInfo)
+void te::gdal::DataSource::create(const std::string& connInfo)
 {
-  m_connectionInfo = dsInfo;
-  
+  //Auxialiary URI
+  te::core::URI auxURI(connInfo);
+
+  if (!auxURI.isValid())
+    throw Exception((boost::format(TE_TR("Invalid data source connection information"))).str());
+
   // create the needed directory
-  std::map<std::string, std::string>::const_iterator it = m_connectionInfo.find("SOURCE");
-  if(it != m_connectionInfo.end())
+  std::string path = auxURI.host() + auxURI.path();
+  if(!path.empty())
   {
     try 
     {      
-      if(!boost::filesystem::is_directory(it->second))
-        boost::filesystem::create_directory(it->second);
+      if(!boost::filesystem::is_directory(path))
+        boost::filesystem::create_directory(path);
+      else
+      {
+        throw Exception((boost::format(TE_TR("Data source creation is supported only for directory data sources"))).str());
+      }
     } 
     catch(const boost::filesystem::filesystem_error& e) 
     { 
@@ -177,70 +176,79 @@ void te::gdal::DataSource::create(const std::map<std::string, std::string>& dsIn
   }
   else 
   {
-    throw Exception((boost::format(TE_TR("Data source creation is supported only for directory data sources"))).str());
+    throw Exception((boost::format(TE_TR("Empty data source connection information"))).str());
   }
 }
 
-bool te::gdal::DataSource::exists(const std::map<std::string, std::string>& dsInfo)
+bool te::gdal::DataSource::exists(const std::string& connInfo)
 {
-  std::map<std::string, std::string>::const_iterator it = dsInfo.find("SOURCE"); // expects a directory
-  if(it != dsInfo.end())   
+  //Auxialiary URI
+  te::core::URI auxURI(connInfo);
+
+  if (!auxURI.isValid())
+    throw Exception((boost::format(TE_TR("Empty ou invalid data source connection information"))).str());
+
+  // create the needed directory
+  std::string path = auxURI.host() + auxURI.path();
+  if (!path.empty())
   {
-    if (boost::filesystem::exists(it->second) && boost::filesystem::is_directory(it->second)) 
+    if (boost::filesystem::exists(path) && boost::filesystem::is_directory(path)) // expects a directory?
       return true;
-    
-    return false;
-  }
-  
-  it = dsInfo.find("URI"); // expects a file?
-  if(it != dsInfo.end())   
-  {  
-    DataSetUseCounter dsUseCounter( GetParentDataSetName( it->second ), DataSetsManager::MultipleAccessType );
-    
-    GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(it->second.c_str(), GA_ReadOnly));
-  
-    if (gds)
+    else if(boost::filesystem::exists(path) && boost::filesystem::is_regular_file(path)) // expects a file?
     {
-      GDALClose(gds);
-      
-      return true;
+      DataSetUseCounter dsUseCounter(GetParentDataSetName(path), DataSetsManager::MultipleAccessType);
+
+      GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.c_str(), GA_ReadOnly));
+
+      if (gds)
+      {
+        GDALClose(gds);
+        return true;
+      }
     }
+    else
+      return false; // it is an invalid file
   }
-  
-  return false; // it is an invalid file
+  else
+    return false; // Path is empty
 }
  
-void te::gdal::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
+void te::gdal::DataSource::drop(const std::string& connInfo)
 {
-  std::map<std::string, std::string>::const_iterator it = dsInfo.find("URI");
-  if (it == dsInfo.end())
-    it = dsInfo.find("SOURCE");
-  
-  if (it == dsInfo.end())
-    return;  // nothing to be done
-  
-  try 
-  {    
-    boost::filesystem::remove(it->second);
+  //Auxialiary URI
+  te::core::URI auxURI(connInfo);
+
+  std::string path = auxURI.host() + auxURI.path();
+  if (!path.empty())
+  {
+    try
+    {
+      boost::filesystem::remove(path);
+    }
+    catch (const boost::filesystem::filesystem_error& /*e*/)
+    {
+    }
   }
-  catch(const boost::filesystem::filesystem_error& /*e*/) 
-  {}
+  else
+    return;  // nothing to be done 
+
 }
 
-std::vector<std::string> te::gdal::DataSource::getDataSourceNames(const std::map<std::string, std::string>& dsInfo)
+std::vector<std::string> te::gdal::DataSource::getDataSourceNames(const std::string& connInfo)
 {
+  //Auxialiary URI
+  te::core::URI auxURI(connInfo);
+
+  std::string path = auxURI.host() + auxURI.path();
+
   std::vector<std::string> dsnames;
   
-  std::map<std::string, std::string>::const_iterator it = dsInfo.find("URI");
-  if (it != dsInfo.end())
-    dsnames.push_back(it->second);
-  else
+  if(!path.empty())
   {
-    it = dsInfo.find("SOURCE");
-    if (it != dsInfo.end())
-      dsnames.push_back(it->second);
-    else
-      throw Exception((boost::format(TE_TR("Empty ou invalid data source connection information"))).str());
+    dsnames.push_back(path);
   }
+  else
+    throw Exception((boost::format(TE_TR("Empty ou invalid data source connection information"))).str());
+  
   return dsnames;
 }
