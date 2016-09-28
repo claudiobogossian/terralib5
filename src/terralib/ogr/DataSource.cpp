@@ -16,12 +16,16 @@
     along with TerraLib. See COPYING. If not, write to
     TerraLib Team at <terralib-team@terralib.org>.
  */
+
+//Terralib
 #include "DataSource.h"
 #include "Globals.h"
 #include "Transactor.h"
 #include "Utils.h"
 
 #include "../core/translator/Translator.h"
+#include "../core/uri/URI.h"
+#include "../core/utils/URI.h"
 #include "../dataaccess/query/SQLDialect.h"
 
 // OGR
@@ -75,7 +79,6 @@ void GetQueryCapabilities(te::da::DataSourceCapabilities& caps)
   caps.setQueryCapabilities(qy_caps);
 }
 
-//void GetCapabilities(OGRDataSource* ds, te::da::DataSourceCapabilities& caps)
 void GetCapabilities(GDALDataset* ds, te::da::DataSourceCapabilities& caps)
 {
   // DataSet
@@ -94,9 +97,16 @@ void GetCapabilities(GDALDataset* ds, te::da::DataSourceCapabilities& caps)
   caps.setDataSetCapabilities(ds_caps);
 }
 
+te::ogr::DataSource::DataSource(const std::string& connInfo)
+  : te::da::DataSource(connInfo),
+  m_ogrDS(0),
+  m_isValid(false),
+  m_encoding(te::core::EncodingType::UTF8)
+{
+}
 
-te::ogr::DataSource::DataSource() :
-  te::da::DataSource(),
+te::ogr::DataSource::DataSource(const te::core::URI& uri)
+  : te::da::DataSource(uri),
   m_ogrDS(0),
   m_isValid(false),
   m_encoding(te::core::EncodingType::UTF8)
@@ -113,16 +123,6 @@ std::string te::ogr::DataSource::getType() const
   return Globals::m_driverIdentifier;
 }
 
-const std::map<std::string, std::string>& te::ogr::DataSource::getConnectionInfo() const
-{
-  return m_connectionInfo;
-}
-
-void te::ogr::DataSource::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
-{
-  m_connectionInfo = connInfo;
-}
-
 std::auto_ptr<te::da::DataSourceTransactor> te::ogr::DataSource::getTransactor()
 {
   return std::auto_ptr<te::da::DataSourceTransactor>(new Transactor(this));
@@ -132,33 +132,27 @@ void te::ogr::DataSource::open()
 {
   close();
 
-  if(m_connectionInfo.empty())
-    throw Exception(TE_TR("There is no information about the data source"));
+  if (!m_uri.isValid())
+    throw Exception(TE_TR("There is no valid information about the data source"));
 
-
-
-  std::string path;
+  std::string path = m_uri.host() + m_uri.path();
+  std::map<std::string, std::string> kvp = te::core::expand(m_uri.query());
   std::map<std::string, std::string>::const_iterator it;
   
-  it = m_connectionInfo.find("URI");
-  if (it==m_connectionInfo.end())
+  if (path.empty())
     throw(Exception(TE_TR("Not enough information to open the data source.")));
 
-  path = it->second;
-
   // Retrieve the char encoding
-  it = m_connectionInfo.find("SHAPE_ENCODING");
-  if (it != m_connectionInfo.end())
+  it = kvp.find("SHAPE_ENCODING");
+  if (it != kvp.end())
     CPLSetConfigOption("SHAPE_ENCODING", it->second.c_str());
 
   if (boost::filesystem::exists(path))
-    //m_ogrDS = OGRSFDriverRegistrar::Open(path.c_str(), 1);
     m_ogrDS = (GDALDataset*)GDALOpenEx(path.c_str(), GDAL_OF_UPDATE, NULL, NULL, NULL);
   
   // let's try to open it without update permission
   if (!m_ogrDS)
   {
-    //m_ogrDS = OGRSFDriverRegistrar::Open(path.c_str(), 0);
     m_ogrDS = (GDALDataset*)GDALOpenEx(path.c_str(), GDAL_OF_READONLY, NULL, NULL, NULL);
     if (m_ogrDS)
       m_capabilities.setAccessPolicy(te::common::RAccess);
@@ -214,7 +208,6 @@ void te::ogr::DataSource::setDialect(te::da::SQLDialect* dialect)
   sm_myDialect = dialect;
 }
 
-//OGRDataSource* te::ogr::DataSource::getOGRDataSource()
 GDALDataset* te::ogr::DataSource::getOGRDataSource()
 {
   return m_ogrDS;
@@ -224,13 +217,15 @@ void te::ogr::DataSource::createOGRDataSource()
 {
   if (!m_ogrDS)
   {
-    std::string path;
+    if (!m_uri.isValid())
+      throw Exception(TE_TR("There is no valid information about the data source"));
+
+    std::string path = m_uri.host() + m_uri.path();
+    std::map<std::string, std::string> kvp = te::core::expand(m_uri.query());
     std::map<std::string, std::string>::const_iterator it;
 
-    it = m_connectionInfo.find("URI");
-    if (it == m_connectionInfo.end())
+    if (path.empty())
       throw(Exception(TE_TR("Not enough information to create data set.")));
-    path = it->second;
 
     boost::filesystem::path bpath(path);
     std::string dir = bpath.parent_path().string();
@@ -238,18 +233,15 @@ void te::ogr::DataSource::createOGRDataSource()
       boost::filesystem::create_directory(dir);
 
     // Retrieve the char encoding
-    it = m_connectionInfo.find("SHAPE_ENCODING");
-    if (it != m_connectionInfo.end())
+    it = kvp.find("SHAPE_ENCODING");
+    if (it != kvp.end())
       CPLSetConfigOption("SHAPE_ENCODING", it->second.c_str());
-
-    //OGRSFDriverRegistrar* driverManager = OGRSFDriverRegistrar::GetRegistrar();
-    //OGRSFDriver* driver;
 
     GDALDriverManager* driverManager = GetGDALDriverManager();
     GDALDriver* driver;
 
-    it = m_connectionInfo.find("DRIVER");
-    if (it != m_connectionInfo.end())
+    it = kvp.find("DRIVER");
+    if (it != kvp.end())
       driver = driverManager->GetDriverByName(it->second.c_str());
     else
       driver = driverManager->GetDriverByName(GetDriverName(path).c_str());
@@ -257,26 +249,17 @@ void te::ogr::DataSource::createOGRDataSource()
     if (driver == 0)
       throw(Exception(TE_TR("Driver not found.")));
 
-    //if(!driver->TestCapability(ODrCCreateDataSource))
-    //  throw(Exception(TE_TR("The driver has no capability for creating a datasource!")));
-
     if (!OGR_Dr_TestCapability(driver, ODrCCreateDataSource))
       throw(Exception(TE_TR("The driver has no capability for creating a datasource!")));
 
     char** papszOptions = 0;
-    it = m_connectionInfo.begin();
-    while (it != m_connectionInfo.end())
+    it = kvp.begin();
+    while (it != kvp.end())
     {
-      if (it->first == "URI" || it->first == "SOURCE" || it->first == "DRIVER")
-      {
-        ++it;
-        continue;
-      }
       papszOptions = CSLSetNameValue(papszOptions, it->first.c_str(), it->second.c_str());
       ++it;
     }
 
-    //m_ogrDS = driver->CreateDataSource(path.c_str(), papszOptions);
     m_ogrDS = driver->Create(path.c_str(), 0, 0, 0, GDT_Unknown, papszOptions);
 
     if (papszOptions)
@@ -287,12 +270,14 @@ void te::ogr::DataSource::createOGRDataSource()
     throw(Exception(TE_TR("Error creating the dataset!")));
 }
 
-void te::ogr::DataSource::create(const std::map<std::string, std::string>& dsInfo)
+void te::ogr::DataSource::create(const std::string& connInfo)
 {
-  setConnectionInfo(dsInfo);
+  te::core::URI auxURI(connInfo);
+
+  std::string path = auxURI.path();
+  //m_connectionInfo["URI"] = path;
 
   createOGRDataSource();
-
   close();
 }
 
@@ -312,16 +297,14 @@ void te::ogr::DataSource::createDataSet(te::da::DataSetType* dt, const std::map<
   return t->createDataSet(dt, options);
 }
 
-void te::ogr::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
+void te::ogr::DataSource::drop(const std::string& connInfo)
 {
-  std::string path = dsInfo.begin()->second;
+  te::core::URI auxURI(connInfo);
 
-  //if (m_ogrDS != 0 && path.compare(m_ogrDS->GetName()) == 0)
+  std::string path = auxURI.path();
+
   if (m_ogrDS != 0 && path.compare(m_ogrDS->GetDescription()) == 0)
     close();
-
-  //OGRSFDriverRegistrar* driverManager = OGRSFDriverRegistrar::GetRegistrar();
-  //OGRSFDriver* driver = driverManager->GetDriverByName(GetDriverName(path).c_str());
 
   GDALDriverManager* driverManager = GetGDALDriverManager();
   GDALDriver* driver = driverManager->GetDriverByName(GetDriverName(path).c_str());
@@ -329,32 +312,38 @@ void te::ogr::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
   if (driver == 0)
     throw(Exception(TE_TR("Driver not found!")));
 
-//  if(!driver->TestCapability(ODrCDeleteDataSource))
-//    throw(Exception(TE_TR("The Driver does not have drop capability.")));
-
   if (!OGR_Dr_TestCapability(driver, ODrCDeleteDataSource))
     throw(Exception(TE_TR("The driver has no drop capability!")));
 
-//  if(driver->DeleteDataSource(path.c_str()) != OGRERR_NONE)
-//    throw(Exception(TE_TR("Error when dropping the data source.")));
   GDALClose(driver);
 }
 
-bool te::ogr::DataSource::exists(const std::map<std::string, std::string>& dsInfo)
+bool te::ogr::DataSource::exists(const std::string& connInfo)
 {
-  return boost::filesystem::exists(dsInfo.begin()->second);
+  te::core::URI auxURI(connInfo);
+  std::string path = auxURI.path();
+
+  return boost::filesystem::exists(path);
 }
 
-std::vector<std::string> te::ogr::DataSource::getDataSourceNames(const std::map<std::string, std::string>& dsInfo)
+std::vector<std::string> te::ogr::DataSource::getDataSourceNames(const std::string& connInfo)
 {
+  te::core::URI auxURI(connInfo);
+
+  std::string path = auxURI.path();
+
   std::vector<std::string> names;
 
-  names.push_back(dsInfo.begin()->second);
+  if (!path.empty())
+  {
+    names.push_back(path);
+  }
 
   return names;
 }
 
-te::ogr::DataSource* te::ogr::Build()
+te::da::DataSource* te::ogr::Build(const te::core::URI& uri)
 {
-  return new DataSource;
+  te::da::DataSource* ds = new DataSource(uri);
+  return ds;
 }
