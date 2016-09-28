@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>639</width>
-    <height>475</height>
+    <height>519</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -275,10 +275,6 @@
                       </property>
                       <property name="text">
                        <string/>
-                      </property>
-                      <property name="icon">
-                       <iconset>
-                        <normaloff>../../../../../../../../TL5-devel-old/terralib/share/terralib/icons/terralib/scalable/edit_delete.svg</normaloff>../../../../../../../../TL5-devel-old/terralib/share/terralib/icons/terralib/scalable/edit_delete.svg</iconset>
                       </property>
                       <property name="checkable">
                        <bool>false</bool>

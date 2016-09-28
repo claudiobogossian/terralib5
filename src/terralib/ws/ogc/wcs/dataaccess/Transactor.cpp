@@ -80,6 +80,7 @@ std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(cons
 
   m_coverageRequest = te::ws::ogc::wcs::CoverageRequest();
   m_coverageRequest.coverageID = name;
+  m_coverageRequest.format = "image/tiff";
   
   std::string coveragePath = m_wcs->getCoverage(m_coverageRequest);
 
@@ -93,7 +94,9 @@ std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(cons
   if (!dataSource->isOpened() || !dataSource->isValid())
     throw Exception(TE_TR("Fail to build Data Set. Data Source isn't valid or open!"));
 
-  return dataSource->getDataSet(name);
+  std::string nameWithExtension = name + ".tif";
+
+  return dataSource->getDataSet(nameWithExtension);
 }
 
 std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(const std::string& name,
@@ -109,6 +112,7 @@ std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(cons
 
   m_coverageRequest = te::ws::ogc::wcs::CoverageRequest();
   m_coverageRequest.coverageID = name;
+  m_coverageRequest.format = "image/tiff";
 
   std::string coveragePath = m_wcs->getCoverage(m_coverageRequest);
 
@@ -122,7 +126,9 @@ std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(cons
   if (!dataSource->isOpened() || !dataSource->isValid())
     throw Exception(TE_TR("Fail to build Data Set. Data Source isn't valid or open!"));
 
-  return dataSource->getDataSet(name, propertyName, e, r, travType, accessPolicy);
+  std::string nameWithExtension = name + ".tif";
+
+  return dataSource->getDataSet(nameWithExtension, propertyName, e, r, travType, accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(const std::string& name,

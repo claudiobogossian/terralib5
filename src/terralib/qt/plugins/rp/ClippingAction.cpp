@@ -39,6 +39,8 @@
 
 te::qt::plugins::rp::ClippingAction::ClippingAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
+  m_clippingWizard = 0;
+
   createAction(tr("Clipping...").toUtf8().data(), "edit-cut");
   m_action->setObjectName("Processing.Raster Processing.Clipping");
 
@@ -47,6 +49,12 @@ te::qt::plugins::rp::ClippingAction::ClippingAction(QMenu* menu, QMenu* popupMen
 
 te::qt::plugins::rp::ClippingAction::~ClippingAction()
 {
+  if(m_clippingWizard)
+  {
+    m_clippingWizard->setParent(0);
+  }
+
+  delete m_clippingWizard;
 }
 
 void te::qt::plugins::rp::ClippingAction::onActionActivated(bool checked)
