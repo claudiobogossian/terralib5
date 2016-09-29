@@ -25,6 +25,8 @@
 
 // TerraLib
 #include "../../../../core/translator/Translator.h"
+#include "../../../../core/uri/URI.h"
+#include "../../../../core/utils/URI.h"
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
@@ -86,7 +88,7 @@ void te::qt::plugins::gdal::GDALConnectorDialog::set(const te::da::DataSourceInf
 
   if(m_datasource.get() != 0)
   {
-    setConnectionInfo(m_datasource->getConnInfo());
+    setConnectionInfo(m_datasource->getConnInfoAsString());
 
     m_ui->m_datasourceTitleLineEdit->setText(QString::fromUtf8(m_datasource->getTitle().c_str()));
 
@@ -103,14 +105,10 @@ void te::qt::plugins::gdal::GDALConnectorDialog::openPushButtonPressed()
       throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for GDAL data sources!"));
 
 // get data source connection info based on form data
-    std::map<std::string, std::string> dsInfo;
-
-    getConnectionInfo(dsInfo);
+    std::string dsInfo = getConnectionInfo();
 
 // perform connection
-    //m_driver.reset(te::da::DataSourceFactory::open("GDAL", dsInfo));
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
-    ds->setConnectionInfo(dsInfo);
+    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", getConnectionInfo());
     ds->open();
     m_driver.reset(ds.release());
 
@@ -170,19 +168,12 @@ void te::qt::plugins::gdal::GDALConnectorDialog::testPushButtonPressed()
 {
   try
   {
-// check if driver is loaded
+    // check if driver is loaded
     if(te::da::DataSourceFactory::find("GDAL") == 0)
       throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for GDAL data sources!"));
 
-// get data source connection info based on form data
-    std::map<std::string, std::string> dsInfo;
-
-    getConnectionInfo(dsInfo);
-
-// perform connection
-    //std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::open("GDAL", dsInfo));
-    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("GDAL"));
-    ds->setConnectionInfo(dsInfo);
+    // perform connection
+    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("GDAL", getConnectionInfo()));
     ds->open();
 
     if(ds.get() == 0)
@@ -242,39 +233,38 @@ void te::qt::plugins::gdal::GDALConnectorDialog::searchDatasetToolButtonPressed(
   }
 }
 
-void te::qt::plugins::gdal::GDALConnectorDialog::getConnectionInfo(std::map<std::string, std::string>& connInfo) const
+const std::string te::qt::plugins::gdal::GDALConnectorDialog::getConnectionInfo() const
 {
-  connInfo.clear();
+  QString qstr; // Auxialiary string used to hold temporary data
 
-  QString qstr = m_ui->m_datasetLineEdit->text().trimmed();
+  std::string strURI = "File://"; // The base of the URI
+
+  qstr = m_ui->m_datasetLineEdit->text().trimmed();
   
   if(qstr.isEmpty())
     throw te::qt::widgets::Exception(TE_TR("Please select a dataset first!"));
 
-  if(boost::filesystem::is_directory(qstr.toUtf8().data()))
-    connInfo["SOURCE"] = qstr.toUtf8().data();    
-  else
-    connInfo["URI"] = qstr.toUtf8().data();
+  strURI += qstr.toUtf8().data();
+
+  return strURI;
 }
 
-void te::qt::plugins::gdal::GDALConnectorDialog::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
+void te::qt::plugins::gdal::GDALConnectorDialog::setConnectionInfo(const  std::string& connInfo)
 {
-  std::map<std::string, std::string>::const_iterator it = connInfo.find("URI");
-  std::map<std::string, std::string>::const_iterator itend = connInfo.end();
+  const te::core::URI uri(connInfo);
 
-  if(it != itend)
+  std::string path = uri.host() + uri.path();
+  std::map<std::string, std::string> kvp = te::core::expand(uri.query());
+  std::map<std::string, std::string>::const_iterator it;
+
+  if(!path.empty())
   {
-    m_ui->m_datasetLineEdit->setText(QString::fromUtf8(it->second.c_str()));
-    m_ui->m_dirRadioButton->setChecked(true);
-    return;
-  }
+  m_ui->m_datasetLineEdit->setText(it->second.c_str());
 
-  it = connInfo.find("SOURCE");
-
-  if(it != itend)
-  {
-    m_ui->m_datasetLineEdit->setText(QString::fromUtf8(it->second.c_str()));
-    m_ui->m_fileRadioButton->setChecked(true);
+  if(boost::filesystem::is_directory(path))
+  m_ui->m_dirRadioButton->setChecked(true);
+  else if(boost::filesystem::is_regular_file(path))
+  m_ui->m_fileRadioButton->setChecked(true);
   }
 }
 

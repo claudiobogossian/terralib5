@@ -41,7 +41,6 @@
 #include "../../../widgets/Utils.h"
 
 #include "../../../af/ApplicationController.h"
-//#include "../../../af/Project.h"
 #include "../../../af/Utils.h"
 #include "../../../af/events/LayerEvents.h"
 #include "../../../af/events/ApplicationEvents.h"
@@ -182,11 +181,8 @@ void te::qt::plugins::gdal::Plugin::openFileDialog()
 
     ds->setAccessDriver("GDAL");
 
-    std::map<std::string, std::string> dsinfo;
-    dsinfo["URI"] = it->toUtf8().data();
-
-    ds->setConnInfo(dsinfo);
-
+    std::string fpath = it->toUtf8().data();
+    ds->setConnInfo("File://" + fpath);
     ds->setDescription("A single raster file");
 
     boost::uuids::basic_random_generator<boost::mt19937> gen;
@@ -245,10 +241,8 @@ void te::qt::plugins::gdal::Plugin::openMultipleFilesDialog()
 
     ds->setAccessDriver("GDAL");
 
-    std::map<std::string, std::string> dsinfo;
-    dsinfo["URI"] = it->toUtf8().data();
-
-    ds->setConnInfo(dsinfo);
+    std::string fpath = it->toUtf8().data();
+    ds->setConnInfo("File://" + fpath);
 
     ds->setDescription("A single raster file");
 
