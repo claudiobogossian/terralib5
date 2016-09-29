@@ -191,17 +191,6 @@ void te::qt::plugins::ogr::Plugin::shutdown()
 
 void te::qt::plugins::ogr::Plugin::showWindow()
 {
-//  QString filter = GetSupportedFiles();
-//  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Open Vector File"), te::qt::af::GetFilePathFromSettings("vector"), filter);
-  
-//  te::qt::af::Project* proj = te::qt::af::AppCtrlSingleton::getInstance().getProject();
-
-//  if(proj == 0)
-//  {
-//    QMessageBox::warning(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Vector File"), tr("Error: there is no opened project!"));
-//    return;
-//  }
-
   QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Open Vector File"), te::qt::widgets::GetFilePathFromSettings("vector"), tr("Esri Shapefile (*.shp *.SHP);; Mapinfo File (*.mif *.MIF);; GeoJSON (*.geojson *.GeoJSON);; GML (*.gml *.GML);; KML (*.kml *.KML);; All Files (*.*)"));
 
   if(fileNames.isEmpty())
@@ -228,16 +217,13 @@ void te::qt::plugins::ogr::Plugin::showWindow()
     ds->setAccessDriver("OGR");
     
     std::string fpath = it->toUtf8().data();
-    std::map<std::string, std::string> dsinfo;
-    dsinfo["URI"] = fpath;
-
-    ds->setConnInfo(dsinfo);
+    ds->setConnInfo("File://" + fpath);
     
     std::string desc("A single vector file: ");
     desc += fpath;
     ds->setDescription(desc);
     
-    boost::filesystem::path mpath(dsinfo["URI"]);
+    boost::filesystem::path mpath(fpath);
 
     std::string fileBaseName = mpath.leaf().string();
 
