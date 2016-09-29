@@ -23,7 +23,8 @@
 #  Author: Emerson Moraes
 #
 
-include_directories(${Boost_INCLUDE_DIR})
+include_directories(${Boost_INCLUDE_DIR}
+                    ${CURL_INCLUDE_DIRS})
 
 if(WIN32)
   add_definitions(-DTEWSWMSCLIENTDLL)
