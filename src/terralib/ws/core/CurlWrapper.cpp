@@ -58,6 +58,15 @@ size_t WriteFileCallback(void *ptr, size_t size, size_t nmemb, void *data)
   return fwrite(ptr, size, nmemb, writehere);
 }
 
+size_t WriteGetResponse(char* data, size_t size, size_t nmemb, std::string* buffer)
+{
+  if(buffer == 0)
+      return 0;
+
+  buffer->append(data, size * nmemb);
+
+  return size * nmemb;
+}
 
 int DownloadProgress(void *p,
                      curl_off_t dltotal, curl_off_t dlnow,
@@ -257,6 +266,36 @@ void te::ws::core::CurlWrapper::customRequest(const te::core::URI &uri, const st
   errbuf[0] = 0;
 
   curl_easy_setopt(m_curl.get(), CURLOPT_CUSTOMREQUEST, request.c_str());
+
+  /* Perform the request, status will get the return code */
+  CURLcode status = curl_easy_perform(m_curl.get());
+
+  if(status != CURLE_OK)
+  {
+    std::string msg = curl_easy_strerror(status) + ':' + std::string(errbuf);
+    throw te::common::Exception(msg);
+  }
+}
+
+void te::ws::core::CurlWrapper::get(const te::core::URI &uri, std::string &buffer) const
+{
+
+  buffer.clear();
+
+  std::string url = uri.uri();
+
+  curl_easy_reset(m_curl.get());
+
+  char errbuf [CURL_ERROR_SIZE];
+
+  curl_easy_setopt(m_curl.get(), CURLOPT_ERRORBUFFER, errbuf);
+  errbuf[0] = 0;
+
+  curl_easy_setopt(m_curl.get(), CURLOPT_URL, url.c_str());
+
+  curl_easy_setopt(m_curl.get(), CURLOPT_WRITEFUNCTION, WriteGetResponse);
+
+  curl_easy_setopt(m_curl.get(), CURLOPT_WRITEDATA, &buffer);
 
   /* Perform the request, status will get the return code */
   CURLcode status = curl_easy_perform(m_curl.get());

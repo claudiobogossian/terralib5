@@ -128,6 +128,13 @@ namespace te
        */
       virtual void customRequest(const te::core::URI &uri, const std::string& request) const;
 
+      /*!
+       * \brief Method to make a GET request.
+       * \param uri The URI with the address information
+       * \param buffer Where the server answer will be write.
+       */
+      virtual void get(const te::core::URI &uri, std::string& buffer) const;
+
     private:
       std::shared_ptr<CURL>  m_curl;
       std::string            m_taskMessage;
