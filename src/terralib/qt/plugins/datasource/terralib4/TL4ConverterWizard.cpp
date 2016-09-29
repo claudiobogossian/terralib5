@@ -259,7 +259,7 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
 
       for(std::size_t i = 0; i < selectedLayerItems.size(); ++i)
       {
-        std::string targetDatasetName = selectedLayerItems[i]->text().toStdString();
+        std::string targetDatasetName = selectedLayerItems[i]->text().toLatin1();
 
   // is it a raster?
         std::auto_ptr<te::da::DataSetType> input_dataset_type(m_tl4Database->getDataSetType(selectedLayerItems[i]->text().toStdString()));
@@ -312,6 +312,12 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
         QTableWidgetItem *oldNameItem = new QTableWidgetItem(selectedLayerItems[i]->text(), selectedLayerItems[i]->type());
         oldNameItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
         m_resolveNameTableWidget->setItem((int)i, 1, oldNameItem);
+
+        bool changed = false;
+        std::string strChanged = te::common::ReplaceSpecialChars(targetDatasetName, changed);
+
+        if (changed)
+          targetDatasetName = strChanged;
 
         QTableWidgetItem *newNameItem = new QTableWidgetItem(targetDatasetName.c_str(), selectedLayerItems[i]->type());
         m_resolveNameTableWidget->setItem((int)i, 2, newNameItem);
