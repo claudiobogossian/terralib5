@@ -44,7 +44,7 @@ void InitPluginSystem()
   te::core::PluginEngineManager::instance().insert(std::move(cppengine));
 }
 
-void withoutPluginManager()
+void WithoutPluginManager()
 {
   // plugins will be loaded with C++ plugin engine
   te::core::AbstractPluginEngine& plugin_engine =
@@ -82,7 +82,7 @@ void withoutPluginManager()
   plugin_engine.unload(std::move(p1));
 }
 
-void withPluginManager()
+void WithPluginManager()
 {
   // Load all the config files for the plugins.
   std::vector<te::core::PluginInfo> v_pinfo;
@@ -121,8 +121,8 @@ int main(int argc, char* argv[])
   try
   {
     InitPluginSystem();
-    withoutPluginManager();
-    withPluginManager();
+    WithoutPluginManager();
+    WithPluginManager();
   }
   catch(boost::exception& e)
   {
