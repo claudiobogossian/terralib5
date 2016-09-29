@@ -90,8 +90,7 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSource
   te::mem::DataSet* outputDataSet = new te::mem::DataSet(outputDataSetType.get());
 
   // Output
-  std::auto_ptr<te::da::DataSource> source = te::da::DataSourceFactory::make(outputSource->getAccessDriver());
-  source->setConnectionInfo(outputSource->getConnInfo());
+  std::auto_ptr<te::da::DataSource> source = te::da::DataSourceFactory::make(outputSource->getAccessDriver(), outputSource->getConnInfo());
   source->open();
 
   std::map<std::string, std::string> options;
