@@ -51,6 +51,7 @@
 #include <geos/operation/polygonize/Polygonizer.h>
 #include <geos/operation/union/UnaryUnionOp.h>
 #include <geos/operation/distance/DistanceOp.h>
+#include <geos/operation/overlay/snap/GeometrySnapper.h>
 #include <geos/operation/valid/IsValidOp.h>
 #include <geos/util/GEOSException.h>
 #endif
@@ -683,5 +684,28 @@ void te::gm::AddLineString(te::gm::LineString* lineString, std::vector<te::gm::G
 
 #else
   throw Exception(TE_TR("addLineString routine is supported by GEOS! Please, enable the GEOS support."));
+#endif
+}
+
+te::gm::Geometry* te::gm::SnapToSelf( const te::gm::Geometry* g,
+                                      const double& snapTolerance,
+                                      const bool& cleanResult)
+{
+#ifdef TERRALIB_GEOS_ENABLED
+  using std::unique_ptr;
+  using geos::geom::Geometry;
+  using geos::operation::overlay::snap::GeometrySnapper;
+
+  unique_ptr<Geometry> geosGeom(GEOSWriter::write(g));
+
+  GeometrySnapper gSnapper(*geosGeom);
+
+  unique_ptr<Geometry> snapToSelfGeom(gSnapper.snapToSelf(snapTolerance, cleanResult));
+
+  snapToSelfGeom->setSRID(g->getSRID());
+
+  return GEOSReader::read(snapToSelfGeom.get());
+#else
+  throw Exception(TE_TR("SnapToSelf routine is supported by GEOS! Please, enable the GEOS support."));
 #endif
 }

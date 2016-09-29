@@ -34,6 +34,7 @@
 #include "../dataaccess/utils/Utils.h"
 
 #include "../geometry/GeometryProperty.h"
+#include "../geometry/Utils.h"
 
 #include "../memory/DataSet.h"
 #include "../memory/DataSetItem.h"
@@ -175,19 +176,32 @@ void te::vp::LineToPolygonMemory::getPolygons(te::gm::LineString* l, std::vector
 {
   assert(l);
 
+  te::gm::Polygon* p = new te::gm::Polygon(0, te::gm::PolygonType, l->getSRID());
+
+  te::gm::LinearRing* ring = 0;
+
   if(l->isClosed())
   {
-    te::gm::Polygon* p = new te::gm::Polygon(0, te::gm::PolygonType, l->getSRID());
-
-    te::gm::LinearRing* ring = new te::gm::LinearRing(l->getNPoints(), te::gm::LineStringType);
-
-    for(std::size_t i = 0; i < l->getNPoints(); ++i)
-      ring->setPoint(i, l->getX(i), l->getY(i));
-
-    p->add(ring);
-
-    getPolygons(p, polygons);
+    ring = new te::gm::LinearRing(l->getNPoints(), te::gm::LineStringType);
   }
+//  else
+//  {
+//    std::string wkt = l->asText();
+//    std::unique_ptr<te::gm::Geometry> geomTemp(SnapToSelf(l, 100, true));
+//    wkt = geomTemp->asText();
+//    l = dynamic_cast<te::gm::LineString*>(geomTemp.release());
+//    wkt = l->asText();
+
+//    if(!l->isClosed())
+//      return;
+//  }
+
+  for(std::size_t i = 0; i < l->getNPoints(); ++i)
+    ring->setPoint(i, l->getX(i), l->getY(i));
+
+  p->add(ring);
+
+  getPolygons(p, polygons);
 }
 
 void te::vp::LineToPolygonMemory::getPolygons(te::gm::Polygon* p, std::vector<te::gm::Polygon*>& polygons)
