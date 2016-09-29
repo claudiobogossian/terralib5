@@ -110,23 +110,7 @@ void SaveProject(const ProjectMetadata& proj, const std::list<te::map::AbstractL
     writer->writeEndElement("te_da:Description");
 
     writer->writeStartElement("te_da:ConnectionInfo");
-    std::map<std::string, std::string> info = it->second->getConnInfo();
-    std::map<std::string, std::string>::iterator conIt;
-
-    for(conIt=info.begin(); conIt!=info.end(); ++conIt)
-    {
-      writer->writeStartElement("te_common:Parameter");
-
-      writer->writeStartElement("te_common:Name");
-      writer->writeValue(conIt->first);
-      writer->writeEndElement("te_common:Name");
-
-      writer->writeStartElement("te_common:Value");
-      writer->writeValue(conIt->second);
-      writer->writeEndElement("te_common:Value");
-
-      writer->writeEndElement("te_common:Parameter");
-    }
+    writer->writeValue(it->second->getConnInfoAsString());
     writer->writeEndElement("te_da:ConnectionInfo");
 
     writer->writeEndElement("te_da:DataSource");
