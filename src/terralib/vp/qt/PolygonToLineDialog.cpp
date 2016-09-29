@@ -255,11 +255,11 @@ void te::vp::PolygonToLineDialog::onOkPushButtonClicked()
       if (idx != std::string::npos)
         outputDataSet=outputDataSet.substr(0,idx);
 
-      std::map<std::string, std::string> dsinfo;
-      dsinfo["URI"] = uri.string();
-      
-      te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
-      dsOGR->setConnectionInfo(dsinfo);
+      std::string dsinfo("File://");
+      dsinfo += uri.string();
+
+      te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR", dsinfo).release());
+
       dsOGR->open();
       if (dsOGR->dataSetExists(outputDataSet))
       {

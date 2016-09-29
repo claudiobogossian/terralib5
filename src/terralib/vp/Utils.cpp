@@ -418,8 +418,7 @@ te::da::DataSourcePtr te::vp::CreateOGRDataSource(std::string repository)
   //create new data source
   boost::filesystem::path uri(repository);
 
-  std::map<std::string, std::string> dsInfo;
-  dsInfo["URI"] = uri.string();
+  const std::string dsInfo("File://" + uri.string());
 
   boost::uuids::basic_random_generator<boost::mt19937> gen;
   boost::uuids::uuid u = gen();
