@@ -39,16 +39,17 @@ TERRALIB_CPP_PLUGIN_STARTUP
 {
   if(m_initialized)
     return;
+  
   std::cout << "Plugin1 startup" << std::endl;
+  
   m_initialized = true;
 }
 
 TERRALIB_CPP_PLUGIN_SHUTDOWN
 {
   std::cout << "Plugin1 shutdown" << std::endl;
+  
   m_initialized = false;
 }
 
-TERRALIB_CPP_PLUGIN_END
-
-TERRALIB_PLUGIN_CALL_BACK_IMPL(Plugin1)
+TERRALIB_CPP_PLUGIN_END(Plugin1)
