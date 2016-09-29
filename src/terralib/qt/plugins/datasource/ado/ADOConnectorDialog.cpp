@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../../../core/translator/Translator.h"
+#include "../../../../core/uri/URI.h"
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
@@ -92,7 +93,7 @@ void te::qt::plugins::ado::ADOConnectorDialog::set(const te::da::DataSourceInfoP
 
   if(m_datasource.get() != 0)
   {
-    setConnectionInfo(m_datasource->getConnInfo());
+    setConnectionInfo(m_datasource->getConnInfoAsString());
 
     m_ui->m_datasourceTitleLineEdit->setText(QString::fromUtf8(m_datasource->getTitle().c_str()));
 
@@ -104,14 +105,13 @@ void te::qt::plugins::ado::ADOConnectorDialog::openPushButtonPressed()
 {
   try
   {
-// check if driver is loaded
+    // check if driver is loaded
     if(te::da::DataSourceFactory::find("ADO") == 0)
       throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for ADO data sources!"));
 
-// perform connection
+    // perform connection
     //m_driver.reset(te::da::DataSourceFactory::open("ADO", dsInfo));
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("ADO");
-    ds->setConnectionInfo(getConnectionInfo(true));
+    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("ADO", getConnectionInfo(true));
     ds->open();
     m_driver.reset(ds.release());
 
@@ -177,8 +177,7 @@ void te::qt::plugins::ado::ADOConnectorDialog::testPushButtonPressed()
 
 // perform connection
     //std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::open("ADO", dsInfo));
-    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("ADO"));
-    ds->setConnectionInfo(getConnectionInfo(true));
+    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("ADO", getConnectionInfo(true)));
     ds->open();
 
     if(ds.get() == 0)
@@ -223,41 +222,40 @@ void te::qt::plugins::ado::ADOConnectorDialog::searchDatabaseToolButtonPressed()
   te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "vector");
 }
 
-std::map<std::string, std::string> te::qt::plugins::ado::ADOConnectorDialog::getConnectionInfo(bool getPrivateKeys) const
+const std::string te::qt::plugins::ado::ADOConnectorDialog::getConnectionInfo(bool getPrivateKeys) const
 {
-  std::map<std::string, std::string> connInfo;
-
-  QString qstr = m_ui->m_fileLineEdit->text().trimmed();
-
-  if(!qstr.isEmpty())
-    connInfo["DB_NAME"] = qstr.toUtf8().data();
+  std::string strURI = "file://"; // The base of the URI
+  QString qstr;  // Auxialiary string used to hold temporary data
 
   if(getPrivateKeys)
   {
+    // The password
     qstr = m_ui->m_passwordLineEdit->text().trimmed();
-
-    if(!qstr.isEmpty())
-      connInfo["PASSWORD"] = qstr.toUtf8().data();
+    strURI += qstr.isEmpty() ? "" : "user:" + std::string(qstr.toUtf8().data()) + "@";
   }
 
+  // Path to the database
+  qstr = m_ui->m_fileLineEdit->text().trimmed();
+  strURI += qstr.isEmpty() ? "" : qstr.toUtf8().data();
+
+  // The provider
   qstr = m_ui->m_providerComboBox->currentText().trimmed();
-
   if(!qstr.isEmpty())
-    connInfo["PROVIDER"] = qstr.toUtf8().data();
+    strURI += "?PROVIDER=" + std::string(qstr.toUtf8().data());
 
-  return connInfo;
+  return strURI;
 }
 
-void te::qt::plugins::ado::ADOConnectorDialog::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
+void te::qt::plugins::ado::ADOConnectorDialog::setConnectionInfo(const std::string& connInfo)
 {
-  std::map<std::string, std::string>::const_iterator it = connInfo.find("DB_NAME");
-  std::map<std::string, std::string>::const_iterator itend = connInfo.end();
+  const te::core::URI uri(connInfo);
 
-  if(it != itend)
-    m_ui->m_fileLineEdit->setText(it->second.c_str());
+  std::string dbName = uri.host() + uri.path();
+  std::string password = uri.password();
 
-  it = connInfo.find("PASSWORD");
+  if(!dbName.empty())
+    m_ui->m_fileLineEdit->setText(dbName.c_str());
 
-  if(it != itend)
-    m_ui->m_passwordLineEdit->setText(it->second.c_str());
+  if(!password.empty())
+    m_ui->m_passwordLineEdit->setText(password.c_str());
 }
