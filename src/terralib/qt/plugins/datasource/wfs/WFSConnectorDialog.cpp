@@ -75,11 +75,10 @@ void te::qt::plugins::wfs::WFSConnectorDialog::set(const te::da::DataSourceInfoP
 
   if(m_datasource.get() != 0)
   {
-    const std::map<std::string, std::string>& connInfo = m_datasource->getConnInfo();
+    const te::core::URI& connInfo = m_datasource->getConnInfo();
 
-    std::map<std::string, std::string>::const_iterator it = connInfo.find("URI");
-    if(it != connInfo.end())
-      m_ui->m_serverLineEdit->setText(QString::fromUtf8(it->second.c_str()));
+    if (!connInfo.uri().empty())
+      m_ui->m_serverLineEdit->setText(QString::fromUtf8(connInfo.uri().c_str()));
 
     m_ui->m_datasourceTitleLineEdit->setText(QString::fromUtf8(m_datasource->getTitle().c_str()));
 
@@ -96,12 +95,10 @@ void te::qt::plugins::wfs::WFSConnectorDialog::openPushButtonPressed()
       throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for WFS data sources!"));
 
     // Get the data source connection info based on form data
-    std::map<std::string, std::string> dsInfo;
-    getConnectionInfo(dsInfo);
+    std::string dsInfo = getConnectionInfo();
 
     // Perform connection
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("WFS");
-    ds->setConnectionInfo(dsInfo);
+    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("WFS", dsInfo);
     ds->open();
     m_driver.reset(ds.release());
 
@@ -163,17 +160,12 @@ void te::qt::plugins::wfs::WFSConnectorDialog::testPushButtonPressed()
     if(te::da::DataSourceFactory::find("WFS") == 0)
       throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for WFS data sources!"));
 
-    // Get the data source connection info based on form data
-    std::map<std::string, std::string> dsInfo;
-    getConnectionInfo(dsInfo);
-
     // Perform connection
-    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("WFS"));
+    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("WFS", getConnectionInfo()));
 
     if(ds.get() == 0)
       throw te::qt::widgets::Exception(TE_TR("Could not open WFS server!"));
 
-    ds->setConnectionInfo(dsInfo);
     ds->open();
 
     QMessageBox::information(this,
@@ -203,17 +195,18 @@ void te::qt::plugins::wfs::WFSConnectorDialog::helpPushButtonPressed()
                        tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
-void te::qt::plugins::wfs::WFSConnectorDialog::getConnectionInfo(std::map<std::string, std::string>& connInfo) const
+const std::string te::qt::plugins::wfs::WFSConnectorDialog::getConnectionInfo() const
 {
-  connInfo.clear();
+  QString qstr; // Auxialiary string used to hold temporary data
+
+  std::string strURI("WFS:"); // The base of the URI
 
   // Get the server URL
-  QString url = m_ui->m_serverLineEdit->text().trimmed();
-  if(url.isEmpty())
+  qstr = m_ui->m_serverLineEdit->text().trimmed();
+  if(qstr.isEmpty())
     throw te::qt::widgets::Exception(TE_TR("Please define the server address first!"));
 
-  if(!url.startsWith("WFS:"))
-    url.prepend("WFS:");
+  strURI += qstr.toUtf8().data();
 
-  connInfo["URI"] = url.toUtf8().data();
+  return strURI;
 }

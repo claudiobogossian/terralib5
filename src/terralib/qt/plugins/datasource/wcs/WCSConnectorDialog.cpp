@@ -25,6 +25,8 @@
 
 // TerraLib
 #include "../../../../core/translator/Translator.h"
+#include "../../../../core/uri/URI.h"
+#include "../../../../core/utils/URI.h"
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
@@ -75,11 +77,10 @@ void te::qt::plugins::wcs::WCSConnectorDialog::set(const te::da::DataSourceInfoP
 
   if(m_datasource.get() != 0)
   {
-    const std::map<std::string, std::string>& connInfo = m_datasource->getConnInfo();
+    const te::core::URI& connInfo = m_datasource->getConnInfo();
 
-    std::map<std::string, std::string>::const_iterator it = connInfo.find("URI");
-    if(it != connInfo.end())
-      m_ui->m_serverLineEdit->setText(QString::fromUtf8(it->second.c_str()));
+    if(!connInfo.uri().empty())
+      m_ui->m_serverLineEdit->setText(QString::fromUtf8(connInfo.uri().c_str()));
 
     m_ui->m_datasourceTitleLineEdit->setText(QString::fromUtf8(m_datasource->getTitle().c_str()));
 
@@ -96,12 +97,10 @@ void te::qt::plugins::wcs::WCSConnectorDialog::openPushButtonPressed()
       throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for WCS data sources!"));
 
     // Get the data source connection info based on form data
-    std::map<std::string, std::string> dsInfo;
-    getConnectionInfo(dsInfo);
+    std::string dsInfo = getConnectionInfo();
 
     // Perform connection
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("WCS");
-    ds->setConnectionInfo(dsInfo);
+    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("WCS", dsInfo);
     ds->open();
     m_driver.reset(ds.release());
 
@@ -165,17 +164,12 @@ void te::qt::plugins::wcs::WCSConnectorDialog::testPushButtonPressed()
     if(te::da::DataSourceFactory::find("WCS") == 0)
       throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for WCS data sources!"));
 
-    // Get the data source connection info based on form data
-    std::map<std::string, std::string> dsInfo;
-    getConnectionInfo(dsInfo);
-
     // Perform connection
-    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("WCS"));
+    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("WCS", getConnectionInfo()));
 
     if(ds.get() == 0)
       throw te::qt::widgets::Exception(TE_TR("Could not open WCS server!"));
 
-    ds->setConnectionInfo(dsInfo);
     ds->open();
 
     QMessageBox::information(this,
@@ -205,14 +199,18 @@ void te::qt::plugins::wcs::WCSConnectorDialog::helpPushButtonPressed()
                        tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
-void te::qt::plugins::wcs::WCSConnectorDialog::getConnectionInfo(std::map<std::string, std::string>& connInfo) const
+const std::string te::qt::plugins::wcs::WCSConnectorDialog::getConnectionInfo() const
 {
-  connInfo.clear();
+  QString qstr; // Auxialiary string used to hold temporary data
 
-  // Get the server URL
-  QString url = m_ui->m_serverLineEdit->text().trimmed();
-  if(url.isEmpty())
-    throw te::qt::widgets::Exception(TE_TR("Please define the server address first!"));
+  std::string strURI("WCS:"); // The base of the URI
 
-  connInfo["URI"] = url.toUtf8().data();
+  qstr = m_ui->m_serverLineEdit->text().trimmed();
+
+  if (qstr.isEmpty())
+    throw te::qt::widgets::Exception(TE_TR("Please select a feature file first!"));
+
+  strURI += qstr.toUtf8().data();
+
+  return strURI;
 }

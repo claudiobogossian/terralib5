@@ -25,6 +25,8 @@
 
 // TerraLib
 #include "../../../../core/translator/Translator.h"
+#include "../../../../core/uri/URI.h"
+#include "../../../../core/utils/URI.h"
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
@@ -75,11 +77,10 @@ void te::qt::plugins::wms::WMSConnectorDialog::set(const te::da::DataSourceInfoP
 
   if(m_datasource.get() != 0)
   {
-    const std::map<std::string, std::string>& connInfo = m_datasource->getConnInfo();
+    const te::core::URI& connInfo = m_datasource->getConnInfo();
 
-    std::map<std::string, std::string>::const_iterator it = connInfo.find("URI");
-    if(it != connInfo.end())
-      m_ui->m_serverLineEdit->setText(QString::fromUtf8(it->second.c_str()));
+    if(!connInfo.uri().empty())
+      m_ui->m_serverLineEdit->setText(QString::fromUtf8(connInfo.uri().c_str()));
 
     m_ui->m_datasourceTitleLineEdit->setText(QString::fromUtf8(m_datasource->getTitle().c_str()));
 
@@ -96,12 +97,10 @@ void te::qt::plugins::wms::WMSConnectorDialog::openPushButtonPressed()
       throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for WMS data sources!"));
 
     // Get the data source connection info based on form data
-    std::map<std::string, std::string> dsInfo;
-    getConnectionInfo(dsInfo);
+    std::string dsInfo = getConnectionInfo();
 
     // Perform connection
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("WMS");
-    ds->setConnectionInfo(dsInfo);
+    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("WMS", dsInfo);
     ds->open();
     m_driver.reset(ds.release());
 
@@ -163,17 +162,12 @@ void te::qt::plugins::wms::WMSConnectorDialog::testPushButtonPressed()
     if(te::da::DataSourceFactory::find("WMS") == 0)
       throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for WMS data sources!"));
 
-    // Get the data source connection info based on form data
-    std::map<std::string, std::string> dsInfo;
-    getConnectionInfo(dsInfo);
-
     // Perform connection
-    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("WMS"));
+    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("WMS", getConnectionInfo()));
 
     if(ds.get() == 0)
       throw te::qt::widgets::Exception(TE_TR("Could not open WMS server!"));
 
-    ds->setConnectionInfo(dsInfo);
     ds->open();
 
     QMessageBox::information(this,
@@ -203,17 +197,17 @@ void te::qt::plugins::wms::WMSConnectorDialog::helpPushButtonPressed()
                        tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
-void te::qt::plugins::wms::WMSConnectorDialog::getConnectionInfo(std::map<std::string, std::string>& connInfo) const
+const std::string te::qt::plugins::wms::WMSConnectorDialog::getConnectionInfo() const
 {
-  connInfo.clear();
+  QString qstr; // Auxialiary string used to hold temporary data
 
-  // Get the server URL
-  QString url = m_ui->m_serverLineEdit->text().trimmed();
-  if(url.isEmpty())
-    throw te::qt::widgets::Exception(TE_TR("Please define the server address first!"));
+  qstr = m_ui->m_serverLineEdit->text().trimmed();
+  std::string strURI("WMS:");
 
-  if(!url.startsWith("WMS:"))
-    url.prepend("WMS:");
+  if (qstr.isEmpty())
+    throw te::qt::widgets::Exception(TE_TR("Please select a feature file first!"));
 
-  connInfo["URI"] = url.toUtf8().data();
+  strURI += qstr.toUtf8().data();
+
+  return strURI;
 }

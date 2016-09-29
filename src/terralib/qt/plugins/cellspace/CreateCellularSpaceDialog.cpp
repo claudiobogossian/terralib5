@@ -29,6 +29,8 @@
 #include "../../../common/progress/ProgressManager.h"
 #include "../../../common/StringUtils.h"
 #include "../../../core/translator/Translator.h"
+#include "../../../core/uri/URI.h"
+#include "../../../core/utils/URI.h"
 #include "../../../common/UnitsOfMeasureManager.h"
 #include "../../../dataaccess/datasource/DataSource.h"
 #include "../../../dataaccess/datasource/DataSourceFactory.h"
@@ -150,7 +152,7 @@ te::map::AbstractLayerPtr te::qt::plugins::cellspace::CreateCellularSpaceDialog:
     boost::uuids::uuid u = gen();
     std::string id_ds = boost::uuids::to_string(u);
     
-    boost::filesystem::path uri(m_outDataSourceInfo->getConnInfo()["URI"]);
+    boost::filesystem::path uri(m_outDataSourceInfo->getConnInfo().host() + m_outDataSourceInfo->getConnInfo().path());
     
     te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
     ds->setConnInfo(m_outDataSourceInfo->getConnInfo());
@@ -410,8 +412,8 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onTargetFileToolButt
   
   m_ui->m_newLayerNameLineEdit->setEnabled(false);
   
-  std::map<std::string, std::string> connInfo;
-  connInfo["URI"] = m_ui->m_repositoryLineEdit->text().toUtf8().data();
+  std::string connInfo("File://");
+  connInfo += m_ui->m_repositoryLineEdit->text().toUtf8().data();
   
   m_outDataSourceInfo.reset(new te::da::DataSourceInfo);
   
