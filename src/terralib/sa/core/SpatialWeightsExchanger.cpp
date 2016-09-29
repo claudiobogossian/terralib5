@@ -189,7 +189,7 @@ te::sa::GeneralizedProximityMatrix* te::sa::SpatialWeightsExchanger::importFromG
   std::string graphType = te::graph::Globals::sm_factoryGraphTypeDirectedGraph;
 
   // connection info
-  std::map<std::string, std::string> connInfo;
+  const std::string connInfo("memory:");
 
   // graph information
   std::map<std::string, std::string> graphInfo;
@@ -414,7 +414,7 @@ te::sa::GeneralizedProximityMatrix* te::sa::SpatialWeightsExchanger::importFromG
   std::string graphType = te::graph::Globals::sm_factoryGraphTypeDirectedGraph;
 
   // connection info
-  std::map<std::string, std::string> connInfo;
+  const std::string connInfo("memory:");
 
   // graph information
   std::map<std::string, std::string> graphInfo;

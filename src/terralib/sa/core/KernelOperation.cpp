@@ -155,17 +155,13 @@ void te::sa::KernelOperation::saveDataSet(te::da::DataSet* dataSet, te::da::Data
   //create dataset info
   std::string fileName = m_outputParams->m_outputPath + "/" + m_outputParams->m_outputDataSetName + ".shp";
 
-  //connection info
-  std::map<std::string, std::string> info;
-  info["URI"] = fileName;
-
   //data source id
   boost::uuids::basic_random_generator<boost::mt19937> gen;
   boost::uuids::uuid u = gen();
   std::string id_ds = boost::uuids::to_string(u);
 
   //create data source
-  te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().get(id_ds, "OGR", info);
+  te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().get(id_ds, "OGR", ("File://" + fileName));
 
   //save dataset
   dataSet->moveBeforeFirst();

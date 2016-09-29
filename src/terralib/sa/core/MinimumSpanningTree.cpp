@@ -167,7 +167,7 @@ te::graph::AbstractGraph* te::sa::MinimumSpanningTree::createGraph()
   std::string graphType = te::graph::Globals::sm_factoryGraphTypeUndirectedGraph;
 
 // connection info
-  std::map<std::string, std::string> connInfo;
+  const std::string connInfo("memory:");
 
 // graph information
   std::map<std::string, std::string> graphInfo;
