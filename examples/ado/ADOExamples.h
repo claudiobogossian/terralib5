@@ -50,15 +50,23 @@ void PrintCatalog(te::da::DataSource* ds);
 void PrintDataSets(te::da::DataSource* ds);
 
 /*!
+\brief It copies a shapefile to the given datasource.
+
+\param ds The data source you want to copy the data to.
+*/
+void CopyFromShapeFile(te::da::DataSource* ds);
+/*!
   \brief It prints the data of a given dataset.
 
   \param dataset A dataset.
  */
 void PrintDataSetValues(const std::string& datasetName, te::da::DataSet* dataset);
 
-void Copy(std::string dataSetName, std::auto_ptr<te::da::DataSource> inDs, std::auto_ptr<te::da::DataSource> outDs);
+void Copy(std::string dataSetName, std::auto_ptr<te::da::DataSource> inDs, te::da::DataSource* outDs);
 
-void CopyFromShapeFile();
+std::auto_ptr<te::da::DataSource> GetADOConnection();
+
+
 
 #endif  // __TERRALIB_EXAMPLES_ADO_INTERNAL_ADOEXAMPLES_H
 

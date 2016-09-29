@@ -16,19 +16,18 @@ void CopyingData()
   try
   {
     // let's take the input dataset from a shape file
+    std::string connInfo("File://");
     std::string data_dir = TERRALIB_DATA_DIR;
-    std::map<std::string, std::string> connInfo;
-    
+
     std::string aux("");
-    std::cout << "Inform the location of your shapefile (ENTER to accept default \'" << (data_dir + "/shp/munic_2001.shp") << "\'): ";
+    std::cout << "Inform the location of your shapefile (ENTER to accept default \'" << (data_dir + "/shape/munic_2001.shp") << "\'): ";
     std::getline (std::cin, aux);
     if (!aux.empty())
-      connInfo["URI"] = aux;
+      connInfo += aux;
     else
-      connInfo["URI"] = data_dir + "/shp/munic_2001.shp";
+      connInfo += data_dir + "/shape/munic_2001.shp";
     
-    std::auto_ptr<te::da::DataSource> dsOrigin = te::da::DataSourceFactory::make("OGR");
-    dsOrigin->setConnectionInfo(connInfo);
+    std::auto_ptr<te::da::DataSource> dsOrigin = te::da::DataSourceFactory::make("OGR", connInfo);
     dsOrigin->open();
     
     if (!dsOrigin->isValid())

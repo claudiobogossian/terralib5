@@ -28,7 +28,6 @@
 
 // TerraLib
 #include <terralib/common.h>
-//#include <terralib/dataaccess.h>
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
 #include <terralib/dataaccess/utils/Utils.h>
 
@@ -37,21 +36,37 @@
 
 void CreateDataSource(std::string name)
 {
-  std::map<std::string, std::string> connInfo;
-#ifdef _M_IX86
-  connInfo["PROVIDER"] = "Microsoft.Jet.OLEDB.4.0";
-#else
-  connInfo["PROVIDER"] = "Microsoft.ACE.OLEDB.12.0";
-#endif
-  connInfo["DB_NAME"] = name;
-  connInfo["CREATE_OGC_METADATA_TABLES"] = "TRUE";
+  // Set the minimum server connection information needed to connect to the database server
+  std::string connInfo("File://");
+  std::string data_dir = TERRALIB_DATA_DIR;
+  std::string aux("");
+
+  std::cout << "Inform the user to access your Microsoft Access database (ENTER if there is none): ";
+  std::getline(std::cin, aux);
+  connInfo += aux.empty() ? "" : aux + ":";
+
+  std::cout << "Inform the Password to access Microsoft Access database (ENTER if there is none): ";
+  std::getline(std::cin, aux);
+  connInfo += aux.empty() ? "" : aux + "@";
+
+  std::cout << "Inform the location of your Microsoft Access database (ENTER to accept default \'" << (data_dir + "/ado/ADODataSource.mdb") << "\'): ";
+  std::getline(std::cin, aux);
+  if (!aux.empty())
+    connInfo += aux;
+  else
+    connInfo += data_dir + "/ado/ADODataSource.mdb";
+
+  #ifdef _M_IX86
+    connInfo += "?&PROVIDER=Microsoft.Jet.OLEDB.4.0";
+  #else
+    connInfo += "?&PROVIDER=Microsoft.ACE.OLEDB.12.0";
+  #endif
 
   std::auto_ptr<te::da::DataSource> outDs = te::da::DataSource::create("ADO", connInfo);
 }
 
-void Copy(std::string dataSetName, std::auto_ptr<te::da::DataSource> inDs, std::auto_ptr<te::da::DataSource> outDs)
+void Copy(std::string dataSetName, std::auto_ptr<te::da::DataSource> inDs, te::da::DataSource* outDs)
 {
-
   std::auto_ptr<te::da::DataSetType> inDst = inDs->getDataSetType(dataSetName);
 
   std::auto_ptr<te::da::DataSet> inDset = inDs->getDataSet(dataSetName);
@@ -60,36 +75,28 @@ void Copy(std::string dataSetName, std::auto_ptr<te::da::DataSource> inDs, std::
 
   inDset->moveFirst();
 
-  te::da::Create(outDs.get(), inDst.get(), inDset.get(), options);
-
+  te::da::Create(outDs, inDst.get(), inDset.get(), options);
 }
 
-void CopyFromShapeFile()
+void CopyFromShapeFile(te::da::DataSource* ds)
 {
-  std::map<std::string, std::string> ogrInfo;
-  ogrInfo["SOURCE"] = "D://DADOS//shapes//Pontos//Focos20120710a20120717_Brasil_25.shp";
+  // let's take the input dataset from a shape file
+  std::string connInfo("File://");
+  std::string data_dir = TERRALIB_DATA_DIR;
 
-  std::auto_ptr<te::da::DataSource> inDs = te::da::DataSourceFactory::make("OGR");
-  inDs->setConnectionInfo(ogrInfo);
+  std::string aux("");
+  std::cout << "Inform the location of your data source (ENTER to accept default \'" << (data_dir + "/shape/poligono_unico.shp") << "\'): ";
+  std::getline(std::cin, aux);
+  if (!aux.empty())
+    connInfo += aux;
+  else
+    connInfo += data_dir + "/shape/poligono_unico.shp";
+
+  std::auto_ptr<te::da::DataSource> inDs = te::da::DataSourceFactory::make("OGR", connInfo);
   inDs->open();
-  
-  std::map<std::string, std::string> connInfo;
-#ifdef _M_IX86 
-  connInfo["PROVIDER"] = "Microsoft.Jet.OLEDB.4.0";
-#else
-  connInfo["PROVIDER"] = "Microsoft.ACE.OLEDB.12.0";
-#endif
-  connInfo["HOST"] = "localhost";
-  connInfo["USER_NAME"] = "";
-  connInfo["PASSWORD"] = "";
-  connInfo["DB_NAME"] = "C://Users//Felipe Siqueira//Desktop//testeado//Banco//ADODataSource.accdb";
-   
-  // Create a data source using the data source factory
-  std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("ADO"));
 
-  // Open the data source using the connection information given above
-  ds->setConnectionInfo(connInfo);
-  ds->open();
-
-  Copy("Focos20120710a20120717_Brasil_25", inDs, ds);
+  if(!aux.empty())
+    Copy(aux, inDs, ds);
+  else
+    Copy("poligono_unico", inDs, ds);
 }

@@ -49,36 +49,16 @@ int main(int /*argc*/, char** /*argv*/)
 
     LoadModules();
 
-    //CopyFromShapeFile();
-
-    // Set the minimum server connection information needed to connect to the database server
-    std::map<std::string, std::string> connInfo;
-#ifdef _M_IX86
-    connInfo["PROVIDER"] = "Microsoft.Jet.OLEDB.4.0";
-#else
-    connInfo["PROVIDER"] = "Microsoft.ACE.OLEDB.12.0";
-#endif
-    connInfo["HOST"] = "localhost";
-    connInfo["USER_NAME"] = "";
-    connInfo["PASSWORD"] = "";
-
-    std::string data_dir = TERRALIB_DATA_DIR;
-    connInfo["DB_NAME"] = data_dir + "/mdb/ADODataSource.mdb";
-    //connInfo["DB_NAME"] = "C:/Users/juan/MyData/DadosTutorial/bh.mdb";
-   
-    // Create a data source using the data source factory
-    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("ADO"));
-
-    // Open the data source using the connection information given above
-    ds->setConnectionInfo(connInfo);
-    ds->open();
-
+    std::auto_ptr<te::da::DataSource> ds = GetADOConnection();
 
     // Show the information about datasets stored in the data source catalog
     PrintCatalog(ds.get());
 
     // Retrieve and then print the datasets stored in the data source
     PrintDataSets(ds.get());
+
+    // Copying data from a shapefile
+    CopyFromShapeFile(ds.get());
   }
   catch(const std::exception& e)
   {

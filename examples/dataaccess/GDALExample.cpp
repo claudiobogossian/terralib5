@@ -9,29 +9,28 @@ void OpenFile()
 {
   try
   {
-    // let's take the input dataset from a shape file
+    // let's take the input dataset from a raster file
+    std::string connInfo("File://");
     std::string data_dir = TERRALIB_DATA_DIR;
-    std::map<std::string, std::string> connInfo;
     
     std::string aux("");
-    std::cout << "Inform the location of your tiff file (ENTER to accept default \'" << (data_dir + "/rasters/cbers2b_rgb342_crop.tif") << "\'): ";
+    std::cout << "Inform the location of your tiff file (ENTER to accept default \'" << (data_dir + "/geotiff/cbers2b_rgb342_crop.tif") << "\'): ";
     std::getline (std::cin, aux);
     if (!aux.empty())
-      connInfo["URI"] = aux;
+      connInfo += aux;
     else
-      connInfo["URI"] = data_dir + "/rasters/cbers2b_rgb342_crop.tif";
+      connInfo += data_dir + "/geotiff/cbers2b_rgb342_crop.tif";
     
-    std::auto_ptr<te::da::DataSource> dsGDAL = te::da::DataSourceFactory::make("GDAL");
+    std::auto_ptr<te::da::DataSource> dsGDAL = te::da::DataSourceFactory::make("GDAL", connInfo);
     std::cout << "Datasource is opened? " << std::boolalpha << dsGDAL->isOpened() << '\n' << '\n';
-  
-    dsGDAL->setConnectionInfo(connInfo);
+
     dsGDAL->open();
   
     std::cout << "Datasource is opened? " << std::boolalpha << dsGDAL->isOpened() << '\n' << '\n';
     std::cout << "Datasource is valid? " << std::boolalpha << dsGDAL->isValid() << '\n' << '\n';
     
     if (!dsGDAL->isOpened() || !dsGDAL->isValid())
-      std::cout << "Datasource " << connInfo["URI"] << " can not be used!\n";
+      std::cout << "Datasource " << aux << " can not be used!\n";
 
     PrintDataSets(dsGDAL.get());
   }
@@ -45,24 +44,23 @@ void OpenFile()
   }
 }
 
-// This example shows how to directory, with multiple raster data files, as a GDAL data source.
+// This example shows how to open a directory, with multiple raster data files, as a GDAL data source.
 void OpenDirectory()
 {
   try
   {
+    std::string connInfo("File://");
     std::string data_dir = TERRALIB_DATA_DIR;
-    std::map<std::string, std::string> connInfo;
     
     std::string aux("");
-    std::cout << "Inform the location of your folder of images (ENTER to accept default \'" << (data_dir + "/rasters") << "\'): ";
+    std::cout << "Inform the location of your folder of images (ENTER to accept default \'" << (data_dir + "/geotiff") << "\'): ";
     std::getline (std::cin, aux);
     if (!aux.empty())
-      connInfo["SOURCE"] = aux;
+      connInfo += aux;
     else
-      connInfo["SOURCE"] = data_dir + "/rasters";
+      connInfo += data_dir + "/geotiff";
   
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
-    ds->setConnectionInfo(connInfo);
+    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", connInfo);
  
     bool res;
     res = ds->isOpened();  // expect false
@@ -73,7 +71,7 @@ void OpenDirectory()
     std::cout << "Datasource is valid? " << std::boolalpha << ds->isValid() << '\n' << '\n';
     
     if (!ds->isOpened() || !ds->isValid())
-      std::cout << "Datasource " << connInfo["SOURCE"] << " can not be used!\n";
+      std::cout << "Datasource " << aux << " can not be used!\n";
 
     PrintDataSets(ds.get());
 
@@ -95,21 +93,18 @@ void DataSourceTransactor()
 {
   try
   {
+    std::string connInfo("File://");
     std::string data_dir = TERRALIB_DATA_DIR;
-    std::map<std::string, std::string> connInfo;
-    
+
     std::string aux("");
-    std::cout << "Inform the location of your folder of imagens (ENTER to accept default \'" << (data_dir + "/rasters") << "\'): ";
+    std::cout << "Inform the location of your folder of images (ENTER to accept default \'" << (data_dir + "/geotiff") << "\'): ";
     std::getline (std::cin, aux);
     if (!aux.empty())
-      connInfo["SOURCE"] = aux;
+      connInfo += aux;
     else
-      connInfo["SOURCE"] = data_dir + "/rasters";
+      connInfo += data_dir + "/geotiff";
   
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
-
-    ds->setConnectionInfo(connInfo);
-   
+    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", connInfo);
     ds->open();
 
     std::auto_ptr<te::da::DataSourceTransactor> tr = ds->getTransactor();  // caller gets the pointer ownership, delete it later

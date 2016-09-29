@@ -27,6 +27,7 @@
 // TerraLib
 #include <terralib/common/TerraLib.h>
 #include <terralib/core/encoding/CharEncoding.h>
+#include <terralib/core/uri/URI.h>
 #include <terralib/plugin.h>
 #include <terralib/dataaccess/dataset/CheckConstraint.h>
 #include <terralib/dataaccess/dataset/PrimaryKey.h>
@@ -58,7 +59,7 @@ int main(int /*argc*/, char** /*argv*/)
     TerraLib::getInstance().initialize();
 
     LoadModules();
-    
+
     MemoryExample();
     OGRExampleRead();
     ORGExampleWrite();
@@ -89,38 +90,38 @@ int main(int /*argc*/, char** /*argv*/)
   return EXIT_SUCCESS;
 }
 
-void PrintDataSourceNames(const std::string& dsType, const std::map<std::string, std::string>& info)
+void PrintDataSourceNames(const std::string& dsType, const std::string& connInfo)
 {
   std::cout << "===== Data Source Names available: \n";
 
-  std::vector<std::string> dataSourceNames = te::da::DataSource::getDataSourceNames(dsType, info);
+  std::vector<std::string> dataSourceNames = te::da::DataSource::getDataSourceNames(dsType, connInfo);
   for(std::size_t i = 0; i < dataSourceNames.size(); ++i)
     std::cout << dataSourceNames[i] << std::endl;
 }
 
-std::auto_ptr<te::da::DataSource> CreateDataSource(const std::string& dsType, const std::map<std::string, std::string>& info)
+std::auto_ptr<te::da::DataSource> CreateDataSource(const std::string& dsType, const std::string& connInfo)
 {
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSource::create(dsType, info);
+  std::auto_ptr<te::da::DataSource> ds = te::da::DataSource::create(dsType, connInfo);
 
   return ds;
 }
 
-void DropDataSource(const std::string& dsType, const std::map<std::string, std::string>& info)
+void DropDataSource(const std::string& dsType, const std::string& connInfo)
 {
-  te::da::DataSource::drop(dsType, info);
+  te::da::DataSource::drop(dsType, connInfo);
 }
 
-bool CheckDataSourceExistence(const std::string& dsType, const std::map<std::string, std::string>& info)
+bool CheckDataSourceExistence(const std::string& dsType, const std::string& connInfo)
 {
-  return te::da::DataSource::exists(dsType, info);
+  return te::da::DataSource::exists(dsType, connInfo);
 }
 
 
 void PrintDataSetNames(te::da::DataSource* ds)
 {
   // Get the database name
-  const std::map<std::string, std::string>& connInfo = ds->getConnectionInfo();
-  std::string dbName = connInfo.find("PG_DB_NAME")->second;
+  const te::core::URI& uri = ds->getConnectionInfo();
+  std::string dbName = uri.path().substr(1, uri.path().length());
 
   std::cout << "\n===== Dataset Names in the data source \"" << dbName << "\":\n";
 

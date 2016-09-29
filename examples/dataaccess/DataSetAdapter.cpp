@@ -47,23 +47,20 @@ te::dt::AbstractData* TupleToStringUpperCaseConverter(te::da::DataSet* dataset, 
 void DataSetAdapter()
 {
   /* Accessing a shapefile */
-  std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR");
-  
-  std::map<std::string, std::string> connInfo;
-  
+  std::string connInfo("File://");
   std::string data_dir = TERRALIB_DATA_DIR;
-  
-  connInfo["SOURCE"] = data_dir + "/shp/munic_2001.shp";
-  
-  dsOGR->setConnectionInfo(connInfo);
+  connInfo += data_dir + "/shape/munic_2001.shp";
+
+  std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR", connInfo);
   dsOGR->open();
 
   std::auto_ptr<te::da::DataSourceTransactor> ogrTransactor = dsOGR->getTransactor();
 
   std::auto_ptr<te::da::DataSet> ogrDataSet = dsOGR->getDataSet("munic_2001");
   std::auto_ptr<te::da::DataSetType>  dtype = dsOGR->getDataSetType("munic_2001");
+  
   /* PostGIS database to gets the DataSource Capabilities */
-  std::auto_ptr<te::da::DataSource> dsPGIS = te::da::DataSourceFactory::make("POSTGIS");
+  //std::auto_ptr<te::da::DataSource> dsPGIS = te::da::DataSourceFactory::make("POSTGIS");
 
   //// Verifies if ogr data set -> pgis data source need an adapter
   //bool needAdapter = te::da::DataSetAdapter::needAdapter(ogrDataSet, dsPGIS->getCapabilities());

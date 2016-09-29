@@ -32,17 +32,16 @@ void ExportingOGR()
 {
   std::string data_dir = TERRALIB_DATA_DIR;
   std::string aux;
-  std::map<std::string, std::string> connInfo;
-  std::cout << "Inform a directory to write the data generated\n(ENTER to access the default \'" << TERRALIB_DATA_DIR << "/ogr\'): ";
+  std::cout << "Inform a directory to write the data generated\n(ENTER to access the default \'" << TERRALIB_DATA_DIR << "/shape\'): ";
   std::getline (std::cin, aux);
   if (!aux.empty())
     data_dir = aux;
   
-  saveUsingOGR(data_dir + "/ogr/testeOGR.shp", "ESRI Shapefile");
-  saveUsingOGR(data_dir + "/ogr/testeOGR.kml", "KML");
-  saveUsingOGR(data_dir + "/ogr/testeOGR.mif", "MapInfo File");
-  saveUsingOGR(data_dir + "/ogr/testeOGR.json", "GeoJSON");
-  saveUsingOGR(data_dir + "/ogr/testeOGR.gml", "GML");
+  saveUsingOGR(data_dir + "/shape/testeOGR.shp", "ESRI Shapefile");
+  saveUsingOGR(data_dir + "/shape/testeOGR.kml", "KML");
+  saveUsingOGR(data_dir + "/shape/testeOGR.mif", "MapInfo File");
+  saveUsingOGR(data_dir + "/shape/testeOGR.geojson", "GeoJSON");
+  saveUsingOGR(data_dir + "/shape/testeOGR.gml", "GML");
   
   std::cout << std::endl << "Checking the directory: \n" << data_dir;
   openDirectory(data_dir, "OGR");
@@ -50,11 +49,10 @@ void ExportingOGR()
 
 void openFile(const std::string& filename, const std::string dstype)
 {
-  std::map<std::string, std::string> connInfo;  
-  connInfo["URI"] = filename;
+  std::string connInfo("File://");
+  connInfo += filename;
   
-  std::auto_ptr<te::da::DataSource> dsptr = te::da::DataSourceFactory::make(dstype);
-  dsptr->setConnectionInfo(connInfo);
+  std::auto_ptr<te::da::DataSource> dsptr = te::da::DataSourceFactory::make(dstype, connInfo);
   dsptr->open();
   
   std::vector<std::string> dsNames = dsptr->getDataSetNames();
@@ -71,11 +69,10 @@ void openFile(const std::string& filename, const std::string dstype)
 
 void openDirectory(const std::string& filename, const std::string dstype)
 {
-  std::map<std::string, std::string> connInfo;
-  connInfo["SOURCE"] = filename;
+  std::string connInfo("File://");
+  connInfo += filename;
   
-  std::auto_ptr<te::da::DataSource> dsptr = te::da::DataSourceFactory::make(dstype);
-  dsptr->setConnectionInfo(connInfo);
+  std::auto_ptr<te::da::DataSource> dsptr = te::da::DataSourceFactory::make(dstype, connInfo);
   dsptr->open();
   
   std::vector<std::string> dsNames = dsptr->getDataSetNames();
@@ -114,12 +111,11 @@ void saveUsingOGR(const std::string& filename, const std::string drivername)
   
   std::auto_ptr<te::da::DataSet> dataset(create_ds_memory("teste10", dt.get()));
   
-  std::map<std::string, std::string> connInfo;
-  connInfo["URI"] = filename;
-  connInfo["DRIVER"] = drivername;
+  std::string connInfo("File://");
+  connInfo += filename;
+  //connInfo += ("?&DRIVER=" + drivername);
   
-  std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR");
-  dsOGR->setConnectionInfo(connInfo);
+  std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR", connInfo);
   dsOGR->open();
   
   dataset->moveBeforeFirst();
