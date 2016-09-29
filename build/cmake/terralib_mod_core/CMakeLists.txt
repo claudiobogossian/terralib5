@@ -1,4 +1,4 @@
-#
+
 #  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 #
 #  This file is part of the TerraLib - a Framework for building GIS enabled applications.
@@ -38,6 +38,9 @@ file(GLOB TERRALIB_CORE_HDR_FILES ${TERRALIB_CORE_DIR}/*.h)
 file(GLOB TERRALIB_CORE_ENCODING_SRC_FILES ${TERRALIB_CORE_DIR}/encoding/*.cpp)
 file(GLOB TERRALIB_CORE_ENCODING_HDR_FILES ${TERRALIB_CORE_DIR}/encoding/*.h)
 
+file(GLOB TERRALIB_CORE_FILESYSTEM_SRC_FILES ${TERRALIB_CORE_DIR}/filesystem/*.cpp)
+file(GLOB TERRALIB_CORE_FILESYSTEM_HDR_FILES ${TERRALIB_CORE_DIR}/filesystem/*.h)
+
 file(GLOB TERRALIB_CORE_LIB_SRC_FILES ${TERRALIB_CORE_DIR}/lib/*.cpp)
 file(GLOB TERRALIB_CORE_LIB_HDR_FILES ${TERRALIB_CORE_DIR}/lib/*.h)
 
@@ -61,6 +64,8 @@ source_group("Source Files"               FILES ${TERRALIB_CORE_SRC_FILES})
 source_group("Header Files"               FILES ${TERRALIB_CORE_HDR_FILES})
 source_group("Source Files\\encoding"     FILES ${TERRALIB_CORE_ENCODING_SRC_FILES})
 source_group("Header Files\\encoding"     FILES ${TERRALIB_CORE_ENCODING_HDR_FILES})
+source_group("Source Files\\filesystem"   FILES ${TERRALIB_CORE_FILESYSTEM_SRC_FILES})
+source_group("Header Files\\filesystem"   FILES ${TERRALIB_CORE_FILESYSTEM_HDR_FILES})
 source_group("Source Files\\lib"          FILES ${TERRALIB_CORE_LIB_SRC_FILES})
 source_group("Header Files\\lib"          FILES ${TERRALIB_CORE_LIB_HDR_FILES})
 source_group("Source Files\\logger"       FILES ${TERRALIB_CORE_LOGGER_SRC_FILES})
@@ -78,6 +83,7 @@ source_group("Header Files\\utils"        FILES ${TERRALIB_CORE_UTILS_HDR_FILES}
 
 add_library(terralib_mod_core SHARED ${TERRALIB_CORE_SRC_FILES} ${TERRALIB_CORE_HDR_FILES}
                                      ${TERRALIB_CORE_ENCODING_SRC_FILES} ${TERRALIB_CORE_ENCODING_HDR_FILES}
+                                     ${TERRALIB_CORE_FILESYSTEM_SRC_FILES} ${TERRALIB_CORE_FILESYSTEM_HDR_FILES}
                                      ${TERRALIB_CORE_LIB_SRC_FILES} ${TERRALIB_CORE_LIB_HDR_FILES}
                                      ${TERRALIB_CORE_LOGGER_SRC_FILES} ${TERRALIB_CORE_LOGGER_HDR_FILES}
                                      ${TERRALIB_CORE_PLUGIN_SRC_FILES} ${TERRALIB_CORE_PLUGIN_HDR_FILES}
@@ -115,6 +121,9 @@ install(FILES ${TERRALIB_CORE_HDR_FILES}
 
 install(FILES ${TERRALIB_CORE_ENCODING_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/core/encoding COMPONENT devel)
+
+install(FILES ${TERRALIB_CORE_FILESYSTEM_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/core/filesysten COMPONENT devel)
 
 install(FILES ${TERRALIB_CORE_LIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/core/lib COMPONENT devel)

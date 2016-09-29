@@ -105,8 +105,6 @@ namespace te
 
           void getExtentClipping(te::gm::Envelope& env);
 
-          void getPolygonClipping(te::gm::Polygon* poly);
-
           void getDimensionClipping(int& x, int& y, int& width, int& height);
 
           void getLayerClipping( std::auto_ptr< te::gm::GeometryCollection >& geomColl);
@@ -126,8 +124,6 @@ namespace te
           void onEnvelopeAcquired(te::gm::Envelope env);
 
           void onEnvelopeDimensionAcquired();
-
-          void onGeomAquired(te::gm::Polygon* poly);
 
           void onPreviewClicked();
 
@@ -150,7 +146,6 @@ namespace te
 
           te::gm::Envelope m_envExt;
           te::gm::Envelope m_envDim;
-          te::gm::Polygon* m_polyROI;
 
           te::qt::widgets::MapDisplay* m_mapDisplay;
       };

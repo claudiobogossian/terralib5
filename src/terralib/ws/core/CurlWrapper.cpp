@@ -76,8 +76,7 @@ int DownloadProgress(void *p,
 
   std::stringstream ss;
 
-  progress->m_task->setTotalSteps((int) dlnow);
-  progress->m_task->setCurrentStep((int) dlnow);
+  progress->m_task->pulse();
 
   ss << dlnow;
 
@@ -91,8 +90,7 @@ int DownloadProgress(void *p,
   return 0;
 }
 
-
-void te::ws::core::CurlWrapper::downloadFile(const std::string& url, const std::string& filePath) const
+void te::ws::core::CurlWrapper::downloadFile(const std::string& url, const std::string& filePath, te::common::TaskProgress* taskProgress) const
 {
 
   std::FILE* file = std::fopen(te::core::CharEncoding::fromUTF8(filePath).c_str(), "wb");
@@ -100,7 +98,7 @@ void te::ws::core::CurlWrapper::downloadFile(const std::string& url, const std::
   if(!file)
     throw te::common::Exception(TE_TR("Could not open file to write!"));
 
-  downloadFile(url, file);
+  downloadFile(url, file, taskProgress);
 
   if (!file)
     throw te::common::Exception(TE_TR("Error at received file!"));
@@ -108,8 +106,7 @@ void te::ws::core::CurlWrapper::downloadFile(const std::string& url, const std::
     std::fclose(file);
 }
 
-
-void te::ws::core::CurlWrapper::downloadFile(const std::string &url, std::FILE* file) const
+void te::ws::core::CurlWrapper::downloadFile(const std::string &url, std::FILE* file, te::common::TaskProgress* taskProgress) const
 {
   curl_easy_reset(m_curl.get());
 
@@ -121,11 +118,13 @@ void te::ws::core::CurlWrapper::downloadFile(const std::string &url, std::FILE* 
   // Set a pointer to our file
   curl_easy_setopt(m_curl.get(), CURLOPT_WRITEDATA, file);
 
-  std::shared_ptr<te::common::TaskProgress> task;
+  te::common::TaskProgress* task = 0;
 
-  task.reset( new te::common::TaskProgress(m_taskMessage,
-                                           te::common::TaskProgress::UNDEFINED, 100 ) );
-
+  if (!taskProgress)
+    task = new te::common::TaskProgress(m_taskMessage, te::common::TaskProgress::UNDEFINED, 100);
+  else
+    task = taskProgress;
+  
   CurlProgress progress;
 
   progress.m_curl = this->m_curl;
@@ -254,7 +253,7 @@ void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const std::fst
 }
 
 
-void te::ws::core::CurlWrapper::customRequest(const te::core::URI &uri, const std::string& request) const
+void te::ws::core::CurlWrapper::customRequest(const te::core::URI &uri, const std::string& request, const std::string& body, const::std::string &header) const
 {
   curl_easy_reset(m_curl.get());
 
@@ -265,10 +264,21 @@ void te::ws::core::CurlWrapper::customRequest(const te::core::URI &uri, const st
   curl_easy_setopt(m_curl.get(), CURLOPT_ERRORBUFFER, errbuf);
   errbuf[0] = 0;
 
+  struct curl_slist* headers= nullptr;
+  headers = curl_slist_append(headers, header.c_str());
+  curl_easy_setopt(m_curl.get(), CURLOPT_HTTPHEADER, headers);
+
   curl_easy_setopt(m_curl.get(), CURLOPT_CUSTOMREQUEST, request.c_str());
+
+  if(!body.empty())
+  {
+    curl_easy_setopt(m_curl.get(), CURLOPT_POSTFIELDS, body.c_str());
+  }
 
   /* Perform the request, status will get the return code */
   CURLcode status = curl_easy_perform(m_curl.get());
+
+  curl_slist_free_all(headers);
 
   if(status != CURLE_OK)
   {

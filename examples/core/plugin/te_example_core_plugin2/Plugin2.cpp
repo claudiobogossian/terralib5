@@ -28,6 +28,7 @@
 
 // TerraLib
 #include <terralib/core/plugin/CppPlugin.h>
+
 // STL
 #include <iostream>
 
@@ -35,14 +36,19 @@ TERRALIB_CPP_PLUGIN_BEGIN(Plugin2)
 
 TERRALIB_CPP_PLUGIN_STARTUP
 {
+  if(m_initialized)
+    return;
+  
   std::cout << "Plugin2 startup" << std::endl;
+  
+  m_initialized = true;
 }
 
 TERRALIB_CPP_PLUGIN_SHUTDOWN
 {
   std::cout << "Plugin2 shutdown" << std::endl;
+  
+  m_initialized = false;
 }
 
-TERRALIB_CPP_PLUGIN_END
-
-TERRALIB_PLUGIN_CALL_BACK_IMPL(Plugin2)
+TERRALIB_CPP_PLUGIN_END(Plugin2)

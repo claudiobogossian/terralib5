@@ -185,9 +185,13 @@ bool te::qt::widgets::ClassifierWizard::execute()
       m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 
                                                    m_rasterInfoPage->getWidget()->getInfo());
 
-      emit addLayer(m_outputLayer);
+      int addOutPutLayer = QMessageBox::question(this, tr("Classifier"), tr("Would you like to add layer on active project?"),
+                                                 QMessageBox::Yes | QMessageBox::No);
 
-      QMessageBox::information(this, tr("Classifier"), tr("Classifier ended sucessfully"));
+      if(addOutPutLayer == QMessageBox::Yes)
+          emit addLayer(m_outputLayer);
+
+      QMessageBox::information(this, tr("Classifier"), tr("Classifier ended sucessfully."));
     }
     else
     {
