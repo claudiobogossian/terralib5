@@ -36,6 +36,7 @@
 #include "plugin/Finders.h"
 #include "plugin/PluginEngineManager.h"
 #include "plugin/PluginInfo.h"
+#include "plugin/PluginManager.h"
 #include "plugin/Serializers.h"
 
 #endif // __TERRALIB_CORE_PLUGIN_H__

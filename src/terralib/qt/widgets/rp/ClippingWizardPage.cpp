@@ -80,8 +80,6 @@ te::qt::widgets::ClippingWizardPage::ClippingWizardPage(QWidget* parent)
 
   connect(m_navigator.get(), SIGNAL(envelopeAcquired(te::gm::Envelope)), this, SLOT(onEnvelopeAcquired(te::gm::Envelope)));
 
-  connect(m_navigator.get(), SIGNAL(geomAquired(te::gm::Polygon*)), this, SLOT(onGeomAquired(te::gm::Polygon*)));
-
   connect(m_navigator.get(), SIGNAL(mapDisplayExtentChanged()), this, SLOT(drawGeom()));
 
 //configure page
@@ -292,17 +290,6 @@ void te::qt::widgets::ClippingWizardPage::getExtentClipping(te::gm::Envelope& en
   env.m_lly = m_ui->m_llyLineEdit->text().toDouble();
   env.m_urx = m_ui->m_urxLineEdit->text().toDouble();
   env.m_ury = m_ui->m_uryLineEdit->text().toDouble();
-}
-
-void te::qt::widgets::ClippingWizardPage::getPolygonClipping(te::gm::Polygon* poly)
-{
-  if (m_ui->m_drawingRadioButton->isChecked())
-  {
-    if (m_polyROI->isValid())
-    {
-      poly = m_polyROI;
-    }
-  }
 }
 
 void te::qt::widgets::ClippingWizardPage::getDimensionClipping(int& x, int& y, int& width, int& height)
@@ -581,24 +568,6 @@ void te::qt::widgets::ClippingWizardPage::onEnvelopeDimensionAcquired()
   }
 
   drawGeom();
-}
-
-void te::qt::widgets::ClippingWizardPage::onGeomAquired(te::gm::Polygon* poly)
-{
-  if (!poly->isValid())
-    return;
-
-  int index = m_ui->m_strategyTypeComboBox->currentIndex();
-  int type = m_ui->m_strategyTypeComboBox->itemData(index).toInt();
-
-  if (type == CLIPPING_ROI)
-  {
-    m_polyROI = poly;
-  }
-
-  drawGeom();
-
-  emit completeChanged();
 }
 
 void te::qt::widgets::ClippingWizardPage::onPreviewClicked()

@@ -40,6 +40,9 @@ namespace te
     //! An exception indicating an error when loading a plugin.
     struct PluginLoadException: virtual Exception { };
 
+    //! An exception indicating an error when unloading a plugin.
+    struct PluginUnloadException: virtual Exception { };
+
     //! An exception indicating an error when trying to start a plugin.
     struct PluginStartupException: virtual Exception { };
 
@@ -52,8 +55,9 @@ namespace te
     //! An exception indicating an error when releasing a given plugin.
     struct PluginEngineUnloadException: virtual Exception { };
 
-    //! An exception indicating that a plugin serializer with the same name was already registered in the system.
-    //struct plugin_serializer_already_registered_error: virtual exception { };
+    //! An exception indicating that a plugin serializer with the same name was
+    //already registered in the system.
+    // struct plugin_serializer_already_registered_error: virtual exception { };
 
   }  // end namespace core
 }    // end namespace te
