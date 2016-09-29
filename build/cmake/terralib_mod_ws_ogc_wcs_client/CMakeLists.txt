@@ -59,7 +59,7 @@ install(TARGETS terralib_mod_ws_ogc_wcs_client
         ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/ogc/wcs/client COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/ws/ogc/wcs/client COMPONENT devel)
 
 
 
