@@ -244,7 +244,7 @@ void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const std::fst
 }
 
 
-void te::ws::core::CurlWrapper::customRequest(const te::core::URI &uri, const std::string& request) const
+void te::ws::core::CurlWrapper::customRequest(const te::core::URI &uri, const std::string& request, const std::string& body, const::std::string &header) const
 {
   curl_easy_reset(m_curl.get());
 
@@ -255,10 +255,21 @@ void te::ws::core::CurlWrapper::customRequest(const te::core::URI &uri, const st
   curl_easy_setopt(m_curl.get(), CURLOPT_ERRORBUFFER, errbuf);
   errbuf[0] = 0;
 
+  struct curl_slist* headers= nullptr;
+  headers = curl_slist_append(headers, header.c_str());
+  curl_easy_setopt(m_curl.get(), CURLOPT_HTTPHEADER, headers);
+
   curl_easy_setopt(m_curl.get(), CURLOPT_CUSTOMREQUEST, request.c_str());
+
+  if(!body.empty())
+  {
+    curl_easy_setopt(m_curl.get(), CURLOPT_POSTFIELDS, body.c_str());
+  }
 
   /* Perform the request, status will get the return code */
   CURLcode status = curl_easy_perform(m_curl.get());
+
+  curl_slist_free_all(headers);
 
   if(status != CURLE_OK)
   {
