@@ -100,7 +100,7 @@ namespace te
           \param fromIdx        Index for column table with origin information.
           \param toIdx          Index for column table with destiny information.
           \param weightIdx      Index for column table with weight information.
-          \param dsInfo         Container with data source information
+          \param dsInfo         The necessary information to access the data source.
           \param graphType      Attribute used to define the output graph type
           \param gInfo          Container with graph generation parameters
 
@@ -108,7 +108,7 @@ namespace te
 
         */
         bool build(const std::string& shapeFileName, const std::string& linkColumn, const int& srid, const std::string& csvFileName, const int& fromIdx, const int& toIdx, const int& weightIdx,
-          const std::map<std::string, std::string>& dsInfo, const std::string& graphType, const std::map<std::string, std::string>& gInfo);
+          const std::string& dsInfo, const std::string& graphType, const std::map<std::string, std::string>& gInfo);
 
         //@}
 

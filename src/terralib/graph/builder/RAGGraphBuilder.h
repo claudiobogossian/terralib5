@@ -94,7 +94,7 @@ namespace te
 
          */
          bool build(const std::string& shapeFileName, const std::string& linkColumn, const int& srid, 
-          const std::map<std::string, std::string>& dsInfo, const std::string& graphType, const std::map<std::string, std::string>& gInfo);
+          const std::string& dsInfo, const std::string& graphType, const std::map<std::string, std::string>& gInfo);
 
         //@}
 

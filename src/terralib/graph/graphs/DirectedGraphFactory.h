@@ -32,6 +32,7 @@
 
 namespace te
 {
+
   namespace graph
   {
     /*!
@@ -77,7 +78,7 @@ namespace te
 
           \note The caller will take the ownership of the returned pointer.
         */
-        te::graph::AbstractGraph* iOpen(const std::map<std::string, std::string>& dsInfo, const std::map<std::string, std::string>& gInfo);
+        te::graph::AbstractGraph* iOpen(const std::string& dsInfo, const std::map<std::string, std::string>& gInfo);
 
         /*!
           \brief This method must be implemented by subclasses (graph types).
@@ -89,7 +90,7 @@ namespace te
 
           \note The caller will take the ownership of the returned pointer.
         */
-        te::graph::AbstractGraph* create(const std::map<std::string, std::string>& dsInfo, const std::map<std::string, std::string>& gInfo);
+        te::graph::AbstractGraph* create(const std::string& dsInfo, const std::map<std::string, std::string>& gInfo);
 
         /*!
           \brief Builder Function used to create the class object.

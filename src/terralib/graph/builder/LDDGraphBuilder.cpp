@@ -61,7 +61,7 @@ te::graph::LDDGraphBuilder::~LDDGraphBuilder()
 {
 }
 
-bool te::graph::LDDGraphBuilder::build(te::rst::Raster* raster, const std::map<std::string, std::string>& dsInfo, const std::string& graphType, const std::map<std::string, std::string>& gInfo)
+bool te::graph::LDDGraphBuilder::build(te::rst::Raster* raster, const std::string& dsInfo, const std::string& graphType, const std::map<std::string, std::string>& gInfo)
 {
   m_raster = raster;
 
