@@ -29,6 +29,8 @@
 
 // TerraLib
 #include "../../../../core/translator/Translator.h"
+#include "../../../../core/uri/URI.h"
+#include "../../../../core/utils/URI.h"
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
@@ -79,11 +81,10 @@ void te::ws::ogc::wcs::qt::WCSConnectorDialog::set(const te::da::DataSourceInfoP
 
   if(m_datasource.get() != 0)
   {
-    const std::map<std::string, std::string>& connInfo = m_datasource->getConnInfo();
+    const te::core::URI& connInfo = m_datasource->getConnInfo();
 
-    std::map<std::string, std::string>::const_iterator it = connInfo.find("URI");
-    if(it != connInfo.end())
-      m_ui->m_serverLineEdit->setText(QString::fromUtf8(it->second.c_str()));
+    if (!connInfo.uri().empty())
+      m_ui->m_serverLineEdit->setText(QString::fromUtf8(connInfo.uri().c_str()));
 
     m_ui->m_datasourceTitleLineEdit->setText(QString::fromUtf8(m_datasource->getTitle().c_str()));
 
@@ -100,12 +101,10 @@ void te::ws::ogc::wcs::qt::WCSConnectorDialog::openPushButtonPressed()
       throw te::ws::ogc::wcs::da::Exception(TE_TR("Sorry! No data access driver loaded for WCS data sources!"));
 
     // Get the data source connection info based on form data
-    std::map<std::string, std::string> dsInfo;
-    getConnectionInfo(dsInfo);
+    std::string dsInfo = getConnectionInfo();
 
     // Perform connection
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("WCS2");
-    ds->setConnectionInfo(dsInfo);
+    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("WCS2", dsInfo);
     ds->open();
     m_driver.reset(ds.release());
 
@@ -169,17 +168,12 @@ void te::ws::ogc::wcs::qt::WCSConnectorDialog::testPushButtonPressed()
     if(te::da::DataSourceFactory::find("WCS2") == 0)
       throw te::ws::ogc::wcs::da::Exception(TE_TR("Sorry! No data access driver loaded for WCS data sources!"));
 
-    // Get the data source connection info based on form data
-    std::map<std::string, std::string> dsInfo;
-    getConnectionInfo(dsInfo);
-
     // Perform connection
-    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("WCS2"));
+    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("WCS2", getConnectionInfo()));
 
     if(ds.get() == 0)
       throw te::ws::ogc::wcs::da::Exception(TE_TR("Could not open WCS server!"));
 
-    ds->setConnectionInfo(dsInfo);
     ds->open();
 
     QMessageBox::information(this,
@@ -209,18 +203,16 @@ void te::ws::ogc::wcs::qt::WCSConnectorDialog::helpPushButtonPressed()
                        tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
-void te::ws::ogc::wcs::qt::WCSConnectorDialog::getConnectionInfo(std::map<std::string, std::string> &connInfo) const
+const std::string te::ws::ogc::wcs::qt::WCSConnectorDialog::getConnectionInfo() const
 {
-  connInfo.clear();
+  QString qstr; // Auxialiary string used to hold temporary data
 
   // Get the server URL
-  QString url = m_ui->m_serverLineEdit->text().trimmed();
-  if(url.isEmpty())
+  qstr = m_ui->m_serverLineEdit->text().trimmed();
+  if(qstr.isEmpty())
     throw te::ws::ogc::wcs::da::Exception(TE_TR("Please define the server address first!"));
 
   std::string usrDataDir = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toUtf8().data();
-
-  connInfo["URI"] = url.toUtf8().data();
-  connInfo["VERSION"] = "2.0.1";
-  connInfo["USERDATADIR"] = usrDataDir;
+  std::string strURI(std::string(qstr.toUtf8().data()) + "?VERSION=2.0.1" + "&USERDATADIR=" + usrDataDir);
+  return strURI;
 }
