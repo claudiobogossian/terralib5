@@ -59,6 +59,8 @@ namespace te
           \brief It verifies the type of the DataSource (dsType) and gets the suitable factory.
         */
         static STDataLoaderImpl* make(const std::string& dsType);
+
+        static STDataLoaderImpl* make(const std::string& dsType, const std::string& connInfo);
        
         /*!
           \brief Virtual destructor.
