@@ -23,7 +23,8 @@
 #  Author: Emerson Moraes
 #
 
-include_directories(${Boost_INCLUDE_DIR})
+include_directories(${Boost_INCLUDE_DIR}
+                    ${CURL_INCLUDE_DIRS})
 
 if(WIN32)
   add_definitions(-DTEWSWMSCLIENTDLL)
@@ -52,4 +53,4 @@ install(TARGETS terralib_mod_ws_ogc_wms_client
         ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/ogc/wms/client COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/ws/ogc/wms/client COMPONENT devel)
