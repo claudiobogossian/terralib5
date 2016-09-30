@@ -83,7 +83,6 @@ BOOST_AUTO_TEST_CASE(linear_test)
 
   mmOutputParameters.m_rInfo = orinfo;
   mmOutputParameters.m_rType = "GDAL";
-  mmOutputParameters.m_normalizeOutput = true;
   mmOutputParameters.m_createErrorRaster = true;
 
   /* Execute the algorithm */
@@ -146,7 +145,6 @@ BOOST_AUTO_TEST_CASE(pca_test)
 
   mmOutputParameters.m_rInfo = orinfo;
   mmOutputParameters.m_rType = "GDAL";
-  mmOutputParameters.m_normalizeOutput = true;
   mmOutputParameters.m_createErrorRaster = true;
 
   /* Execute the algorithm */

@@ -684,6 +684,15 @@ void te::qt::widgets::MixtureModelWizardPage::onComponentItemClicked(QTreeWidget
 
   m_ui->m_componentLineEdit->setText(item->text(0));
 
+  std::map<std::string, MixModelComponent>::iterator it = m_components.find(item->text(0).toStdString());
+  if (it != m_components.end())
+  {
+    m_color = QColor(it->second.m_color.getRed(), it->second.m_color.getGreen(), it->second.m_color.getBlue(), it->second.m_color.getAlpha());
+    QPixmap px(16, 16);
+    px.fill(m_color);
+    m_ui->m_colorToolButton->setIcon(px);
+  }
+
   drawMarks();
 
   PlotSpectralSignature();
