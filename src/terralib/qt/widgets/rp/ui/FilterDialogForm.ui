@@ -29,7 +29,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Arithmetic Operations</string>
+   <string>Filter</string>
   </property>
   <property name="layoutDirection">
    <enum>Qt::LeftToRight</enum>

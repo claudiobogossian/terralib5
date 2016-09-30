@@ -153,8 +153,6 @@ void te::qt::widgets::FilterDialogForm::setMapDisplay(te::qt::widgets::MapDispla
   m_canvas->setPolygonContourWidth(2);
   m_canvas->setPolygonContourColor(te::color::RGBAColor(100, 177, 216, TE_OPAQUE));
   m_canvas->setPolygonFillColor(te::color::RGBAColor(100, 177, 216, 0));
-
-  connect(m_mapDisplay, SIGNAL(extentChanged()), this, SLOT(onMapDisplayExtentChanged()));
 }
 
 te::rp::Filter::InputParameters  te::qt::widgets::FilterDialogForm::getInputParams()
