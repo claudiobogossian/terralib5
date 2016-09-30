@@ -1155,6 +1155,7 @@ endif()
 
 if(TERRALIB_MOD_WS_OGC_WMS_CLIENT_ENABLED)
   add_subdirectory(terralib_mod_ws_ogc_wms_client)
+  list(APPEND TERRALIB_MODULES ws_ogc_wms_client)
 endif()
 
 if(TERRALIB_MOD_WS_OGC_WMS_DATAACCESS_ENABLED)

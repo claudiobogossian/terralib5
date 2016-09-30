@@ -36,6 +36,7 @@
 #include "../../../raster/Raster.h"
 #include "../../../raster/RasterFactory.h"
 #include "../../../raster/Utils.h"
+#include "../../../rp/Module.h"
 #include "../help/HelpPushButton.h"
 #include "../layer/search/LayerSearchWidget.h"
 #include "../layer/search/LayerSearchWizardPage.h"
@@ -218,7 +219,6 @@ bool te::qt::widgets::ClippingWizard::executeExtentClipping()
 
   //get parameters
   te::gm::Envelope env;
-  //te::gm::Polygon* poly;
 
   m_clippingPage->getExtentClipping(env);
 
@@ -242,7 +242,20 @@ bool te::qt::widgets::ClippingWizard::executeExtentClipping()
 
     m_outputLayer.push_back(outputLayer);
 
-    emit addLayer(outputLayer);
+    int addOutPutLayer = QMessageBox::question(this, tr("Clipping"), tr("Would you like to add layer on active project?"),
+                                               QMessageBox::Yes | QMessageBox::No);
+
+    if(addOutPutLayer == QMessageBox::Yes)
+        emit addLayer(outputLayer);
+
+    QMessageBox::information(this, tr("Clipping"), tr("Clipping ended sucessfully."));
+  }
+  else
+  {
+   QMessageBox::critical(this, tr("Clipping"), tr("Clipping execution error.") +
+                         (" " + te::rp::Module::getLastLogStr() ).c_str());
+
+   return false;
   }
   return true;
 }
@@ -278,10 +291,26 @@ bool te::qt::widgets::ClippingWizard::executeDimensionClipping()
     delete outputRst;
 
     //set output layer
-    m_outputLayer.push_back(te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(),
-      m_rasterInfoPage->getWidget()->getInfo()));
-  }
+    te::map::AbstractLayerPtr outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(),
+                                                                          m_rasterInfoPage->getWidget()->getInfo());
 
+    m_outputLayer.push_back(outputLayer);
+
+    int addOutPutLayer = QMessageBox::question(this, tr("Clipping"), tr("Would you like to add layer on active project?"),
+                                               QMessageBox::Yes | QMessageBox::No);
+
+    if(addOutPutLayer == QMessageBox::Yes)
+        emit addLayer(outputLayer);
+
+    QMessageBox::information(this, tr("Clipping"), tr("Clipping ended sucessfully."));
+  }
+  else
+  {
+   QMessageBox::critical(this, tr("Clipping"), tr("Clipping execution error.") +
+                         (" " + te::rp::Module::getLastLogStr() ).c_str());
+
+   return false;
+  }
   return true;
 }
 

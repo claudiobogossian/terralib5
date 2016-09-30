@@ -44,6 +44,5 @@ TERRALIB_CPP_PLUGIN_SHUTDOWN
   std::cout << "Plugin shutdown" << std::endl;
 }
 
-TERRALIB_CPP_PLUGIN_END
+TERRALIB_CPP_PLUGIN_END(Plugin)
   
-TERRALIB_PLUGIN_CALL_BACK_IMPL(Plugin)
