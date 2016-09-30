@@ -92,6 +92,7 @@ bool te::qt::widgets::MixtureModelWizard::validateCurrentPage()
   }
   else if(currentPage() ==  m_mixtureModelPage.get())
   {
+    m_mixtureModelPage->updateComponents();
     return m_mixtureModelPage->isComplete();
   }
   else if(currentPage() ==  m_rasterInfoPage.get())

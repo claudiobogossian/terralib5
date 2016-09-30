@@ -96,6 +96,7 @@ te::qt::widgets::MixtureModelWizardPage::MixtureModelWizardPage(QWidget* parent)
   m_rgbaMark = te::map::MarkRendererManager::getInstance().render(m_mark, PATTERN_SIZE);
 
 //connects
+  QObject::connect(m_ui->m_mixturetabWidget, SIGNAL(currentChanged(int)), this, SLOT(onMixturetabChanged(int)));
   QObject::connect(m_ui->m_componentTreeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(onComponentItemClicked(QTreeWidgetItem*, int)));
 
   connect(m_ui->m_removeToolButton, SIGNAL(clicked()), this, SLOT(onRemoveToolButtonClicked()));
@@ -163,7 +164,6 @@ te::qt::widgets::MixtureModelWizardPage::MixtureModelWizardPage(QWidget* parent)
 te::qt::widgets::MixtureModelWizardPage::~MixtureModelWizardPage()
 {
   m_components.clear();
-  m_max.clear();
 
   te::common::Free(m_rgbaMark, PATTERN_SIZE);
 
@@ -225,7 +225,6 @@ void te::qt::widgets::MixtureModelWizardPage::setActionGroup(QActionGroup* actio
   m_navigator->enablePickerAction();
 }
 
-
 std::list<te::map::AbstractLayerPtr> te::qt::widgets::MixtureModelWizardPage::get()
 {
   return m_layers;
@@ -241,14 +240,12 @@ te::rp::MixtureModel::InputParameters te::qt::widgets::MixtureModelWizardPage::g
   if(type == MIXMODEL_LINEAR)
   {
     algoInputParams.m_strategyName = "linear";
-
     te::rp::MixtureModelLinearStrategy::Parameters specificParameters;
     algoInputParams.setMixtureModelStrategyParams(specificParameters);
   }
   else if(type == MIXMODEL_PCA)
   {
     algoInputParams.m_strategyName = "pca";
-
     te::rp::MixtureModelPCAStrategy::Parameters specificParameters;
     algoInputParams.setMixtureModelStrategyParams(specificParameters);
   }
@@ -292,7 +289,6 @@ te::rp::MixtureModel::InputParameters te::qt::widgets::MixtureModelWizardPage::g
     ++it;
   }
 
-
   return algoInputParams;
 }
 
@@ -309,9 +305,7 @@ te::rp::MixtureModel::OutputParameters te::qt::widgets::MixtureModelWizardPage::
 void te::qt::widgets::MixtureModelWizardPage::saveMixtureModelComponents(std::string &fileName)
 {
   boost::property_tree::ptree pt;
-
   std::map<std::string, MixModelComponent >::iterator it = m_components.begin();
-
   boost::property_tree::ptree children;
 
   while(it != m_components.end())
@@ -355,7 +349,6 @@ void te::qt::widgets::MixtureModelWizardPage::loadMixtureModelComponents(std::st
 {
   try
   {
-    m_ui->m_componentTreeWidget->clear();
     m_components.clear();
 
     boost::property_tree::ptree pt;
@@ -390,34 +383,6 @@ void te::qt::widgets::MixtureModelWizardPage::loadMixtureModelComponents(std::st
       mmc.m_color.setColor(color);
 
       m_components.insert(std::map<std::string, MixModelComponent >::value_type(name, mmc));
-    }
-
-    for (std::map<std::string, MixModelComponent>::iterator it = m_components.begin(); it != m_components.end(); ++it)
-    {
-      QTreeWidgetItem* compItem = new QTreeWidgetItem;
-      compItem->setText(0, it->first.c_str());
-      QBrush brush(QColor(it->second.m_color.getRed(), it->second.m_color.getGreen(), it->second.m_color.getBlue(), 255));
-      std::size_t count = 0;
-      for (int i = 0; i < nBands; ++i)
-      {
-        QCheckBox* checkBox = (QCheckBox*)m_ui->m_bandTableWidget->cellWidget(i, 0);
-        if (checkBox && checkBox->isChecked())
-        {
-          QTreeWidgetItem* item = new QTreeWidgetItem(compItem);
-          item->setText(0, checkBox->text());
-          if (i < it->second.m_values.size())
-            item->setText(1, QString::number(it->second.m_values[i]));
-          else
-            item->setText(1, QString::number(0.0));
-          item->setForeground(0, brush);
-          item->setForeground(1, brush);
-        }
-      }
-
-      compItem->setForeground(0, brush);
-      m_ui->m_componentTreeWidget->addTopLevelItem(compItem);
-      m_ui->m_componentTreeWidget->setCurrentItem(compItem);
-
     }
 
     if (m_components.size())
@@ -466,10 +431,6 @@ void te::qt::widgets::MixtureModelWizardPage::onPointPicked(double x, double y)
 
   QString comp(m_ui->m_componentLineEdit->text());
 
-  std::map<std::string, MixModelComponent>::iterator itc = m_components.find(comp.toUtf8().data());
-  if (itc == m_components.end())
-    addComponent();
-
   //get input raster
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
   while (it != m_layers.end())
@@ -492,11 +453,6 @@ void te::qt::widgets::MixtureModelWizardPage::onPointPicked(double x, double y)
       if (currentRow < 0 || currentRow >= (int) inputRst->getNumberOfRows())
         return;
 
-      //component id
-      static boost::uuids::basic_random_generator<boost::mt19937> gen;
-      boost::uuids::uuid u = gen();
-      std::string id = boost::uuids::to_string(u);
-
       //component name
         QString className = comp;
 
@@ -507,12 +463,10 @@ void te::qt::widgets::MixtureModelWizardPage::onPointPicked(double x, double y)
       for(unsigned b = 0 ; b < inputRst->getNumberOfBands(); b++)
       {
         inputRst->getValue(currentColumn, currentRow, value, b);
-          QString bName(it->get()->getTitle().c_str());
-          bName.append(tr(" Band "));
-
-          bName.append(QString::number(b));
-
-          componentsVector.push_back(value/* / m_max[bName]*/);
+        QString bName(it->get()->getTitle().c_str());
+        bName.append(tr(" Band "));
+        bName.append(QString::number(b));
+        componentsVector.push_back(value);
       }
       
       //component coordinate
@@ -527,62 +481,20 @@ void te::qt::widgets::MixtureModelWizardPage::onPointPicked(double x, double y)
       te::color::RGBAColor newcolor(m_color.red(), m_color.green(), m_color.blue(), 255);
       mmc.m_color.setColor(newcolor.getColor());
 
-        std::map<std::string, MixModelComponent > ::iterator it = m_components.find(className.toUtf8().data());
-        if (it != m_components.end())
-        {
-          it->second = mmc;
-        }
-        else
-          m_components.insert(std::map<std::string, MixModelComponent >::value_type(className.toUtf8().data(), mmc));
+      std::map<std::string, MixModelComponent > ::iterator it = m_components.find(className.toUtf8().data());
+      if (it != m_components.end())
+      {
+        it->second = mmc;
+      }
+      else
+        m_components.insert(std::map<std::string, MixModelComponent >::value_type(className.toUtf8().data(), mmc));
 
       updateComponents();
 
-      } //if (inputRst.get())
-    } //if (ds.get())
-    ++it;
+    } //if (inputRst.get())
+  } //if (ds.get())
+   ++it;
   }
-}
-
-
-void te::qt::widgets::MixtureModelWizardPage::addComponent()
-{
-  
-	std::map<std::string, MixModelComponent>::iterator it = m_components.find(m_ui->m_componentLineEdit->text().toUtf8().data());
-	if (it != m_components.end())
-		return;
-
-	QTreeWidgetItem* compItem = new QTreeWidgetItem;
-	compItem->setText(0, m_ui->m_componentLineEdit->text());
-	compItem->setFlags(compItem->flags() | Qt::ItemIsSelectable);
-
-  int nBands = m_ui->m_bandTableWidget->rowCount();
-
-  QBrush brush(QColor(m_color.red(), m_color.green(), m_color.blue(), 255));
-  std::size_t count = 0;
-  for (int i = 0; i < nBands; ++i)
-  {
-    QCheckBox* checkBox = (QCheckBox*)m_ui->m_bandTableWidget->cellWidget(i, 0);
-    if (checkBox && checkBox->isChecked())
-    {
-      QComboBox* comboBox = (QComboBox*)m_ui->m_bandTableWidget->cellWidget(i, 1);
-
-      QTreeWidgetItem* item = new QTreeWidgetItem(compItem);
-      item->setText(0, comboBox->currentText());
-      item->setText(1, QString::number(0.0));
-      item->setForeground(0, brush);
-      item->setForeground(1, brush);
-    }
-  }
-
-  compItem->setForeground(0, brush);
-
-  if (!compItem->childCount())
-  {
-	  QMessageBox::warning(this, tr("Misture Model"), tr("Select Bands"));
-  }
-
-  m_ui->m_componentTreeWidget->addTopLevelItem(compItem);
-  m_ui->m_componentTreeWidget->setCurrentItem(compItem);
 }
 
 void te::qt::widgets::MixtureModelWizardPage::onRemoveToolButtonClicked()
@@ -594,23 +506,6 @@ void te::qt::widgets::MixtureModelWizardPage::onRemoveToolButtonClicked()
   std::map<std::string, MixModelComponent>::iterator it = m_components.find(comp);
   if (it == m_components.end())
     return;
-
-  QTreeWidgetItemIterator itqt(m_ui->m_componentTreeWidget);
-  while (*itqt) {
-    if (comp.compare((*itqt)->text(0).toUtf8().data()) == 0)
-    {
-      QTreeWidgetItem* item = *itqt;
-      int x = m_ui->m_componentTreeWidget->indexOfTopLevelItem(item);
-      if (x >= 0 && x < m_ui->m_componentTreeWidget->topLevelItemCount())
-      {
-        item = m_ui->m_componentTreeWidget->takeTopLevelItem(x);
-        if (item)delete item;
-      }
-      m_components.erase(comp);
-      break;
-    }
-    ++itqt;
-  }
 
   //Set first as current
   if (m_components.size())
@@ -672,9 +567,7 @@ void te::qt::widgets::MixtureModelWizardPage::listBands()
           bName.append(tr(" Band "));
 
         bName.append(QString::number(b));
-          double max = inputRst->getBand(b)->getMaxValue(true, 0, 0, inputRst->getNumberOfRows() - 1, inputRst->getNumberOfColumns() - 1).real();
-          m_max.insert (std::pair<QString, double>(bName, max));
-        
+
         QCheckBox* bandCheckBox = new QCheckBox(bName, this);
 
         connect(bandCheckBox, SIGNAL(stateChanged(int)), this, SIGNAL(completeChanged()));
@@ -685,7 +578,6 @@ void te::qt::widgets::MixtureModelWizardPage::listBands()
         m_ui->m_bandTableWidget->setCellWidget(newrow, 0, bandCheckBox);
         m_ui->m_bandTableWidget->setCellWidget(newrow, 1, sensorDescriptionComboBox);
         m_ui->m_bandTableWidget->resizeColumnToContents(0);
-       // m_ui->m_bandTableWidget->resizeColumnToContents(1);
         newrow++;
 
         bandCheckBox->setChecked(true);
@@ -737,44 +629,40 @@ void te::qt::widgets::MixtureModelWizardPage::updateComponents()
   if (it == m_components.end())
     return;
 
-  QTreeWidgetItemIterator itqt(m_ui->m_componentTreeWidget);
-  while (*itqt) {
-    if (comp.compare((*itqt)->text(0).toUtf8().data()) == 0)
-    {
-      (*itqt)->setSelected(true);
-      break;
-    }
-    ++itqt;
-  }
+  m_ui->m_componentTreeWidget->clear();
 
-  m_color.setRgb(it->second.m_color.getRed(), it->second.m_color.getGreen(), it->second.m_color.getBlue());
+  int nBands = m_ui->m_bandTableWidget->rowCount();
 
-  QBrush brush(m_color);
-  size_t i = 0;
-  for(size_t t = 0; t < it->second.m_values.size(); ++t)
+  for (it = m_components.begin(); it != m_components.end(); ++it)
   {
-    QComboBox* comboBox = (QComboBox*)m_ui->m_bandTableWidget->cellWidget((int)i++, 1);
-    std::string b = comboBox->currentText().toUtf8().data();
-    std::string v = QString::number(it->second.m_values[t]).toUtf8().data();
-    (*itqt)->setForeground(0, brush);
-    for (int c = 0; c < (*itqt)->childCount(); c++)
+    QBrush brush(QColor(it->second.m_color.getRed(), it->second.m_color.getGreen(), it->second.m_color.getBlue(), 255));
+    QTreeWidgetItem* compItem = new QTreeWidgetItem;
+    compItem->setText(0, it->first.c_str());
+    compItem->setForeground(0, brush);
+    m_ui->m_componentTreeWidget->addTopLevelItem(compItem);
+    m_ui->m_componentTreeWidget->setCurrentItem(compItem);
+
+    std::size_t count = 0;
+    for (int i = 0; i < nBands; ++i)
     {
-      if (b.compare((*itqt)->child(c)->text(0).toUtf8().data()) == 0)
+      QCheckBox* checkBox = (QCheckBox*)m_ui->m_bandTableWidget->cellWidget(i, 0);
+      if (checkBox && checkBox->isChecked())
       {
-        (*itqt)->child(c)->setText(1, v.c_str());
-        (*itqt)->child(c)->setForeground(0, brush);
-        (*itqt)->child(c)->setForeground(1, brush);
-        m_ui->m_componentTreeWidget->setCurrentItem((*itqt)->child(c));
+        QComboBox* comboBox = (QComboBox*)m_ui->m_bandTableWidget->cellWidget(i, 1);
+        QTreeWidgetItem* item = new QTreeWidgetItem(compItem);
+        item->setText(0, comboBox->currentText());
+        if (i < it->second.m_values.size())
+          item->setText(1, QString::number(it->second.m_values[i]));
+        else
+          item->setText(1, QString::number(0.0));
+        item->setForeground(0, brush);
+        item->setForeground(1, brush);
+        m_ui->m_componentTreeWidget->setCurrentItem(item);
         m_ui->m_componentTreeWidget->resizeColumnToContents(0);
         m_ui->m_componentTreeWidget->resizeColumnToContents(1);
-        break;
       }
     }
   }
-
-  QPixmap px(16, 16);
-  px.fill(m_color);
-  m_ui->m_colorToolButton->setIcon(px);
 
   drawMarks();
 
@@ -796,8 +684,9 @@ void te::qt::widgets::MixtureModelWizardPage::onComponentItemClicked(QTreeWidget
 
   m_ui->m_componentLineEdit->setText(item->text(0));
 
-  updateComponents();
+  drawMarks();
 
+  PlotSpectralSignature();
 }
 
 void te::qt::widgets::MixtureModelWizardPage::PlotSpectralSignature()
@@ -844,9 +733,13 @@ void te::qt::widgets::MixtureModelWizardPage::PlotSpectralSignature()
     double wave = 0;
     for (unsigned int ii = 0; ii < it->second.m_values.size(); ++ii)
     {
-      QComboBox* sensor = (QComboBox*)m_ui->m_bandTableWidget->cellWidget(ii, 1);
-      wave = GetMediumWavelength(sensor->currentText().toStdString());
-      values.push_back(QPointF(wave, it->second.m_values[ii]));
+      QCheckBox* bandCheckBox = (QCheckBox*)m_ui->m_bandTableWidget->cellWidget(ii, 0);
+      if (bandCheckBox->isChecked())
+      {
+        QComboBox* sensor = (QComboBox*)m_ui->m_bandTableWidget->cellWidget(ii, 1);
+        wave = GetMediumWavelength(sensor->currentText().toStdString());
+        values.push_back(QPointF(wave, it->second.m_values[ii]));
+      }
     }
 
     graphic->setSamples(values);
@@ -924,4 +817,8 @@ void te::qt::widgets::MixtureModelWizardPage::onallEnabled(bool status)
     PlotSpectralSignature();
 }
 
-
+void te::qt::widgets::MixtureModelWizardPage::onMixturetabChanged(int page)
+{
+  if (page == 1)
+    updateComponents();
+}
