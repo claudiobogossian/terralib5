@@ -123,9 +123,21 @@ void te::qt::widgets::FilterDialogForm::setParams()
 
 void te::qt::widgets::FilterDialogForm::setList(std::list<te::map::AbstractLayerPtr>& layerList)
 {
-  m_inputWidget->setLayerList(layerList);
+  std::list<te::map::AbstractLayerPtr> layersRasterList;
 
-  m_layer = layerList.begin()->get();
+  std::list<te::map::AbstractLayerPtr>::iterator it = layerList.begin();
+  //Filter only raster layers
+  while (it != layerList.end())
+  {
+    std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
+    if (dsType->hasRaster())
+      layersRasterList.push_back(it->get());
+    ++it;
+  }
+
+  m_inputWidget->setLayerList(layersRasterList);
+
+  m_layer = layersRasterList.begin()->get();
 
   setParams();
 }
