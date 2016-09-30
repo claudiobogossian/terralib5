@@ -219,7 +219,6 @@ bool te::qt::widgets::ClippingWizard::executeExtentClipping()
 
   //get parameters
   te::gm::Envelope env;
-  //te::gm::Polygon* poly;
 
   m_clippingPage->getExtentClipping(env);
 
