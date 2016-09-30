@@ -583,6 +583,7 @@ namespace te
     std::vector<std::string> GetBandNames()
     {
       static std::vector<std::string> bandNames;
+      bandNames.clear();
 
       bandNames.push_back("CBERS2_CCD_1_BLUE");
       bandNames.push_back("CBERS2_CCD_2_GREEN");
@@ -676,6 +677,7 @@ namespace te
     std::pair<double, double> GetSpectralBandInfo(std::string bandName)
     {
       static std::map<std::string, std::pair<double, double> > BandInfo;
+      BandInfo.clear();
 
       BandInfo["CBERS2_CCD_1_BLUE"] = std::pair<double, double> (0.45, 0.52);
       BandInfo["CBERS2_CCD_2_GREEN"] = std::pair<double, double> (0.52, 0.59);
@@ -784,6 +786,7 @@ namespace te
     std::pair<double, double> GetDigitalNumberBandInfo(std::string bandName)
     {
       static std::map<std::string, std::pair<double, double> > DNBandInfo;
+      DNBandInfo.clear();
 
       DNBandInfo["CBERS2_CCD_1_BLUE"] = std::pair<double, double> (0.0, 255.0);
       DNBandInfo["CBERS2_CCD_2_GREEN"] = std::pair<double, double> (0.0, 255.0);
