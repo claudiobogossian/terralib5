@@ -41,9 +41,30 @@
 #include <fstream>
 
 
+struct CurlProgress
+{
+  te::common::TaskProgress* m_task;
+  std::shared_ptr<CURL> m_curl;
+  std::string m_baseMessage;
+
+  CurlProgress() : m_task(0)
+  {
+  }
+
+  ~CurlProgress()
+  {
+  }
+};
+
+struct te::ws::core::CurlWrapper::Impl
+{
+  std::shared_ptr<CURL>  m_curl;
+};
+
 te::ws::core::CurlWrapper::CurlWrapper()
 {
-  m_curl = std::shared_ptr<CURL>(curl_easy_init(), curl_easy_cleanup);
+  m_pimpl.reset(new Impl);
+  m_pimpl->m_curl = std::shared_ptr<CURL>(curl_easy_init(), curl_easy_cleanup);
 }
 
 
@@ -72,7 +93,7 @@ int DownloadProgress(void *p,
                      curl_off_t dltotal, curl_off_t dlnow,
                      curl_off_t ultotal, curl_off_t ulnow)
 {
-  te::ws::core::CurlProgress* progress = (te::ws::core::CurlProgress*) p;
+  CurlProgress* progress = (CurlProgress*) p;
 
   std::stringstream ss;
 
@@ -108,15 +129,15 @@ void te::ws::core::CurlWrapper::downloadFile(const std::string& url, const std::
 
 void te::ws::core::CurlWrapper::downloadFile(const std::string &url, std::FILE* file, te::common::TaskProgress* taskProgress) const
 {
-  curl_easy_reset(m_curl.get());
+  curl_easy_reset(m_pimpl->m_curl.get());
 
-  curl_easy_setopt(m_curl.get(), CURLOPT_URL, url.c_str());
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_URL, url.c_str());
 
   // Get data to be written
-  curl_easy_setopt(m_curl.get(), CURLOPT_WRITEFUNCTION, WriteFileCallback);
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_WRITEFUNCTION, WriteFileCallback);
 
   // Set a pointer to our file
-  curl_easy_setopt(m_curl.get(), CURLOPT_WRITEDATA, file);
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_WRITEDATA, file);
 
   te::common::TaskProgress* task = 0;
 
@@ -127,18 +148,21 @@ void te::ws::core::CurlWrapper::downloadFile(const std::string &url, std::FILE* 
   
   CurlProgress progress;
 
-  progress.m_curl = this->m_curl;
+  progress.m_curl = m_pimpl->m_curl;
   progress.m_task = task;
   progress.m_baseMessage = m_taskMessage;
 
-  curl_easy_setopt(m_curl.get(), CURLOPT_XFERINFOFUNCTION, DownloadProgress);
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_XFERINFOFUNCTION, DownloadProgress);
 
-  curl_easy_setopt(m_curl.get(), CURLOPT_XFERINFODATA, &progress);
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_XFERINFODATA, &progress);
 
-  curl_easy_setopt(m_curl.get(), CURLOPT_NOPROGRESS, 0L);
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_NOPROGRESS, 0L);
 
   /* Perform the request, status will get the return code */
-  CURLcode status = curl_easy_perform(m_curl.get());
+  CURLcode status = curl_easy_perform(m_pimpl->m_curl.get());
+
+  if (!taskProgress)
+    delete task;
 
   // Check for errors
   if(status != CURLE_OK)
@@ -176,23 +200,23 @@ size_t read_stream_callback(char *buffer, size_t size, size_t nitems, void *inst
 
 void te::ws::core::CurlWrapper::post(const te::core::URI &uri, const std::string &postFields, const::std::string &header) const
 {
-  curl_easy_reset(m_curl.get());
+  curl_easy_reset(m_pimpl->m_curl.get());
 
-  curl_easy_setopt(m_curl.get(), CURLOPT_URL, uri.uri().c_str());
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_URL, uri.uri().c_str());
 
   char errbuf[CURL_ERROR_SIZE];
 
-  curl_easy_setopt(m_curl.get(), CURLOPT_ERRORBUFFER, errbuf);
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_ERRORBUFFER, errbuf);
   errbuf[0] = 0;
 
   struct curl_slist* headers= nullptr;
   headers = curl_slist_append(headers, header.c_str());
-  curl_easy_setopt(m_curl.get(), CURLOPT_HTTPHEADER, headers);
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_HTTPHEADER, headers);
 
-  curl_easy_setopt(m_curl.get(), CURLOPT_POSTFIELDS, postFields.c_str());
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_POSTFIELDS, postFields.c_str());
 
   /* Perform the request, status will get the return code */
-  CURLcode status = curl_easy_perform(m_curl.get());
+  CURLcode status = curl_easy_perform(m_pimpl->m_curl.get());
 
   curl_slist_free_all(headers);
 
@@ -220,27 +244,27 @@ void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const std::str
 
 void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const std::fstream& file, const::std::string &header) const
 {
-  curl_easy_reset(m_curl.get());
+  curl_easy_reset(m_pimpl->m_curl.get());
 
-  curl_easy_setopt(m_curl.get(), CURLOPT_URL, uri.uri().c_str());
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_URL, uri.uri().c_str());
 
   char errbuf[CURL_ERROR_SIZE];
 
-  curl_easy_setopt(m_curl.get(), CURLOPT_ERRORBUFFER, errbuf);
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_ERRORBUFFER, errbuf);
   errbuf[0] = 0;
 
   struct curl_slist* headers= nullptr;
   headers = curl_slist_append(headers, header.c_str());
-  curl_easy_setopt(m_curl.get(), CURLOPT_HTTPHEADER, headers);
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_HTTPHEADER, headers);
 
-  curl_easy_setopt(m_curl.get(), CURLOPT_UPLOAD, 1L);
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_UPLOAD, 1L);
 
-  curl_easy_setopt(m_curl.get(), CURLOPT_READFUNCTION, read_stream_callback);
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_READFUNCTION, read_stream_callback);
 
-  curl_easy_setopt(m_curl.get(), CURLOPT_READDATA, (const std::fstream*)&file);
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_READDATA, (const std::fstream*)&file);
 
   /* Perform the request, status will get the return code */
-  CURLcode status = curl_easy_perform(m_curl.get());
+  CURLcode status = curl_easy_perform(m_pimpl->m_curl.get());
 
   curl_slist_free_all(headers);
 
@@ -255,28 +279,28 @@ void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const std::fst
 
 void te::ws::core::CurlWrapper::customRequest(const te::core::URI &uri, const std::string& request, const std::string& body, const::std::string &header) const
 {
-  curl_easy_reset(m_curl.get());
+  curl_easy_reset(m_pimpl->m_curl.get());
 
-  curl_easy_setopt(m_curl.get(), CURLOPT_URL, uri.uri().c_str());
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_URL, uri.uri().c_str());
 
   char errbuf[CURL_ERROR_SIZE];
 
-  curl_easy_setopt(m_curl.get(), CURLOPT_ERRORBUFFER, errbuf);
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_ERRORBUFFER, errbuf);
   errbuf[0] = 0;
 
   struct curl_slist* headers= nullptr;
   headers = curl_slist_append(headers, header.c_str());
-  curl_easy_setopt(m_curl.get(), CURLOPT_HTTPHEADER, headers);
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_HTTPHEADER, headers);
 
-  curl_easy_setopt(m_curl.get(), CURLOPT_CUSTOMREQUEST, request.c_str());
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_CUSTOMREQUEST, request.c_str());
 
   if(!body.empty())
   {
-    curl_easy_setopt(m_curl.get(), CURLOPT_POSTFIELDS, body.c_str());
+    curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_POSTFIELDS, body.c_str());
   }
 
   /* Perform the request, status will get the return code */
-  CURLcode status = curl_easy_perform(m_curl.get());
+  CURLcode status = curl_easy_perform(m_pimpl->m_curl.get());
 
   curl_slist_free_all(headers);
 
@@ -294,21 +318,21 @@ void te::ws::core::CurlWrapper::get(const te::core::URI &uri, std::string &buffe
 
   std::string url = uri.uri();
 
-  curl_easy_reset(m_curl.get());
+  curl_easy_reset(m_pimpl->m_curl.get());
 
   char errbuf [CURL_ERROR_SIZE];
 
-  curl_easy_setopt(m_curl.get(), CURLOPT_ERRORBUFFER, errbuf);
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_ERRORBUFFER, errbuf);
   errbuf[0] = 0;
 
-  curl_easy_setopt(m_curl.get(), CURLOPT_URL, url.c_str());
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_URL, url.c_str());
 
-  curl_easy_setopt(m_curl.get(), CURLOPT_WRITEFUNCTION, WriteGetResponse);
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_WRITEFUNCTION, WriteGetResponse);
 
-  curl_easy_setopt(m_curl.get(), CURLOPT_WRITEDATA, &buffer);
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_WRITEDATA, &buffer);
 
   /* Perform the request, status will get the return code */
-  CURLcode status = curl_easy_perform(m_curl.get());
+  CURLcode status = curl_easy_perform(m_pimpl->m_curl.get());
 
   if(status != CURLE_OK)
   {

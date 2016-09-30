@@ -24,8 +24,7 @@
 #
 
 include_directories(${Boost_INCLUDE_DIR}
-                    ${GDAL_INCLUDE_DIR}
-                    ${CURL_INCLUDE_DIRS})
+                    ${GDAL_INCLUDE_DIR})
 					
 if(WIN32)
   add_definitions(-DTEWSWCSDATAACCESSDLL)
