@@ -95,8 +95,9 @@ class plugin_class_name : public te::core::CppPlugin \
 #define TERRALIB_CPP_PLUGIN_SHUTDOWN \
     void shutdown()
 
-#define TERRALIB_CPP_PLUGIN_END \
-};
+#define TERRALIB_CPP_PLUGIN_END(plugin_class_name) \
+}; \
+TERRALIB_PLUGIN_CALL_BACK_IMPL(plugin_class_name)
 
 #ifdef WIN32
   #define TERRALIB_PLUGIN_EXPORT_MACRO __declspec(dllexport)

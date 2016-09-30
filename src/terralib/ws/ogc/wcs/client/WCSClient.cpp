@@ -153,7 +153,7 @@ std::string te::ws::ogc::WCSClient::getFileExtension(const std::string& format) 
 }
 
 
-std::string te::ws::ogc::WCSClient::getCoverage(const te::ws::ogc::wcs::CoverageRequest coverageRequest) const
+std::string te::ws::ogc::WCSClient::getCoverage(const te::ws::ogc::wcs::CoverageRequest coverageRequest, te::common::TaskProgress* taskProgress) const
 {
   std::string coveragePath;
 
@@ -212,16 +212,16 @@ std::string te::ws::ogc::WCSClient::getCoverage(const te::ws::ogc::wcs::Coverage
 
   std::string fileName = coverageRequest.coverageID + getFileExtension(coverageRequest.format);
 
-  coveragePath = makeFileRequest(url, fileName);
+  coveragePath = makeFileRequest(url, fileName, taskProgress);
 
   return coveragePath;
 }
 
-std::string te::ws::ogc::WCSClient::makeFileRequest(const std::string url, const std::string fileName) const
+std::string te::ws::ogc::WCSClient::makeFileRequest(const std::string url, const std::string fileName, te::common::TaskProgress* taskProgress) const
 {
   std::string path = m_dataDir + fileName;
 
-  m_curl->downloadFile(url, path);
+  m_curl->downloadFile(url, path, taskProgress);
 
   return path;
 }

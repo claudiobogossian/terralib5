@@ -32,6 +32,7 @@ add_definitions(-DBOOST_TEST_DYN_LINK)
 
 file(GLOB TERRALIB_UNITTEST_CORE_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/*.cpp)
 file(GLOB TERRALIB_UNITTEST_CORE_ENCODING_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/encoding/*.cpp)
+file(GLOB TERRALIB_UNITTEST_CORE_FILESYSTEM_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/filesystem/*.cpp)
 file(GLOB TERRALIB_UNITTEST_CORE_LIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/lib/*.cpp)
 file(GLOB TERRALIB_UNITTEST_CORE_LOGGER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/logger/*.cpp)
 file(GLOB TERRALIB_UNITTEST_CORE_PLUGIN_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/plugin/*.cpp)
@@ -43,6 +44,7 @@ file(GLOB TERRALIB_UNITTEST_CORE_UTILS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/u
 
 source_group("Source Files"              FILES ${TERRALIB_UNITTEST_CORE_SRC_FILES})
 source_group("Source Files\\encoding"    FILES ${TERRALIB_UNITTEST_CORE_ENCODING_SRC_FILES})
+source_group("Source Files\\filesystem"  FILES ${TERRALIB_UNITTEST_CORE_FILESYSTEM_SRC_FILES})
 source_group("Source Files\\lib"         FILES ${TERRALIB_UNITTEST_CORE_LIB_SRC_FILES})
 source_group("Source Files\\logger"      FILES ${TERRALIB_UNITTEST_CORE_LOGGER_SRC_FILES})
 source_group("Source Files\\plugin"      FILES ${TERRALIB_UNITTEST_CORE_PLUGIN_SRC_FILES})
@@ -53,6 +55,7 @@ source_group("Source Files\\utils"       FILES ${TERRALIB_UNITTEST_CORE_UTILS_SR
 
 add_executable(terralib_unittest_core ${TERRALIB_UNITTEST_CORE_SRC_FILES}
                                       ${TERRALIB_UNITTEST_CORE_ENCODING_SRC_FILES}
+                                      ${TERRALIB_UNITTEST_CORE_FILESYSTEM_SRC_FILES}
                                       ${TERRALIB_UNITTEST_CORE_LIB_SRC_FILES}
                                       ${TERRALIB_UNITTEST_CORE_LOGGER_SRC_FILES}
                                       ${TERRALIB_UNITTEST_CORE_PLUGIN_SRC_FILES}
