@@ -956,7 +956,8 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
         te::da::DataSetTypePtr dstPtr(dst.release());
 
         layer = converter(dstPtr);
-        layer->setTitle(themes[i].m_name);
+        bool changed;
+        layer->setTitle(te::common::ReplaceSpecialChars(themes[i].m_name, changed));
 
         // Get Style
         te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dstPtr.get());
