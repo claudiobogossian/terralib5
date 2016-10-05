@@ -23,8 +23,7 @@
 #  Author: Vinicius Campanha
 #
 
-include_directories(${Boost_INCLUDE_DIR}
-                    ${CURL_INCLUDE_DIRS})
+include_directories(${Boost_INCLUDE_DIR})
 					
 if(WIN32)
   add_definitions(-DTEWSWCSCLIENTDLL)
@@ -45,8 +44,7 @@ qt5_use_modules(terralib_mod_ws_ogc_wcs_client Core)
 target_link_libraries(terralib_mod_ws_ogc_wcs_client terralib_mod_dataaccess
                                                       terralib_mod_xml
                                                       terralib_mod_common
-                                                      terralib_mod_ws_core
-                                                      ${CURL_LIBRARIES})
+                                                      terralib_mod_ws_core)
 													  
 set_target_properties(terralib_mod_ws_ogc_wcs_client
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}

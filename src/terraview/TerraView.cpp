@@ -870,6 +870,12 @@ void TerraView::onNewProjectTriggered()
   m_project->m_title = tr("Default Project");
   m_project->m_changed = false;
 
+  // Closing tables
+  for (std::size_t i = 0; i < m_tables.size(); ++i)
+  {
+    m_tables[i]->close();
+  }
+
   setWindowTitle(m_app->getAppName() + " - " + m_project->m_title);
 
   std::list<te::map::AbstractLayerPtr> ls;
