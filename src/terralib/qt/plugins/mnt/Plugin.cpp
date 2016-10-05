@@ -31,6 +31,7 @@
 #include "../../af/ApplicationController.h"
 #include "../../af/Utils.h"
 #include "CreateIsolinesAction.h"
+#include "ImageGenerationAction.h"
 #include "MNTGenerationAction.h"
 #include "ShowValuesAction.h"
 #include "SlopeAction.h"
@@ -68,6 +69,7 @@ te::qt::plugins::mnt::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
 : te::plugin::Plugin(pluginInfo),
 m_mntMenu(0),
 m_ISOGeneration(0),
+m_ImageGeneration(0),
 m_MNTGeneration(0),
 m_ShowValue(0),
 m_Slope(0),
@@ -175,6 +177,10 @@ void te::qt::plugins::mnt::Plugin::registerActions()
   m_Slope = new te::qt::plugins::mnt::SlopeAction(m_mntMenu);
   connect(m_Slope, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_Slope->getAction());
+
+  m_ImageGeneration = new te::qt::plugins::mnt::ImageGenerationAction(m_mntMenu);
+  connect(m_ImageGeneration, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_ImageGeneration->getAction());
 
   m_Volume = new te::qt::plugins::mnt::VolumeAction(m_mntMenu);
   connect(m_Volume, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
