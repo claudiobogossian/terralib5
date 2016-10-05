@@ -29,6 +29,7 @@
 
 // TerraLib
 #include "Finders.h"
+#include "../filesystem/FileSystem.h"
 #include "../utils/Platform.h"
 #include "Exception.h"
 #include "Serializers.h"
@@ -50,7 +51,7 @@ te::core::DefaultPluginFinder()
 
   for(const std::string& plugins_dir : lookup_dirs)
   {
-    if(plugins_dir.empty() || !boost::filesystem::is_directory(plugins_dir))
+    if(plugins_dir.empty() || !te::core::FileSystem::isDirectory(plugins_dir))
       continue;
 
     boost::filesystem::path p(plugins_dir);

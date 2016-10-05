@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../common/StringUtils.h"
+#include "../core/filesystem/FileSystem.h"
 #include "../core/translator/Translator.h"
 #include "../geometry/Envelope.h"
 #include "../dataaccess/dataset/DataSetType.h"
@@ -113,7 +114,7 @@ bool te::gdal::DataSource::isValid() const
   // if URI used, check if it is a valid directory or file name
   if(it != m_connectionInfo.end())
   {
-    if(boost::filesystem::is_directory(it->second))
+    if(te::core::FileSystem::isDirectory(it->second))
       return true;    
   }
   else  // if it is another GDAL string let's check it
@@ -167,7 +168,7 @@ void te::gdal::DataSource::create(const std::map<std::string, std::string>& dsIn
   {
     try 
     {      
-      if(!boost::filesystem::is_directory(it->second))
+      if(!te::core::FileSystem::isDirectory(it->second))
         boost::filesystem::create_directory(it->second);
     } 
     catch(const boost::filesystem::filesystem_error& e) 
@@ -186,7 +187,7 @@ bool te::gdal::DataSource::exists(const std::map<std::string, std::string>& dsIn
   std::map<std::string, std::string>::const_iterator it = dsInfo.find("SOURCE"); // expects a directory
   if(it != dsInfo.end())   
   {
-    if (boost::filesystem::exists(it->second) && boost::filesystem::is_directory(it->second)) 
+    if (boost::filesystem::exists(it->second) && te::core::FileSystem::isDirectory(it->second)) 
       return true;
     
     return false;

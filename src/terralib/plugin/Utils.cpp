@@ -82,7 +82,7 @@ te::plugin::PluginInfo* te::plugin::GetInstalledPlugin(const std::string& plugin
   boost::filesystem::path pluginFileName(pluginFilePath);
 
 // check if it was provided a plugin file name or just its dir
- /* if(boost::filesystem::is_directory(pluginFileName))
+ /* if(te::core::FileSystem::isDirectory(pluginFileName))
     pluginFileName /= TE_DEFAULT_PLUGIN_FILE_NAME;*/
 
 // check

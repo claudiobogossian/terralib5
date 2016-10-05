@@ -27,9 +27,10 @@
 */
 
 // TerraLib
+#include "Platform.h"
+#include "../filesystem/FileSystem.h"
 #include "../../BuildConfig.h"
 #include "../../Defines.h"
-#include "Platform.h"
 
 // Boost
 #include <boost/filesystem.hpp>
@@ -140,7 +141,7 @@ std::string te::core::GetAppLocalDataLocation()
 #elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
 
   char* homePtr = getenv( "HOME" );
-  if( homePtr && boost::filesystem::is_directory(homePtr))
+  if( homePtr && te::core::FileSystem::isDirectory(homePtr))
   {
     boost::filesystem::path path(homePtr);
     path /=".local/share";
@@ -150,7 +151,7 @@ std::string te::core::GetAppLocalDataLocation()
 #elif (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
 
    char* homePtr = getenv( "HOME" );
-   if( homePtr && boost::filesystem::is_directory(homePtr))
+   if( homePtr && te::core::FileSystem::isDirectory(homePtr))
    {
      boost::filesystem::path path(homePtr);
      path /="Library/Application Support";

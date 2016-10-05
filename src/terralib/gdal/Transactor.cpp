@@ -29,6 +29,7 @@
 
 // TerraLib
 #include "../common/StringUtils.h"
+#include "../core/filesystem/FileSystem.h"
 #include "../core/translator/Translator.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/query/DataSetName.h"
@@ -546,7 +547,7 @@ std::auto_ptr<te::gm::Envelope> te::gdal::Transactor::getExtent(const std::strin
 void te::gdal::Transactor::createDataSet(te::da::DataSetType* dt,
                                          const std::map<std::string, std::string>& options) 
 { 
-  if (!boost::filesystem::is_directory(m_path))
+  if (!te::core::FileSystem::isDirectory(m_path.string()))
     throw Exception(TE_TR("Create operation supported just on directory data sources."));
       
   te::rst::RasterProperty* rstp = static_cast<te::rst::RasterProperty*>(dt->getProperty(0));

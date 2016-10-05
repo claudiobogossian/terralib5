@@ -120,7 +120,7 @@ void exportRastertoGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsG
     std::map<std::string, std::string>  connInfo = info->getConnInfo();
     std::string uri = connInfo["SOURCE"];
 
-    if (boost::filesystem::is_directory(uri))
+    if (te::core::FileSystem::isDirectory(uri))
       uri += ("/" + dsLayer->getDataSetName());
 
     std::map<std::string, std::string> rinfo;

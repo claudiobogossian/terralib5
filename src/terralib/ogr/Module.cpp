@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../BuildConfig.h"
+#include "../core/filesystem/FileSystem.h"
 #include "../core/logger/Logger.h"
 #include "../core/translator/Translator.h"
 #include "../core/utils/Platform.h"
@@ -70,7 +71,7 @@ void te::ogr::Module::startup()
   std::string gdal_data_dir(TERRALIB_GDAL_DATA);
 
 // if the above variable is not set or it points to an invalid directory
-  if(gdal_data_dir.empty() || !boost::filesystem::is_directory(gdal_data_dir))
+  if(gdal_data_dir.empty() || !te::core::FileSystem::isDirectory(gdal_data_dir))
   {
 // search for GDAL in a PATH relative to TerraLib.
 // note: each SO will look in a different folder

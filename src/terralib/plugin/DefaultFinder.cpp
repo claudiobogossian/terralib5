@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../core/filesystem/FileSystem.h"
 #include "../core/translator/Translator.h"
 #include "../core/utils/Platform.h"
 #include "DefaultFinder.h"
@@ -58,7 +59,7 @@ void te::plugin::DefaultFinder::getDefaultDirs( std::vector< std::string >& dirs
   
   // let's check if there is a directory called TE_DEFAULT_PLUGINS_DIR in the current application dir
   
-  if(boost::filesystem::is_directory(TE_DEFAULT_PLUGINS_DIR))
+  if(te::core::FileSystem::isDirectory(TE_DEFAULT_PLUGINS_DIR))
   {
     dirs.push_back( boost::filesystem::system_complete(TE_DEFAULT_PLUGINS_DIR).string() );
   }
@@ -71,7 +72,7 @@ void te::plugin::DefaultFinder::getDefaultDirs( std::vector< std::string >& dirs
   {
     boost::filesystem::path p(plgDir);
 
-    if(boost::filesystem::is_directory(p))
+    if(te::core::FileSystem::isDirectory(p.string()))
       dirs.push_back( boost::filesystem::system_complete(p).string() );
   }
   
@@ -79,7 +80,7 @@ void te::plugin::DefaultFinder::getDefaultDirs( std::vector< std::string >& dirs
     {
       boost::filesystem::path p(TE_PLUGINS_INSTALL_PATH);
 
-      if(boost::filesystem::is_directory(p))
+      if(te::core::FileSystem::isDirectory(p))
         dirs.push_back( boost::filesystem::system_complete(p).string() );
     }
 #endif
@@ -87,7 +88,7 @@ void te::plugin::DefaultFinder::getDefaultDirs( std::vector< std::string >& dirs
 
 void te::plugin::DefaultFinder::addPluginsDir(const std::string& path)
 {
-  if(!boost::filesystem::is_directory(path))
+  if(!te::core::FileSystem::isDirectory(path))
     throw Exception((boost::format(TE_TR("Default plugin directory is invalid: %1%.")) % path).str());
 
   boost::filesystem::path p(boost::filesystem::system_complete(path));
@@ -113,7 +114,7 @@ void te::plugin::DefaultFinder::getPlugins(boost::ptr_vector<PluginInfo>& plugin
 // let's look in each plugins base dir
   for(std::size_t i = 0; i < ndirs; ++i)
   {
-    if(!boost::filesystem::is_directory(m_pluginsDir[i]))
+    if(!te::core::FileSystem::isDirectory(m_pluginsDir[i]))
       throw Exception((boost::format(TE_TR("The base plugin directory is invalid: %1%.")) % m_pluginsDir[i]).str());
 
     boost::filesystem::path path(m_pluginsDir[i]);
@@ -128,7 +129,7 @@ void te::plugin::DefaultFinder::getPlugins(boost::ptr_vector<PluginInfo>& plugin
           plugins.push_back(GetInstalledPlugin(it->path().string()));
       }
 // check just in direct sub-dirs, don't go recursively for ever!
-//      if(boost::filesystem::is_directory(it->status()))
+//      if(te::core::FileSystem::isDirectory(it->status()))
 //      {
 //        boost::filesystem::path foundPlugin = (*it);
 //
