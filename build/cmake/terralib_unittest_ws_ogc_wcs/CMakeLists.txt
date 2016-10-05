@@ -25,7 +25,6 @@
 #
 
 include_directories(${Boost_INCLUDE_DIR}
-                    ${CURL_INCLUDE_DIRS}
                     ${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
 include_directories(${GMOCK_INCLUDE_DIRS})
@@ -43,7 +42,6 @@ target_link_libraries(terralib_unittest_ws_ogc_wcs terralib_mod_ws_ogc_wcs_clien
                                                     terralib_mod_qt_apf
                                                     terralib_mod_qt_widgets
                                                     terralib_mod_plugin
-                                                    ${CURL_LIBRARIES}
                                                     ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
                                                     ${GMOCK_BOTH_LIBRARIES})
 

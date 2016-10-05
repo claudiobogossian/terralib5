@@ -29,11 +29,7 @@
 #ifndef __TERRALIB_WS_CORE_CURLWRAPPER_H
 #define __TERRALIB_WS_CORE_CURLWRAPPER_H
 
-// LibCurl
-#include <curl/curl.h>
-
 //STL
-#include <iostream>
 #include <memory>
 
 #include "Config.h"
@@ -46,21 +42,6 @@ namespace te
   {
     namespace core
     {
-
-    struct TEWSCOREEXPORT CurlProgress
-    {
-      te::common::TaskProgress* m_task;
-      std::shared_ptr<CURL> m_curl;
-      std::string m_baseMessage;
-
-      CurlProgress() : m_task(0)
-      {       
-      }
-
-      ~CurlProgress()
-      {
-      }
-    };
 
     /*!
       \class CurlWrapper
@@ -136,8 +117,17 @@ namespace te
        */
       virtual void customRequest(const te::core::URI& uri, const std::string& request, const std::string& body = std::string(""), const::std::string &header = std::string("")) const;
 
+      /*!
+       * \brief Method to make a GET request.
+       * \param uri The URI with the address information
+       * \param buffer Where the server answer will be write.
+       */
+      virtual void get(const te::core::URI &uri, std::string& buffer) const;
+
     private:
-      std::shared_ptr<CURL>  m_curl;
+      struct Impl;
+
+      std::unique_ptr<Impl>  m_pimpl;
       std::string            m_taskMessage;
     };
 

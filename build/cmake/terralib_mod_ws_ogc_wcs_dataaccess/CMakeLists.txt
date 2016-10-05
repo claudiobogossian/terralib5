@@ -24,8 +24,7 @@
 #
 
 include_directories(${Boost_INCLUDE_DIR}
-                    ${GDAL_INCLUDE_DIR}
-                    ${CURL_INCLUDE_DIRS})
+                    ${GDAL_INCLUDE_DIR})
 					
 if(WIN32)
   add_definitions(-DTEWSWCSDATAACCESSDLL)
@@ -59,7 +58,7 @@ install(TARGETS terralib_mod_ws_ogc_wcs_dataaccess
         ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES}
-        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/ogc/wcs/da COMPONENT devel)
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/ws/ogc/wcs/da COMPONENT devel)
 
 install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.ogc.wcs.teplg
         DESTINATION ${TERRALIB_DESTINATION_PLUGINS} COMPONENT runtime)

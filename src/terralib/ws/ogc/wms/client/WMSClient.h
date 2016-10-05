@@ -85,9 +85,18 @@ namespace te
 
                The WMSCapabilities will be empty until the updateCapabilities() method its called.
 
-        \return Returns a path to a file
+        \return Returns the WMSCapabilities member.
       */
       const te::ws::ogc::wms::WMSCapabilities& getCapabilities() const;
+
+      /*!
+        \brief Return the WMSGetMapResponse member.
+
+               Make the GetMapRequest and return the server answer as a WMSGetMapResponse.
+
+        \return Returns a path to a file
+      */
+      const te::ws::ogc::wms::WMSGetMapResponse getMap(const te::ws::ogc::wms::WMSGetMapRequest& request) const;
 
       /*!
         \brief Executes a request on a WMS server
