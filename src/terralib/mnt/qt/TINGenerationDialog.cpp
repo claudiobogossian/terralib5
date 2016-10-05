@@ -23,11 +23,11 @@ TerraLib Team at <terralib-team@terralib.org>.
 \brief A dialog for TIN generation
 */
 
-
 //terralib
+#include "../../core/filesystem/FileSystem.h"
+#include "../../core/translator/Translator.h"
 #include "../../common/Exception.h"
 #include "../../common/progress/ProgressManager.h"
-#include "../../core/translator/Translator.h"
 #include "../../common/UnitsOfMeasureManager.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
@@ -514,7 +514,7 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
 
     if (m_toFile)
     {
-      if (boost::filesystem::exists(uri))
+      if (te::core::FileSystem::exists(uri.string()))
         throw te::common::Exception(TE_TR("Output file already exists. Remove it or select a new name and try again."));
 
       std::size_t idx = outputdataset.find(".");

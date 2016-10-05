@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../core/filesystem/FileSystem.h"
 #include "../core/translator/Translator.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/query/SQLDialect.h"
@@ -232,7 +233,7 @@ void te::sqlite::DataSource::create(const std::map<std::string, std::string>& ds
       boost::filesystem::path fileName(it->second);
 
       if(fileName.has_parent_path() &&
-         !boost::filesystem::exists(fileName.parent_path()) &&
+         !te::core::FileSystem::exists(fileName.parent_path().string()) &&
          !boost::filesystem::create_directories(fileName.parent_path()))
           throw te::da::Exception(TR_COMMON("Could not create directory for SQLite database!"));
     }
@@ -268,7 +269,7 @@ void te::sqlite::DataSource::drop(const std::map<std::string, std::string>& dsIn
       throw te::da::Exception(TR_COMMON("To remove an SQLite database you must inform its file name!"));
   }
 
-  boost::filesystem::remove(fileName);
+  te::core::FileSystem::remove(fileName);
 }
 
 bool te::sqlite::DataSource::exists(const std::map<std::string, std::string>& dsInfo)
@@ -280,7 +281,7 @@ bool te::sqlite::DataSource::exists(const std::map<std::string, std::string>& ds
   if(it == dsInfo.end())
     throw te::da::Exception(TR_COMMON("In order to check the existence of a SQLite database you must inform its file name"));
 
-  return boost::filesystem::exists(it->second);
+  return te::core::FileSystem::exists(it->second);
 }
 
 std::vector<std::string> te::sqlite::DataSource::getDataSourceNames(const std::map<std::string, std::string>& dsInfo)

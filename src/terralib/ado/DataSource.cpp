@@ -214,7 +214,7 @@ bool te::ado::DataSource::exists(const std::map<std::string, std::string>& dsInf
 
   boost::filesystem::path path(info["DB_NAME"]);
 
-  return boost::filesystem::exists(path);
+  return te::core::FileSystem::exists(path);
 }
 
 std::vector<std::string> te::ado::DataSource::getDataSourceNames(const std::map<std::string, std::string>&)

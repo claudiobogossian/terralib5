@@ -210,7 +210,7 @@ std::string te::qt::widgets::RasterInfoWidget::getPath() const
 bool te::qt::widgets::RasterInfoWidget::fileExists() const
 {
   boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toUtf8().data() );
-  return boost::filesystem::exists( path );
+  return te::core::FileSystem::exists( path.string() );
 }
 
 void te::qt::widgets::RasterInfoWidget::onOpenFileDlgToolButtonClicked()

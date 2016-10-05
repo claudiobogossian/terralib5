@@ -24,9 +24,10 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 // terralib
+#include "../../core/filesystem/FileSystem.h"
+#include "../../core/translator/Translator.h"
 #include "../../common/Exception.h"
 #include "../../common/progress/ProgressManager.h"
-#include "../../core/translator/Translator.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
@@ -573,7 +574,7 @@ void te::mnt::CreateIsolinesDialog::onOkPushButtonClicked()
 
     if (m_toFile)
     {
-      if (boost::filesystem::exists(uri))
+      if (te::core::FileSystem::exists(uri.string()))
         throw te::common::Exception(TE_TR("Output file already exists! Remove it or select a new name and try again."));
 
       std::size_t idx = outputdataset.find(".");

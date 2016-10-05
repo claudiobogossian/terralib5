@@ -187,7 +187,7 @@ bool te::gdal::DataSource::exists(const std::map<std::string, std::string>& dsIn
   std::map<std::string, std::string>::const_iterator it = dsInfo.find("SOURCE"); // expects a directory
   if(it != dsInfo.end())   
   {
-    if (boost::filesystem::exists(it->second) && te::core::FileSystem::isDirectory(it->second)) 
+    if (te::core::FileSystem::exists(it->second) && te::core::FileSystem::isDirectory(it->second)) 
       return true;
     
     return false;

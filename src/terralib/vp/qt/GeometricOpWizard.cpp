@@ -25,6 +25,7 @@
 
 // TerraLib 
 #include "../Enums.h"
+#include "../../core/filesystem/FileSystem.h"
 #include "../../core/logger/Logger.h"
 #include "../../common/progress/ProgressManager.h"
 #include "../../dataaccess/dataset/DataSet.h"
@@ -240,7 +241,7 @@ bool te::vp::GeometricOpWizard::execute()
       if(m_geomOpOutputPage->hasConvexHull())
       {
         boost::filesystem::path uri_file(m_geomOpOutputPage->getPath() + "/" + outputdataset + "_convex_hull.shp");
-        if (boost::filesystem::exists(uri_file))
+        if (te::core::FileSystem::exists(uri_file.string()))
         {
           QMessageBox::information(this, "Geographic Operation", "The convex hull output file already exists. Remove it or select a new name and try again.");
           return false;
@@ -251,7 +252,7 @@ bool te::vp::GeometricOpWizard::execute()
       if(m_geomOpOutputPage->hasCentroid())
       {
         boost::filesystem::path uri_file(m_geomOpOutputPage->getPath() + "/" + outputdataset + "_centroid.shp");
-        if (boost::filesystem::exists(uri_file))
+        if (te::core::FileSystem::exists(uri_file.string()))
         {
           QMessageBox::information(this, "Geographic Operation", "The centroid output file already exists. Remove it or select a new name and try again.");
           return false;
@@ -262,7 +263,7 @@ bool te::vp::GeometricOpWizard::execute()
       if(m_geomOpOutputPage->hasMBR())
       {
         boost::filesystem::path uri_file(m_geomOpOutputPage->getPath() + "/" + outputdataset + "_mbr.shp");
-        if (boost::filesystem::exists(uri_file))
+        if (te::core::FileSystem::exists(uri_file.string()))
         {
           QMessageBox::information(this, "Geographic Operation", "The mbr output file already exists. Remove it or select a new name and try again.");
           return false;
@@ -273,7 +274,7 @@ bool te::vp::GeometricOpWizard::execute()
       if(!ops_selected)
       {
         boost::filesystem::path uri_file(m_geomOpOutputPage->getPath() + "/" + outputdataset + ".shp");
-        if (boost::filesystem::exists(uri_file))
+        if (te::core::FileSystem::exists(uri_file.string()))
         {
           QMessageBox::information(this, "Geographic Operation", "Output file already exists. Remove it or select a new name and try again.");
           return false;

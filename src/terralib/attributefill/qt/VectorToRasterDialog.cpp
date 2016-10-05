@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../BuildConfig.h"
+#include "../../core/filesystem/FileSystem.h"
 #include "../../core/logger/Logger.h"
 #include "../../common/progress/ProgressManager.h"
 #include "../../core/translator/Translator.h"
@@ -339,7 +340,7 @@ void te::attributefill::VectorToRasterDialog::onOkPushButtonClicked()
 
     boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
-    if (boost::filesystem::exists(uri))
+    if (te::core::FileSystem::exists(uri.string()))
     {
       QMessageBox::information(this, "Fill", "Output file already exists. Remove it or select a new name and try again.");
       return;

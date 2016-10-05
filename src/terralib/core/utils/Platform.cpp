@@ -50,14 +50,14 @@ std::string te::core::FindInTerraLibPath(const std::string& path)
 
   boost::filesystem::path eval_path = tl_path / path;
 
-  if(boost::filesystem::exists(eval_path))
+  if(te::core::FileSystem::exists(eval_path.string()))
     return eval_path.string();
 
   // Check for one path above
   tl_path /= "..";
   eval_path = tl_path / path;
 
-  if(boost::filesystem::exists(eval_path))
+  if(te::core::FileSystem::exists(eval_path.string()))
     return eval_path.string();
 
 
@@ -70,7 +70,7 @@ std::string te::core::FindInTerraLibPath(const std::string& path)
 
     eval_path = tl_path / path;
 
-    if(boost::filesystem::exists(eval_path))
+    if(te::core::FileSystem::exists(eval_path.string()))
       return eval_path.string();
   }
 
@@ -79,7 +79,7 @@ std::string te::core::FindInTerraLibPath(const std::string& path)
 
   eval_path = tl_path / path;
 
-  if(boost::filesystem::exists(eval_path))
+  if(te::core::FileSystem::exists(eval_path.string()))
     return eval_path.string();
 
 // 4nd: look into the codebase path
@@ -87,7 +87,7 @@ std::string te::core::FindInTerraLibPath(const std::string& path)
 
   eval_path = tl_path / path;
 
-  if(boost::filesystem::exists(eval_path))
+  if(te::core::FileSystem::exists(eval_path.string()))
     return eval_path.string();
 
 

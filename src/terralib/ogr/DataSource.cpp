@@ -21,6 +21,7 @@
 #include "Transactor.h"
 #include "Utils.h"
 
+#include "../core/filesystem/FileSystem.h"
 #include "../core/translator/Translator.h"
 #include "../dataaccess/query/SQLDialect.h"
 
@@ -151,7 +152,7 @@ void te::ogr::DataSource::open()
   if (it != m_connectionInfo.end())
     CPLSetConfigOption("SHAPE_ENCODING", it->second.c_str());
 
-  if (boost::filesystem::exists(path))
+  if (te::core::FileSystem::exists(path))
     //m_ogrDS = OGRSFDriverRegistrar::Open(path.c_str(), 1);
     m_ogrDS = (GDALDataset*)GDALOpenEx(path.c_str(), GDAL_OF_UPDATE, NULL, NULL, NULL);
   
@@ -234,7 +235,7 @@ void te::ogr::DataSource::createOGRDataSource()
 
     boost::filesystem::path bpath(path);
     std::string dir = bpath.parent_path().string();
-    if (!dir.empty() && !boost::filesystem::exists(dir))
+    if (!dir.empty() && !te::core::FileSystem::exists(dir))
       boost::filesystem::create_directory(dir);
 
     // Retrieve the char encoding
@@ -342,7 +343,7 @@ void te::ogr::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
 
 bool te::ogr::DataSource::exists(const std::map<std::string, std::string>& dsInfo)
 {
-  return boost::filesystem::exists(dsInfo.begin()->second);
+  return te::core::FileSystem::exists(dsInfo.begin()->second);
 }
 
 std::vector<std::string> te::ogr::DataSource::getDataSourceNames(const std::map<std::string, std::string>& dsInfo)

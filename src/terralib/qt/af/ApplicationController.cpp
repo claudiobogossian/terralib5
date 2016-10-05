@@ -295,7 +295,7 @@ void  te::qt::af::ApplicationController::initialize()
   m_userDataDir = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
 #endif
   
-  if(!boost::filesystem::exists(m_userDataDir.toUtf8().data()))
+  if(!te::core::FileSystem::exists(m_userDataDir.toUtf8().data()))
     boost::filesystem::create_directories(m_userDataDir.toUtf8().data());
 
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
@@ -336,22 +336,22 @@ void  te::qt::af::ApplicationController::initialize()
   //m_appProjectExtension = QString::fromUtf8(te::common::SystemApplicationSettings::getInstance().getValue("Application.ProjectExtension"));
   m_appIconName = QString::fromUtf8(te::common::SystemApplicationSettings::getInstance().getValue("Application.IconName").c_str());
   
-  if(!boost::filesystem::exists(m_appIconName.toUtf8().data()))
+  if(!te::core::FileSystem::exists(m_appIconName.toUtf8().data()))
     m_appIconName = te::core::FindInTerraLibPath(m_appIconName.toUtf8().data()).c_str();
 
   m_appPluginsPath = QString::fromUtf8(te::common::SystemApplicationSettings::getInstance().getValue("Application.Plugins.<xmlattr>.xlink:href").c_str());
 
-  if (!boost::filesystem::exists(m_appPluginsPath.toUtf8().data()))
+  if (!te::core::FileSystem::exists(m_appPluginsPath.toUtf8().data()))
     m_appPluginsPath = te::core::FindInTerraLibPath(m_appPluginsPath.toUtf8().data()).c_str();
 
   m_aboutLogo = QString::fromUtf8(te::common::SystemApplicationSettings::getInstance().getValue("Application.AboutDialogLogo.<xmlattr>.xlink:href").c_str());
   
-  if(!boost::filesystem::exists(m_aboutLogo.toUtf8().data()))
+  if(!te::core::FileSystem::exists(m_aboutLogo.toUtf8().data()))
     m_aboutLogo = te::core::FindInTerraLibPath(m_aboutLogo.toUtf8().data()).c_str();
   
   m_tLibLogo = QString::fromUtf8(te::common::SystemApplicationSettings::getInstance().getValue("Application.TerraLibLogo.<xmlattr>.xlink:href").c_str());
   
-  if(!boost::filesystem::exists(m_tLibLogo.toUtf8().data()))
+  if(!te::core::FileSystem::exists(m_tLibLogo.toUtf8().data()))
     m_tLibLogo = te::core::FindInTerraLibPath(m_tLibLogo.toUtf8().data()).c_str();
 
   QString fullAppName = m_appName + "-" + QString(te::common::Version::asString().c_str());

@@ -555,7 +555,7 @@ void te::gdal::Transactor::createDataSet(te::da::DataSetType* dt,
   boost::filesystem::path paux(m_path);
   paux /= dt->getName();
   
-  if (boost::filesystem::exists(paux))
+  if (te::core::FileSystem::exists(paux.string()))
     throw Exception((boost::format(TE_TR("The datasource already has a dataset with this name (\"%1%\")!")) % dt->getName()).str());
   
   DataSetUseCounter dsUseCounter( paux.string(), DataSetsManager::SingleAccessType );

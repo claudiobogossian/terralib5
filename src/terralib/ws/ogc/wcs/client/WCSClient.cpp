@@ -74,7 +74,7 @@ te::ws::ogc::WCSClient::WCSClient(const std::string usrDataDir, const std::strin
 
   m_curl = std::shared_ptr<te::ws::core::CurlWrapper>(new te::ws::core::CurlWrapper());
 
-  if (te::core::FileSystem::isDirectory(usrDataDir) && !boost::filesystem::exists(m_dataDir))
+  if (te::core::FileSystem::isDirectory(usrDataDir) && !te::core::FileSystem::exists(m_dataDir))
     boost::filesystem::create_directories(m_dataDir);
 }
 
