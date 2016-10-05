@@ -44,7 +44,7 @@
 //
 //  config_file /= TERRALIB_SYSTEM_SETTINGS_FILE;
 //
-//  if(boost::filesystem::is_regular_file(config_file))
+//  if(te::core::FileSystem::isRegularFile(config_file))
 //  {
 //    load(config_file.string());
 //    return;
@@ -61,7 +61,7 @@
 //
 //  //  config_file /= TERRALIB_SYSTEM_SETTINGS_FILE;
 //
-//  //  if(boost::filesystem::is_regular_file(config_file))
+//  //  if(te::core::FileSystem::isRegularFile(config_file))
 //  //  {
 //  //    load(config_file.string());
 //  //    return;
@@ -79,7 +79,7 @@
 //
 //    config_file /= TERRALIB_SYSTEM_SETTINGS_FILE;
 //
-//    if(boost::filesystem::is_regular_file(config_file))
+//    if(te::core::FileSystem::isRegularFile(config_file))
 //    {
 //      load(config_file.string());
 //      return;

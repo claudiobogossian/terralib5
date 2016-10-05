@@ -29,6 +29,7 @@
 // TerraLib
 #include "Config.h"
 #include "ThreadingPolicies.h"
+#include "../core/filesystem/FileSystem.h"
 
 // STL
 #include <string>
@@ -208,7 +209,7 @@ namespace te
       m_settings.clear();
       m_file = settingsFile;
 
-      if(boost::filesystem::is_regular_file(m_file))
+      if(te::core::FileSystem::isRegularFile(m_file))
         boost::property_tree::read_xml(m_file, m_settings, boost::property_tree::xml_parser::trim_whitespace);
     }
 

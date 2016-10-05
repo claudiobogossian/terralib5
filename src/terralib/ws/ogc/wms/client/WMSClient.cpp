@@ -1,6 +1,7 @@
 #include "WMSClient.h"
 
 // TerraLib
+#include "../../../../core/filesystem/FileSystem.h"
 #include "../../../../core/translator/Translator.h"
 #include "../../../core/CurlWrapper.h"
 #include "WMSClient.h"

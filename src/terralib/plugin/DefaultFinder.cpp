@@ -121,7 +121,7 @@ void te::plugin::DefaultFinder::getPlugins(boost::ptr_vector<PluginInfo>& plugin
 
     for(boost::filesystem::directory_iterator it(path), itEnd; it != itEnd; ++it)
     {
-      if(boost::filesystem::is_regular_file(it->status()))
+      if(te::core::FileSystem::isRegularFile(it->path().string()))
       {
         std::string ext = boost::filesystem::extension(it->path());
 
@@ -139,7 +139,7 @@ void te::plugin::DefaultFinder::getPlugins(boost::ptr_vector<PluginInfo>& plugin
 //        
 //        foundPlugin /= TE_DEFAULT_PLUGIN_FILE_NAME;
 //
-//        if(boost::filesystem::is_regular_file(foundPlugin))
+//        if(te::core::FileSystem::isRegularFile(foundPlugin))
 //        {
 //// try to read the plugin XML configuration file and add info to the output vector
 //          plugins.push_back(GetInstalledPlugin(foundPlugin.string()));

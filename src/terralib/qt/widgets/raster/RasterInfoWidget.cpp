@@ -28,6 +28,7 @@
 #include "../../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../srs/SpatialReferenceSystemManager.h"
+#include "../../../core/filesystem/FileSystem.h"
 #include "../../../common/StringUtils.h"
 #include "../srs/SRSManagerDialog.h"
 #include "../utils/ParameterTableWidget.h"
@@ -312,7 +313,7 @@ void te::qt::widgets::RasterInfoWidget::updateRawRasterFileName()
       
       boost::filesystem::remove( vrtFullFileName );
       
-      if( !boost::filesystem::is_regular_file( fullVrtPath ) )
+      if( !te::core::FileSystem::isRegularFile( fullVrtPath.string() ) )
       {
         const unsigned int bandsNumber = m_ui->m_bandsLineEdit->text().toUInt();
         const unsigned int colsNumber = m_ui->m_columnsLineEdit->text().toUInt();
@@ -323,8 +324,8 @@ void te::qt::widgets::RasterInfoWidget::updateRawRasterFileName()
         const double upperLeftY = m_ui->m_upperLeftYLineEdit->text().toDouble();
         const int SRID = m_ui->m_sridLineEdit->text().toInt();
         const std::string byteOrder = m_ui->m_byteOrderComboBox->currentText().toUtf8().data();
-        const std::string dataTypeString = m_ui->m_dataTypeComboBox->currentText().toUtf8().data();;
-        const std::string interleaveString = m_ui->m_interleaveComboBox->currentText().toUtf8().data();;
+        const std::string dataTypeString = m_ui->m_dataTypeComboBox->currentText().toUtf8().data();
+        const std::string interleaveString = m_ui->m_interleaveComboBox->currentText().toUtf8().data();
         
         unsigned int dataTypeSizeBytes = 0;
         if( dataTypeString == "Byte" )

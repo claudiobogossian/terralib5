@@ -636,7 +636,7 @@ namespace te
           
             while( dirIt != dirItE )
             {
-              if( boost::filesystem::is_regular_file( *dirIt ) )
+              if( te::core::FileSystem::isRegularFile( dirIt->path().string() ) )
               {
                 if( fileExtensionsSize )
                 {
@@ -666,7 +666,7 @@ namespace te
           
             while( dirIt != dirItE )
             {
-              if( boost::filesystem::is_regular_file( *dirIt ) )
+              if( te::core::FileSystem::isRegularFile( dirIt->path().string() ) )
               {
                 if( fileExtensionsSize )
                 {

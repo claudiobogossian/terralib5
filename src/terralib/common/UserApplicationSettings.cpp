@@ -50,7 +50,7 @@
 //
 //  user_settings_file /= user_conf_file_name;
 //
-//  if(boost::filesystem::is_regular_file(user_settings_file))
+//  if(te::core::FileSystem::isRegularFile(user_settings_file))
 //  {
 //    load(user_settings_file.string());
 //    return;
@@ -67,7 +67,7 @@
 //
 //  //  user_settings_file /= user_conf_file_name;
 //
-//  //  if(boost::filesystem::is_regular_file(user_settings_file))
+//  //  if(te::core::FileSystem::isRegularFile(user_settings_file))
 //  //  {
 //  //    load(user_settings_file.string());
 //  //    return;
@@ -85,7 +85,7 @@
 //
 //    user_settings_file /= user_conf_file_name;
 //
-//    if(boost::filesystem::is_regular_file(user_settings_file))
+//    if(te::core::FileSystem::isRegularFile(user_settings_file))
 //    {
 //      load(user_settings_file.string());
 //      return;
