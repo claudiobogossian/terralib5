@@ -25,7 +25,6 @@ TerraLib Team at <terralib-team@terralib.org>.
 
 //terralib
 #include "../../common/Exception.h"
-#include "../../common/progress/ProgressManager.h"
 #include "../../core/logger/Logger.h"
 #include "../../core/translator/Translator.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
@@ -35,6 +34,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../geometry/GeometryProperty.h"
 #include "../../maptools/DataSetLayer.h"
 #include "../../maptools/Utils.h"
+#include "../../mnt/core/Shadow.h"
 #include "../../qt/widgets/canvas/Canvas.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
@@ -45,6 +45,8 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../raster.h"
 #include "../../raster/Interpolator.h"
 #include "../../raster/RasterFactory.h"
+#include "../../se/CoverageStyle.h"
+#include "../../se/Utils.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
 
 #include "../core/CalculateGrid.h"
@@ -69,18 +71,6 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include <boost/uuid/uuid_io.hpp>
 
 
-void getRasterElementLine(te::rst::Raster* inputRaster, int line, std::vector< std::complex<double> > &val)
-{
-  int ncols = inputRaster->getNumberOfColumns();
-  std::vector< std::complex<double> > aux;
-  for (int col = 0; col < ncols; col++)
-  {
-    inputRaster->getValues(col, line, aux);
-    val[col] = aux[0];
-  }
-}
-
-
 te::mnt::ImageGenerationDialog::ImageGenerationDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
   m_ui(new Ui::ImageGenerationDialogForm),
@@ -88,9 +78,6 @@ te::mnt::ImageGenerationDialog::ImageGenerationDialog(QWidget* parent, Qt::Windo
   m_inputLayer(0),
   m_mapDisplay(0),
   m_canvas(0),
-  m_raster(0),
-  m_geom(0),
-  m_previewRaster(0), 
   m_outputLayer(0),
   m_inDataSource(0)
 {
@@ -103,13 +90,7 @@ te::mnt::ImageGenerationDialog::ImageGenerationDialog(QWidget* parent, Qt::Windo
   
   connect(m_ui->m_dummycheckBox, SIGNAL(toggled(bool)), m_ui->m_dummylineEdit, SLOT(setEnabled(bool)));
 
-  connect(m_ui->m_previewCheckBox, SIGNAL(toggled(bool)), this, SLOT(onPreviewCheckBoxToggled(bool)));
-  connect(m_navigator.get(), SIGNAL(mapDisplayExtentChanged()), this, SLOT(onPreviewChanged()));
-  connect(m_navigator.get(), SIGNAL(previewClicked()), this, SLOT(apply()));
-  connect(m_ui->m_allImageRadioButton, SIGNAL(toggled(bool)), this, SLOT(onAllImageRadioButtonToggled(bool)));
-  connect(m_ui->m_visibleAreaRadioButton, SIGNAL(toggled(bool)), this, SLOT(onVisibleAreaRadioButtonToggled(bool)));
-  connect(m_ui->m_roiRadioButton, SIGNAL(toggled(bool)), this, SLOT(onRoiRadioButtonToggled(bool)));
-  connect(m_ui->m_newROIPushButton, SIGNAL(clicked()), this, SLOT(onNewROIPushButtonClicked()));
+  connect(m_ui->m_previewToolButton, SIGNAL(clicked()), this, SLOT(onPreviewPushButtonClicked()));
 
   m_ui->m_dimLLineEdit->setValidator(new QIntValidator(this));
   m_ui->m_dimCLineEdit->setValidator(new QIntValidator(this));
@@ -129,14 +110,6 @@ te::mnt::ImageGenerationDialog::ImageGenerationDialog(QWidget* parent, Qt::Windo
   connect(m_ui->m_srsToolButton, SIGNAL(clicked()), this, SLOT(onSrsToolButtonClicked()));
 
   m_outsrid = 0;
-
-  //teste
-  m_ui->m_previewCheckBox->setVisible(false);
-  m_ui->m_allImageRadioButton->setVisible(false);
-  m_ui->m_visibleAreaRadioButton->setVisible(false);
-  m_ui->m_roiRadioButton->setVisible(false);
-  m_ui->m_newROIPushButton->setVisible(false);
-
 }
 
 te::mnt::ImageGenerationDialog::~ImageGenerationDialog()
@@ -181,7 +154,6 @@ te::map::AbstractLayerPtr te::mnt::ImageGenerationDialog::getLayer()
 {
   return m_outputLayer;
 }
-
 
 void te::mnt::ImageGenerationDialog::onInputComboBoxChanged(int index)
 {
@@ -240,7 +212,6 @@ void te::mnt::ImageGenerationDialog::onlayerSearchToolButtonClicked()
   m_ui->m_layersComboBox->setCurrentIndex(search.getLayerIndex());
 }
 
-
 void te::mnt::ImageGenerationDialog::onResXLineEditEditingFinished()
 {
   double resX = m_ui->m_resXLineEdit->text().toDouble();
@@ -274,7 +245,6 @@ void te::mnt::ImageGenerationDialog::onResYLineEditEditingFinished()
 
   m_ui->m_dimLLineEdit->setText(QString::number(maxRows));
 }
-
 
 void te::mnt::ImageGenerationDialog::onTargetFileToolButtonPressed()
 {
@@ -312,10 +282,6 @@ void te::mnt::ImageGenerationDialog::onHelpPushButtonClicked()
 
 void te::mnt::ImageGenerationDialog::onOkPushButtonClicked()
 {
-  //progress
-  te::qt::widgets::ProgressViewerDialog v(this);
-  int id = te::common::ProgressManager::getInstance().addViewer(&v);
-
   try
   {
     QApplication::setOverrideCursor(Qt::WaitCursor);
@@ -354,6 +320,13 @@ void te::mnt::ImageGenerationDialog::onOkPushButtonClicked()
     outdsinfo["URI"] = uri.string();
 
     bool ok;
+    if (m_ui->m_dummycheckBox->isChecked())
+    {
+      m_dummy = m_ui->m_dummylineEdit->text().toDouble(&ok);
+      if (!ok)
+        throw te::common::Exception(TE_TR("Define Dummy Value."));
+    }
+
     double resxo = m_ui->m_resXLineEdit->text().toDouble(&ok);
     if (!ok)
       throw te::common::Exception(TE_TR("Define X resolution."));
@@ -361,169 +334,51 @@ void te::mnt::ImageGenerationDialog::onOkPushButtonClicked()
     if (!ok)
       throw te::common::Exception(TE_TR("Define Y resolution."));
 
-    //get input raster
-    std::auto_ptr<te::da::DataSet> inds(m_inputLayer->getData());
-    std::size_t rpos = te::da::GetFirstPropertyPos(inds.get(), te::dt::RASTER_TYPE);
-    std::auto_ptr<te::rst::Raster> inputRst(inds->getRaster(rpos).release());
-    if (inputRst->getNumberOfBands() > 1)
-    {
-      throw te::common::Exception(TE_TR("Layer isn't Regular Grid."));
-    }
+    te::mnt::Shadow *somb = new te::mnt::Shadow();
+    somb->setInput(inDataSource, inDsetName, inDataSource->getDataSetType(inDsetName));
+    somb->setOutput(outdsinfo, "GDAL");
+    somb->setSRID(m_outsrid);
 
-    std::vector< std::complex<double> > dummy;
-    if (m_ui->m_dummycheckBox->isChecked())
-    {
-      bool ok;
-      dummy.push_back(m_ui->m_dummylineEdit->text().toDouble(&ok));
-      if (!ok)
-        throw te::common::Exception(TE_TR("Define Dummy Value."));
-    }
-    else
-      dummy.push_back(inputRst.get()->getBand(0)->getProperty()->m_noDataValue);
+    somb->setParams(m_ui->m_azimuthLineEdit->text().toDouble(), m_ui->m_elevationLineEdit->text().toDouble(), m_ui->m_reliefLineEdit->text().toDouble(),
+      m_ui->m_vminRasterLineEdit->text().toDouble(), m_ui->m_vmaxRasterLineEdit->text().toDouble() - 1, m_ui->m_vminLineEdit->text().toDouble(), m_ui->m_vmaxLineEdit->text().toDouble() - 1,
+      m_dummy, m_ui->m_dimCLineEdit->text().toUInt(), m_ui->m_dimLLineEdit->text().toUInt(), resxo, resyo);
 
-    double resxi = inputRst.get()->getResolutionX();
-    double resyi = inputRst.get()->getResolutionY();
-    unsigned int outputWidth = m_ui->m_dimCLineEdit->text().toUInt();
-    unsigned int outputHeight = m_ui->m_dimLLineEdit->text().toUInt();
-    int X1 = inputRst.get()->getExtent()->getLowerLeftX();
-    int Y2 = inputRst.get()->getExtent()->getUpperRightY();
-    te::gm::Coord2D ulc(X1, Y2);
-    te::rst::Grid* grid = new te::rst::Grid(outputWidth, outputHeight, resxo, resyo, &ulc, m_outsrid);
-    std::vector<te::rst::BandProperty*> bands;
-    bands.push_back(new te::rst::BandProperty(0, te::dt::DOUBLE_TYPE, "Shadow Image"));
-    bands[0]->m_nblocksx = 1;
-    bands[0]->m_nblocksy = (int)outputHeight;
-    bands[0]->m_blkw = (int)outputWidth;
-    bands[0]->m_blkh = 1;
-    bands[0]->m_colorInterp = te::rst::GrayIdxCInt;
+    somb->run();
 
-    double minval = m_ui->m_vminLineEdit->text().toDouble();
-    double maxval = m_ui->m_vmaxLineEdit->text().toDouble() - 1;
-
-    double vmin = m_ui->m_vminRasterLineEdit->text().toDouble();
-    double vmax = m_ui->m_vmaxRasterLineEdit->text().toDouble() - 1;
-
-    double pi = 3.1415927;
-    double teta = (90. - m_ui->m_azimuthLineEdit->text().toDouble()) * (pi / 180.);
-    double phi = (m_ui->m_elevationLineEdit->text().toDouble() * pi) / (double)180;
-    double exRelief = m_ui->m_reliefLineEdit->text().toDouble();
-
-    //Set coefficients of the ilumination
-    double cx = cos(teta) * cos(phi);
-    double cy = sin(teta) * cos(phi);
-    double cz = sin(phi);
-
-    double ambi = minval + ((maxval - minval) * 0.2);
-    double difu = maxval - ((maxval - minval) * 0.2);
-
-    int nlines = inputRst.get()->getNumberOfRows();
-    int ncols = inputRst.get()->getNumberOfColumns();
-
-    te::common::TaskProgress task("Generating shadow image...", te::common::TaskProgress::UNDEFINED, (int)(outputHeight*outputWidth));
-
-    // create raster
-    std::auto_ptr<te::rst::Raster> outRst(te::rst::RasterFactory::make("GDAL", grid, bands, outdsinfo));
-    te::rst::Raster* out = outRst.get();
-
-    double minimum = 0;
-    double maximum = 0;
-
-    std::vector < std::complex<double> > val1(ncols);
-    std::vector < std::complex<double> > val2(ncols);
-    std::vector < std::complex<double> > val3(ncols);
-
-    for (int line = 0; line < nlines-2; line++)
-    {
-      if (!task.isActive())
-        throw te::common::Exception(TE_TR("Canceled by user"));
-      task.pulse();
-
-      if (line == 0)
-      {
-        getRasterElementLine(inputRst.get(), line, val1);
-        getRasterElementLine(inputRst.get(), line + 1, val2);
-        getRasterElementLine(inputRst.get(), line + 2, val3);
-      }
-      else
-      {
-        val1.swap(val2);
-        val2.swap(val3);
-        getRasterElementLine(inputRst.get(), line + 2, val3);
-      }
-
-      for (int col = 1; col < ncols - 1; col++)
-      {
-        double val[8];
-        val[0] = val1[col - 1].real();
-        val[1] = val1[col].real();
-        val[2] = val1[col + 1].real();
-        val[3] = val2[col - 1].real();
-        val[4] = val2[col + 1].real();
-        val[5] = val3[col - 1].real();
-        val[6] = val3[col].real();
-        val[7] = val3[col + 1].real();
-        double val0 = val2[col].real();
-
-        if ((val0 >= vmin) && (val0 <= vmax))
-        {
-          double dzdx, dzdy;
-          if (calcLocalGradient(inputRst.get(), line, col, vmin, vmax, dzdx, dzdy, val))
-          {
-            dzdx = (dzdx * exRelief);
-            dzdy = (dzdy * exRelief);
-
-            double d = sqrt((dzdx * dzdx) + (dzdy * dzdy) + 1);
-            double costeta = (-(dzdx * cx) - (dzdy * cy) + cz) / d;
-
-            if (costeta < 0)
-              costeta = 0;
-
-            double value = ambi + difu * costeta;
-            out->setValue(col, line, value);
-
-            if (value > maximum)
-              maximum = value;
-            else if (value < minimum)
-              minimum = value;
-          }
-          else
-            out->setValue(col, line, 0);
-        }
-        else
-          out->setValue(col, line, m_dummy);
-      } //for (int col = 1; col < ncols - 1; col++)
-    } //for (int line = 0; line < nlines; line++)
-
-    val1.clear();
-    val2.clear();
-    val3.clear();
-
-    outRst.release();
-    delete out;
-    inputRst.release();
-    inds.release();
+    delete somb;
 
     m_outputLayer = te::qt::widgets::createLayer("GDAL", outdsinfo);
+
+    resetDraw();
   }
   catch (te::common::Exception& e)
   {
     QApplication::restoreOverrideCursor();
-    te::common::ProgressManager::getInstance().removeViewer(id);
     QMessageBox::information(this, "Shadow Image Generation", e.what());
     return;
   }
 
   QApplication::restoreOverrideCursor();
-  te::common::ProgressManager::getInstance().removeViewer(id);
   accept();
-
 }
 
 void te::mnt::ImageGenerationDialog::onCancelPushButtonClicked()
 {
+  resetDraw();
   reject();
 }
 
+void  te::mnt::ImageGenerationDialog::resetDraw()
+{
+  m_canvas->clear();
+  m_mapDisplay->repaint();
+
+  if (m_canvas)
+  {
+    delete m_canvas;
+    m_canvas = 0;
+  }
+}
 
 void te::mnt::ImageGenerationDialog::onSrsToolButtonClicked()
 {
@@ -557,265 +412,84 @@ void te::mnt::ImageGenerationDialog::setSRID(int newSRID)
 
 }
 
-bool te::mnt::ImageGenerationDialog::calcLocalGradient(te::rst::Raster* inputRaster, int line, int col, double vmin, double vmax,
-  double& dx, double& dy, double *val)
+void te::mnt::ImageGenerationDialog::getRaster()
 {
-  dx = 0;
-  dy = 0;
-
-  double factor = 1;
-
-  double deltaX = inputRaster->getResolutionX() * factor;
-  double deltaY = inputRaster->getResolutionY() * factor;
-
-  if (((val[1] <= vmax) && (val[1] >= vmin)) && ((val[3] <= vmax) && (val[3] >= vmin)) &&
-    ((val[6] <= vmax) && (val[6] >= vmin)) && ((val[4] <= vmax) && (val[4] >= vmin)))
+  if (m_inputLayer)
   {
-    if (((val[0] <= vmax) && (val[0] >= vmin)) && ((val[2] <= vmax) && (val[2] >= vmin)) &&
-      ((val[5] <= vmax) && (val[5] >= vmin)) && ((val[7] <= vmax) && (val[7] >= vmin)))
-    {//Calculate dzdx and dzdy derivative values with neighbourhood 8
-      dx = ((val[7] + (2 * val[4]) + val[2]) - (val[5] + (2 * val[3]) + val[0])) / (8 * deltaX);
-      dy = ((val[7] + (2 * val[6]) + val[5]) - (val[2] + (2 * val[1]) + val[0])) / (8 * deltaY);
-    }
-    else
-    {//Calculate dzdx and dzdy derivative values with the neighbourhood 4
-      dx = (val[4] - val[3]) / (2 * deltaX);
-      dy = (val[6] - val[1]) / (2 * deltaY);
-    }
-  }
-  else
-  {//neighborhood 4 using extreme neighbors
-    if (((val[0] <= vmax) && (val[0] >= vmin)) && ((val[2] <= vmax) && (val[2] >= vmin)) &&
-      ((val[5] <= vmax) && (val[5] >= vmin)) && ((val[7] <= vmax) && (val[7] >= vmin)))
-    {
-      dx = ((val[7] + val[2]) - (val[5] + val[0])) / (4 * deltaX);
-      dy = ((val[7] + val[5]) - (val[2] + val[0])) / (4 * deltaY);
-    }
-    else
-      return false;
-  }
-
-  return true;
-}
-
-void te::mnt::ImageGenerationDialog::onAllImageRadioButtonToggled(bool isChecked)
-{
-  if (isChecked)
-  {
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-
-    std::auto_ptr<te::da::DataSet> ds = m_inputLayer->getData();
+    std::unique_ptr<te::da::DataSet> ds = m_inputLayer->getData();
 
     if (ds.get())
     {
       std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
-
-      m_raster = ds->getRaster(rpos).release();
-
-      //m_histogramWidget->setInputRaster(m_raster);
-
-      //drawHistogram();
-
-      if (m_ui->m_previewCheckBox->isChecked())
-      {
-        applyPreview();
-      }
-    }
-
-    QApplication::restoreOverrideCursor();
-  }
-}
-
-void te::mnt::ImageGenerationDialog::onNewROIPushButtonClicked()
-{
-  if (m_ui->m_newROIPushButton->isChecked())
-  {
-    te::qt::widgets::ExtentAcquire* ea = new te::qt::widgets::ExtentAcquire(m_mapDisplay, Qt::ArrowCursor);
-    m_mapDisplay->setCurrentTool(ea);
-
-    connect(ea, SIGNAL(extentAcquired(te::gm::Envelope)), this, SLOT(onEnvelopeAcquired(te::gm::Envelope)));
-  }
-  else
-  {
-    m_mapDisplay->setCurrentTool(NULL);
-  }
-}
-
-void te::mnt::ImageGenerationDialog::onPreviewCheckBoxToggled(bool isChecked)
-{
-  if (isChecked)
-  {
-    applyPreview();
-  }
-  else
-  {
-    if (m_raster)
-      drawPreview(m_raster);
-  }
-}
-
-void te::mnt::ImageGenerationDialog::onRoiRadioButtonToggled(bool isChecked)
-{
-  if (isChecked)
-  {
-    m_ui->m_newROIPushButton->setEnabled(true);
-  }
-  else
-  {
-    m_ui->m_newROIPushButton->setEnabled(false);
-  }
-}
-
-void te::mnt::ImageGenerationDialog::onVisibleAreaRadioButtonToggled(bool isChecked)
-{
-  if (isChecked)
-  {
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-
-    te::gm::Envelope reprojectedBBOX(m_mapDisplay->getExtent());
-    reprojectedBBOX.transform(m_mapDisplay->getSRID(), m_inputLayer->getSRID());
-
-    if (!reprojectedBBOX.intersects(m_inputLayer->getExtent()))
-    {
-      QMessageBox::warning(this, tr("Warning"), tr("Visible area doesn't intersect with the layer."));
-      return;
-    }
-
-    te::gm::Envelope ibbox = reprojectedBBOX.intersection(m_inputLayer->getExtent());
-
-    m_geom = 0;
-
-    if (ibbox.isValid())
-      m_geom = te::gm::GetGeomFromEnvelope(&ibbox, m_inputLayer->getSRID());
-
-    m_canvas->draw(m_geom);
-
-    m_mapDisplay->repaint();
-
-    getRasterFromROI();
-
-    QApplication::restoreOverrideCursor();
-  }
-}
-
-void te::mnt::ImageGenerationDialog::getRasterFromROI()
-{
-  switch (m_geom->getGeomTypeId())
-  {
-    case te::gm::PolygonType:
-    {
-      QApplication::setOverrideCursor(Qt::WaitCursor);
-
-      std::auto_ptr<te::da::DataSetType> dsType = m_inputLayer->getSchema();
-      te::rst::RasterProperty* rasterProp = te::da::GetFirstRasterProperty(dsType.get());
-      std::auto_ptr<te::da::DataSet> dsRaster = m_inputLayer->getData();
-      std::auto_ptr<te::rst::Raster> raster = dsRaster->getRaster(rasterProp->getName());
-
-      std::map<std::string, std::string> info;
-      info["FORCE_MEM_DRIVER"] = "TRUE";
-      //execute clipping
-      m_raster = raster->trim(m_geom->getMBR(), info);
-
-      //m_histogramWidget->setInputRaster(m_raster);
-
-      //drawHistogram();
-
-      if (m_ui->m_previewCheckBox->isChecked())
-      {
-        applyPreview();
-      }
-
-      QApplication::restoreOverrideCursor();
-
-      break;
+      m_previewRaster = ds->getRaster(rpos);
     }
   }
 }
 
-void te::mnt::ImageGenerationDialog::applyPreview()
+void te::mnt::ImageGenerationDialog::onPreviewPushButtonClicked()
 {
-  if (!m_raster)
+  if (!m_previewRaster.get())
+    getRaster();
+  drawPreview(m_previewRaster);
+}
+
+void te::mnt::ImageGenerationDialog::drawPreview(std::unique_ptr<te::rst::Raster>& raster)
+{
+  if (!raster.get())
     return;
 
-  //progress
-  te::qt::widgets::ProgressViewerDialog v(this);
-  int id = te::common::ProgressManager::getInstance().addViewer(&v);
-
-  QApplication::setOverrideCursor(Qt::WaitCursor);
+  if (raster->getNumberOfBands() > 1)
+  {
+    throw te::common::Exception(TE_TR("Layer isn't Regular Grid."));
+  }
 
   std::map<std::string, std::string> rinfo;
-  rinfo["MEM_RASTER_NROWS"] = boost::lexical_cast<std::string>(m_raster->getNumberOfRows());
-  rinfo["MEM_RASTER_NCOLS"] = boost::lexical_cast<std::string>(m_raster->getNumberOfColumns());
-  rinfo["MEM_RASTER_DATATYPE"] = boost::lexical_cast<std::string>(m_raster->getBandDataType(0));
-  rinfo["MEM_RASTER_NBANDS"] = boost::lexical_cast<std::string>(m_raster->getNumberOfBands());
+  rinfo["MEM_RASTER_NROWS"] = boost::lexical_cast<std::string>(raster->getNumberOfRows());
+  rinfo["MEM_RASTER_NCOLS"] = boost::lexical_cast<std::string>(raster->getNumberOfColumns());
+  rinfo["MEM_RASTER_DATATYPE"] = boost::lexical_cast<std::string>(raster->getBandDataType(0));
+  rinfo["MEM_RASTER_NBANDS"] = boost::lexical_cast<std::string>(raster->getNumberOfBands());
 
-  //algoOutputParams.m_createdOutRasterDSType = "MEM";
-  //algoOutputParams.m_createdOutRasterInfo = rinfo;
-
-  ////run contrast
-  //te::rp::Contrast algorithmInstance;
-
-  try
+  bool ok;
+  if (m_ui->m_dummycheckBox->isChecked())
   {
- /*   if (algorithmInstance.initialize(algoInputParams))
-    {
-      if (algorithmInstance.execute(algoOutputParams))
-      {
-        te::dt::AbstractData* abs = algoOutputParams.m_outRasterPtr->clone();
-
-        te::rst::Raster* rst = static_cast<te::rst::Raster*>(abs);
-
-        m_previewRaster = rst;
-
-        double min = m_previewRaster->getBand(0)->getMinValue(true).real();
-        double max = m_previewRaster->getBand(0)->getMaxValue(true).real();
-
-        m_histogramWidget->setOutputRaster(algoOutputParams.m_createdOutRasterPtr.release());*/
-
-        if (m_ui->m_previewCheckBox->isChecked())
-          drawPreview(m_previewRaster);
-      //}
-  //}
-  }
-  catch (...)
-  {
-    QMessageBox::warning(this, tr("Warning"), tr("Constrast error."));
-    te::common::ProgressManager::getInstance().removeViewer(id);
-    QApplication::restoreOverrideCursor();
+    m_dummy = m_ui->m_dummylineEdit->text().toDouble(&ok);
+    if (!ok)
+      throw te::common::Exception(TE_TR("Define Dummy Value."));
   }
 
-  te::common::ProgressManager::getInstance().removeViewer(id);
+  double resxo = m_ui->m_resXLineEdit->text().toDouble(&ok);
+  if (!ok)
+    throw te::common::Exception(TE_TR("Define X resolution."));
+  double resyo = m_ui->m_resYLineEdit->text().toDouble(&ok);
+  if (!ok)
+    throw te::common::Exception(TE_TR("Define Y resolution."));
 
-  QApplication::restoreOverrideCursor();
-}
+  te::mnt::Shadow *somb = new te::mnt::Shadow();
+  //somb->setInput(inDataSource, inDsetName, inDataSource->getDataSetType(inDsetName));
+  somb->setOutput(rinfo, "MEM");
+  somb->setSRID(m_outsrid);
 
+  somb->setParams(m_ui->m_azimuthLineEdit->text().toDouble(), m_ui->m_elevationLineEdit->text().toDouble(), m_ui->m_reliefLineEdit->text().toDouble(),
+    m_ui->m_vminRasterLineEdit->text().toDouble(), m_ui->m_vmaxRasterLineEdit->text().toDouble() - 1, m_ui->m_vminLineEdit->text().toDouble(), m_ui->m_vmaxLineEdit->text().toDouble() - 1,
+    m_dummy, raster->getNumberOfColumns(), raster->getNumberOfRows(), resxo, resyo);
 
-void te::mnt::ImageGenerationDialog::drawPreview(te::rst::Raster* raster)
-{
-  QApplication::setOverrideCursor(Qt::WaitCursor);
-
-  const te::gm::Envelope& envRaster = *raster->getExtent();
+  te::rst::Raster *outrst = somb->GenerateImage(raster.get());
+  
+  const te::gm::Envelope& envRaster = *outrst->getExtent();
   const te::gm::Envelope& env = m_mapDisplay->getExtent();
   const te::gm::Envelope* envRst = &env;
+  te::se::Style* style = te::se::CreateCoverageStyle(outrst->getNumberOfBands());
+  te::se::CoverageStyle* cs = dynamic_cast<te::se::CoverageStyle*>(style);
+  assert(cs);
 
   // Draw raster
-  //te::map::DrawRaster(raster, m_canvas, *envRst, m_mapDisplay->getSRID(), *envRst, raster->getSRID(), cs, m_mapDisplay->getScale());
-
-  if (m_ui->m_roiRadioButton->isChecked())
-  {
-    if (!m_geom->isValid())
-      return;
-
-    m_canvas->draw(m_geom);
-  }
+  te::map::DrawRaster(outrst, m_canvas, *envRst, m_mapDisplay->getSRID(), *envRst, m_outsrid, cs, m_mapDisplay->getScale());
 
   m_mapDisplay->repaint();
-
+  delete somb;
 
   QApplication::restoreOverrideCursor();
 }
-
-
 
 void te::mnt::ImageGenerationDialog::setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay)
 {
@@ -843,3 +517,4 @@ void te::mnt::ImageGenerationDialog::setMapDisplay(te::qt::widgets::MapDisplay* 
 
   connect(m_mapDisplay, SIGNAL(extentChanged()), this, SLOT(onMapDisplayExtentChanged()));
 }
+
