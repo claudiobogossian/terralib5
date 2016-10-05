@@ -24,10 +24,10 @@
 */
 
 // Terralib
-#include "../../../qt/widgets/rp/FilterWizard.h"
+#include "../../../qt/widgets/rp/FilterDialogForm.h"
 #include "../../af/ApplicationController.h"
+#include "../../af/BaseApplication.h"
 #include "FilterAction.h"
-
 
 // Qt
 #include <QtCore/QObject>
@@ -37,25 +37,56 @@
 
 te::qt::plugins::rp::FilterAction::FilterAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
+  m_filterDlg = 0;
+
   createAction(tr("Filter...").toUtf8().data(), "mask");
   m_action->setObjectName("Processing.Raster Processing.Filter");
 }
 
 te::qt::plugins::rp::FilterAction::~FilterAction()
 {
+  if (m_filterDlg)
+  {
+    delete m_filterDlg;
+    m_filterDlg = 0;
+  }
 }
 
 void te::qt::plugins::rp::FilterAction::onActionActivated(bool checked)
 {
-  te::qt::widgets::FilterWizard dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
+  if (m_filterDlg)
+  {
+    delete m_filterDlg;
+    m_filterDlg = 0;
+  }
+
+  m_filterDlg = new te::qt::widgets::FilterDialogForm(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
+
+  connect(m_filterDlg, SIGNAL(addLayer(te::map::AbstractLayerPtr)), this, SLOT(addLayer(te::map::AbstractLayerPtr)));
+  connect(m_filterDlg, SIGNAL(closeTool()), this, SLOT(closeTool()));
+
+  te::qt::af::BaseApplication* ba = dynamic_cast<te::qt::af::BaseApplication*>(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 
-  dlg.setList( layersList );
+  m_filterDlg->setModal(false);
+  m_filterDlg->setMapDisplay(ba->getMapDisplay());
+  m_filterDlg->setList(layersList);
 
-  if(dlg.exec() == QDialog::Accepted)
+  m_filterDlg->show();
+}
+
+void te::qt::plugins::rp::FilterAction::addLayer(te::map::AbstractLayerPtr outputLayer)
+{
+  //add new layer
+  addNewLayer(outputLayer);
+}
+
+void te::qt::plugins::rp::FilterAction::closeTool()
+{
+  if (m_filterDlg)
   {
-    //add new layer
-    addNewLayer(dlg.getOutputLayer());
+    delete m_filterDlg;
+    m_filterDlg = 0;
   }
 }
