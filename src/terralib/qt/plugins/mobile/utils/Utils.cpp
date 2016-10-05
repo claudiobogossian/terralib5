@@ -200,7 +200,7 @@ void exportRastertoGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsG
 
       te::gpkg::copyToGeopackage(outRaster, outFileName);
     }
-    boost::filesystem::remove(file);
+    te::core::FileSystem::remove(file);
   }
   else
     te::gpkg::copyToGeopackage(raster.get(), outFileName);

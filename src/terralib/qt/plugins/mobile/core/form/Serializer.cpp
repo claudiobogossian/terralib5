@@ -153,7 +153,7 @@ std::string te::qt::plugins::terramobile::WriteStyle(const te::se::Style* style,
     xml = buffer.str();
   }
 
-  boost::filesystem::remove(file);
+  te::core::FileSystem::remove(file);
   return xml;
 }
 
@@ -194,7 +194,7 @@ std::auto_ptr<te::se::Style> te::qt::plugins::terramobile::ReadStyle(std::string
     }
   }
 
-  boost::filesystem::remove(file);
+  te::core::FileSystem::remove(file);
   return std::move(style);
 }
 

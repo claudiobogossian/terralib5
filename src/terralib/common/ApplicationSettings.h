@@ -221,7 +221,7 @@ namespace te
         return;
 
       if(m_settings.empty())
-        boost::filesystem::remove(m_file);
+        te::core::FileSystem::remove(m_file);
       else
       {
 #if BOOST_VERSION > 105600

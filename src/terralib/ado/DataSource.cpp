@@ -204,7 +204,7 @@ void te::ado::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
 
   boost::filesystem::path path(info["DB_NAME"]);
 
-  if(boost::filesystem::remove(path) == false)
+  if(te::core::FileSystem::remove(path) == false)
     throw te::common::Exception(TE_TR("The data source could not be dropped!"));
 }
 

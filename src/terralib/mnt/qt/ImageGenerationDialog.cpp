@@ -290,7 +290,7 @@ void te::mnt::ImageGenerationDialog::onTargetFileToolButtonPressed()
 
   try
   {
-    boost::filesystem::remove(fileName.toUtf8().data());
+    te::core::FileSystem::remove(fileName.toUtf8().data());
   }
   catch (const std::exception& e)
   {

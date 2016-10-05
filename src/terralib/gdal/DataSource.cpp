@@ -222,7 +222,7 @@ void te::gdal::DataSource::drop(const std::map<std::string, std::string>& dsInfo
   
   try 
   {    
-    boost::filesystem::remove(it->second);
+    te::core::FileSystem::remove(it->second);
   }
   catch(const boost::filesystem::filesystem_error& /*e*/) 
   {}

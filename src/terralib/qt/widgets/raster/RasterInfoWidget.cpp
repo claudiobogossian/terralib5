@@ -311,7 +311,7 @@ void te::qt::widgets::RasterInfoWidget::updateRawRasterFileName()
             
       boost::filesystem::path fullVrtPath( vrtFullFileName );
       
-      boost::filesystem::remove( vrtFullFileName );
+      te::core::FileSystem::remove( vrtFullFileName );
       
       if( !te::core::FileSystem::isRegularFile( fullVrtPath.string() ) )
       {

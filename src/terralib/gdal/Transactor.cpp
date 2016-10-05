@@ -598,7 +598,7 @@ void te::gdal::Transactor::dropDataSet(const std::string& name)
   if (!te::core::FileSystem::isRegularFile(mpath.string()))
     throw Exception(TE_TR("Can not drop a dataset that it is not a raster file."));
 
-  boost::filesystem::remove(mpath.string());  
+  te::core::FileSystem::remove(mpath.string());  
 }
 
 void te::gdal::Transactor::renameDataSet(const std::string& name, const std::string& newName)
