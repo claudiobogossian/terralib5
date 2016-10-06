@@ -18,16 +18,15 @@
  */
 
 /*!
-  \file terralib/qt/plugins/rp/FilterAction.h
+  \file terralib/qt/plugins/mnt/ImageGenerationAction.h
 
-  \brief This file defines the Filter class
+  \brief This file defines the REgular Grid Generation class
 */
 
-#ifndef __TE_QT_PLUGINS_RP_INTERNAL_FILTERACTION_H
-#define __TE_QT_PLUGINS_RP_INTERNAL_FILTERACTION_H
+#ifndef __TE_QT_PLUGINS_MNT_INTERNAL_IMAGEGENERATIONACTION_H
+#define __TE_QT_PLUGINS_MNT_INTERNAL_IMAGEGENERATIONACTION_H
 
 // TerraLib
-#include "../../../qt/widgets/rp/FilterDialogForm.h"
 #include "Config.h"
 #include "AbstractAction.h"
 
@@ -37,39 +36,32 @@ namespace te
   {
     namespace plugins
     {
-      namespace rp
+      namespace mnt
       {
         /*!
-          \class FilterAction
+          \class ImageGenerationAction
 
-          \brief This class register the filter action into RP Plugin.
+          \brief This class register the image generation action into MNT Plugin.
 
         */
-        class FilterAction : public te::qt::plugins::rp::AbstractAction
+        class ImageGenerationAction : public te::qt::plugins::mnt::AbstractAction
         {
           Q_OBJECT
 
           public:
 
-            FilterAction(QMenu* menu, QMenu* popupMenu);
+            ImageGenerationAction(QMenu* menu);
 
-            virtual ~FilterAction();
+            virtual ~ImageGenerationAction();
 
           protected slots:
 
             virtual void onActionActivated(bool checked);
-
-            void addLayer(te::map::AbstractLayerPtr outputLayer);
-
-            void closeTool();
-
-          private:
-            te::qt::widgets::FilterDialogForm* m_filterDlg;
         };
 
-      } // end namespace rp
+      } // end namespace mnt
     }   // end namespace plugins
   }     // end namespace qt
 }       // end namespace te
 
-#endif //__TE_QT_PLUGINS_RP_INTERNAL_FILTERACTION_H
+#endif //__TE_QT_PLUGINS_MNT_INTERNAL_IMAGEGENERATIONACTION_H

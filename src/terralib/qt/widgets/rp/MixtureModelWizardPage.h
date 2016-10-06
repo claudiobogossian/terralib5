@@ -163,7 +163,11 @@ namespace te
 
           void loadMixtureModelComponents(std::string &fileName);
 
+          void updateComponents();
+
         public slots:
+
+          void onMixturetabChanged(int);
 
           void onSaveToolButtonClicked();
 
@@ -184,15 +188,11 @@ namespace te
 
         protected:
 
-          void addComponent();
-
           void fillMixtureModelTypes();
 
           void listBands();
 
           void drawMarks();
-
-          void updateComponents();
 
           void PlotSpectralSignature();
 
@@ -206,17 +206,12 @@ namespace te
           std::map<std::string, MixModelComponent > m_components;   //!< The map of selected components
           unsigned int m_countComponents;                           //!< The maximum number of components inserted.
 
-          //te::map::AbstractLayerPtr m_layer;
           std::list<te::map::AbstractLayerPtr>  m_layers;
           te::color::RGBAColor** m_rgbaMark;
           te::se::Mark* m_mark;
 
           te::qt::widgets::MapDisplay* m_mapDisplay;
 
-          std::map<QString, double> m_max; //maximum value of each layer/band used to mixture
-          //te::qt::widgets::ChartStyle m_chartStyle;
-          //te::qt::widgets::ChartDisplay* m_chartDisplay;
-          //QwtPlotCurve *m_graphic;
           te::qt::widgets::ChartDisplayWidget *m_displayWidget;
           QGridLayout* m_layoutg;
           QColor m_color;
