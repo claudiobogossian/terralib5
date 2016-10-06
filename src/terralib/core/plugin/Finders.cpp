@@ -79,7 +79,7 @@ static std::vector<std::string> GetDefaultLookupDirs()
 
   // Add application current directory as a search path
   plugin_directories.push_back(
-      boost::filesystem::system_complete(".").string());
+      te::core::FileSystem::systemCompletePath("."));
 
   // Let's check if there is a directory called "share/terralib/plugins" in the
   // application path
