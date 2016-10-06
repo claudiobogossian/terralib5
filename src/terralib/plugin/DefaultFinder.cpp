@@ -123,7 +123,7 @@ void te::plugin::DefaultFinder::getPlugins(boost::ptr_vector<PluginInfo>& plugin
     {
       if(te::core::FileSystem::isRegularFile(it->path().string()))
       {
-        std::string ext = boost::filesystem::extension(it->path());
+        std::string ext = te::core::FileSystem::extension(it->path().string());
 
         if(ext == TE_DEFAULT_PLUGIN_EXTENSION)
           plugins.push_back(GetInstalledPlugin(it->path().string()));
