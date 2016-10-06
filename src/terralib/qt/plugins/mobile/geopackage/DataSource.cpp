@@ -21,6 +21,7 @@
 #include "Transactor.h"
 #include "Utils.h"
 
+#include "../../../../core/filesystem/FileSystem.h"
 #include "../../../../core/translator/Translator.h"
 #include "../../../../dataaccess/query/SQLDialect.h"
 

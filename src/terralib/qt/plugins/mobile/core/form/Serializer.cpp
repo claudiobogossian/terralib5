@@ -154,7 +154,7 @@ std::string te::qt::plugins::terramobile::WriteStyle(const te::se::Style* style,
     xml = buffer.str();
   }
 
-  te::core::FileSystem::remove(file);
+  te::core::FileSystem::remove(file.string());
   return xml;
 }
 
