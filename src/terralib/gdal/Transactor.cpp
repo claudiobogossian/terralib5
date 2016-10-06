@@ -583,7 +583,7 @@ void te::gdal::Transactor::cloneDataSet(const std::string& name,
     throw Exception(TE_TR("Can not clone a dataset that it is not a raster file."));
   
   boost::filesystem::path newpath(mpath.parent_path() /= cloneName);
-  boost::filesystem::copy_file(mpath, newpath);
+  te::core::FileSystem::copyFile(mpath.string(), newpath.string());
   
 }
 
