@@ -234,7 +234,7 @@ void te::sqlite::DataSource::create(const std::map<std::string, std::string>& ds
 
       if(fileName.has_parent_path() &&
          !te::core::FileSystem::exists(fileName.parent_path().string()) &&
-         !boost::filesystem::create_directories(fileName.parent_path()))
+         !te::core::FileSystem::createDirectories(fileName.parent_path()))
           throw te::da::Exception(TR_COMMON("Could not create directory for SQLite database!"));
     }
   }

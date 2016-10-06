@@ -32,8 +32,8 @@
 #include "../../common/TerraLib.h"
 #include "../../common/SystemApplicationSettings.h"
 #include "../../common/UserApplicationSettings.h"
-#include "../../core/logger/Logger.h"
 #include "../../common/Version.h"
+#include "../../core/logger/Logger.h"
 #include "../../core/translator/Translator.h"
 #include "../../core/utils/Platform.h"
 #include "../../dataaccess/serialization/xml/Serializer.h"
@@ -296,7 +296,7 @@ void  te::qt::af::ApplicationController::initialize()
 #endif
   
   if(!te::core::FileSystem::exists(m_userDataDir.toUtf8().data()))
-    boost::filesystem::create_directories(m_userDataDir.toUtf8().data());
+    te::core::FileSystem::createDirectories(m_userDataDir.toUtf8().data());
 
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
 
