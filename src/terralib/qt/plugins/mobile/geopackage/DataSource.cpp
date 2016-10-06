@@ -232,7 +232,7 @@ void  te::gpkg::DataSource::createDataSet(te::da::DataSetType* dt, const std::ma
     boost::filesystem::path bpath(path);
     std::string dir = bpath.parent_path().string();
     if (!te::core::FileSystem::exists(dir))
-      boost::filesystem::create_directory(dir);
+      te::core::FileSystem::createDirectory(dir);
     
     //OGRSFDriverRegistrar* driverManager = OGRSFDriverRegistrar::GetRegistrar();
     //OGRSFDriver* driver;

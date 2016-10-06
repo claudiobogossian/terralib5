@@ -236,7 +236,7 @@ void te::ogr::DataSource::createOGRDataSource()
     boost::filesystem::path bpath(path);
     std::string dir = bpath.parent_path().string();
     if (!dir.empty() && !te::core::FileSystem::exists(dir))
-      boost::filesystem::create_directory(dir);
+      te::core::FileSystem::createDirectory(dir);
 
     // Retrieve the char encoding
     it = m_connectionInfo.find("SHAPE_ENCODING");

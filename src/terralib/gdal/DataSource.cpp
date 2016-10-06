@@ -169,7 +169,7 @@ void te::gdal::DataSource::create(const std::map<std::string, std::string>& dsIn
     try 
     {      
       if(!te::core::FileSystem::isDirectory(it->second))
-        boost::filesystem::create_directory(it->second);
+        te::core::FileSystem::createDirectory(it->second);
     } 
     catch(const boost::filesystem::filesystem_error& e) 
     { 
