@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../../../core/filesystem/FileSystem.h"
 #include "../../../../common/StringUtils.h"
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
@@ -156,8 +157,8 @@ void exportRastertoGPKG(te::map::AbstractLayerPtr layer, te::da::DataSource* dsG
     }
 
     //exporting
-    boost::filesystem::wpath dir = boost::filesystem::absolute(outFileName);
-    boost::filesystem::wpath file = boost::filesystem::absolute(dir.parent_path().string() + "/" + dsLayer->getDataSetName());
+    boost::filesystem::wpath dir = te::core::FileSystem::absolutePath(outFileName);
+    boost::filesystem::wpath file = te::core::FileSystem::absolutePath(dir.parent_path().string() + "/" + dsLayer->getDataSetName());
     {
       te::rp::RasterHandler outRasterHandler;
       te::rp::CreateNewGdalRaster(*(raster->getGrid()), bandsProperties, file.string(), outRasterHandler);

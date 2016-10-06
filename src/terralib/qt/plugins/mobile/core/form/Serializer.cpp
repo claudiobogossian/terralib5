@@ -24,6 +24,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 // TerraLib
+#include "../../../../../core/filesystem/FileSystem.h"
 #include "../../../../../se/serialization/xml/Style.h"
 #include "../../../../../se/Style.h"
 #include "../../../../../xml/AbstractWriter.h"
@@ -116,7 +117,7 @@ te::qt::plugins::terramobile::Section* te::qt::plugins::terramobile::Read(std::s
 
 std::string te::qt::plugins::terramobile::WriteStyle(const te::se::Style* style, std::string path)
 {
-  boost::filesystem::wpath file = boost::filesystem::absolute(path);
+  boost::filesystem::wpath file = te::core::FileSystem::absolutePath(path);
   std::string xml;
   {
     std::auto_ptr<te::xml::AbstractWriter> writer(te::xml::AbstractWriterFactory::make());
@@ -166,7 +167,7 @@ std::auto_ptr<te::se::Style> te::qt::plugins::terramobile::ReadStyle(std::string
     ot.close();
   }
 
-  boost::filesystem::wpath file = boost::filesystem::absolute("style.xml");
+  boost::filesystem::wpath file = te::core::FileSystem::absolutePath("style.xml");
   {
     std::auto_ptr<te::xml::Reader> reader(te::xml::ReaderFactory::make());
     reader->setValidationScheme(false);
@@ -194,7 +195,7 @@ std::auto_ptr<te::se::Style> te::qt::plugins::terramobile::ReadStyle(std::string
     }
   }
 
-  te::core::FileSystem::remove(file);
+  te::core::FileSystem::remove(file.string());
   return std::move(style);
 }
 
