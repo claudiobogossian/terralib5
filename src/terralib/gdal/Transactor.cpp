@@ -613,5 +613,5 @@ void te::gdal::Transactor::renameDataSet(const std::string& name, const std::str
     throw Exception(TE_TR("Can not rename a dataset that it is not a raster file."));
   
   boost::filesystem::path newpath(mpath.parent_path() /= newName);
-  boost::filesystem::rename(mpath, newpath);
+  te::core::FileSystem::rename(mpath.string(), newpath.string());
 }
