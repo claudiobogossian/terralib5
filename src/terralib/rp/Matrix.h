@@ -28,6 +28,7 @@
   #include "Macros.h"
 
   #include "../common/PlatformUtils.h"
+  #include "../core/filesystem/FileSystem.h"
   #include "../core/encoding/CharEncoding.h"
   #include "../core/utils/Platform.h"
 
@@ -900,11 +901,11 @@
         const boost::filesystem::path randShortFileNamePath( 
           "TerralibRPMatrix_%%%%-%%%%-%%%%-%%%%" );
         const unsigned char c = '\0';
-        
-        fullFileName = boost::filesystem::unique_path( 
-          boost::filesystem::temp_directory_path() /= 
-          randShortFileNamePath ).string();
-          
+
+        fullFileName = te::core::FileSystem::uniquePath(
+            (boost::filesystem::path(te::core::GetUserDirectory()) /=
+             randShortFileNamePath).string());
+
         if( fullFileName.empty() )
         {
           returnValue = false;
@@ -940,10 +941,10 @@
         
         if( ! returnValue )
         {
-          fullFileName = boost::filesystem::unique_path( 
-            boost::filesystem::path( te::core::GetUserDirectory() ) /= 
-            randShortFileNamePath ).string();
-            
+          fullFileName = te::core::FileSystem::uniquePath(
+              (boost::filesystem::path(te::core::GetUserDirectory()) /=
+               randShortFileNamePath).string());
+
           if( fullFileName.empty() )
           {
             returnValue = false;
