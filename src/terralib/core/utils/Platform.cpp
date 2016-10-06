@@ -46,7 +46,7 @@
 std::string te::core::FindInTerraLibPath(const std::string& path)
 {
 // 1st: look in the neighborhood of the executable
-  boost::filesystem::path tl_path = boost::filesystem::current_path();
+  boost::filesystem::path tl_path = te::core::FileSystem::currentPath();
 
   boost::filesystem::path eval_path = tl_path / path;
 

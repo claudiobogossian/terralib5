@@ -44,7 +44,7 @@
 //    user_conf_file_name = TERRALIB_USER_SETTINGS_FILE;
 //
 //// first: current application dir
-//  boost::filesystem::path user_settings_file = boost::filesystem::current_path();
+//  boost::filesystem::path user_settings_file = te::core::FileSystem::currentPath();
 //  
 //  user_settings_file /= TERRALIB_CONFIG_DIR;
 //

@@ -38,7 +38,7 @@
 //void te::common::SystemApplicationSettings::load()
 //{
 //// look in the application current dir for a file TERRALIB_SYSTEM_SETTINGS_FILE inside the folder TERRALIB_CONFIG_DIR
-//  boost::filesystem::path config_file = boost::filesystem::current_path();
+//  boost::filesystem::path config_file = te::core::FileSystem::currentPath();
 //
 //  config_file /= TERRALIB_CONFIG_DIR;
 //
