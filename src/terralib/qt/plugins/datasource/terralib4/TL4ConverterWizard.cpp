@@ -28,6 +28,7 @@
 #include "../../../../common/StringUtils.h"
 #include "../../../../common/progress/ProgressManager.h"
 #include "../../../../common/progress/TaskProgress.h"
+#include "../../../../core/filesystem/FileSystem.h"
 #include "../../../../core/translator/Translator.h"
 #include "../../../../dataaccess.h"
 #include "../../../../geometry/GeometryProperty.h"

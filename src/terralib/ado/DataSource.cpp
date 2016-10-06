@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../common/Exception.h"
+#include "../core/filesystem/FileSystem.h"
 #include "../core/translator/Translator.h"
 #include "../dataaccess/datasource/DataSourceTransactor.h"
 #include "../dataaccess/query/SQLDialect.h"
@@ -204,7 +205,7 @@ void te::ado::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
 
   boost::filesystem::path path(info["DB_NAME"]);
 
-  if(te::core::FileSystem::remove(path) == false)
+  if(te::core::FileSystem::remove(path.string()) == false)
     throw te::common::Exception(TE_TR("The data source could not be dropped!"));
 }
 
@@ -214,7 +215,7 @@ bool te::ado::DataSource::exists(const std::map<std::string, std::string>& dsInf
 
   boost::filesystem::path path(info["DB_NAME"]);
 
-  return te::core::FileSystem::exists(path);
+  return te::core::FileSystem::exists(path.string());
 }
 
 std::vector<std::string> te::ado::DataSource::getDataSourceNames(const std::map<std::string, std::string>&)
