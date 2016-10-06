@@ -39,6 +39,18 @@ add_executable(terralib_example_core_encoding ${TERRALIB_EXAMPLE_CORE_ENCODING_S
 target_link_libraries(terralib_example_core_encoding terralib_mod_core)
 
 
+#Examples of core/filesystem
+
+file(GLOB TERRALIB_EXAMPLE_CORE_FILESYSTEM_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/filesystem/*.cpp)
+
+source_group("Source Files\\filesystem"  FILES ${TERRALIB_EXAMPLE_CORE_FILESYSTEM_SRC_FILES})
+
+add_executable(terralib_example_core_filesystem ${TERRALIB_EXAMPLE_CORE_FILESYSTEM_SRC_FILES})
+
+target_link_libraries(terralib_example_core_filesystem terralib_mod_core)
+
+
+
 #Examples of core/lib
 
 file(GLOB TERRALIB_EXAMPLE_CORE_LIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/core/lib/*.cpp)
