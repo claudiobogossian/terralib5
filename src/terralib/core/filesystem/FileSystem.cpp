@@ -42,8 +42,9 @@ std::string te::core::FileSystem::currentPath()
 
 std::string te::core::FileSystem::systemCompletePath(const std::string& path)
 {
-  std::string complete = boost::filesystem::system_complete(
-                             te::core::CharEncoding::fromUTF8(path)).string();
+  std::string complete =
+      boost::filesystem::system_complete(te::core::CharEncoding::fromUTF8(path))
+          .string();
   return te::core::CharEncoding::toUTF8(complete);
 }
 
@@ -98,6 +99,12 @@ bool te::core::FileSystem::createDirectory(const std::string& path)
       te::core::CharEncoding::fromUTF8(path));
 }
 
+bool te::core::FileSystem::createDirectories(const std::string& path)
+{
+  return boost::filesystem::create_directories(
+      te::core::CharEncoding::fromUTF8(path));
+}
+
 void te::core::FileSystem::copyFile(const std::string& from,
                                     const std::string& to)
 {
@@ -120,7 +127,7 @@ void te::core::FileSystem::rename(const std::string& old_p,
 std::vector<std::string> te::core::FileSystem::listDirectory(
     const std::string& path)
 {
-  if(!isDirectory(path))
+  if (!isDirectory(path))
     throw InvalidArgumentException()
         << ErrorDescription("The given path is not a directory.");
 
@@ -128,7 +135,7 @@ std::vector<std::string> te::core::FileSystem::listDirectory(
 
   boost::filesystem::path p(te::core::CharEncoding::fromUTF8(path));
 
-  for(boost::filesystem::directory_iterator it(p), it_end; it != it_end; ++it)
+  for (boost::filesystem::directory_iterator it(p), it_end; it != it_end; ++it)
     result.push_back(te::core::CharEncoding::toUTF8(it->path().string()));
 
   return result;
