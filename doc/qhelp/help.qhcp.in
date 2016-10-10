@@ -2,7 +2,8 @@
 <QHelpCollectionProject version="1.0">
     <assistant>
       <title>TerraView Help</title>
-      <startPage>qthelp://dpi.inpe.br.terraview/doc/terraview/index.html</startPage> 
+      <cacheDirectory>terraview/qhelp_cache</cacheDirectory>
+      <startPage>qthelp://dpi.inpe.br.terraview/doc/terraview/index.html</startPage>
       <currentFilter>help</currentFilter>
       <applicationIcon>terralib-globe.png</applicationIcon>
       <enableFilterFunctionality>false</enableFilterFunctionality>

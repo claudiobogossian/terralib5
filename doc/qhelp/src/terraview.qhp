@@ -5,7 +5,7 @@
    <filterSection>
        <filterAttribute>help</filterAttribute>
        <toc>
-            <section title="TerraView User Manual" ref="./terraview/index.html"/>
+       <section title="TerraView User Manual" ref="./terraview/index.html">
 			<section title="TerraView Main Concepts" ref="./terraview/main_concepts.html"/>
 			<section title="TerraView GUI" ref="./terraview/main_window.html">
 				<section title="Menu Bar" ref="./terraview/terraview_menus.html">
@@ -102,6 +102,7 @@
 				<section title="TerraLib 4.x Converter" ref="./plugins/terralib4/Terralib4Converter.html"/>
 				<section title="Cellular Spaces" ref="./plugins/cellspace/cellspace.html"/>
 		    </section>
+	   </section>
        </toc>
        <files>
 			<file>./gen_icones/*.png</file>
