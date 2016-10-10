@@ -33,6 +33,7 @@
 
 // Qt
 #include <QProgressDialog>
+#include <QString>
 
 // STL
 #include <map>
@@ -75,7 +76,7 @@ namespace te
         public:
 
           /*! \brief Default constructor. */
-          ProgressViewerDialog(QWidget* parent);
+          ProgressViewerDialog(QWidget* parent, QString title = "");
 
           /*! \brief Virtual destructor. */
           virtual ~ProgressViewerDialog();
@@ -108,6 +109,13 @@ namespace te
             \param taskId Task identifier.
           */
           void setTotalValues(int taskId);
+
+          /*!
+            \brief Set title to dialog.
+
+            \param title A QString title.
+          */
+          void setTitle(QString title);
 
           /*!
             \brief Update the progress evaluation.
