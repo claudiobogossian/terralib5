@@ -18,20 +18,17 @@
  */
 
 /*!
-  \file terralib/terralib4/DataSourceFactory.h
+  \file terralib/terralib4/DataSourceFactory.cpp
 
   \brief This is the factory for Terralib 4 data sources.
 */
 
-#ifndef __TERRALIB_TERRALIB4_INTERNAL_DATASOURCEFACTORY_H
-#define __TERRALIB_TERRALIB4_INTERNAL_DATASOURCEFACTORY_H
-
 // TerraLib
-#include "DataSource.h"
+#include "DataSourceFactory.h"
 
-namespace terralib4
+te::da::DataSource* terralib4::Build(const te::core::URI& uri)
 {
-  te::da::DataSource* Build(const te::core::URI& uri);
-}   // end namespace terralib4
+  te::da::DataSource* ds = new DataSource(uri);
+  return ds;
+}
 
-#endif  // __TERRALIB_TERRALIB4_INTERNAL_DATASOURCEFACTORY_H
