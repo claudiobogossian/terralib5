@@ -202,10 +202,10 @@ void te::pgis::DataSource::create(const std::string& connInfo)
 
 // create a database based on the connection information
   std::string sql = "CREATE DATABASE ";
-  std::string newDBName = dsPGIS->getConnectionInfo().path().substr(1, dsPGIS->getConnectionInfo().path().length());
 
-  if(!newDBName.empty())
-    sql += "\"" + newDBName + "\"";
+  it = kvp.find("PG_NEWDB_NAME");
+  if (it != itend && !it->second.empty())
+    sql += "\"" + it->second + "\"";
   else
     throw Exception(TE_TR("The database could not be created due the missing parameter: PG_NEWDB_NAME!"));
 

@@ -20,7 +20,7 @@
 
 #include "XMLFormatter.h"
 
-#include "../../core/utils/URI.h"
+#include "../../core/uri/URI.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../maptools/DataSetLayer.h"
@@ -54,7 +54,7 @@ void te::qt::af::XMLFormatter::format(te::da::DataSourceInfo *d, const bool &enc
   d->setDescription(format(d->getDescription(), encode));
 
   const te::core::URI& i = d->getConnInfo();
-  std::string& path = i.host() + i.path();
+  std::string path = i.host() + i.path();
 
   if (!path.empty())
     path = format(path, encode);

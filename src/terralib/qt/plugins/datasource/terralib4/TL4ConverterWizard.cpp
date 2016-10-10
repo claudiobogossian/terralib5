@@ -218,7 +218,6 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
 
     m_layerSelectionPage->setDatasets(layers, tables, rasters, m_rasterFiles);
 
-
   }
   else if(current_page_id == PAGE_LAYER_SELECTION)
   {
@@ -354,8 +353,7 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validTerraLib4Connection()
   try
   {
     te::qt::widgets::ScopedCursor sc(Qt::WaitCursor);
-    m_tl4Database = te::da::DataSourceFactory::make("TERRALIB4");
-    m_tl4Database->setConnectionInfo(connInfo);
+    m_tl4Database = te::da::DataSourceFactory::make("TERRALIB4", "Converter:");
     m_tl4Database->open();
   }
   catch(const te::da::Exception& e)

@@ -164,7 +164,10 @@ te::da::DataSourceInfo* te::serialize::xml::ReadDataSourceInfo(te::xml::Reader& 
 
   if (reader.getNodeType() == te::xml::VALUE)
   {
-    ds->setConnInfo(reader.getElementValue());
+    std::string connInfo = reader.getElementValue();
+    boost::replace_all(connInfo, "%26", "&");
+
+    ds->setConnInfo(connInfo);
     reader.next();
   }
 
@@ -228,7 +231,11 @@ void te::serialize::xml::Save(te::xml::AbstractWriter& writer)
     writer.writeEndElement("te_da:Description");
 
     writer.writeStartElement("te_da:ConnectionInfo");
-    writer.writeValue(it->second->getConnInfoAsString());
+
+    std::string connInfo = it->second->getConnInfoAsString();
+    boost::replace_all(connInfo, "&", "%26");
+
+    writer.writeValue(connInfo);
     writer.writeEndElement("te_da:ConnectionInfo");
 
     writer.writeEndElement("te_da:DataSource");

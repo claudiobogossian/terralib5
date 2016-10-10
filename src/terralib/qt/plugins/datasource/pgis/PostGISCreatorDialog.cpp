@@ -26,6 +26,8 @@
 // TerraLib
 #include "PostGISCreatorDialog.h"
 #include "../../../../core/translator/Translator.h"
+#include "../../../../core/uri/URI.h"
+#include "../../../../core/utils/URI.h"
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
@@ -94,7 +96,23 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::onApplyPushButtonPressed()
 
     {
       // Connect
-      std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS", connInfo);
+      const te::core::URI aux(connInfo);
+
+      std::map<std::string, std::string> kvp = te::core::expand(aux.query());
+      std::map<std::string, std::string>::const_iterator it = kvp.begin();
+      std::map<std::string, std::string>::const_iterator itend = kvp.end();
+
+      std::string strURI = "pgsql://";
+      strURI += aux.user() + ":";
+      strURI += aux.password() + "@";
+      strURI += aux.host() + ":";
+      strURI += aux.port() + "/";
+      strURI += kvp["PG_NEWDB_NAME"] + "?";
+
+      strURI += "PG_NEWDB_ENCODING=";
+      strURI += te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8);
+
+      std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS", strURI);
       ds->open();
 
       m_driver.reset(ds.release());
@@ -113,7 +131,7 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::onApplyPushButtonPressed()
 // create a new data source based on form data
       m_datasource.reset(new te::da::DataSourceInfo);
 
-      m_datasource->setConnInfo(connInfo);
+      m_datasource->setConnInfo(m_driver->getConnectionInfo());
 
       boost::uuids::basic_random_generator<boost::mt19937> gen;
       boost::uuids::uuid u = gen();
@@ -129,11 +147,10 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::onApplyPushButtonPressed()
     else
     {
       m_driver->setId(m_datasource->getId());
-      m_datasource->setConnInfo(connInfo);
+      m_datasource->setConnInfo(m_driver->getConnectionInfo());
       m_datasource->setTitle(title.toUtf8().data());
       m_datasource->setDescription("");
     }
-
   }
   catch(const std::exception& e)
   {
@@ -195,41 +212,49 @@ const std::string te::qt::plugins::pgis::PostGISCreatorDialog::getConnectionInfo
   strURI += qstr.isEmpty() ? "5432" : qstr.toUtf8().data();
   strURI += "/";
 
-  //get db name 
-  qstr = m_ui->m_newDatabaseNameLineEdit->text().trimmed();
-  strURI += qstr.toUtf8().data();
-
   //query section
   strURI += "?";
 
-  strURI += "&PG_NEWDB_NAME=";
   qstr = m_ui->m_newDatabaseNameLineEdit->text().trimmed();
-  strURI += qstr.toUtf8().data();
+  if (!qstr.isEmpty())
+  {
+    strURI += "PG_NEWDB_NAME=";
+    strURI += qstr.toUtf8().data();
+    strURI += "&";
+  }
 
   // get Template
-  strURI += "&PG_NEWDB_TEMPLATE=";
   qstr = m_ui->m_templateComboBox->currentText().trimmed();
-  strURI += qstr.toUtf8().data();
+  if (!qstr.isEmpty())
+  {
+    strURI += "PG_NEWDB_TEMPLATE=";
+    strURI += qstr.toUtf8().data();
+    strURI += "&";
+  }
 
 // get Owner
-  strURI += "&PG_NEWDB_OWNER=";
   qstr = m_ui->m_ownerComboBox->currentText().trimmed();
-  strURI += qstr.toUtf8().data();
-
-// get Encoding
-  strURI += "&PG_NEWDB_ENCODING=";
-  strURI += te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8);
+  if (!qstr.isEmpty())
+  {
+    strURI += "PG_NEWDB_OWNER=";
+    strURI += qstr.toUtf8().data();
+    strURI += "&";
+  }
 
 // get Tablespace
-  strURI += "&PG_NEWDB_TABLESPACE=";
   qstr = m_ui->m_tablespaceLineEdit->text().trimmed();
-  strURI += qstr.toUtf8().data();
+  if (!qstr.isEmpty())
+  {
+    strURI += "PG_NEWDB_TABLESPACE=";
+    strURI += qstr.toUtf8().data();
+    strURI += "&";
+  }
 
 // get Connections limit
   if(!m_ui->m_noLimitConnectionsGroupBox->isChecked())
   {
 
-    strURI += "&PG_NEWDB_CONN_LIMIT=";
+    strURI += "PG_NEWDB_CONN_LIMIT=";
     qstr = m_ui->m_connectionsLimitSpinBox->text().trimmed();
 
     if(!qstr.isEmpty())
@@ -251,6 +276,10 @@ const std::string te::qt::plugins::pgis::PostGISCreatorDialog::getConnectionInfo
   // get MinPoolSize
   strURI += "&PG_MIN_POOL_SIZE=";
   strURI += "2";
+
+  // get Encoding
+  strURI += "&PG_NEWDB_ENCODING=";
+  strURI += te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8);
 
   return strURI;
 }
