@@ -57,15 +57,10 @@ BOOST_AUTO_TEST_CASE(datasource_open_test)
   // Version that will be used on WCS Requests.
   std::string version = "2.0.1";
 
-  std::map<std::string, std::string> connInfo;
-
-  connInfo["URI"] = url;
-  connInfo["VERSION"] = version;
-  connInfo["USERDATADIR"] = usrDataDir;
+  std::string connInfo(url + "?VERSION=" + version + "&USERDATADIR=" + usrDataDir);
 
   // Perform connection
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("WCS2");
-  ds->setConnectionInfo(connInfo);
+  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("WCS2", connInfo);
   ds->open();
 
   BOOST_CHECK(ds->isOpened());
@@ -86,48 +81,46 @@ BOOST_AUTO_TEST_CASE(datasource_open_exception_test)
   // Version that will be used on WCS Requests.
   std::string version = "2.0.1";
 
-  std::map<std::string, std::string> connInfo;
+  std::string connInfo;
 
   // Perform connection
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("WCS2");
-
-  ds->setConnectionInfo(connInfo);
+  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("WCS2", connInfo);
 
   // Test without any correct connection parameter
   BOOST_CHECK_THROW(ds->open(), te::ws::ogc::wcs::da::Exception);
 
-  connInfo["URI"] = url;
+  connInfo = url;
+  ds.reset(te::da::DataSourceFactory::make("WCS2", connInfo).release());
+
   // Test with URI correct connection parameter
   BOOST_CHECK_THROW(ds->open(), te::ws::ogc::wcs::da::Exception);
 
-  connInfo.clear();
+  connInfo = version;
+  ds.reset(te::da::DataSourceFactory::make("WCS2", connInfo).release());
 
-  connInfo["VERSION"] = version;
-  // Test with URI correct connection parameter
+  // Test with VERSION correct connection parameter
   BOOST_CHECK_THROW(ds->open(), te::ws::ogc::wcs::da::Exception);
 
-  connInfo.clear();
+  connInfo = usrDataDir;
+  ds.reset(te::da::DataSourceFactory::make("WCS2", connInfo).release());
 
-  connInfo["USERDATADIR"] = usrDataDir;
-  // Test with URI correct connection parameter
+  // Test with USERDATADIR correct connection parameter
   BOOST_CHECK_THROW(ds->open(), te::ws::ogc::wcs::da::Exception);
 
-  connInfo.clear();
+  connInfo = url + "?VERSION=" + version;
+  ds.reset(te::da::DataSourceFactory::make("WCS2", connInfo).release());
 
-  connInfo["URI"] = url;
-  connInfo["VERSION"] = version;
   // Test with URI and VERSION correct connection parameters
   BOOST_CHECK_THROW(ds->open(), te::ws::ogc::wcs::da::Exception);
 
-  connInfo.clear();
+  connInfo = url + "?USERDATADIR=" + usrDataDir;
+  ds.reset(te::da::DataSourceFactory::make("WCS2", connInfo).release());
 
-  connInfo["URI"] = url;
-  connInfo["USERDATADIR"] = usrDataDir;
   // Test with URI and USERDATADIR correct connection parameters
   BOOST_CHECK_THROW(ds->open(), te::ws::ogc::wcs::da::Exception);
 
-  connInfo["VERSION"] = version;
-  connInfo["USERDATADIR"] = usrDataDir;
+  connInfo = "?VERSION=" + version + "&USERDATADIR=" + usrDataDir;
+  ds.reset(te::da::DataSourceFactory::make("WCS2", connInfo).release());
 
   // Test with VERSION and USERDATADIR correct connection parameters
   BOOST_CHECK_THROW(ds->open(), te::ws::ogc::wcs::da::Exception);
