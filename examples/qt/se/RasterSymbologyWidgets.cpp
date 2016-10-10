@@ -17,20 +17,18 @@ void RasterSymbologyWidgets()
   QApplication app(argc, 0);
 
   // set input raster name
-  std::map<std::string, std::string> rinfo;
+  std::string rinfo ("File://");
   
   std::string data_dir = TERRALIB_DATA_DIR;
   
   //std::string filename(data_dir + '/shp/SP_cities.shp");
   
-  std::string filename(data_dir + "/Nulos/nulos2.shp");
-  
-  //rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/rasters/cbers2b_rgb342_crop.tif";
-  rinfo["URI"] = data_dir + "/rasters/cbers2b_rgb342_crop.tif";
+  std::string filename(data_dir + "/Nulos/nulos2.shp");  
+
+  rinfo += data_dir + "/geotiff/cbers2b_rgb342_crop.tif";
 
 // open input raster
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
-  ds->setConnectionInfo(rinfo);
+  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", rinfo);
   ds->open();
 
   std::auto_ptr<te::da::DataSourceTransactor> tr = ds->getTransactor();

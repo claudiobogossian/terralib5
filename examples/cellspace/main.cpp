@@ -110,8 +110,9 @@ int main(int /*argc*/, char** /*argv*/)
 
 void CreateCellSpace()
 {
-  std::map<std::string, std::string> ogrInfo;
-  ogrInfo["URI"] = "C://CellspaceExample//brazil_cells.shp";
+  std::string data_dir = TERRALIB_DATA_DIR;
+  std::string filename(data_dir + "/shape/Intersection/brazil_cells.shp");
+  std::string ogrInfo("File://" + filename);
 
   boost::uuids::basic_random_generator<boost::mt19937> gen;
   boost::uuids::uuid u = gen();
@@ -143,11 +144,10 @@ void CreateMaskCellSpace()
 
   std::string data_dir = TERRALIB_DATA_DIR;
 
-  std::map<std::string, std::string> connInfo;
-  connInfo["URI"] = data_dir + "/shp/munic_2001.shp";
+  std::string connInfo("File://");
+  connInfo += data_dir + "/shp/munic_2001.shp";
 
-  te::da::DataSourcePtr source( te::da::DataSourceFactory::make("OGR") );
-  source->setConnectionInfo(connInfo);
+  te::da::DataSourcePtr source( te::da::DataSourceFactory::make("OGR", connInfo) );
   source->open();
   source->setId(id_source);
 
@@ -175,8 +175,9 @@ void CreateMaskCellSpace()
     if (mbr.get())
       layer->setExtent(*mbr);
 
-    std::map<std::string, std::string> ogrInfo;
-    ogrInfo["URI"] = "C://CellspaceExample//brazil_cells_mask.shp";
+    std::string data_dir = TERRALIB_DATA_DIR;
+    std::string filename(data_dir + "/shape/Intersection/brazil_cells_mask.shp");
+    std::string ogrInfo("File://" + filename);
 
     std::string id_source = boost::uuids::to_string(u);
 

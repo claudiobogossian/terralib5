@@ -19,15 +19,11 @@ bool BufferOGRToOGR()
 {
   std::string data_dir = TERRALIB_DATA_DIR;
   
-  std::string filename = data_dir + "/shp/Buffer/SP_meso.shp";
+  std::string filename = data_dir + "/shape/Buffer/SP_meso.shp";
   
-  std::map<std::string, std::string> srcInfo;
-  srcInfo["URI"] = filename;
-  srcInfo["DRIVER"] = "ESRI Shapefile";
+  std::string srcInfo("File://" + filename);
 
-  //std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("OGR");
-  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR"));
-  srcDs->setConnectionInfo(srcInfo);
+  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR", srcInfo));
   srcDs->open();
 
   std::string inDsetName = "SP_meso";
@@ -56,15 +52,11 @@ bool BufferOGRToOGR()
   bool copyInputColumns = false;
   int levels = 1;
 
-  std::string file_result = data_dir + "/shp/Buffer/file_result.shp";
-
-  std::map<std::string, std::string> tgrInfo;
-  tgrInfo["URI"] = file_result;
-  tgrInfo["DRIVER"] = "ESRI Shapefile";
+  std::string file_result = data_dir + "/shape/Buffer/file_result.shp";
+  std::string tgrInfo("File://" + file_result);
 
   //std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("OGR");
-  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR"));
-  trgDs->setConnectionInfo(tgrInfo);
+  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR", tgrInfo));
   trgDs->open();
 
   std::string outDS = "file_result";
@@ -103,15 +95,11 @@ bool BufferOGRToPGIS()
 {
   std::string data_dir = TERRALIB_DATA_DIR;
   
-  std::string filename(data_dir + "/shp/Buffer/SP_meso.shp");
-  
-  std::map<std::string, std::string> srcInfo;
-  srcInfo["URI"] = filename;
-  srcInfo["DRIVER"] = "ESRI Shapefile";
+  std::string filename(data_dir + "/shape/Buffer/SP_meso.shp");  
+  std::string srcInfo("File://" + filename);
   
   //std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("OGR");
-  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR"));
-  srcDs->setConnectionInfo(srcInfo);
+  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR", filename));
   srcDs->open();
   
   std::string inDsetName = "SP_meso";
@@ -140,18 +128,9 @@ bool BufferOGRToPGIS()
   bool copyInputColumns = false;
   int levels = 1;
 
-  std::map<std::string, std::string> connInfo;
-  connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ; 
-  connInfo["PG_PORT"] = "5433" ;
-  connInfo["PG_USER"] = "postgres";
-  connInfo["PG_PASSWORD"] = "postgres";
-  connInfo["PG_DB_NAME"] = "testPostGIS";
-  connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-  connInfo["PG_CLIENT_ENCODING"] = "CP1252";
+  std::string connInfo("ppgsql://postgres:postgres@atlas.dpi.inpe.br:5433/testPostGIS?PG_CONNECT_TIMEOUT=4&PG_CLIENT_ENCODING=UTF-8");
 
-  //std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("POSTGIS");
-  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("POSTGIS"));
-  trgDs->setConnectionInfo(connInfo);
+  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("POSTGIS", connInfo));
   trgDs->open();
   
   std::string outDS = "result";
@@ -188,20 +167,10 @@ bool BufferOGRToPGIS()
 //Postgis to Postgis
 bool BufferPGISToPGIS()
 {
-  std::map<std::string, std::string> connInfo;
-  connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ; 
-  connInfo["PG_PORT"] = "5433" ;
-  connInfo["PG_USER"] = "postgres";
-  connInfo["PG_PASSWORD"] = "postgres";
-  connInfo["PG_DB_NAME"] = "testPostGIS";
-  connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-  connInfo["PG_CLIENT_ENCODING"] = "CP1252"; 
+  std::string connInfo("ppgsql://postgres:postgres@atlas.dpi.inpe.br:5433/testPostGIS?PG_CONNECT_TIMEOUT=4&PG_CLIENT_ENCODING=UTF-8");
 
-  //std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("POSTGIS");
-  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("POSTGIS"));
-  srcDs->setConnectionInfo(connInfo);
-  srcDs->open();
-  
+  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("POSTGIS", connInfo));
+
   std::string inDsetName = "sp_meso";
   if (!srcDs->dataSetExists(inDsetName))
   {
@@ -220,19 +189,15 @@ bool BufferPGISToPGIS()
 
   //options for Polygon Rule.
   int bufferPolygonRule = te::vp::INSIDE_OUTSIDE;
-  //int bufferPolygonRule = te::vp::ONLY_INSIDE;
-  //int bufferPolygonRule = te::vp::ONLY_OUTSIDE;
 
   //options for Boundaries Rule.
   int bufferBoundariesRule = te::vp::DISSOLVE;
-  //int bufferBoundariesRule = te::vp::NOT_DISSOLVE;
 
   bool copyInputColumns = false;
   int levels = 2;
 
   //std::auto_ptr<te::da::DataSource> outDsource = te::da::DataSourceFactory::make("POSTGIS");
-  te::da::DataSourcePtr outDsource(te::da::DataSourceFactory::make("POSTGIS"));
-  outDsource->setConnectionInfo(connInfo);
+  te::da::DataSourcePtr outDsource(te::da::DataSourceFactory::make("POSTGIS", connInfo));
   outDsource->open();
 
   if (outDsource->dataSetExists(outDSet))
@@ -267,18 +232,9 @@ bool BufferPGISToPGIS()
 //Postgis to OGR
 bool BufferPGISToOGR()
 {
-  std::map<std::string, std::string> connInfo;
-  connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ; 
-  connInfo["PG_PORT"] = "5433" ;
-  connInfo["PG_USER"] = "postgres";
-  connInfo["PG_PASSWORD"] = "postgres";
-  connInfo["PG_DB_NAME"] = "terralib4";
-  connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-  connInfo["PG_CLIENT_ENCODING"] = "CP1252";
+  std::string connInfo("ppgsql://postgres:postgres@atlas.dpi.inpe.br:5433/testPostGIS?PG_CONNECT_TIMEOUT=4&PG_CLIENT_ENCODING=UTF-8");
 
-  //std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("POSTGIS");
-  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("POSTGIS"));
-  srcDs->setConnectionInfo(connInfo);
+  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("POSTGIS", connInfo));
   srcDs->open();
   
   std::string inDsetName = "distritos";
@@ -297,27 +253,20 @@ bool BufferPGISToOGR()
 
   //options for Polygon Rule.
   int bufferPolygonRule = te::vp::INSIDE_OUTSIDE;
-  //int bufferPolygonRule = te::vp::ONLY_INSIDE;
-  //int bufferPolygonRule = te::vp::ONLY_OUTSIDE;
 
   //options for Boundaries Rule.
   int bufferBoundariesRule = te::vp::DISSOLVE;
-  //int bufferBoundariesRule = te::vp::NOT_DISSOLVE;
 
   bool copyInputColumns = false;
   int levels = 1;
   
   std::string data_dir = TERRALIB_DATA_DIR;
   
-  std::string uriResult(data_dir + "/shp/Buffer/bufferPGISToOGR_distritos.shp");
+  std::string uriResult(data_dir + "/shape/Buffer/bufferPGISToOGR_distritos.shp");
 
-  std::map<std::string, std::string> tgrInfo;
-  tgrInfo["URI"] = uriResult;
-  tgrInfo["DRIVER"] = "ESRI Shapefile";
+  std::string tgrInfo("File://" + uriResult);
 
-  //std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("OGR");
-  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR"));
-  trgDs->setConnectionInfo(tgrInfo);
+  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR", tgrInfo));
   trgDs->open();
 
   std::string outDSet = "bufferPGISToOGR_distritos";

@@ -19,15 +19,12 @@
 bool RasterToVectorInSHP()
 {
 // Input Raster
-  std::string dataDirRaster(TERRALIB_DATA_DIR  "/rasters");
+  std::string dataDirRaster(TERRALIB_DATA_DIR  "/geotiff");
   std::string fileNameRaster = "cbers2b_rgb342_crop.tif";
 
-  std::map<std::string, std::string> connInfoRaster;
-  connInfoRaster["URI"] = dataDirRaster + "/" + fileNameRaster;
+  std::string connInfoRaster("File://" + dataDirRaster);
 
-  te::da::DataSourcePtr dsGDAL(te::da::DataSourceFactory::make("GDAL").release());
-
-  dsGDAL->setConnectionInfo(connInfoRaster);
+  te::da::DataSourcePtr dsGDAL(te::da::DataSourceFactory::make("GDAL", connInfoRaster).release());
   dsGDAL->open();
 
   std::auto_ptr<te::da::DataSet> dsRaster = dsGDAL->getDataSet(fileNameRaster);
@@ -38,15 +35,12 @@ bool RasterToVectorInSHP()
 
 
 // Input Vector
-  std::string dataDirVector(TERRALIB_DATA_DIR "/shp/shapeTeste.shp");
+  std::string dataDirVector(TERRALIB_DATA_DIR "/shape/shapeTeste.shp");
   std::string fileNameVector = "shapeTeste";
 
-  std::map<std::string, std::string> connInfoVector;
-  connInfoVector["URI"] = dataDirVector;
-  connInfoVector["DRIVER"] = "ESRI Shapefile";
+  std::string connInfoVector("File://" + dataDirVector);
 
-  te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
-  dsOGR->setConnectionInfo(connInfoVector);
+  te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR", connInfoVector).release());
   dsOGR->open();
 
   std::auto_ptr<te::da::DataSetType>dsTypeVector = dsOGR->getDataSetType(fileNameVector);
@@ -74,12 +68,9 @@ bool RasterToVectorInSHP()
     return false;
   }
   
-  std::map<std::string, std::string> dsinfo;
-  dsinfo["URI"] = uri.string();
-  dsinfo["DRIVER"] = "ESRI Shapefile";
+  std::string dsinfo("File://" + uri.string());
 
-  te::da::DataSourcePtr outDataSource(te::da::DataSourceFactory::make("OGR").release());
-  outDataSource->setConnectionInfo(dsinfo);
+  te::da::DataSourcePtr outDataSource(te::da::DataSourceFactory::make("OGR", dsinfo).release());
   outDataSource->open();
   if (outDataSource->dataSetExists(outputdataset))
   {
@@ -118,15 +109,11 @@ bool RasterToVectorInSHP()
 bool RasterToVectorInPGIS()
 {
   // Input Raster
-  std::string dataDirRaster(TERRALIB_DATA_DIR "/rasters");
+  std::string dataDirRaster(TERRALIB_DATA_DIR "/geotiff");
   std::string fileNameRaster = "cbers2b_rgb342_crop.tif";
 
-  std::map<std::string, std::string> connInfoRaster;
-  connInfoRaster["URI"] = dataDirRaster + "/" + fileNameRaster;
-
-  te::da::DataSourcePtr dsGDAL(te::da::DataSourceFactory::make("GDAL").release());
-
-  dsGDAL->setConnectionInfo(connInfoRaster);
+  std::string connInfoRaster("File://" + dataDirRaster);
+  te::da::DataSourcePtr dsGDAL(te::da::DataSourceFactory::make("GDAL", connInfoRaster).release());
   dsGDAL->open();
 
   std::auto_ptr<te::da::DataSet> dsRaster = dsGDAL->getDataSet(fileNameRaster);
@@ -137,15 +124,12 @@ bool RasterToVectorInPGIS()
 
 
   // Input Vector
-  std::string dataDirVector(TERRALIB_DATA_DIR "/shp/shapeTeste.shp");
+  std::string dataDirVector(TERRALIB_DATA_DIR "/shape/shapeTeste.shp");
   std::string fileNameVector = "shapeTeste";
 
-  std::map<std::string, std::string> connInfoVector;
-  connInfoVector["URI"] = dataDirVector;
-  connInfoVector["DRIVER"] = "ESRI Shapefile";
+  std::string connInfoVector("File://" + dataDirVector);
 
-  te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
-  dsOGR->setConnectionInfo(connInfoVector);
+  te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR", connInfoVector).release());
   dsOGR->open();
 
   std::auto_ptr<te::da::DataSetType>dsTypeVector = dsOGR->getDataSetType(fileNameVector);
@@ -164,18 +148,9 @@ bool RasterToVectorInPGIS()
   vecStat.push_back(te::stat::SUM);
 
   // Output Vector
+  std::string connInfo("ppgsql://postgres:postgres@atlas.dpi.inpe.br:5433/testPostGIS");
 
-  std::map<std::string, std::string> connInfo;
-  connInfo["PG_HOST"] = "atlas.dpi.inpe.br";
-  connInfo["PG_PORT"] = "5433";
-  connInfo["PG_USER"] = "postgres";
-  connInfo["PG_PASSWORD"] = "postgres";
-  connInfo["PG_DB_NAME"] = "testPostGIS";
-  connInfo["PG_CONNECT_TIMEOUT"] = "4";
-  connInfo["PG_CLIENT_ENCODING"] = "CP1252";
-
-  te::da::DataSourcePtr outDataSource(te::da::DataSourceFactory::make("POSTGIS").release());
-  outDataSource->setConnectionInfo(connInfo);
+  te::da::DataSourcePtr outDataSource(te::da::DataSourceFactory::make("POSTGIS", connInfo).release());
   outDataSource->open();
 
   std::string outputdataset = "raster2vector";

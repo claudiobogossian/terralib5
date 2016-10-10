@@ -32,10 +32,9 @@ std::auto_ptr<te::rst::Raster> OpenRaster(const std::string& pathName, const int
   return rst;
 }
 
-std::auto_ptr<te::da::DataSource> OpenDataSource(std::map<std::string, std::string> connInfo, std::string dsType)
+std::auto_ptr<te::da::DataSource> OpenDataSource(std::string connInfo, std::string dsType)
 {
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make(dsType);
-  ds->setConnectionInfo(connInfo);
+  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make(dsType, connInfo);
   ds->open();
 
   return ds;
@@ -43,9 +42,7 @@ std::auto_ptr<te::da::DataSource> OpenDataSource(std::map<std::string, std::stri
 
 std::auto_ptr<te::da::DataSource> OpenOGRDataSource(const std::string& pathName)
 {
-  std::map<std::string, std::string> connInfo;
-  connInfo["URI"] = pathName;
-
+  std::string connInfo("File://" + pathName);
   return OpenDataSource(connInfo, "OGR");
 }
 

@@ -21,14 +21,12 @@ void DrawPNG()
 
   try
   {
-    std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR");
-    
     std::string data_dir = TERRALIB_DATA_DIR;
-        
-    std::map<std::string, std::string> connInfo;    
-    
-    connInfo["URI"] = data_dir + "/shp/munic_2001.shp";
-    dsOGR->setConnectionInfo(connInfo);
+
+    std::string connInfo ("File://");
+    connInfo += data_dir + "/shape/munic_2001.shp";
+    std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR", connInfo);
+
     dsOGR->open();
 
     std::auto_ptr<te::da::DataSourceTransactor> t = dsOGR->getTransactor();

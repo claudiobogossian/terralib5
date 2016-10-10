@@ -20,14 +20,11 @@
 // Adapt the source and target datasource information to your environment!
 bool VectorToRaster()
 {
-  std::string filename(TERRALIB_DATA_DIR "/shp/SP_cities.shp");
+  std::string filename(TERRALIB_DATA_DIR "/shape/SP_cities.shp");
   
-  std::map<std::string, std::string> srcInfo;
-  srcInfo["URI"] = filename;
-  srcInfo["DRIVER"] = "ESRI Shapefile";
+  std::string srcInfo("File://" + filename);
 
-  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR").release());
-  srcDs->setConnectionInfo(srcInfo);
+  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR", srcInfo).release());
   srcDs->open();
 
   std::string inDset = "SP_cities";
@@ -54,7 +51,7 @@ bool VectorToRaster()
   int columns = 1000;
   int rows = 1000;
   
-  boost::filesystem::path uri(TERRALIB_DATA_DIR "/rasters/vector2raster.tif");
+  boost::filesystem::path uri(TERRALIB_DATA_DIR "/geotiff/vector2raster.tif");
   std::string dsName = "vector2raster";
 
   if (boost::filesystem::exists(uri))
@@ -63,11 +60,8 @@ bool VectorToRaster()
     return false;
   }
 
-  std::map<std::string, std::string> dsinfo;
-  dsinfo["URI"] = uri.string();
-
-  te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
-  dsOGR->setConnectionInfo(dsinfo);
+  std::string dsinfo("File://" + uri.string());
+  te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR", dsinfo).release());
   dsOGR->open();
   if (dsOGR->dataSetExists(dsName))
   {

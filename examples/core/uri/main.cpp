@@ -28,6 +28,7 @@
 // TerraLib
 #include <terralib/Exception.h>
 #include <terralib/core/uri/URI.h>
+#include <terralib/core/utils/URI.h>
 
 // STL
 #include <cassert>
@@ -36,6 +37,118 @@
 
 int main(int argc, char *argv[])
 {
+  {
+    te::core::URI uri("ppgsql://postgres:123@localhost:5432/TerraView5?max_connections=410&min_connections=1&idle_time=60&conn_timeout=5&hide_metadata=FALSE&hide_raster_tables=FALSE&new_db_name=Axaou-531");
+
+    if (!uri.isValid())
+    {
+      std::cout << "Uri isn't valid!" << std::endl;
+      return EXIT_FAILURE;
+    }
+
+    std::string scheme, user, password, host, port, path, query, fragment;
+
+    scheme = uri.scheme();
+    user = uri.user();
+    password = uri.password();
+    host = uri.host();
+    port = uri.port();
+    path = uri.path();
+    query = uri.query();
+    fragment = uri.fragment();
+
+    std::map<std::string, std::string> kvp = te::core::expand(query);
+
+    std::string res;
+    static const boost::regex regex_maxCon("&max_connections=(?<MAX_CON>[1-9][0-9]{0,5})");
+    static const std::string regex_dbname ("&new_db_name=(?<NEW_DB_NAME>[A-zÀ-ú0-9_-]*)");
+    boost::regex expression(regex_dbname);
+    boost::match_results< std::string::const_iterator > match;
+
+    if (boost::regex_search(query, match, expression, boost::match_default))
+      res = match["NEW_DB_NAME"].str();
+  }
+
+  {
+    te::core::URI uri("file://E:/Projetos/Dados/rasters/cbers_rgb342_crop1.tif");
+    //te::core::URI uri("file:///home/Dados/rasters/cbers_rgb342_crop1.tif");
+    
+    if (!uri.isValid())
+    {
+      std::cout << "Uri isn't valid!" << std::endl;
+      return EXIT_FAILURE;
+    }
+
+    std::string scheme, user, password, host, port, path, query, fragment;
+
+    scheme = uri.scheme();
+    user = uri.user();
+    password = uri.password();
+    host = uri.host();
+    port = uri.port();
+    path = uri.path();
+    query = uri.query();
+    fragment = uri.fragment();
+  }
+
+  {
+    te::core::URI uri("memory:");
+
+    if (!uri.isValid())
+    {
+      std::cout << "Uri isn't valid!" << std::endl;
+      return EXIT_FAILURE;
+    }
+
+    std::string scheme, user, password, host, port, path, query, fragment;
+
+    scheme = uri.scheme();
+    user = uri.user();
+    password = uri.password();
+    host = uri.host();
+    port = uri.port();
+    path = uri.path();
+    query = uri.query();
+    fragment = uri.fragment();
+  }
+
+  {
+    te::core::URI uri("file://:adopass@E:/Projetos/Workspace/TerraView-520/data/ado/ADODataSource.mdb");
+
+    std::string scheme, user, password, host, port, path, query, fragment;
+
+    scheme = uri.scheme();
+    user = uri.user();
+    password = uri.password();
+    host = uri.host();
+    port = uri.port();
+    path = uri.path();
+    query = uri.query();
+    fragment = uri.fragment();
+  }
+
+  {
+    te::core::URI uri("http://demo.opengeo.org/geoserver/ows?&VERSION=2.0.1&USERDATADIR=C:/Users/andre.oliveira/AppData/Local/terralib_example_ws_ogc_wcs");
+
+    if (!uri.isValid())
+    {
+      std::cout << "Uri isn't valid!" << std::endl;
+      return EXIT_FAILURE;
+    }
+
+    std::string scheme, user, password, host, port, path, query, fragment;
+
+    scheme = uri.scheme();
+    user = uri.user();
+    password = uri.password();
+    host = uri.host();
+    port = uri.port();
+    path = uri.path();
+    query = uri.query();
+    fragment = uri.fragment();
+
+  }
+
   {
     te::core::URI uri("http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:documentation:devguide#modules");
 

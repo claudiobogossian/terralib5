@@ -264,8 +264,7 @@ te::se::Style* MarkPointStyle(const std::string& markName)
 te::map::DataSetLayer* CreateDataSetLayer(const std::string& path)
 {
   // Connection string to a shape file
-  std::map<std::string, std::string> connInfo;
-  connInfo["path"] = path;
+  std::string connInfo("File://" + path);
 
   // Creates and connects data source
   te::da::DataSourcePtr datasource = te::da::DataSourceManager::getInstance().open(te::common::Convert2String(G_ID++), "OGR", connInfo);
@@ -336,7 +335,7 @@ void DrawStyledLayers()
     //te::map::MarkRendererManager::getAllSupportedMarks(marks); // AbstractMarkFactory::SupportedMarks(marks);
     te::map::MarkRendererManager::getInstance().getAllSupportedMarks(marks);
     // Creates a layer of polygons
-    te::map::DataSetLayer* polygons = CreateDataSetLayer("./shp/style/polygons.shp");
+    te::map::DataSetLayer* polygons = CreateDataSetLayer("./shape/style/polygons.shp");
 
     // Polygon Styles
     std::vector<te::se::Style*> polygonStyles;
@@ -356,7 +355,7 @@ void DrawStyledLayers()
     }
 
     // Creates a layer of lines
-    te::map::DataSetLayer* lines = CreateDataSetLayer("./shp/style/lines.shp");
+    te::map::DataSetLayer* lines = CreateDataSetLayer("./shape/style/lines.shp");
 
     // Line Styles
     std::vector<te::se::Style*> lineStyles;
@@ -374,7 +373,7 @@ void DrawStyledLayers()
     }
 
     // Creates a layer of points
-    te::map::DataSetLayer* points = CreateDataSetLayer("./shp/style/points.shp");
+    te::map::DataSetLayer* points = CreateDataSetLayer("./shape/style/points.shp");
 
     // Point Styles
     std::vector<te::se::Style*> pointStyles;

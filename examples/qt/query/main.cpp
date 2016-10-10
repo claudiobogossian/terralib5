@@ -68,11 +68,8 @@ int main(int argc, char** argv)
     // Load datasource
     std::string fileName = TERRALIB_DATA_DIR "/shp/munic_2001.shp";
 
-    //LoadShapeDataSource(fileName, "MunicShp2001");
-
     te::da::DataSourcePtr ds = LoadPGISDataSource("graphDb");
 
-    //te::qt::widgets::QueryBuilderWizard w(0);
     te::qt::widgets::QueryLayerBuilderWizard w(0);
 
     w.setDataSource(ds);

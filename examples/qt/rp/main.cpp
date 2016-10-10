@@ -124,14 +124,14 @@ void SegmenterDialogExample( int argc, char** argv )
   std::string data_dir = TERRALIB_DATA_DIR;
   
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = data_dir +  "/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = data_dir +  "/geotiff/cbers2b_rgb342_crop.tif";
 
   std::auto_ptr< te::rst::Raster > inputRasterPointer( te::rst::RasterFactory::open(rinfo) );
 
   // Defining the output raster info
 
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = data_dir + "/rasters/terralib_example_qt_rp_SegmenterDialog.tif";
+  outputRasterInfo["URI"] = data_dir + "/geotiff/terralib_example_qt_rp_SegmenterDialog.tif";
 
   // Executing the dialog
 
@@ -157,14 +157,14 @@ void ContrastDialogExample( int argc, char** argv )
   std::string data_dir = TERRALIB_DATA_DIR;
 
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = data_dir +  "/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = data_dir +  "/geotiff/cbers2b_rgb342_crop.tif";
 
   std::auto_ptr< te::rst::Raster > inputRasterPointer( te::rst::RasterFactory::open(rinfo) );
 
   // Defining the output raster info
 
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = data_dir + "/rasters/terralib_example_qt_rp_ContrastDialog.tif";
+  outputRasterInfo["URI"] = data_dir + "/geotiff/terralib_example_qt_rp_ContrastDialog.tif";
 
   // Executing the dialog
 
@@ -189,20 +189,20 @@ void ClassifierDialogExample(int argc, char** argv)
   std::string data_dir = TERRALIB_DATA_DIR;
 
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = data_dir + "/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = data_dir + "/geotiff/cbers2b_rgb342_crop.tif";
 
   std::auto_ptr<te::rst::Raster> inputRasterPointer(te::rst::RasterFactory::open(rinfo));
 
 // define the output raster info
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = data_dir + "/rasters/terralib_example_qt_rp_ClassifierDialog.tif";
+  outputRasterInfo["URI"] = data_dir + "/geotiff/terralib_example_qt_rp_ClassifierDialog.tif";
 
 // execute the dialog
   QApplication app(argc, argv);
 
 // open a previously segmentation (from SegmenterDialogExample)
   std::map<std::string, std::string> segmentedinfo;
-  segmentedinfo["URI"] = data_dir + "/rasters/terralib_example_qt_rp_SegmenterDialog.tif";
+  segmentedinfo["URI"] = data_dir + "/geotiff/terralib_example_qt_rp_SegmenterDialog.tif";
   std::auto_ptr<te::rst::Raster> segmentedraster(te::rst::RasterFactory::open(segmentedinfo));
 
 // vectorize the segmentation
@@ -231,9 +231,9 @@ void MixtureModelDialogExample(int argc, char** argv)
   std::string data_dir = TERRALIB_DATA_DIR;
 
   const std::string dsname("cbers2b_rgb342_crop.tif");
-  std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = data_dir + "/rasters/cbers2b_rgb342_crop.tif";
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
+  std::string rinfo ("File://");
+  rinfo += data_dir + "/geotiff/cbers2b_rgb342_crop.tif";
+  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", rinfo);
  
   ds->open();
   if(!ds->isOpened())
@@ -242,39 +242,15 @@ void MixtureModelDialogExample(int argc, char** argv)
     return;
   }
 
- // * Under revision *
- /* std::auto_ptr<te::map::RasterLayer> rasterLayer(new te::map::RasterLayer(dsname, dsname) );
-  rasterLayer->setDataSource(ds.get());
-  rasterLayer->setDataSetName(dsname);
-  if(!rasterLayer->isValid())
-  {
-    std::cout << std::endl << "Invalid layer";
-    return;
-  }
-
-  te::map::RasterLayerRenderer* renderer = new te::map::RasterLayerRenderer();
-  rasterLayer->setRenderer(renderer);
-  rasterLayer->setVisibility(te::map::VISIBLE);*/
-
 // define the output raster info
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = data_dir + "/rasters/terralib_example_qt_rp_MixtureModelDialog.tif";
+  outputRasterInfo["URI"] = data_dir + "/geotiff/terralib_example_qt_rp_MixtureModelDialog.tif";
 
 // execute the dialog
   QApplication app(argc, argv);
 
-  // * Under revision *
-// create GUI dialog
-  //te::qt::widgets::MixtureModelDialog dialogInstance(rasterLayer.get(), "GDAL", outputRasterInfo, 0, 0);
-
-  //dialogInstance.exec();
-
-  //dialogInstance.hide();
-
 // get the result
   boost::shared_ptr< te::rst::Raster > outputRasterPtr;
-
-  //dialogInstance.getOutputRaster(outputRasterPtr);
 }
 
 int main(int argc, char** argv)
