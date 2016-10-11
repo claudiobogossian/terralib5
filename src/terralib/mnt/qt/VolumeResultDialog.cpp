@@ -24,6 +24,7 @@ TerraLib Team at <terralib - team@terralib.org>.
 */
 
 #include "VolumeResultDialog.h"
+#include "../../core/filesystem/FileSystem.h"
 #include "ui_VolumeResultDialogForm.h"
 
 // Qt
@@ -92,7 +93,7 @@ void te::mnt::VolumeResultDialog::onSavePushButtonClicked()
 
   try
   {
-    boost::filesystem::remove(fileName.toUtf8().data());
+    te::core::FileSystem::remove(fileName.toUtf8().data());
   }
   catch (const std::exception& e)
   {

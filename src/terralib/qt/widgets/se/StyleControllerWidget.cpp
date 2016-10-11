@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "StyleControllerWidget.h"
+#include "../../../core/filesystem/FileSystem.h"
 #include "../../../se/Font.h"
 #include "../../../se/Rule.h"
 #include "../../../se/TextSymbolizer.h"
@@ -278,7 +279,7 @@ void te::qt::widgets::StyleControllerWidget::changeLegendIconSize(int size)
 
 void te::qt::widgets::StyleControllerWidget::writeStyle(const te::se::Style* style, std::string path)
 {
-  boost::filesystem::wpath file = boost::filesystem::absolute(path);
+  boost::filesystem::wpath file = te::core::FileSystem::absolutePath(path);
 
   {
     std::auto_ptr<te::xml::AbstractWriter> writer(te::xml::AbstractWriterFactory::make());
@@ -314,7 +315,7 @@ void te::qt::widgets::StyleControllerWidget::readStyle(std::string path)
 {
   std::auto_ptr<te::se::Style> style;
 
-  boost::filesystem::wpath file = boost::filesystem::absolute(path);
+  boost::filesystem::wpath file = te::core::FileSystem::absolutePath(path);
   {
     std::auto_ptr<te::xml::Reader> reader(te::xml::ReaderFactory::make());
     reader->setValidationScheme(false);

@@ -24,10 +24,11 @@
 */
 
 // TerraLib
+#include "OutputRasterWidget.h"
+#include "../../../core/filesystem/FileSystem.h"
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../datasource/selector/DataSourceSelectorDialog.h"
 #include "../Utils.h"
-#include "OutputRasterWidget.h"
 #include "ui_OutputRasterWidgetForm.h"
 
 // BOOST Includes
@@ -71,7 +72,7 @@ std::string te::qt::widgets::OutputRasterWidget::getOutputRaster()
 bool te::qt::widgets::OutputRasterWidget::fileExists() const
 {
   boost::filesystem::path path(m_ui->m_repositoryLineEdit->text().toUtf8().data());
-  return boost::filesystem::exists(path);
+  return te::core::FileSystem::exists(path.string());
 }
 
 std::string te::qt::widgets::OutputRasterWidget::getType() const

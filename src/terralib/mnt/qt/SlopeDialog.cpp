@@ -24,8 +24,9 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 //terralib
-#include "../../common/progress/ProgressManager.h"
+#include "../../core/filesystem/FileSystem.h"
 #include "../../core/translator/Translator.h"
+#include "../../common/progress/ProgressManager.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
@@ -300,7 +301,7 @@ void te::mnt::SlopeDialog::onTargetFileToolButtonPressed()
 
   try
   {
-    boost::filesystem::remove(fileName.toUtf8().data());
+    te::core::FileSystem::remove(fileName.toUtf8().data());
   }
   catch (const std::exception& e)
   {
@@ -357,7 +358,7 @@ void te::mnt::SlopeDialog::onOkPushButtonClicked()
     std::map<std::string, std::string> outdsinfo;
     boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
-    if (boost::filesystem::exists(uri))
+    if (te::core::FileSystem::exists(uri.string()))
       throw te::common::Exception(TE_TR("Output file already exists! Remove it or select a new name and try again."));
 
     std::size_t idx = outputdataset.find(".");

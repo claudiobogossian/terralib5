@@ -36,13 +36,13 @@
 #include <QApplication>
 #include <QStyle>
 
-te::qt::widgets::ProgressViewerTaskWidget::ProgressViewerTaskWidget(QWidget* parent, bool hideToolBar)
+te::qt::widgets::ProgressViewerTaskWidget::ProgressViewerTaskWidget(QWidget* parent, bool hideToolBar, std::string message)
   : QWidget(parent), AbstractProgressViewer(),
     m_taskId(-1),
     m_totalSteps(0),
     m_currentStep(0),
     m_propStep(0),
-    m_message(""),
+    m_message(message),
     m_task(0)
 {
   // build custom widget
@@ -50,13 +50,13 @@ te::qt::widgets::ProgressViewerTaskWidget::ProgressViewerTaskWidget(QWidget* par
   m_mainGridLayout->setContentsMargins(1, 1, 1, 1);
   m_mainGridLayout->setHorizontalSpacing(2);
 
+  m_button = new QToolButton(this);
+  m_button->setIcon(m_button->style()->standardIcon(QStyle::SP_TitleBarCloseButton));
+
+  m_label = new QLabel(this);
+
   if (hideToolBar)
   {
-    m_button = new QToolButton(this);
-    m_button->setIcon(m_button->style()->standardIcon(QStyle::SP_TitleBarCloseButton));
-
-    m_label = new QLabel(this);
-
     m_mainGridLayout->addWidget(m_button, 0, 0);
     m_mainGridLayout->addWidget(m_label, 0, 1);
 
@@ -66,11 +66,6 @@ te::qt::widgets::ProgressViewerTaskWidget::ProgressViewerTaskWidget(QWidget* par
   {
     m_progressBar = new QProgressBar(this);
 
-    m_button = new QToolButton(this);
-    m_button->setIcon(m_button->style()->standardIcon(QStyle::SP_TitleBarCloseButton));
-
-    m_label = new QLabel(this);
-
     m_mainGridLayout->addWidget(m_button, 1, 0);
     m_mainGridLayout->addWidget(m_progressBar, 1, 1);
     m_mainGridLayout->addWidget(m_label, 0, 0, 1, 2);
@@ -78,6 +73,11 @@ te::qt::widgets::ProgressViewerTaskWidget::ProgressViewerTaskWidget(QWidget* par
     // set default range
     m_progressBar->setRange(0, 100);
   }
+
+  m_button->setEnabled(false);
+
+  if (!m_message.empty())
+    m_label->setText(QString::fromUtf8(m_message.c_str()));
 
   // connect signal cancel
   connect(m_button, SIGNAL(released()), this, SLOT(cancel()));
@@ -163,6 +163,8 @@ void te::qt::widgets::ProgressViewerTaskWidget::setTask(te::common::TaskProgress
 {
   m_task = task;
   m_taskId = task->getId();
+
+  m_button->setEnabled(true);
 }
 
 void te::qt::widgets::ProgressViewerTaskWidget::customEvent(QEvent* e)

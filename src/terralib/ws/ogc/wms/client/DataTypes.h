@@ -33,6 +33,8 @@
 #include <vector>
 #include <string>
 
+#include <boost/lexical_cast.hpp>
+
 namespace te
 {
   namespace ws
@@ -273,6 +275,50 @@ namespace te
       {
         Capability m_capability;
       };
+
+      /*!
+       * \brief The WMSGetMapRequest WMS 1.3.0 struct.
+       *
+       * A WMSGetMapRequest is a struct to be used on
+       * WMS 1.3.0 GetMap requests.
+       */
+      struct TEOGCWMSEXPORT WMSGetMapRequest
+      {
+        std::vector<std::string> m_layers;
+        std::vector<std::string> m_styles;
+        std::string              m_srs;
+        BoundingBox              m_boundingBox;
+        int                      m_width;
+        int                      m_height;
+        std::string              m_format;
+        bool                     m_transparent;
+        std::string              m_bgColor;
+        std::string              m_time;
+
+        WMSGetMapRequest() :
+          m_srs(TE_OGC_WMS_DEFAULT_SRS),
+          m_width(boost::lexical_cast<int>(TE_OGC_WMS_DEFAULT_WIDTH)),
+          m_height(boost::lexical_cast<int>(TE_OGC_WMS_DEFAULT_HEIGHT)),
+          m_format(TE_OGC_WMS_DEFAULT_IMAGE_FORMAT),
+          m_transparent(false),
+          m_bgColor(""),
+          m_time("")
+        {}
+      };
+
+      /*!
+       * \brief The WMSGetMapResponse WMS 1.3.0 struct.
+       *
+       * A WMSGetMapResponse is a sctruct that is used to
+       * retrieve 1.3.0 GetMap images as a buffer.
+       */
+      struct TEOGCWMSEXPORT WMSGetMapResponse
+      {
+        std::string m_buffer;
+        int         m_size;
+        std::string m_format;
+      };
+
       }
     }
   }

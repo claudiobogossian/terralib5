@@ -473,7 +473,7 @@ void te::addressgeocoding::MainWindowDialog::onOkPushButtonClicked()
     {
       boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
-      if (boost::filesystem::exists(uri))
+      if (te::core::FileSystem::exists(uri))
       {
         QMessageBox::information(this, "Address Geocoding", "Output file already exists. Remove it or select a new name and try again.");
         return;

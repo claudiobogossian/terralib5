@@ -246,6 +246,12 @@ namespace te
     */
     TEGEOMEXPORT void AddLineString(te::gm::LineString* lineString, std::vector<te::gm::Geometry*>& pAdd);
 
+    /*!
+     * \brief snapToSelf
+     * \return
+     */
+    TEGEOMEXPORT te::gm::Geometry* SnapToSelf(const te::gm::Geometry* g, const double& snapTolerance, const bool& cleanResult);
+
   } // end namespace gm
 }   // end namespace te
 

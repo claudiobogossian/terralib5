@@ -2,7 +2,7 @@
 
 void MSearch(const boost::filesystem::path& mpath, std::vector<std::string>& fnames)
 {
-  if (boost::filesystem::is_regular_file(mpath))
+  if (te::core::FileSystem::isRegularFile(mpath))
   {
     std::string aux = mpath.leaf().string();
     unsigned pos = aux.find("MOD");
