@@ -34,7 +34,7 @@
 #include <QtCore/QCoreApplication>
 #include <QApplication>
 
-te::qt::widgets::ProgressViewerDialog::ProgressViewerDialog(QWidget* parent)
+te::qt::widgets::ProgressViewerDialog::ProgressViewerDialog(QWidget* parent, QString title)
   : AbstractProgressViewer(),
     m_totalSteps(0),
     m_currentStep(0),
@@ -44,7 +44,11 @@ te::qt::widgets::ProgressViewerDialog::ProgressViewerDialog(QWidget* parent)
   m_dlgProgress = new QProgressDialog(parent);
   m_dlgProgress->setWindowModality(Qt::NonModal);
   m_dlgProgress->setRange(0, 100);
-  m_dlgProgress->setWindowTitle(parent->windowTitle());
+
+  if(title.isEmpty())
+    m_dlgProgress->setWindowTitle(parent->windowTitle());
+  else
+    m_dlgProgress->setWindowTitle(title);
 
   connect(m_dlgProgress, SIGNAL(canceled()), this, SLOT(cancel()));
 }
@@ -104,6 +108,11 @@ void te::qt::widgets::ProgressViewerDialog::cancelTask(int taskId)
 void te::qt::widgets::ProgressViewerDialog::setTotalValues(int taskId)
 {
   m_totalSteps += m_tasks[taskId]->getTotalSteps();
+}
+
+void te::qt::widgets::ProgressViewerDialog::setTitle(QString title)
+{
+  m_dlgProgress->setWindowTitle(title);
 }
 
 void te::qt::widgets::ProgressViewerDialog::updateValue(int taskId)
