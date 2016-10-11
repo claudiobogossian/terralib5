@@ -531,9 +531,11 @@ namespace te
 
         if( outputRasterPtr->getSRID() != inputRasterPtr->getSRID() )
         {
-          reprojectedRasterFileName = boost::filesystem::unique_path( 
-            boost::filesystem::temp_directory_path() /= 
-            boost::filesystem::path( "TerralibRGeoMosaic_%%%%-%%%%-%%%%-%%%%" ) ).string();
+          boost::filesystem::path tempDirPath(
+              te::core::FileSystem::tempDirectoryPath());
+          reprojectedRasterFileName = te::core::FileSystem::uniquePath(
+              (tempDirPath /= boost::filesystem::path(
+                   "TerralibRGeoMosaic_%%%%-%%%%-%%%%-%%%%")).string());
           TERP_TRUE_OR_RETURN_FALSE( !reprojectedRasterFileName.empty(),
             "Invalid temporary raster file name" );
           reprojectedRasterFileName += ".tif";

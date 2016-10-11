@@ -25,6 +25,7 @@
 #include "TINExamples.h"
 
 // TerraLib
+#include <terralib/core/filesystem/FileSystem.h>
 #include <terralib/common/TerraLib.h>
 
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
@@ -474,7 +475,7 @@ void CalculateGrid()
   boost::filesystem::path uri(TERRALIB_DATA_DIR "/mnt/TIN_GRD_quint1.tif");
   std::string dsName = "TIN_GRD_quint";
 
-  if (boost::filesystem::exists(uri))
+  if (te::core::FileSystem::exists(uri.string()))
   {
     std::cout << "Output file already exists. Remove it or select a new name and try again.";
     throw;

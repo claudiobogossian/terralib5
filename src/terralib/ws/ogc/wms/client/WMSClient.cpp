@@ -1,6 +1,7 @@
 #include "WMSClient.h"
 
 // TerraLib
+#include "../../../../core/filesystem/FileSystem.h"
 #include "../../../../core/translator/Translator.h"
 #include "../../../core/CurlWrapper.h"
 #include "WMSClient.h"
@@ -44,8 +45,8 @@ te::ws::ogc::WMSClient::WMSClient(const std::string usrDataDir, const std::strin
 
   m_curl = std::shared_ptr<te::ws::core::CurlWrapper>(new te::ws::core::CurlWrapper());
 
-  if (boost::filesystem::is_directory(usrDataDir) && !boost::filesystem::exists(m_dataDir))
-    boost::filesystem::create_directories(m_dataDir);
+  if (te::core::FileSystem::isDirectory(usrDataDir) && !te::core::FileSystem::exists(m_dataDir))
+    te::core::FileSystem::createDirectories(m_dataDir);
 }
 
 te::ws::ogc::WMSClient::~WMSClient()

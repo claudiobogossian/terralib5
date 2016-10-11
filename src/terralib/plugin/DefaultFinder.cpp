@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../core/filesystem/FileSystem.h"
 #include "../core/translator/Translator.h"
 #include "../core/utils/Platform.h"
 #include "DefaultFinder.h"
@@ -54,13 +55,13 @@ void te::plugin::DefaultFinder::getDefaultDirs( std::vector< std::string >& dirs
   
   // The first default directory 
   
-  dirs.push_back( boost::filesystem::system_complete( "." ).string() );    
+  dirs.push_back( te::core::FileSystem::systemCompletePath( "." ) );
   
   // let's check if there is a directory called TE_DEFAULT_PLUGINS_DIR in the current application dir
   
-  if(boost::filesystem::is_directory(TE_DEFAULT_PLUGINS_DIR))
+  if(te::core::FileSystem::isDirectory(TE_DEFAULT_PLUGINS_DIR))
   {
-    dirs.push_back( boost::filesystem::system_complete(TE_DEFAULT_PLUGINS_DIR).string() );
+    dirs.push_back( te::core::FileSystem::systemCompletePath(TE_DEFAULT_PLUGINS_DIR) );
   }
 
 // if the default dir is not available in the current dir let's try an environment variable defined as TERRALIB_DIR_ENVIRONMENT_VARIABLE
@@ -71,26 +72,26 @@ void te::plugin::DefaultFinder::getDefaultDirs( std::vector< std::string >& dirs
   {
     boost::filesystem::path p(plgDir);
 
-    if(boost::filesystem::is_directory(p))
-      dirs.push_back( boost::filesystem::system_complete(p).string() );
+    if(te::core::FileSystem::isDirectory(p.string()))
+      dirs.push_back( te::core::FileSystem::systemCompletePath(p.string()) );
   }
   
 #ifdef TE_PLUGINS_INSTALL_PATH
     {
       boost::filesystem::path p(TE_PLUGINS_INSTALL_PATH);
 
-      if(boost::filesystem::is_directory(p))
-        dirs.push_back( boost::filesystem::system_complete(p).string() );
+      if(te::core::FileSystem::isDirectory(p))
+        dirs.push_back( te::core::FileSystem::systemCompletePath(p.string()) );
     }
 #endif
 }
 
 void te::plugin::DefaultFinder::addPluginsDir(const std::string& path)
 {
-  if(!boost::filesystem::is_directory(path))
+  if(!te::core::FileSystem::isDirectory(path))
     throw Exception((boost::format(TE_TR("Default plugin directory is invalid: %1%.")) % path).str());
 
-  boost::filesystem::path p(boost::filesystem::system_complete(path));
+  boost::filesystem::path p(te::core::FileSystem::systemCompletePath(path));
 
   std::string s(p.string());
 
@@ -113,22 +114,22 @@ void te::plugin::DefaultFinder::getPlugins(boost::ptr_vector<PluginInfo>& plugin
 // let's look in each plugins base dir
   for(std::size_t i = 0; i < ndirs; ++i)
   {
-    if(!boost::filesystem::is_directory(m_pluginsDir[i]))
+    if(!te::core::FileSystem::isDirectory(m_pluginsDir[i]))
       throw Exception((boost::format(TE_TR("The base plugin directory is invalid: %1%.")) % m_pluginsDir[i]).str());
 
     boost::filesystem::path path(m_pluginsDir[i]);
 
     for(boost::filesystem::directory_iterator it(path), itEnd; it != itEnd; ++it)
     {
-      if(boost::filesystem::is_regular_file(it->status()))
+      if(te::core::FileSystem::isRegularFile(it->path().string()))
       {
-        std::string ext = boost::filesystem::extension(it->path());
+        std::string ext = te::core::FileSystem::extension(it->path().string());
 
         if(ext == TE_DEFAULT_PLUGIN_EXTENSION)
           plugins.push_back(GetInstalledPlugin(it->path().string()));
       }
 // check just in direct sub-dirs, don't go recursively for ever!
-//      if(boost::filesystem::is_directory(it->status()))
+//      if(te::core::FileSystem::isDirectory(it->status()))
 //      {
 //        boost::filesystem::path foundPlugin = (*it);
 //
@@ -138,7 +139,7 @@ void te::plugin::DefaultFinder::getPlugins(boost::ptr_vector<PluginInfo>& plugin
 //        
 //        foundPlugin /= TE_DEFAULT_PLUGIN_FILE_NAME;
 //
-//        if(boost::filesystem::is_regular_file(foundPlugin))
+//        if(te::core::FileSystem::isRegularFile(foundPlugin))
 //        {
 //// try to read the plugin XML configuration file and add info to the output vector
 //          plugins.push_back(GetInstalledPlugin(foundPlugin.string()));

@@ -8,7 +8,7 @@
 
 void mmain(std::string& rootpath)
 {
-  if (!boost::filesystem::is_directory(rootpath))
+  if (!te::core::FileSystem::isDirectory(rootpath))
   {
     std::cout << "Enter with a valid root directory!" << std::endl;
     return;
