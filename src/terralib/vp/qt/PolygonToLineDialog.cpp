@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../common/progress/ProgressManager.h"
+#include "../../core/filesystem/FileSystem.h"
 #include "../../core/logger/Logger.h"
 #include "../../core/translator/Translator.h"
 #include "../../common/STLUtils.h"
@@ -245,7 +246,7 @@ void te::vp::PolygonToLineDialog::onOkPushButtonClicked()
     if(m_toFile)
     {
       boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
-      if (boost::filesystem::exists(uri))
+      if (te::core::FileSystem::exists(uri.string()))
       {
         QMessageBox::information(this, "Polygon to line", "Output file already exists. Remove it or select a new name and try again.");
         return;

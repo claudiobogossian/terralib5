@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../common/StringUtils.h"
+#include "../core/filesystem/FileSystem.h"
 #include "../core/translator/Translator.h"
 #include "../core/uri/URI.h"
 #include "../core/utils/URI.h"
@@ -109,9 +110,9 @@ bool te::gdal::DataSource::isValid() const
   if(!source.empty())
   {
     //Checking if it is a valid directory or file name
-    if(boost::filesystem::is_directory(source))
+    if(te::core::FileSystem::isDirectory(source))
       return true;
-    else if(boost::filesystem::is_regular_file(source))
+    else if(te::core::FileSystem::isRegularFile(source))
       return true;
 
     // if it is another GDAL string let's check it
@@ -162,8 +163,8 @@ void te::gdal::DataSource::create(const std::string& connInfo)
   {
     try 
     {      
-      if(!boost::filesystem::is_directory(path))
-        boost::filesystem::create_directory(path);
+      if(!te::core::FileSystem::isDirectory(path))
+        te::core::FileSystem::createDirectory(path);
       else
       {
         throw Exception((boost::format(TE_TR("Data source creation is supported only for directory data sources"))).str());
@@ -192,7 +193,7 @@ bool te::gdal::DataSource::exists(const std::string& connInfo)
   std::string path = auxURI.host() + auxURI.path();
   if (!path.empty())
   {
-    if (boost::filesystem::exists(path) && boost::filesystem::is_directory(path)) // expects a directory?
+    if (te::core::FileSystem::exists(path) && te::core::FileSystem::isDirectory(path)) // expects a directory?
       return true;
     else if(boost::filesystem::exists(path) && boost::filesystem::is_regular_file(path)) // expects a file?
     {
@@ -223,7 +224,7 @@ void te::gdal::DataSource::drop(const std::string& connInfo)
   {
     try
     {
-      boost::filesystem::remove(path);
+      te::core::FileSystem::remove(path);
     }
     catch (const boost::filesystem::filesystem_error& /*e*/)
     {

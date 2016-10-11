@@ -31,6 +31,7 @@
 // TerraLib
 #include "Serializers.h"
 #include "Exception.h"
+#include "../filesystem/FileSystem.h"
 #include "../encoding/CharEncoding.h"
 #include "../translator/Translator.h"
 
@@ -45,7 +46,7 @@ te::core::PluginInfo te::core::JSONPluginInfoSerializer(
 {
   boost::property_tree::ptree doc;
 
-  if (!boost::filesystem::exists(te::core::CharEncoding::fromUTF8(file_name)))
+  if (!te::core::FileSystem::exists(file_name))
   {
     boost::format err_msg(TE_TR("The file %1% doesn't exist."));
     throw InvalidArgumentException()

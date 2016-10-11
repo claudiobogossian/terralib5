@@ -23,6 +23,7 @@
 #include "Transactor.h"
 #include "Utils.h"
 
+#include "../core/filesystem/FileSystem.h"
 #include "../core/translator/Translator.h"
 #include "../core/uri/URI.h"
 #include "../core/utils/URI.h"
@@ -147,7 +148,7 @@ void te::ogr::DataSource::open()
   if (it != kvp.end())
     CPLSetConfigOption("SHAPE_ENCODING", it->second.c_str());
 
-  if (boost::filesystem::exists(path))
+  if (te::core::FileSystem::exists(path))
     m_ogrDS = (GDALDataset*)GDALOpenEx(path.c_str(), GDAL_OF_UPDATE, NULL, NULL, NULL);
   
   // let's try to open it without update permission
@@ -229,8 +230,8 @@ void te::ogr::DataSource::createOGRDataSource()
 
     boost::filesystem::path bpath(path);
     std::string dir = bpath.parent_path().string();
-    if (!dir.empty() && !boost::filesystem::exists(dir))
-      boost::filesystem::create_directory(dir);
+    if (!dir.empty() && !te::core::FileSystem::exists(dir))
+      te::core::FileSystem::createDirectory(dir);
 
     // Retrieve the char encoding
     it = kvp.find("SHAPE_ENCODING");
@@ -323,7 +324,7 @@ bool te::ogr::DataSource::exists(const std::string& connInfo)
   te::core::URI auxURI(connInfo);
   std::string path = auxURI.path();
 
-  return boost::filesystem::exists(path);
+  return te::core::FileSystem::exists(path);
 }
 
 std::vector<std::string> te::ogr::DataSource::getDataSourceNames(const std::string& connInfo)

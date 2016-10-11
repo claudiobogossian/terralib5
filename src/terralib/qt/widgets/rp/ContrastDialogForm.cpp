@@ -80,6 +80,8 @@ te::qt::widgets::ContrastDialogForm::ContrastDialogForm(QWidget* parent)
   m_geom = 0;
   m_canvas = 0;
   m_parent = parent;
+  m_lastText = "";
+
 // setup controls
   m_ui->setupUi(this);
 
@@ -102,6 +104,7 @@ te::qt::widgets::ContrastDialogForm::ContrastDialogForm(QWidget* parent)
 //connects
   connect(m_ui->m_contrastTypeComboBox, SIGNAL(activated(int)), this, SLOT(onContrastTypeComboBoxActivated(int)));
   connect(m_ui->m_bandTableWidget, SIGNAL(cellClicked(int, int)), this, SLOT(onCellClicked(int, int)));
+  connect(m_ui->m_bandTableWidget, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(onCellDoubleClicked(int, int)));
   connect(m_ui->m_bandTableWidget, SIGNAL(cellChanged(int, int)), this, SLOT(onCellChanged(int, int)));
   connect(m_navigator.get(), SIGNAL(mapDisplayExtentChanged()), this, SLOT(onPreviewChanged()));
   connect(m_navigator.get(), SIGNAL(previewClicked()), this, SLOT(apply()));
@@ -706,6 +709,25 @@ void te::qt::widgets::ContrastDialogForm::getRasterFromROI()
     {
       QApplication::setOverrideCursor(Qt::WaitCursor);
 
+      te::gm::Envelope* env = new te::gm::Envelope(*m_geom->getMBR());
+
+      // verify if is necessary convert the raster to the given srid
+      bool needRemap = false;
+      if ((m_mapDisplay->getSRID() != TE_UNKNOWN_SRS) && (m_layer->getSRID() != TE_UNKNOWN_SRS) && (m_mapDisplay->getSRID() != m_layer->getSRID()))
+        needRemap = true;
+
+      // create a SRS converter
+      std::auto_ptr<te::srs::Converter> converter(new te::srs::Converter());
+
+      if (needRemap)
+      {
+        converter->setSourceSRID(m_mapDisplay->getSRID());
+        converter->setTargetSRID(m_layer->getSRID());
+
+        converter->convert(env->getLowerLeftX(), env->getLowerLeftY(), env->m_llx, env->m_lly);
+        converter->convert(env->getUpperRightX(), env->getUpperRightY(), env->m_urx, env->m_ury);
+      }
+
       std::auto_ptr<te::da::DataSetType> dsType = m_layer->getSchema();
       te::rst::RasterProperty* rasterProp = te::da::GetFirstRasterProperty(dsType.get());
       std::auto_ptr<te::da::DataSet> dsRaster = m_layer->getData();
@@ -714,7 +736,7 @@ void te::qt::widgets::ContrastDialogForm::getRasterFromROI()
       std::map<std::string, std::string> info;
       info["FORCE_MEM_DRIVER"] = "TRUE";
       //execute clipping
-      m_raster = raster->trim(m_geom->getMBR(), info);
+      m_raster = raster->trim(env, info);
 
       m_histogramWidget->setInputRaster(m_raster);
 
@@ -887,7 +909,6 @@ void te::qt::widgets::ContrastDialogForm::drawPreview(te::rst::Raster* raster)
 
   const te::gm::Envelope& envRaster = *raster->getExtent();
   const te::gm::Envelope& env = m_mapDisplay->getExtent();
-  const te::gm::Envelope* envRst = &env;
 
   te::se::ChannelSelection* channel = getChannelSelection();
 
@@ -952,7 +973,7 @@ void te::qt::widgets::ContrastDialogForm::drawPreview(te::rst::Raster* raster)
   }
 
   // Draw raster
-  te::map::DrawRaster(raster, m_canvas, *envRst, m_mapDisplay->getSRID(), *envRst, raster->getSRID(), cs, m_mapDisplay->getScale());
+  te::map::DrawRaster(raster, m_canvas, envRaster, raster->getSRID(), env, m_mapDisplay->getSRID(), cs, m_mapDisplay->getScale());
 
   if(m_ui->m_roiRadioButton->isChecked())
   {
@@ -1112,8 +1133,22 @@ void te::qt::widgets::ContrastDialogForm::onCellClicked(int row, int column)
     drawHistogram();
 }
 
+void te::qt::widgets::ContrastDialogForm::onCellDoubleClicked(int row, int column)
+{
+  if (column == 0)
+    return;
+
+  m_lastText = m_ui->m_bandTableWidget->item(row, column)->text().toUtf8().data();
+}
+
 void te::qt::widgets::ContrastDialogForm::onCellChanged(int row, int column)
 {
+  if (!isdigit(*m_ui->m_bandTableWidget->item(row, column)->text().toUtf8().data()))
+  {
+    m_ui->m_bandTableWidget->item(row, column)->setText(m_lastText.c_str());
+    return;
+  }
+
   if (m_ui->m_roiRadioButton && (!m_geom || !m_geom->isValid()))
     return;
 
@@ -1121,8 +1156,8 @@ void te::qt::widgets::ContrastDialogForm::onCellChanged(int row, int column)
 
   if (column == 1)
   {
-    double value = m_ui->m_bandTableWidget->item(row, column)->text().toDouble();
-    onMinValueSelected(value, band);
+      double value = m_ui->m_bandTableWidget->item(row, column)->text().toDouble();
+      onMinValueSelected(value, band);
   }
   else if (column == 2)
   {
@@ -1600,7 +1635,26 @@ void te::qt::widgets::ContrastDialogForm::onEnvelopeAcquired(te::gm::Envelope en
   if (env.getLowerLeftX() == 0 && env.getLowerLeftY() == 0 && env.getUpperRightX() == 0 && env.getUpperRightY() == 0)
     return;
 
-  if (!env.intersects(m_layer->getExtent()))
+  // verify if is necessary convert the raster to the given srid
+  bool needRemap = false;
+  if ((m_mapDisplay->getSRID() != TE_UNKNOWN_SRS) && (m_layer->getSRID() != TE_UNKNOWN_SRS) && (m_mapDisplay->getSRID() != m_layer->getSRID()))
+    needRemap = true;
+
+  te::gm::Envelope envOut = env;
+
+  // create a SRS converter
+  std::auto_ptr<te::srs::Converter> converter(new te::srs::Converter());
+
+  if (needRemap)
+  {
+    converter->setSourceSRID(m_mapDisplay->getSRID());
+    converter->setTargetSRID(m_layer->getSRID());
+
+    converter->convert(envOut.getLowerLeftX(), envOut.getLowerLeftY(), envOut.m_llx, envOut.m_lly);
+    converter->convert(envOut.getUpperRightX(), envOut.getUpperRightY(), envOut.m_urx, envOut.m_ury);
+  }
+
+  if (!envOut.intersects(m_layer->getExtent()))
   {
     QMessageBox::warning(this, tr("Warning"), tr("ROI is invalid."));
     return;

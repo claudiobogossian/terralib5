@@ -26,7 +26,7 @@
 // TerraLib
 #include "../../../Version.h"
 #include "../../../common/BoostUtils.h"
-#include "../../../core/uri/URI.h"
+#include "../../../core/filesystem/FileSystem.h"
 #include "../../../core/utils/Platform.h"
 #include "../../../datatype/AbstractData.h"
 #include "../../../datatype/Enums.h"
@@ -90,7 +90,7 @@
 
 void te::serialize::xml::ReadDataSourceInfo(const std::string& datasourcesFileName)
 {
-  if(!boost::filesystem::is_regular_file(datasourcesFileName))
+  if(!te::core::FileSystem::isRegularFile(datasourcesFileName))
     return;
 
   std::auto_ptr<te::xml::Reader> xmlReader(te::xml::ReaderFactory::make());

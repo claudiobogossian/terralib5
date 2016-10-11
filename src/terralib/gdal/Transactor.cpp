@@ -29,6 +29,7 @@
 
 // TerraLib
 #include "../common/StringUtils.h"
+#include "../core/filesystem/FileSystem.h"
 #include "../core/translator/Translator.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/query/DataSetName.h"
@@ -99,7 +100,7 @@ te::da::DataSource* te::gdal::Transactor::getDataSource() const
 
 void te::gdal::Transactor::getDataSetNames(const boost::filesystem::path& path, std::vector<std::string>& dsnames)
 {  
-  if (boost::filesystem::is_regular_file(path))
+  if (te::core::FileSystem::isRegularFile(path.string()))
   {
     std::string upcaseExtension = te::common::Convert2UCase( path.extension().string() );
     if( upcaseExtension[ 0 ] == '.' ) upcaseExtension = upcaseExtension.substr( 1, upcaseExtension.size() - 1);
@@ -209,7 +210,7 @@ std::auto_ptr<te::da::DataSetType> te::gdal::Transactor::getDataSetType(const st
 
 std::auto_ptr<te::da::DataSetType> te::gdal::Transactor::getDataSetType(const boost::filesystem::path& path, const std::string& name, std::string& uri)
 {
-  if (boost::filesystem::is_regular_file(path))
+  if (te::core::FileSystem::isRegularFile(path.string()))
   {
     if (path.leaf() == name)
     { 
@@ -546,7 +547,7 @@ std::auto_ptr<te::gm::Envelope> te::gdal::Transactor::getExtent(const std::strin
 void te::gdal::Transactor::createDataSet(te::da::DataSetType* dt,
                                          const std::map<std::string, std::string>& options) 
 { 
-  if (!boost::filesystem::is_directory(m_path))
+  if (!te::core::FileSystem::isDirectory(m_path.string()))
     throw Exception(TE_TR("Create operation supported just on directory data sources."));
       
   te::rst::RasterProperty* rstp = static_cast<te::rst::RasterProperty*>(dt->getProperty(0));
@@ -554,7 +555,7 @@ void te::gdal::Transactor::createDataSet(te::da::DataSetType* dt,
   boost::filesystem::path paux(m_path);
   paux /= dt->getName();
   
-  if (boost::filesystem::exists(paux))
+  if (te::core::FileSystem::exists(paux.string()))
     throw Exception((boost::format(TE_TR("The datasource already has a dataset with this name (\"%1%\")!")) % dt->getName()).str());
   
   DataSetUseCounter dsUseCounter( paux.string(), DataSetsManager::SingleAccessType );
@@ -578,11 +579,11 @@ void te::gdal::Transactor::cloneDataSet(const std::string& name,
 
   boost::filesystem::path mpath(dsty->getTitle());
   
-  if (!boost::filesystem::is_regular_file(mpath))
+  if (!te::core::FileSystem::isRegularFile(mpath.string()))
     throw Exception(TE_TR("Can not clone a dataset that it is not a raster file."));
   
   boost::filesystem::path newpath(mpath.parent_path() /= cloneName);
-  boost::filesystem::copy_file(mpath, newpath);
+  te::core::FileSystem::copyFile(mpath.string(), newpath.string());
   
 }
 
@@ -594,10 +595,10 @@ void te::gdal::Transactor::dropDataSet(const std::string& name)
     throw Exception(TE_TR("Dataset does not exist."));
   
   boost::filesystem::path mpath(dsty->getTitle());
-  if (!boost::filesystem::is_regular_file(mpath))
+  if (!te::core::FileSystem::isRegularFile(mpath.string()))
     throw Exception(TE_TR("Can not drop a dataset that it is not a raster file."));
 
-  boost::filesystem::remove(mpath.string());  
+  te::core::FileSystem::remove(mpath.string());  
 }
 
 void te::gdal::Transactor::renameDataSet(const std::string& name, const std::string& newName)
@@ -608,9 +609,9 @@ void te::gdal::Transactor::renameDataSet(const std::string& name, const std::str
     throw Exception(TE_TR("Dataset does not exist."));
   
   boost::filesystem::path mpath(dsty->getTitle());
-  if (!boost::filesystem::is_regular_file(mpath))
+  if (!te::core::FileSystem::isRegularFile(mpath.string()))
     throw Exception(TE_TR("Can not rename a dataset that it is not a raster file."));
   
   boost::filesystem::path newpath(mpath.parent_path() /= newName);
-  boost::filesystem::rename(mpath, newpath);
+  te::core::FileSystem::rename(mpath.string(), newpath.string());
 }

@@ -134,60 +134,39 @@ accessible through:</font><font style="font-family: Calibri Light;"
 <font face="Calibri Light"><br>
 </font>
 <font style="font-family: Calibri Light;" face="Calibri Light"><b>&nbsp;&nbsp;&nbsp;</b></font><font
- style="font-family: Calibri Light;" face="Calibri Light"><b>Raster
-Processing &gt; Filter...</b></font><font
- style="font-family: Calibri Light;" face="Calibri Light"><b> </b>(list
-of all
-raster layers will be available)&nbsp;<br>
-<br>
-<span style="font-family: Calibri Light;"></span></font><font
- style="font-family: Calibri Light;" face="Calibri Light">This
-wizard consists of the
-following steps:</font><font face="Calibri Light"><br>
+ style="font-family: Calibri Light;" face="Calibri Light"><b>PROCESSING &rarr; RASTER PROCESSING
+&rarr; CONTRAST...</b></font><font
+ style="font-family: Calibri Light;" face="Calibri Light"><b> </b><br>
 </font>
 <h4><font style="font-family: Calibri Light;" face="Calibri Light">&nbsp;&nbsp;&nbsp;
-Wizard Page 1 -&nbsp;</font><font face="Calibri Light"><span
+</font><font face="Calibri Light"><span
  style="font-family: Calibri Light;">Selection
-of the layer to apply the filter (<span
- style="text-decoration: underline;"><a
- href="../../widgets/layer/search.html">Layer Search</a></span>)</span></font></h4>
+of the layer to apply the filter </span></font></h4>
 <ol>
-  <li><font face="Calibri Light">On the <i>List
-of Layers</i> select the raster layer to apply the filter.&nbsp;</font></li>
-  <li><font face="Calibri Light">Optionally use <i>Filter By Name</i>
-field
-giving part of the layer name to help find the layer in the list.</font></li>
-  <li><font face="Calibri Light">Press <b>Next&nbsp;</b>
-to go to next step or <b>Cancel </b>to close the
-dialog.&nbsp;</font></li>
+  <li><font face="Calibri Light">On the <i>Layer</i> field select the raster layer to apply the filter.&nbsp;</font></li>
 </ol>
 <div style="text-align: center;">
 <div style="text-align: left;"><font face="Calibri Light"><span
  style="font-family: Calibri Light;"></span></font>
 <h4><font style="font-family: Calibri Light;" face="Calibri Light">&nbsp;&nbsp;&nbsp;
-Wizard Page 2 - Filter</font><font face="Calibri Light"><span
+Filter</font><font face="Calibri Light"><span
  style="font-family: Calibri Light;"> parameters</span><span
  style="font-family: Calibri Light;"></span></font></h4>
 <font face="Calibri Light"><span style="font-family: Calibri Light;"></span></font></div>
 </div>
 <ol style="font-family: Calibri Light;">
   <li><font face="Calibri Light">Select the <i>Type</i> of filter to
-be used.</font></li>
+be used. Depending on the selected type different and additional parameters field will appear below, e.g., if a morphological filter is selected another parameter (Morph Type) appears and proper value should be setup.</font></li>
   <li><font face="Calibri Light">Set the number of iterations.<br>
     </font></li>
   <li><font face="Calibri Light">In&nbsp;<i> Bands</i> select the
 desired bands to be processed.</font></li>
-  <li><font face="Calibri Light">On the <i>Preview </i>&nbsp;section
-click on <img alt="" src="../../gen_icones/ic_check.PNG" height="22"
- width="25"> to have a preview of the filter with the parameters
-informed.</font></li>
-  <li><font face="Calibri Light">Press <b>Next</b></font> to apply the
-contrast or <b>Back</b> to go to the previous wizard page.</li>
+  <li><font face="Calibri Light">Check in the <i>Preview</i> box to activate visualization of operation and click on the <b>New ROI</b> button to draw the area to be used by the filter operation.</font></li>
 </ol>
 <span style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; If the
-user selects the "User Defined" type, </span><span
+user check in the <i>User Mask Definition</i> box, </span><span
  style="font-family: Calibri Light;" id="result_box" class="" lang="en"><span
- class="hps"></span><span></span><span class=""></span><span class="hps">is</span>
+ class="hps"></span><span></span><span class=""></span><span class="hps">it is</span>
 <span class="hps">allowed</span> <span class="hps">to define</span> <span
  class="hps">information</span> <span class="hps">about the</span> <span
  class="hps">mask</span> <span class="hps">being used</span><span>.<br>
@@ -219,28 +198,30 @@ previous mask defined by the user.</span><br>
 </ul>
 <font face="Calibri Light"><span style="font-family: Calibri Light;"></span></font>
 <h4><font style="font-family: Calibri Light;" face="Calibri Light">&nbsp;&nbsp;&nbsp;
-Wizard Page 3 -&nbsp;</font><font face="Calibri Light"><span
+</font><font face="Calibri Light"><span
  style="font-family: Calibri Light;">Output
 information</span></font></h4>
 <ol>
-  <li><font face="Calibri Light"><i>Raster Info</i>
-- First press <img alt="" src="../../gen_icones/ic_3points.PNG"
- height="19" width="27"> and inform the folder where the resulting
-file&nbsp;will be saved.</font></li>
-  <li><font face="Calibri Light"><i>Name - </i>inform
+ <li><font face="Calibri Light"><I>Repository</I> -
+<SPAN STYLE="font-style: normal">Select one type of repository by&nbsp;
+clicking on the </SPAN><SPAN STYLE="font-style: normal">
+<img alt="" src="../../gen_icones/ic_3points.PNG" NAME="graphics2" WIDTH=17 HEIGHT=17 BORDER=0>&nbsp;</SPAN><SPAN STYLE="font-style: normal">
+button to save the output layer as a file or on the </SPAN><SPAN STYLE="font-style: normal">&nbsp;
+<img alt="" src="../../gen_icones/ic_database.PNG" NAME="graphics4" WIDTH=17 HEIGHT=17 BORDER=0>&nbsp;</SPAN><SPAN STYLE="font-style: normal">
+button to save it in the database.</li>
+  <li><font face="Calibri Light"><i>Layer Name - </i>inform
 the raster name.</font></li>
-  <li><font face="Calibri Light"><i>Extra
-Parameters</i> - if there are some, see the details on how to inform
-then <a href="../../widgets/rp/output_raster_info.html">here</a>.</font></li>
-  <li><font face="Calibri Light">Press <b>Finish</b>
-to save the resulting contrasted raster or&nbsp;<b>Back</b>
-to go to the previous wizard page.</font></li>
+  <li><font face="Calibri Light">Press the <b>OK</b> button
+to save the resulting contrasted raster.</font></li>
 </ol>
 <font face="Calibri Light">
 Hint: The filtered image will be added as a new layer at the
 TerraView project.</font><font face="Calibri Light">
 </font></div>
 <br>
+<font face="Calibri Light">
+Hint: Although the user can change the layer by selecting in the Layer Explorer, it does not change the layer selected in a open filter interface.</font><font face="Calibri Light">
+</font></div>
 </div>
 </body>
 </html>

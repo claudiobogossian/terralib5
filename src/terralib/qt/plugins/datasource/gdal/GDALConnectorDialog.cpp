@@ -24,7 +24,9 @@
 */
 
 // TerraLib
+#include "GDALConnectorDialog.h"
 #include "../../../../core/translator/Translator.h"
+#include "../../../../core/filesystem/FileSystem.h"
 #include "../../../../core/uri/URI.h"
 #include "../../../../core/utils/URI.h"
 #include "../../../../dataaccess/datasource/DataSource.h"
@@ -36,7 +38,6 @@
 #include "../../../widgets/Utils.h"
 #include "../../../widgets/raster/RasterInfoDialog.h"
 #include "../../../widgets/raster/RasterInfoWidget.h"
-#include "GDALConnectorDialog.h"
 #include "ui_GDALConnectorDialogForm.h"
 
 // Boost
@@ -244,6 +245,7 @@ const std::string te::qt::plugins::gdal::GDALConnectorDialog::getConnectionInfo(
   if(qstr.isEmpty())
     throw te::qt::widgets::Exception(TE_TR("Please select a dataset first!"));
 
+  if(te::core::FileSystem::isDirectory(qstr.toUtf8().data()))
   strURI += qstr.toUtf8().data();
 
   return strURI;

@@ -28,6 +28,7 @@
 #include "../../../../common/StringUtils.h"
 #include "../../../../common/progress/ProgressManager.h"
 #include "../../../../common/progress/TaskProgress.h"
+#include "../../../../core/filesystem/FileSystem.h"
 #include "../../../../core/translator/Translator.h"
 #include "../../../../dataaccess.h"
 #include "../../../../geometry/GeometryProperty.h"
@@ -266,7 +267,7 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
         {
           QTableWidgetItem *conflictItem = 0;
         
-          if(boost::filesystem::exists(m_rasterFolderPath + "/" + targetDatasetName + ".tif"))
+          if(te::core::FileSystem::exists(m_rasterFolderPath + "/" + targetDatasetName + ".tif"))
           {
             hasConflicts = true;
 
@@ -471,7 +472,7 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validLayerNames()
       if(input_dataset_type->hasRaster())
       {
 // yes!
-        if(boost::filesystem::exists(m_rasterFolderPath + "/" + targetName + ".tif"))
+        if(te::core::FileSystem::exists(m_rasterFolderPath + "/" + targetName + ".tif"))
         {
           hasConflict = true;
         }

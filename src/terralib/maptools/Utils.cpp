@@ -576,7 +576,6 @@ void te::map::DrawRaster(te::rst::Raster* raster, Canvas* canvas, const te::gm::
       max = std::max(max, max1);
     }
 
-    // *** aqui temos a quest�o da vari�vel global que diz se � para normalizar ou n�o os valores do raster ***
     rasterTransform.setLinearTransfParameters(min, max, 0, 255);
   }
   else

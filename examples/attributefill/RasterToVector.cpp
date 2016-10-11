@@ -1,5 +1,6 @@
 
 #include "../Config.h"
+#include <terralib/core/filesystem/FileSystem.h>
 #include <terralib/common.h>
 #include <terralib/dataaccess.h>
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
@@ -62,7 +63,7 @@ bool RasterToVectorInSHP()
   std::string outputdatadir = "/shp/" + outputdataset + ".shp";
 
   boost::filesystem::path uri(TERRALIB_DATA_DIR + outputdatadir);
-  if (boost::filesystem::exists(uri))
+  if (te::core::FileSystem::exists(uri.string()))
   {
     std::cout << "Output file already exists. Remove it or select a new name and try again.\n";
     return false;

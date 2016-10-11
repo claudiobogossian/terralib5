@@ -27,6 +27,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "ui_InternalSettingsDialogForm.h"
 
 // terralib includes
+#include "../../core/filesystem/FileSystem.h"
 #include "../../common/PlatformUtils.h"
 #include "../../common/TerraLib.h"
 #include "../../plugin/PluginManager.h"
@@ -86,7 +87,7 @@ void te::qt::af::InternalSettingsDialog::setPaths()
   m_ui->m_gdalDirLineEdit->setText(TERRALIB_GDAL_DATA);
 
   // terralib home
-  boost::filesystem::path curPath = boost::filesystem::current_path();
+  boost::filesystem::path curPath = te::core::FileSystem::currentPath();
   m_ui->m_curPathLineEdit->setText(curPath.string().c_str());
 
   curPath /= "..";

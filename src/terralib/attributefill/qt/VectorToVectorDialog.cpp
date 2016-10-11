@@ -28,9 +28,10 @@
 #include "../../attributefill/Utils.h"
 #include "../../attributefill/VectorToVectorOp.h"
 #include "../../attributefill/VectorToVectorMemory.h"
+#include "../../core/filesystem/FileSystem.h"
+#include "../../core/translator/Translator.h"
 #include "../../common/Exception.h"
 #include "../../common/progress/ProgressManager.h"
-#include "../../core/translator/Translator.h"
 #include "../../common/StringUtils.h"
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/datasource/DataSourceCapabilities.h"
@@ -198,7 +199,7 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
   {
     boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
-    if (boost::filesystem::exists(uri))
+    if (te::core::FileSystem::exists(uri.string()))
     {
       QMessageBox::warning(this, tr("VectorToVector"), tr("Output file already exists. Remove it or select a new name and try again."));
       return;

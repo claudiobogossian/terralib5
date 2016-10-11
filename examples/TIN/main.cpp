@@ -25,6 +25,7 @@
 #include "TINExamples.h"
 
 // TerraLib
+#include <terralib/core/filesystem/FileSystem.h>
 #include <terralib/common/TerraLib.h>
 #include <terralib/core/uri/URI.h>
 #include <terralib/core/utils/URI.h>
@@ -437,7 +438,7 @@ void CalculateGrid()
   boost::filesystem::path uri(TERRALIB_DATA_DIR "/mnt/TIN_GRD_quint1.tif");
   std::string dsName = "TIN_GRD_quint";
 
-  if (boost::filesystem::exists(uri))
+  if (te::core::FileSystem::exists(uri.string()))
   {
     std::cout << "Output file already exists. Remove it or select a new name and try again.";
     throw;
@@ -454,9 +455,10 @@ void CalculateGrid()
   }
 
   te::mnt::TINCalculateGrid *Tin = new te::mnt::TINCalculateGrid();
+  std::map<std::string, std::string> options = te::core::expand(dsOGR->getConnectionInfo().query());
 
   Tin->setInput(srcDs, inDsetName, inDsetType);
-  Tin->setOutput(te::core::expand(dsOGR->getConnectionInfo().query()));
+  Tin->setOutput(options);
   Tin->setSRID(SRID);
   Tin->setParams(resx, resy, te::mnt::Quintico);
 
