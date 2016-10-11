@@ -62,7 +62,7 @@ namespace te
         public:
 
           /*! \brief Default constructor. */
-          ProgressViewerTaskWidget(QWidget* parent, bool hideToolBar);
+          ProgressViewerTaskWidget(QWidget* parent, bool hideToolBar, std::string message = "");
 
           /*! \brief Virtual destructor. */
           virtual ~ProgressViewerTaskWidget();
