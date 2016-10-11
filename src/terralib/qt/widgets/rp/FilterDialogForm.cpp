@@ -81,6 +81,9 @@ te::qt::widgets::FilterDialogForm::FilterDialogForm(QWidget* parent)
   m_outputWidget = new te::qt::widgets::OutputRasterWidget(m_ui->m_outputWidget);
   outputLayout->addWidget(m_outputWidget);
 
+  m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins");
+  m_ui->m_helpPushButton->setPageReference("plugins/rp/rp_filter.html");
+
   //connects
   connect(m_ui->m_listWidget, SIGNAL(itemSelectionChanged()), this, SIGNAL(completeChanged()));
   connect(m_ui->m_typeComboBox, SIGNAL(activated(int)), SLOT(onFilterTypeComboBoxActivated(int)));
