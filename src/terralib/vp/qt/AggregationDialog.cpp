@@ -24,10 +24,11 @@
 */
 
 // TerraLib
+#include "../../core/filesystem/FileSystem.h"
 #include "../../core/logger/Logger.h"
+#include "../../core/translator/Translator.h"
 #include "../../common/STLUtils.h"
 #include "../../common/StringUtils.h"
-#include "../../core/translator/Translator.h"
 
 
 #include "../../dataaccess/dataset/DataSet.h"
@@ -690,7 +691,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
     {
       boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
-      if (boost::filesystem::exists(uri))
+      if (te::core::FileSystem::exists(uri.string()))
       {
         QMessageBox::information(this, tr("Dissolve"), tr("Output file already exists. Remove it and try again. "));
 

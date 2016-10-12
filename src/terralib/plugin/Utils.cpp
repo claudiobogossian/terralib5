@@ -24,6 +24,8 @@
 */
 
 // TerraLib
+#include "Utils.h"
+#include "../core/filesystem/FileSystem.h"
 #include "../core/translator/Translator.h"
 #include "../xml/Reader.h"
 #include "../xml/ReaderFactory.h"
@@ -31,7 +33,6 @@
 #include "Exception.h"
 #include "PluginInfo.h"
 #include "PluginManager.h"
-#include "Utils.h"
 
 // Boost
 #include <boost/filesystem.hpp>
@@ -82,11 +83,11 @@ te::plugin::PluginInfo* te::plugin::GetInstalledPlugin(const std::string& plugin
   boost::filesystem::path pluginFileName(pluginFilePath);
 
 // check if it was provided a plugin file name or just its dir
- /* if(boost::filesystem::is_directory(pluginFileName))
+ /* if(te::core::FileSystem::isDirectory(pluginFileName))
     pluginFileName /= TE_DEFAULT_PLUGIN_FILE_NAME;*/
 
 // check
-  if(!boost::filesystem::is_regular_file(pluginFileName))
+  if(!te::core::FileSystem::isRegularFile(pluginFileName.string()))
     throw Exception((boost::format(TE_TR("The informed plugin file is not valid: %1%.")) % pluginFileName).str());
 
   std::auto_ptr<te::xml::Reader> xmlReader(te::xml::ReaderFactory::make());

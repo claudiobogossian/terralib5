@@ -28,6 +28,34 @@
 #ifndef __TERRALIB_WS_OGC_WMS_CLIENT_CONFIG_H
 #define __TERRALIB_WS_OGC_WMS_CLIENT_CONFIG_H
 
+/*!
+  \def TE_OGC_WMS_DEFAULT_WIDTH
+
+  \brief It specifies the default width used on GetMap request.
+*/
+#define TE_OGC_WMS_DEFAULT_WIDTH "512"
+
+/*!
+  \def TE_OGC_WMS_DEFAULT_HEIGHT
+
+  \brief It specifies the default height used on GetMap request.
+*/
+#define TE_OGC_WMS_DEFAULT_HEIGHT "512"
+
+/*!
+  \def TE_OGC_WMS_DEFAULT_IMAGE_FORMAT
+
+  \brief It specifies the default image format used on GetMap request.
+*/
+#define TE_OGC_WMS_DEFAULT_IMAGE_FORMAT "image/png"
+
+/*!
+  \def TE_OGC_WMS_DEFAULT_SRS
+
+  \brief It specifies the default SRS used on GetMap request.
+*/
+#define TE_OGC_WMS_DEFAULT_SRS "EPSG:4326"
+
 /** @name DLL/LIB Module
  *  Flags for building TerraLib as a DLL or as a Static Library
  */

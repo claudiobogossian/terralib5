@@ -21,6 +21,7 @@
 #include "Transactor.h"
 #include "Utils.h"
 
+#include "../../../../core/filesystem/FileSystem.h"
 #include "../../../../core/translator/Translator.h"
 #include "../../../../dataaccess/query/SQLDialect.h"
 
@@ -141,7 +142,7 @@ void te::gpkg::DataSource::open()
 
   path = it->second;
 
-  if (boost::filesystem::exists(path))
+  if (te::core::FileSystem::exists(path))
     //m_ogrDS = OGRSFDriverRegistrar::Open(path.c_str(), 1);
     m_ogrDS = (GDALDataset*)GDALOpenEx(path.c_str(), GDAL_OF_UPDATE, NULL, NULL, NULL);
   
@@ -231,8 +232,8 @@ void  te::gpkg::DataSource::createDataSet(te::da::DataSetType* dt, const std::ma
     
     boost::filesystem::path bpath(path);
     std::string dir = bpath.parent_path().string();
-    if (!boost::filesystem::exists(dir))
-      boost::filesystem::create_directory(dir);
+    if (!te::core::FileSystem::exists(dir))
+      te::core::FileSystem::createDirectory(dir);
     
     //OGRSFDriverRegistrar* driverManager = OGRSFDriverRegistrar::GetRegistrar();
     //OGRSFDriver* driver;
@@ -312,7 +313,7 @@ void te::gpkg::DataSource::drop(const std::map<std::string, std::string>& dsInfo
 
 bool te::gpkg::DataSource::exists(const std::map<std::string, std::string>& dsInfo)
 {
-  return boost::filesystem::exists(dsInfo.begin()->second);
+  return te::core::FileSystem::exists(dsInfo.begin()->second);
 }
 
 std::vector<std::string> te::gpkg::DataSource::getDataSourceNames(const std::map<std::string, std::string>& dsInfo)

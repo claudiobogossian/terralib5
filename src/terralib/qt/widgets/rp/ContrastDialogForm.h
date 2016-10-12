@@ -133,6 +133,8 @@ namespace te
 
           void onCellClicked(int row, int column);
 
+          void onCellDoubleClicked(int row, int column);
+
           void onCellChanged(int row, int column);
 
           void onGreenComboBoxCurrentIndexChanged(int index);
@@ -196,6 +198,7 @@ namespace te
           std::vector<double> m_minValue;
           std::vector<double> m_maxValue;
           te::qt::widgets::OutputRasterWidget* m_outputWidget;
+          std::string m_lastText;
 
           QComboBox* m_monoComboBox;
           QComboBox* m_redComboBox;

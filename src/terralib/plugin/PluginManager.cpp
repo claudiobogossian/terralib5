@@ -309,7 +309,8 @@ void te::plugin::PluginManager::load(const PluginInfo& pInfo, const bool start)
 
 void te::plugin::PluginManager::load(const std::string& pluginName)
 {
-  load(getPlugin(pluginName));
+  PluginInfo pInfo = getPlugin(pluginName);
+  load(pInfo);
 }
 
 void te::plugin::PluginManager::unload(const std::string& name)
