@@ -1175,12 +1175,12 @@ void te::ogr::Transactor::add(const std::string& datasetName,
               if(tinst)
               {
                 feat->SetField(currfield,
-                               static_cast<int>(dtime->getYear()),
-                               static_cast<int>(dtime->getMonth()),
-                               static_cast<int>(dtime->getDay()),
-                               static_cast<int>(tduration->getHours()),
-                               static_cast<int>(tduration->getMinutes()),
-                               static_cast<int>(tduration->getSeconds()));
+                               static_cast<int>(tinst->getDate().getYear()),
+                               static_cast<int>(tinst->getDate().getMonth()),
+                               static_cast<int>(tinst->getDate().getDay()),
+                               static_cast<int>(tinst->getTime().getHours()),
+                               static_cast<int>(tinst->getTime().getMinutes()),
+                               static_cast<float>(tinst->getTime().getSeconds()));
                 ++currfield;
                 break;
               }
