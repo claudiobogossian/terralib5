@@ -27,8 +27,13 @@
 #include "../../../common/STLUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../../geometry/CurvePolygon.h"
+#include "../../../geometry/Enums.h"
 #include "../../../geometry/Point.h"
+#include "../../../geometry/Polygon.h"
+#include "../../../geometry/Utils.h"
 #include "../../../maptools/MarkRendererManager.h"
+#include "../../../raster/PositionIterator.h"
 #include "../../../raster/Raster.h"
 #include "../../../rp/MixtureModel.h"
 #include "../../../rp/MixtureModelLinearStrategy.h"
@@ -114,16 +119,14 @@ te::qt::widgets::MixtureModelWizardPage::MixtureModelWizardPage(QWidget* parent)
   layout->addWidget(m_navigator.get(), 0, 0);
   layout->setContentsMargins(0, 0, 0, 0);
   layout->setSizeConstraint(QLayout::SetMinimumSize);
-
-  m_navigator->setSelectionMode(false);
-  m_navigator->hidePickerTool(false);
+ 
   m_navigator->hideInfoTool(true);
-  m_navigator->hideBoxTool(true);
-  m_navigator->hideGeomTool(true);
 
 //connects
   connect(m_navigator.get(), SIGNAL(mapDisplayExtentChanged()), this, SLOT(onMapDisplayExtentChanged()));
   connect(m_navigator.get(), SIGNAL(pointPicked(double, double)), this, SLOT(onPointPicked(double, double)));
+  connect(m_navigator.get(), SIGNAL(geomAquired(te::gm::Polygon*)), this, SLOT(onGeomAquired(te::gm::Polygon*)));
+  connect(m_navigator.get(), SIGNAL(envelopeAcquired(te::gm::Envelope)), this, SLOT(onEnvelopeAcquired(te::gm::Envelope)));
 
   //configure page
   this->setTitle(tr("Mixture Model"));
@@ -223,6 +226,8 @@ void te::qt::widgets::MixtureModelWizardPage::setActionGroup(QActionGroup* actio
   m_navigator->setActionGroup(actionGroup);
 
   m_navigator->enablePickerAction();
+  m_navigator->enableGeomAction();
+  m_navigator->enableBoxAction();
 }
 
 std::list<te::map::AbstractLayerPtr> te::qt::widgets::MixtureModelWizardPage::get()
@@ -314,15 +319,49 @@ void te::qt::widgets::MixtureModelWizardPage::saveMixtureModelComponents(std::st
 
     child.put("name", it->second.m_name);
 
-    boost::property_tree::ptree coordGrid;
-    coordGrid.put("xGrid", it->second.m_coordGrid.getX());
-    coordGrid.put("yGrid", it->second.m_coordGrid.getY());
-    child.push_back(std::make_pair("coordGrid", coordGrid));
+   boost::property_tree::ptree coordGrid;
+   boost::property_tree::ptree coordGeo;
+   std::string type = it->second.m_geomGeo->getGeometryType();
+    if (type == "Point")
+    {
+      te::gm::Point *pgrid = dynamic_cast<te::gm::Point*>(it->second.m_geomGrid);
+      coordGrid.put("xGrid", pgrid->getX());
+      coordGrid.put("yGrid", pgrid->getY());
+      child.push_back(std::make_pair("coordGrid", coordGrid));
 
-    boost::property_tree::ptree coordGeo;
-    coordGeo.put("xGeo", it->second.m_coordGeo.getX());
-    coordGeo.put("yGeo", it->second.m_coordGeo.getY());
-    child.push_back(std::make_pair("coordGeo", coordGeo));
+      te::gm::Point *pgeo = dynamic_cast<te::gm::Point*>(it->second.m_geomGeo);
+      coordGeo.put("xGeo", pgeo->getX());
+      coordGeo.put("yGeo", pgeo->getY());
+      child.push_back(std::make_pair("coordGeo", coordGeo));
+    }
+    else
+    {
+      te::gm::CurvePolygon *pgrid = dynamic_cast<te::gm::CurvePolygon*>(it->second.m_geomGrid);
+      te::gm::LinearRing* lgrid = static_cast<te::gm::LinearRing*>(pgrid->getExteriorRing());
+      std::size_t npts = lgrid->getNPoints();
+      boost::property_tree::ptree ptgrid, ptgeo;
+
+      for (size_t pt = 0; pt < npts; pt++)
+      {
+        boost::property_tree::ptree val;
+        val.put("xGrid", lgrid->getPointN(pt)->getX());
+        val.put("yGrid", lgrid->getPointN(pt)->getY());
+        ptgrid.push_back(std::make_pair("", val));
+      }
+      child.add_child("geomGrid", ptgrid);
+
+      te::gm::CurvePolygon *pgeo = dynamic_cast<te::gm::CurvePolygon*>(it->second.m_geomGeo);
+      te::gm::LinearRing* lgeo = static_cast<te::gm::LinearRing*>(pgeo->getExteriorRing());
+
+      for (size_t pt = 0; pt < npts; pt++)
+      {
+        boost::property_tree::ptree val;
+        val.put("xGeo", lgeo->getPointN(pt)->getX());
+        val.put("yGeo", lgeo->getPointN(pt)->getY());
+        ptgeo.push_back(std::make_pair("", val));
+      }
+      child.add_child("geomCoord", ptgeo);
+    }
 
     boost::property_tree::ptree values;
 
@@ -334,6 +373,7 @@ void te::qt::widgets::MixtureModelWizardPage::saveMixtureModelComponents(std::st
     }
 
     child.add_child("Values", values);
+
     child.put("Color", it->second.m_color.getColor());
     children.push_back(std::make_pair("Component", child));
 
@@ -359,12 +399,56 @@ void te::qt::widgets::MixtureModelWizardPage::loadMixtureModelComponents(std::st
     BOOST_FOREACH(boost::property_tree::ptree::value_type &v, pt.get_child("MixModel_Components"))
     {
       std::string name = v.second.get<std::string>("name");
+      std::vector<te::gm::Point*> pointsVecg, pointsVecc;
+      te::gm::Geometry *geomGrid;
+      te::gm::Geometry *geomCoord;
 
-      int xGrid = v.second.get<int>("coordGrid.xGrid");
-      int yGrid = v.second.get<int>("coordGrid.yGrid");
+      if (v.second.find("geomGrid")!=v.second.not_found())
+      {
+        BOOST_FOREACH(boost::property_tree::ptree::value_type &c, v.second.get_child("geomGrid"))
+        {
+          int x = c.second.get<int>("xGrid");
+          int y = c.second.get<int>("yGrid");
+          pointsVecg.push_back(new te::gm::Point(x, y));
+        }
+        te::gm::LinearRing *l = new te::gm::LinearRing(pointsVecg.size(), te::gm::LineStringType);
+        for (std::size_t i = 0; i < pointsVecg.size(); i++)
+          l->setPointN(i, *pointsVecg[i]);
+        te::gm::Polygon* pol = new te::gm::Polygon(1, te::gm::PolygonType);
+        pol->setRingN(0, l);
+        geomGrid = dynamic_cast<te::gm::Geometry*>(pol);
+      }
 
-      double xGeo = v.second.get<double>("coordGeo.xGeo");
-      double yGeo = v.second.get<double>("coordGeo.yGeo");
+      if (v.second.find("geomCoord") != v.second.not_found())
+      {
+        BOOST_FOREACH(boost::property_tree::ptree::value_type &c, v.second.get_child("geomCoord"))
+        {
+          double x = c.second.get<double>("xGeo");
+          double y = c.second.get<double>("yGeo");
+          pointsVecc.push_back(new te::gm::Point(x, y));
+        }
+        te::gm::LinearRing *l = new te::gm::LinearRing(pointsVecg.size(), te::gm::LineStringType);
+        for (std::size_t i = 0; i < pointsVecc.size(); i++)
+          l->setPointN(i, *pointsVecc[i]);
+        te::gm::Polygon* pol = new te::gm::Polygon(1, te::gm::PolygonType);
+        pol->setRingN(0, l);
+        geomCoord = dynamic_cast<te::gm::Geometry*>(pol);
+      }
+
+      if (v.second.find("coordGrid") != v.second.not_found())
+      {
+
+        int xGrid = v.second.get<int>("coordGrid.xGrid");
+        int yGrid = v.second.get<int>("coordGrid.yGrid");
+        geomGrid = new te::gm::Point(xGrid, yGrid);
+      }
+
+      if (v.second.find("coordGeo") != v.second.not_found())
+      {
+        double xGeo = v.second.get<double>("coordGeo.xGeo");
+        double yGeo = v.second.get<double>("coordGeo.yGeo");
+        geomCoord = new te::gm::Point(xGeo, yGeo);
+      }
 
       std::vector<double> valuesVec;
       BOOST_FOREACH(boost::property_tree::ptree::value_type &c, v.second.get_child("Values"))
@@ -378,8 +462,8 @@ void te::qt::widgets::MixtureModelWizardPage::loadMixtureModelComponents(std::st
       MixModelComponent mmc;
       mmc.m_name = name;
       mmc.m_values = valuesVec;
-      mmc.m_coordGrid = te::gm::Coord2D(xGrid, yGrid);
-      mmc.m_coordGeo = te::gm::Coord2D(xGeo, yGeo);
+      mmc.m_geomGrid = geomGrid;
+      mmc.m_geomGeo = geomCoord;
       mmc.m_color.setColor(color);
 
       m_components.insert(std::map<std::string, MixModelComponent >::value_type(name, mmc));
@@ -470,14 +554,12 @@ void te::qt::widgets::MixtureModelWizardPage::onPointPicked(double x, double y)
       }
       
       //component coordinate
-      te::gm::Coord2D coordinateGrid(currentColumn, currentRow);
-      te::gm::Coord2D coordinateGeo(x, y);
-
       MixModelComponent mmc;
       mmc.m_name = className.toUtf8().data();
       mmc.m_values = componentsVector;
-      mmc.m_coordGrid = coordinateGrid;
-      mmc.m_coordGeo = coordinateGeo;
+      mmc.m_geomGrid =  new te::gm::Point(currentColumn, currentRow);
+      mmc.m_geomGeo = new te::gm::Point(x, y);
+
       te::color::RGBAColor newcolor(m_color.red(), m_color.green(), m_color.blue(), 255);
       mmc.m_color.setColor(newcolor.getColor());
 
@@ -497,6 +579,33 @@ void te::qt::widgets::MixtureModelWizardPage::onPointPicked(double x, double y)
   }
 }
 
+void te::qt::widgets::MixtureModelWizardPage::onEnvelopeAcquired(te::gm::Envelope env)
+{
+  assert(m_layers.size());
+
+  m_geom = 0;
+
+  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
+  if (env.isValid())
+    m_geom = te::gm::GetGeomFromEnvelope(&env, it->get()->getSRID());
+
+  if (!env.intersects(*m_geom->getMBR()))
+  {
+    return;
+  }
+
+  addGeometryComponent();
+}
+
+void te::qt::widgets::MixtureModelWizardPage::onGeomAquired(te::gm::Polygon* poly)
+{
+  if (poly->isValid())
+  {
+    m_geom = poly;
+    addGeometryComponent();
+  }
+}
+
 void te::qt::widgets::MixtureModelWizardPage::onRemoveToolButtonClicked()
 {
   if(m_ui->m_componentLineEdit->text().isEmpty())
@@ -506,6 +615,23 @@ void te::qt::widgets::MixtureModelWizardPage::onRemoveToolButtonClicked()
   std::map<std::string, MixModelComponent>::iterator it = m_components.find(comp);
   if (it == m_components.end())
     return;
+
+  QTreeWidgetItemIterator itqt(m_ui->m_componentTreeWidget);
+  while (*itqt) {
+    if (comp.compare((*itqt)->text(0).toUtf8().data()) == 0)
+    {
+      QTreeWidgetItem* item = *itqt;
+      int x = m_ui->m_componentTreeWidget->indexOfTopLevelItem(item);
+      if (x >= 0 && x < m_ui->m_componentTreeWidget->topLevelItemCount())
+      {
+        item = m_ui->m_componentTreeWidget->takeTopLevelItem(x);
+        if (item)delete item;
+      }
+      m_components.erase(comp);
+      break;
+    }
+    ++itqt;
+  }
 
   //Set first as current
   if (m_components.size())
@@ -606,14 +732,31 @@ void te::qt::widgets::MixtureModelWizardPage::drawMarks()
 
   while(it != m_components.end())
   {
-    te::gm::Coord2D cGeo = it->second.m_coordGeo;
+    std::string type = it->second.m_geomGeo->getGeometryType();
+    if (type == "Point")
+    {
+      te::gm::Point *cGeo = dynamic_cast<te::gm::Point*>(it->second.m_geomGeo);
 
-    te::gm::Point point;
-    point.setX(cGeo.x);
-    point.setY(cGeo.y);
-    canvasInstance.setPointColor(it->second.m_color);
+      te::gm::Point point;
+      point.setX(cGeo->getX());
+      point.setY(cGeo->getY());
+      canvasInstance.setPointColor(it->second.m_color);
 
-    canvasInstance.draw(&point);
+      canvasInstance.draw(&point);
+    }
+    else
+    {
+      te::gm::Polygon *cGeo = dynamic_cast<te::gm::Polygon*>(it->second.m_geomGeo->clone());
+
+      //te::gm::Polygon pol(cGeo->clone());
+      //point.setX(cGeo->getX());
+      //point.setY(cGeo->getY());
+      te::color::RGBAColor polcolor(it->second.m_color.getRed(), it->second.m_color.getGreen(), it->second.m_color.getBlue(), 62);
+      canvasInstance.setPolygonFillColor(polcolor);
+      canvasInstance.setPolygonContourColor(it->second.m_color);
+
+      canvasInstance.draw(cGeo);
+    }
 
     ++it;
   }
@@ -786,7 +929,7 @@ double te::qt::widgets::MixtureModelWizardPage::GetMediumWavelength(std::string 
 
 void te::qt::widgets::MixtureModelWizardPage::oncomponentChanged()
 {
-  m_navigator->setPointPickedTool(true);
+ // m_navigator->setPointPickedTool(true);
   updateComponents();
 }
 
@@ -830,4 +973,104 @@ void te::qt::widgets::MixtureModelWizardPage::onMixturetabChanged(int page)
 {
   if (page == 1)
     updateComponents();
+}
+
+void te::qt::widgets::MixtureModelWizardPage::addGeometryComponent()
+{
+  assert(m_layers.size());
+
+  QString comp(m_ui->m_componentLineEdit->text());
+
+  te::gm::Polygon* pol = dynamic_cast<te::gm::Polygon*>(m_geom);
+
+  std::vector<double> allvalues;
+
+  //get input raster
+  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
+  while (it != m_layers.end())
+  {
+    std::auto_ptr<te::da::DataSet> ds = it->get()->getData();
+    if (ds.get())
+    {
+      std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
+      std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
+
+      if (inputRst.get())
+      {
+        //component name
+        QString className = comp;
+        //component values
+        std::vector<double> componentsVector;
+
+        te::rst::PolygonIterator<double> itRasterEnd = te::rst::PolygonIterator<double>::end(inputRst.get(), pol);
+
+        //iterate polygon
+        int npixels = 0;
+        for (std::size_t nb = 0; nb < inputRst->getNumberOfBands(); nb++)
+          allvalues.push_back(0);
+
+        std::vector<double>::iterator itv, ita;
+        for (te::rst::PolygonIterator<double> itRaster = te::rst::PolygonIterator<double>::begin(inputRst.get(), pol); itRaster != itRasterEnd; ++itRaster)
+        {
+          std::vector<double> values;
+          int currentColumn = itRaster.getColumn();
+          int currentRow = itRaster.getRow();
+
+          if (currentColumn < 0 || currentColumn >= (int)inputRst->getNumberOfColumns())
+            continue;
+          if (currentRow < 0 || currentRow >= (int)inputRst->getNumberOfRows())
+            continue;
+
+          inputRst->getValues(currentColumn, currentRow, values);
+          for (itv = values.begin(), ita = allvalues.begin(); itv != values.end(), ita != allvalues.end(); itv++, ita++)
+            (*ita) += *itv;
+          npixels++;
+        }
+
+        for (ita = allvalues.begin(); ita != allvalues.end(); ita++)
+          (*ita) /= npixels;
+
+        // double value;
+        for (unsigned b = 0; b < inputRst->getNumberOfBands(); b++)
+        {
+          QString bName(it->get()->getTitle().c_str());
+          bName.append(tr(" Band "));
+          bName.append(QString::number(b));
+          componentsVector.push_back(allvalues[b]);
+        }
+
+        //component coordinate
+        te::gm::Polygon *pgrid = new te::gm::Polygon(*pol);
+        te::gm::LinearRing *lr = dynamic_cast<te::gm::LinearRing*>(pol->getExteriorRing());
+        te::gm::LinearRing *lrg = dynamic_cast<te::gm::LinearRing*>(pgrid->getExteriorRing());
+        for (std::size_t i = 0; i < lr->getNPoints(); i++)
+        {
+          te::gm::Coord2D pixelLocation = inputRst->getGrid()->geoToGrid(lr->getPointN(i)->getX(), lr->getPointN(i)->getY());
+          int currentColumn = pixelLocation.x;
+          int currentRow = pixelLocation.y;
+          lrg->setX(i, currentColumn);
+          lrg->setY(i, currentRow);
+        }
+
+        MixModelComponent mmc;
+        mmc.m_name = className.toUtf8().data();
+        mmc.m_values = componentsVector;
+        mmc.m_geomGrid = dynamic_cast<te::gm::Geometry*>(pgrid);
+        mmc.m_geomGeo = m_geom;
+        te::color::RGBAColor newcolor(m_color.red(), m_color.green(), m_color.blue(), 255);
+        mmc.m_color.setColor(newcolor.getColor());
+
+        std::map<std::string, MixModelComponent > ::iterator it = m_components.find(className.toUtf8().data());
+        if (it != m_components.end())
+        {
+          it->second = mmc;
+        }
+        else
+          m_components.insert(std::map<std::string, MixModelComponent >::value_type(className.toUtf8().data(), mmc));
+
+        updateComponents();
+      } //if (inputRst.get())
+    } //if (ds.get())
+    ++it;
+  }
 }
