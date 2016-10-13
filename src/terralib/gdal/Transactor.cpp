@@ -107,7 +107,7 @@ void te::gdal::Transactor::getDataSetNames(const boost::filesystem::path& path, 
     
     std::pair< std::multimap< std::string, std::string >::const_iterator,
       std::multimap< std::string, std::string >::const_iterator > extensionsRangeIts =
-      GetGDALDriversUCaseExt2DriversMap().equal_range( upcaseExtension );
+      GetGDALAllDriversUCaseExt2DriversMap().equal_range( upcaseExtension );
     
     if( extensionsRangeIts.first != extensionsRangeIts.second )
     {
@@ -233,7 +233,7 @@ std::auto_ptr<te::da::DataSetType> te::gdal::Transactor::getDataSetType(const bo
       
       std::pair< std::multimap< std::string, std::string >::const_iterator,
         std::multimap< std::string, std::string >::const_iterator > extensionsRangeIts =
-        GetGDALDriversUCaseExt2DriversMap().equal_range( upcaseExtension );      
+        GetGDALAllDriversUCaseExt2DriversMap().equal_range( upcaseExtension );      
         
       if( extensionsRangeIts.first != extensionsRangeIts.second )
       {        

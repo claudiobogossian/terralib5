@@ -695,9 +695,9 @@ std::string te::gdal::GetDriverName(const std::string& name)
   if( ext[ 0 ] == '.' ) ext = ext.substr( 1, ext.size() - 1);
   
   std::multimap< std::string, std::string >::const_iterator exttMapIt =
-    GetGDALDriversUCaseExt2DriversMap().find( ext );
+    GetGDALAllDriversUCaseExt2DriversMap().find( ext );
     
-  if( exttMapIt == GetGDALDriversUCaseExt2DriversMap().end() )
+  if( exttMapIt == GetGDALAllDriversUCaseExt2DriversMap().end() )
   {
     return std::string();
   }
@@ -833,12 +833,13 @@ boost::mutex& te::gdal::getStaticMutex()
 
 std::map< std::string, te::gdal::DriverMetadata >&  te::gdal::GetGDALDriversMetadata()
 {
-  if(m_driversMetadata.empty() )
+  static std::map< std::string, DriverMetadata > driversMetadataMap;
+  
+  if(driversMetadataMap.empty() )
   {
     GDALDriverManager* driverManagerPtr = GetGDALDriverManager();
     
     int driversCount = driverManagerPtr->GetDriverCount();
-    char** metaInfoPtr = 0;
     const char* valuePtr = 0;
     
     for( int driverIndex = 0 ; driverIndex < driversCount ; ++driverIndex )
@@ -850,51 +851,131 @@ std::map< std::string, te::gdal::DriverMetadata >&  te::gdal::GetGDALDriversMeta
         DriverMetadata auxMD;
         auxMD.m_driverName = driverPtr->GetDescription();
         
-        metaInfoPtr = driverPtr->GetMetadata();
+        CPLStringList metaInfo( driverPtr->GetMetadata(), false );
+        CPLStringList metaDomainList( driverPtr->GetMetadataDomainList(), true );        
         
-        if( metaInfoPtr )
+        valuePtr = metaInfo.FetchNameValue( GDAL_DMD_EXTENSIONS );
+        if( valuePtr )
         {
-          valuePtr = CSLFetchNameValue( metaInfoPtr, "DMD_EXTENSION" );
-          if( valuePtr ) auxMD.m_extension = valuePtr;
-          
-          valuePtr = CSLFetchNameValue( metaInfoPtr, "DMD_LONGNAME" );
-          if( valuePtr ) auxMD.m_longName = valuePtr;    
-          
-          valuePtr = CSLFetchNameValue( metaInfoPtr, "DMD_SUBDATASETS" );
-          if( ( valuePtr != 0 ) && ( std::strcmp( "YES", valuePtr ) == 0 ) )
-          {
-            auxMD.m_subDatasetsSupport = true;
-          }
-          else
-          {
-            auxMD.m_subDatasetsSupport = false;
-          }
+          te::common::Tokenize( std::string( valuePtr ), auxMD.m_extensions, " " );
         }
         
-        m_driversMetadata[ auxMD.m_driverName ] = auxMD;
+        valuePtr = metaInfo.FetchNameValue( GDAL_DMD_LONGNAME );
+        if( valuePtr ) auxMD.m_longName = valuePtr;    
+        
+        valuePtr = metaInfo.FetchNameValue( GDAL_DMD_SUBDATASETS );
+        if( ( valuePtr != 0 ) && ( std::strcmp( "YES", valuePtr ) == 0 ) )
+        {
+          auxMD.m_subDatasetsSupport = true;
+        }
+        else
+        {
+          auxMD.m_subDatasetsSupport = false;
+        }
+        
+        valuePtr = metaInfo.FetchNameValue( GDAL_DCAP_RASTER );
+        if( ( valuePtr != 0 ) && ( std::strcmp( "YES", valuePtr ) == 0 ) )
+        {
+          auxMD.m_isRaster = true;
+        }
+        else
+        {
+          auxMD.m_isRaster = false;
+        }        
+        
+        valuePtr = metaInfo.FetchNameValue( GDAL_DCAP_VECTOR );
+        if( ( valuePtr != 0 ) && ( std::strcmp( "YES", valuePtr ) == 0 ) )
+        {
+          auxMD.m_isVector = true;
+        }
+        else
+        {
+          auxMD.m_isVector = false;
+        }          
+        
+        driversMetadataMap[ auxMD.m_driverName ] = auxMD;
       }
     }
   }
   
-  return m_driversMetadata;
+  return driversMetadataMap;
 }
 
-std::multimap< std::string, std::string >& te::gdal::GetGDALDriversUCaseExt2DriversMap()
+std::multimap< std::string, std::string >& te::gdal::GetGDALRasterDriversUCaseExt2DriversMap()
 {  
-  if(m_extensions.empty() )
+  static std::multimap< std::string, std::string > extensionsMap;
+  
+  if(extensionsMap.empty() )
   {
     const std::map< std::string, DriverMetadata >& driversMetadata = GetGDALDriversMetadata();
     
     for( std::map< std::string, DriverMetadata >::const_iterator it = driversMetadata.begin() ;
       it != driversMetadata.end() ; ++it )
     {
-      if( ! it->second.m_extension.empty() )
+      if( 
+          ( ! it->second.m_extensions.empty() ) 
+          &&
+          it->second.m_isRaster 
+        )
       {
-        m_extensions.insert( std::pair< std::string, std::string >(
-          te::common::Convert2UCase( it->second.m_extension ), it->first ) );;
+        for( std::size_t extensionsIdx = 0 ; extensionsIdx < it->second.m_extensions.size() ;
+          ++extensionsIdx )
+        {        
+          extensionsMap.insert( std::pair< std::string, std::string >(
+            te::common::Convert2UCase( it->second.m_extensions[ extensionsIdx ] ), it->first ) );;
+        }
       }
     }
   }
   
-  return m_extensions;
+  return extensionsMap;
 }
+
+std::multimap< std::string, std::string >& te::gdal::GetGDALVectorDriversUCaseExt2DriversMap()
+{  
+  static std::multimap< std::string, std::string > extensionsMap;
+  
+  if(extensionsMap.empty() )
+  {
+    const std::map< std::string, DriverMetadata >& driversMetadata = GetGDALDriversMetadata();
+    
+    for( std::map< std::string, DriverMetadata >::const_iterator it = driversMetadata.begin() ;
+      it != driversMetadata.end() ; ++it )
+    {
+      if( 
+          ( ! it->second.m_extensions.empty() ) 
+          &&
+          it->second.m_isVector 
+        )
+      {
+        for( std::size_t extensionsIdx = 0 ; extensionsIdx < it->second.m_extensions.size() ;
+          ++extensionsIdx )
+        {        
+          extensionsMap.insert( std::pair< std::string, std::string >(
+            te::common::Convert2UCase( it->second.m_extensions[ extensionsIdx ] ), it->first ) );;
+        }
+      }
+    }
+  }
+  
+  return extensionsMap;
+}
+
+std::multimap< std::string, std::string > te::gdal::GetGDALAllDriversUCaseExt2DriversMap()
+{  
+  std::multimap< std::string, std::string > extensionsMap( GetGDALVectorDriversUCaseExt2DriversMap() );
+  
+  std::multimap< std::string, std::string >::const_iterator it = 
+    GetGDALRasterDriversUCaseExt2DriversMap().begin();
+  std::multimap< std::string, std::string >::const_iterator itEnd = 
+    GetGDALRasterDriversUCaseExt2DriversMap().end();
+    
+  while( it != itEnd )
+  {
+    extensionsMap.insert( std::pair< std::string, std::string >( it->first, it->second ) );
+    ++it;
+  }
+  
+  return extensionsMap;
+}
+

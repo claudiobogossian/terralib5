@@ -74,7 +74,8 @@ namespace te
      This class is an implementation of a DataSource that consists of raster that can be decoded 
      by the GDAL - Geospatial Data Abstraction Library (http://www.gdal.org/).
      
-     \note Supported getCapabilities options: SUPPORTED_EXTENSIONS-The supported file extensions.
+     \note Supported getCapabilities options: SUPPORTED_RASTER_EXTENSIONS-The supported raster file extensions,
+       SUPPORTED_VECTOR_EXTENSIONS-The supported vector file extensions.
      */
     class TEGDALEXPORT DataSource : public te::da::DataSource
     {

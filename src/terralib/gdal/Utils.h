@@ -60,9 +60,11 @@ namespace te
     struct DriverMetadata
     {
       std::string m_driverName;  //!< Driver name (driver description).
-      std::string m_extension; //!< File extension (DMD_EXTENSION).
-      std::string m_longName; //!< File long name (DMD_LONGNAME).
-      bool m_subDatasetsSupport; //!< true if the driver has support for sub-datasets (DMD_SUBDATASETS).
+      std::vector< std::string > m_extensions; //!< List of extensions handled by the driver (GDAL_DMD_EXTENSIONS).
+      std::string m_longName; //!< File long name (GDAL_DMD_LONGNAME).
+      bool m_subDatasetsSupport; //!< true if the driver has support for sub-datasets (GDAL_DMD_SUBDATASETS).
+      bool m_isRaster; //!< Capability set by a driver having raster capability (GDAL_DCAP_RASTER).
+      bool m_isVector; //!< Capability set by a driver having vector capability (GDAL_DCAP_VECTOR).
     };
     
     /*!
@@ -196,16 +198,6 @@ namespace te
         default : throw Exception(TE_TR("Invalid interpolation method"));
       }
     }    
-    
-    /*!
-    \brief A static map containing the drivers supported by GDAL.
-    */
-    static std::map< std::string, DriverMetadata >   m_driversMetadata;
-
-    /*!
-    \brief A static multimap containing the extensions supported by GDAL.
-    */
-    static std::multimap< std::string, std::string > m_extensions;
 
     /*!
      \brief Gets the grid definition from a GDAL dataset.
@@ -410,10 +402,25 @@ namespace te
     std::map< std::string, DriverMetadata >& GetGDALDriversMetadata();
     
     /*!
-     \brief Returns a map all GDAL supported Upper-case extensions to their respective driver names.
-     \return Returns a map all GDAL supported Upper-case extensions to their respective driver names.
+     \brief Returns a map of all GDAL supported Upper-case raster extensions to their respective driver names.
+     \return Returns the result map.
      */    
-    std::multimap< std::string, std::string >& GetGDALDriversUCaseExt2DriversMap();    
+    std::multimap< std::string, std::string >& GetGDALRasterDriversUCaseExt2DriversMap();    
+    
+    /*!
+     \brief Returns a map of all GDAL supported Upper-case vector extensions to their respective driver names.
+     \return Returns the result map.
+     */    
+    std::multimap< std::string, std::string >& GetGDALVectorDriversUCaseExt2DriversMap();        
+    
+    /*!
+     \brief Returns a map of all GDAL supported Upper-case ( vector and raster ) extensions to their respective driver names.
+     \return Returns the result map.
+     \note To get only vector extensiones use GetGDALVectorDriversUCaseExt2DriversMap(().
+     \note To get only raster extensiones use GetGDALRasterDriversUCaseExt2DriversMap(().
+     */    
+    std::multimap< std::string, std::string > GetGDALAllDriversUCaseExt2DriversMap();     
+    
   } // end namespace gdal
 } // end namespace te
 #endif
