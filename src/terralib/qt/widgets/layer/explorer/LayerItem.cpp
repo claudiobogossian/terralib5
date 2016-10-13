@@ -8,6 +8,7 @@
 #include "../../se/SymbologyPreview.h"
 
 #include "../../../../core/uri/URI.h"
+#include "../../../../core/utils/URI.h"
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../../maptools/DataSetLayer.h"
 #include "../../../../maptools/DataSetAdapterLayer.h"
@@ -54,7 +55,19 @@ QString GetTooltip(te::map::AbstractLayerPtr l)
   if(!connInfo.path().empty())
     toolTip += QObject::tr("Path: ") + (connInfo.path() + "\n").c_str();
 
-  toolTip += '\n';
+  std::map<std::string, std::string> kvp = te::core::expand(connInfo.query());
+  std::map<std::string, std::string>::iterator itBegin = kvp.begin();
+  std::map<std::string, std::string>::iterator itEnd = kvp.end();
+
+  while (itBegin != itEnd)
+  {
+    toolTip += itBegin->first.c_str();
+    toolTip += ": ";
+    toolTip += itBegin->second.c_str();
+    toolTip += "\n";
+    ++itBegin;
+  }
+
   toolTip += QObject::tr("SRID: ");
   toolTip += QString::number(l->getSRID());
   toolTip += QObject::tr(" -  ");
