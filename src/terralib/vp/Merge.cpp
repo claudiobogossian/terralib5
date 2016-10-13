@@ -277,6 +277,9 @@ bool te::vp::Merge::executeMemory(te::vp::AlgorithmParams* mainParams)
       {
         if (!m_properties[i].second.empty())
         {
+          if (m_mergeDs->isNull(m_properties[i].second))
+            continue;
+
           if (!m_properties[i].first.empty())
           {
             if (s != TRYGETMAX && isPrimaryKeyProperty(dst.get(), m_properties[i].first))
