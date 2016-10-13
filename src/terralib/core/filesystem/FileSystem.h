@@ -137,13 +137,23 @@ namespace te
         static bool exists(const std::string& path);
 
         /*!
-          \brief Creates a directory from a given path in UTF-8
+          \brief Creates a directory from a given path in UTF-8.
 
           \param path Path in UTF-8.
 
           \return true if a new directory was created, otherwise false.
          */
         static bool createDirectory(const std::string& path);
+
+        /*!
+          \brief Creates a directory for any element of path that does not
+          exist.
+          \param path Path in UTF-8.
+
+          \return true if a new directory was created, otherwise false.
+         */
+        static bool createDirectories(const std::string& path);
+
         /*!
           \brief Copies a file
 

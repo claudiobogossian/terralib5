@@ -24,10 +24,9 @@
 */
 
 // TerraLib
-
-#include "../../core/translator/Translator.h"
-
+#include "../../core/filesystem/FileSystem.h"
 #include "../../core/logger/Logger.h"
+#include "../../core/translator/Translator.h"
 #include "../../common/progress/ProgressManager.h"
 #include "../../common/StringUtils.h"
 
@@ -636,7 +635,7 @@ void te::vp::UnionDialog::onOkPushButtonClicked()
     {
       ogrUri = m_ui->m_repositoryLineEdit->text().toUtf8().data();
 
-      if (boost::filesystem::exists(ogrUri))
+      if (te::core::FileSystem::exists(ogrUri.string()))
       {
         QMessageBox::information(this, tr("Merge"), tr("Output file already exists. Remove it or select a new name and try again."));
         return;

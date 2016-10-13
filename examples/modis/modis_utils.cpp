@@ -10,7 +10,7 @@
 
 void msearch(const boost::filesystem::path& mpath, std::string product, std::string hv, ProdHVDate& fnames)
 {
-  if (boost::filesystem::is_regular_file(mpath))
+  if (te::core::FileSystem::isRegularFile(mpath))
   {
       
 // Take the filename from the full path and check if it starts with MOD

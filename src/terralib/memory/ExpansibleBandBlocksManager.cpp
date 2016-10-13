@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../core/filesystem/FileSystem.h"
 #include "../core/encoding/CharEncoding.h"
 #include "../core/translator/Translator.h"
 #include "../core/utils/Platform.h"
@@ -771,10 +772,10 @@ bool te::mem::ExpansibleBandBlocksManager::createNewDiskFile( unsigned long int 
   const boost::filesystem::path randShortFileNamePath( 
     "TerralibExpansibleBandBlocksManager_%%%%-%%%%-%%%%-%%%%" );
   const unsigned char c = '\0';
-  
-  fullFileName = boost::filesystem::unique_path( 
-    boost::filesystem::temp_directory_path() /= 
-    randShortFileNamePath ).string();
+  boost::filesystem::path tempDirPath(te::core::FileSystem::tempDirectoryPath());
+  fullFileName = te::core::FileSystem::uniquePath( 
+    (tempDirPath /=
+    randShortFileNamePath).string() );
     
   if( fullFileName.empty() )
   {
@@ -811,9 +812,9 @@ bool te::mem::ExpansibleBandBlocksManager::createNewDiskFile( unsigned long int 
   
   if( ! returnValue )
   {
-    fullFileName = boost::filesystem::unique_path( 
+    fullFileName = te::core::FileSystem::uniquePath((
       boost::filesystem::path( te::core::GetUserDirectory() ) /= 
-      randShortFileNamePath ).string();
+      randShortFileNamePath).string() );
       
     if( fullFileName.empty() )
     {

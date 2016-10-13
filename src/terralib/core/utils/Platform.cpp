@@ -27,9 +27,10 @@
 */
 
 // TerraLib
+#include "Platform.h"
+#include "../filesystem/FileSystem.h"
 #include "../../BuildConfig.h"
 #include "../../Defines.h"
-#include "Platform.h"
 
 // Boost
 #include <boost/filesystem.hpp>
@@ -45,18 +46,18 @@
 std::string te::core::FindInTerraLibPath(const std::string& path)
 {
 // 1st: look in the neighborhood of the executable
-  boost::filesystem::path tl_path = boost::filesystem::current_path();
+  boost::filesystem::path tl_path = te::core::FileSystem::currentPath();
 
   boost::filesystem::path eval_path = tl_path / path;
 
-  if(boost::filesystem::exists(eval_path))
+  if(te::core::FileSystem::exists(eval_path.string()))
     return eval_path.string();
 
   // Check for one path above
   tl_path /= "..";
   eval_path = tl_path / path;
 
-  if(boost::filesystem::exists(eval_path))
+  if(te::core::FileSystem::exists(eval_path.string()))
     return eval_path.string();
 
 
@@ -69,7 +70,7 @@ std::string te::core::FindInTerraLibPath(const std::string& path)
 
     eval_path = tl_path / path;
 
-    if(boost::filesystem::exists(eval_path))
+    if(te::core::FileSystem::exists(eval_path.string()))
       return eval_path.string();
   }
 
@@ -78,7 +79,7 @@ std::string te::core::FindInTerraLibPath(const std::string& path)
 
   eval_path = tl_path / path;
 
-  if(boost::filesystem::exists(eval_path))
+  if(te::core::FileSystem::exists(eval_path.string()))
     return eval_path.string();
 
 // 4nd: look into the codebase path
@@ -86,7 +87,7 @@ std::string te::core::FindInTerraLibPath(const std::string& path)
 
   eval_path = tl_path / path;
 
-  if(boost::filesystem::exists(eval_path))
+  if(te::core::FileSystem::exists(eval_path.string()))
     return eval_path.string();
 
 
@@ -140,7 +141,7 @@ std::string te::core::GetAppLocalDataLocation()
 #elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
 
   char* homePtr = getenv( "HOME" );
-  if( homePtr && boost::filesystem::is_directory(homePtr))
+  if( homePtr && te::core::FileSystem::isDirectory(homePtr))
   {
     boost::filesystem::path path(homePtr);
     path /=".local/share";
@@ -150,7 +151,7 @@ std::string te::core::GetAppLocalDataLocation()
 #elif (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
 
    char* homePtr = getenv( "HOME" );
-   if( homePtr && boost::filesystem::is_directory(homePtr))
+   if( homePtr && te::core::FileSystem::isDirectory(homePtr))
    {
      boost::filesystem::path path(homePtr);
      path /="Library/Application Support";

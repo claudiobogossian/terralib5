@@ -1,5 +1,6 @@
 
 #include "../Config.h"
+#include <terralib/core/filesystem/FileSystem.h>
 #include <terralib/common.h>
 #include <terralib/dataaccess.h>
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
@@ -57,7 +58,7 @@ bool VectorToRaster()
   boost::filesystem::path uri(TERRALIB_DATA_DIR "/rasters/vector2raster.tif");
   std::string dsName = "vector2raster";
 
-  if (boost::filesystem::exists(uri))
+  if (te::core::FileSystem::exists(uri.string()))
   {
     std::cout << "Output file already exists. Remove it or select a new name and try again.";
     return false;

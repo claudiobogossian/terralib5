@@ -22,13 +22,16 @@
   \brief Raster objects feeders.
 */
 
+// TerraLib
 #include "FeedersRaster.h"
 #include "Macros.h"
+#include "../core/filesystem/FileSystem.h"
 #include "../raster/RasterFactory.h"
 #include "../raster/Grid.h"
 #include "../geometry/LinearRing.h"
 #include "../common/Exception.h"
 
+//Boost
 #include <boost/filesystem.hpp>
 
 namespace te
@@ -623,7 +626,7 @@ namespace te
         std::vector< std::string >::size_type fileExtensionsIdx = 0;
         
         boost::filesystem::path directoryPath( directoryName );
-        if( boost::filesystem::is_directory( directoryName ) )
+        if( te::core::FileSystem::isDirectory( directoryName ) )
         {
           if( recursive )
           {
@@ -633,7 +636,7 @@ namespace te
           
             while( dirIt != dirItE )
             {
-              if( boost::filesystem::is_regular_file( *dirIt ) )
+              if( te::core::FileSystem::isRegularFile( dirIt->path().string() ) )
               {
                 if( fileExtensionsSize )
                 {
@@ -663,7 +666,7 @@ namespace te
           
             while( dirIt != dirItE )
             {
-              if( boost::filesystem::is_regular_file( *dirIt ) )
+              if( te::core::FileSystem::isRegularFile( dirIt->path().string() ) )
               {
                 if( fileExtensionsSize )
                 {
