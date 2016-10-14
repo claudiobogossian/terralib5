@@ -43,7 +43,7 @@ namespace te
 
           \brief This is the concrete factory for renderers of a WMSLayer.
         */
-        class WMSLayerRendererFactory : public te::map::RendererFactory
+        class TEOGCWMSDATAACCESSEXPORT WMSLayerRendererFactory : public te::map::RendererFactory
         {
         public:
 
