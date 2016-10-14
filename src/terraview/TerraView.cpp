@@ -294,8 +294,6 @@ void TerraView::init()
   QStringList prjTitles,
       prjPaths;
 
-  initToolbars();
-
   GetProjectsFromSettings(prjTitles, prjPaths);
 
   if(!prjPaths.empty())
@@ -399,11 +397,6 @@ void TerraView::initActions()
   initAction(m_fileExit, "system-log-out", "File.Exit", tr("E&xit"), tr(""), true, false, true, m_menubar);
   initAction(m_filePrintPreview, "document-print-preview", "File.Print Preview", tr("Print Pre&view..."), tr(""), true, false, false, m_menubar);
   initAction(m_filePrint, "document-print", "File.Print", tr("&Print..."), tr(""), true, false, false, m_menubar);
-
-  // Menu -Map- actions
-  initAction(m_mapMeasureDistance, "distance-measure", "Map.Measure Distance", tr("Measure &Distance"), tr(""), true, true, true, m_menubar);
-  initAction(m_mapMeasureArea, "area-measure", "Map.Measure Area", tr("Measure &Area"), tr(""), true, true, true, m_menubar);
-  initAction(m_mapMeasureAngle, "angle-measure", "Map.Measure Angle", tr("Measure &Angle"), tr(""), true, true, true, m_menubar);
 }
 
 void TerraView::initSlotsConnections()
@@ -427,10 +420,6 @@ void TerraView::initSlotsConnections()
   connect(m_layerObjectGrouping, SIGNAL(triggered()), SLOT(onLayerGroupingTriggered()));
   connect(m_layerCompositionMode, SIGNAL(hovered()), SLOT(onLayerCompositionModeTriggered()));
   connect(m_layerQuery, SIGNAL(triggered()), SLOT(onQueryLayerTriggered()));
-
-  connect(m_mapMeasureDistance, SIGNAL(toggled(bool)), SLOT(onMeasureDistanceToggled(bool)));
-  connect(m_mapMeasureArea, SIGNAL(toggled(bool)), SLOT(onMeasureAreaToggled(bool)));
-  connect(m_mapMeasureAngle, SIGNAL(toggled(bool)), SLOT(onMeasureAngleToggled(bool)));
 
   connect(m_projectAddLayerDataset, SIGNAL(triggered()), SLOT(onAddDataSetLayerTriggered()));
   connect(m_projectAddLayerQueryDataSet, SIGNAL(triggered()), SLOT(onAddQueryLayerTriggered()));
@@ -562,19 +551,6 @@ void TerraView::addMenusActions()
   m_mapMenu->addSeparator();
   m_mapMenu->addAction(m_mapSRID);
   m_mapMenu->addAction(m_mapUnknownSRID);
-
-  // Group the map tools
-  QActionGroup* mapToolsGroup = new QActionGroup(m_mapMenu);
-  mapToolsGroup->setObjectName("Map.ToolsGroup");
-  mapToolsGroup->addAction(m_mapZoomIn);
-  mapToolsGroup->addAction(m_mapZoomOut);
-  mapToolsGroup->addAction(m_mapPan);
-  mapToolsGroup->addAction(m_mapMeasureDistance);
-  mapToolsGroup->addAction(m_mapMeasureArea);
-  mapToolsGroup->addAction(m_mapMeasureAngle);
-  mapToolsGroup->addAction(m_mapInfo);
-  mapToolsGroup->addAction(m_mapSelection);
-  mapToolsGroup->addAction(m_mapRemoveSelection);
 
   // Tools menu
   m_toolsMenu->setObjectName("Tools");
@@ -779,18 +755,18 @@ void TerraView::initMenus()
 
 void TerraView::initToolbars()
 {
-  std::vector<QToolBar*> bars = te::qt::af::ReadToolBarsFromSettings(m_app, this);
-  std::vector<QToolBar*>::iterator it;
+  te::qt::af::BaseApplication::initToolbars();
 
-  for (it = bars.begin(); it != bars.end(); ++it)
+  std::vector<QToolBar*> toolBars = m_app->getToolBars();
+
+
+  for (std::size_t t = 0; t < toolBars.size(); ++t)
   {
-    QToolBar* bar = *it;
-    addToolBar(Qt::TopToolBarArea, bar);
+    QToolBar* bar = toolBars[t];
+
     m_viewToolBarsMenu->addAction(bar->toggleViewAction());
-    m_app->registerToolBar(bar->objectName(), bar);
   }
 }
-
 
 void TerraView::showAboutDialog()
 {
@@ -1313,41 +1289,6 @@ void TerraView::onQueryLayerTriggered()
 
   m_queryDlg->show();
 }
-
-
-void TerraView::onMeasureDistanceToggled(bool checked)
-{
-  if (!checked)
-    return;
-
-  QCursor measureDistanceCursor(QIcon::fromTheme("distance-measure-cursor").pixmap(m_mapCursorSize), 0, 0);
-
-  te::qt::widgets::Measure* distance = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Distance, measureDistanceCursor);
-  m_display->getDisplay()->setCurrentTool(distance);
-}
-
-void TerraView::onMeasureAreaToggled(bool checked)
-{
-  if (!checked)
-    return;
-
-  QCursor measureAreaCursor(QIcon::fromTheme("area-measure-cursor").pixmap(m_mapCursorSize), 0, 0);
-
-  te::qt::widgets::Measure* area = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Area, measureAreaCursor);
-  m_display->getDisplay()->setCurrentTool(area);
-}
-
-void TerraView::onMeasureAngleToggled(bool checked)
-{
-  if (!checked)
-    return;
-
-  QCursor measureAngleCursor(QIcon::fromTheme("angle-measure-cursor").pixmap(m_mapCursorSize), 0, 0);
-
-  te::qt::widgets::Measure* angle = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Angle, measureAngleCursor);
-  m_display->getDisplay()->setCurrentTool(angle);
-}
-
 
 void TerraView::onAddDataSetLayerTriggered()
 {

@@ -84,13 +84,13 @@ class TerraView : public te::qt::af::BaseApplication
 
     virtual void initMenus();
 
+    virtual void initToolbars();
+
     virtual void initSlotsConnections();
 
     void addMenusActions();
 
     void addPopUpMenu();
-
-    void initToolbars();
 
   protected slots:
 
@@ -127,13 +127,6 @@ class TerraView : public te::qt::af::BaseApplication
     void onLayerCompositionModeTriggered();
 
     void onQueryLayerTriggered();
-
-
-    void onMeasureDistanceToggled(bool checked);
-
-    void onMeasureAreaToggled(bool checked);
-
-    void onMeasureAngleToggled(bool checked);
 
 
     void onAddDataSetLayerTriggered();
@@ -208,10 +201,6 @@ class TerraView : public te::qt::af::BaseApplication
     QAction* m_layerObjectGrouping;
     QAction* m_layerCompositionMode;
     QAction* m_layerQuery;
-
-    QAction* m_mapMeasureDistance;
-    QAction* m_mapMeasureArea;
-    QAction* m_mapMeasureAngle;
 
     QAction* m_pluginsManager;
 

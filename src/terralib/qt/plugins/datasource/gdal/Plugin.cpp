@@ -61,6 +61,7 @@
 #include <QMenu>
 #include <QFileInfo>
 #include <QMessageBox>
+#include <QToolBar>
 
 std::list<te::da::DataSetTypePtr> GetDataSetsInfo(const te::da::DataSourceInfoPtr& info)
 {
@@ -127,20 +128,29 @@ void te::qt::plugins::gdal::Plugin::startup()
   m_initialized = true;
 
   //Initializing action
-  m_openFile = new QAction(QIcon::fromTheme("file-raster"), tr("Raster File..."), this);
-  m_openFile->setObjectName("Project.Add Layer.Raster File");
-  m_openMultipleFiles = new QAction(QIcon::fromTheme("file-raster"), tr("Multiple Raster Files..."), this);
-  m_openMultipleFiles->setObjectName("Project.Add Layer.Multiple Raster Files");
+  m_openMultipleFiles = new QAction(QIcon::fromTheme("file-raster"), tr("Raster File..."), this);
+  m_openMultipleFiles->setToolTip(tr("Add new raster file as a layer."));
+  m_openMultipleFiles->setObjectName("Project.Add Layer.Raster File");
+  m_openFile = new QAction(QIcon::fromTheme("file-raster"), tr("RAW Raster File..."), this);
+  m_openFile->setObjectName("Project.Add Layer.RAW Raster File");
+
 
   te::qt::af::evt::NewActionsAvailable e;
   e.m_category = "Dataaccess";
-  e.m_actions << m_openFile;
   e.m_actions << m_openMultipleFiles;
+  e.m_actions << m_openFile;
+  
 
   emit triggered(&e);
 
-    connect (m_openFile, SIGNAL(triggered()), SLOT(openFileDialog()));
-    connect (m_openMultipleFiles, SIGNAL(triggered()), SLOT(openMultipleFilesDialog()));
+  connect (m_openFile, SIGNAL(triggered()), SLOT(openFileDialog()));
+  connect (m_openMultipleFiles, SIGNAL(triggered()), SLOT(openMultipleFilesDialog()));
+
+  //register actions into application tool bar
+  QToolBar* toolBar = te::qt::af::AppCtrlSingleton::getInstance().getToolBar("File Tool Bar");
+
+  if (toolBar)
+    toolBar->addAction(m_openMultipleFiles);
 }
 
 void te::qt::plugins::gdal::Plugin::shutdown()
