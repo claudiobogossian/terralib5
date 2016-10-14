@@ -57,8 +57,6 @@ namespace te
         */
         virtual WMSCapabilities parseCapabilities(const std::string& xmlPath);
 
-      private:
-
         Capability parseCapability(const std::auto_ptr<te::xml::Reader>& reader);
 
         Request parseRequest(const std::auto_ptr<te::xml::Reader>& reader);

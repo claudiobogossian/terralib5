@@ -252,11 +252,11 @@ namespace te
 
           void optimize(const std::map<std::string, std::string>& opInfo);
 
-        protected:
-
           std::vector<std::string> getLayerNames();
 
           te::ws::ogc::wms::Layer getLayerByName(const std::string& layerName);
+
+        protected:
 
           void createLayerMap(const te::ws::ogc::wms::Layer& rootLayer);
 
