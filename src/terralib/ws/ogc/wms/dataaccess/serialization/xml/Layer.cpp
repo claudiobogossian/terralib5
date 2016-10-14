@@ -5,6 +5,7 @@
 #include "../../../../../../maptools/serialization/xml/Utils.h"
 #include "../../../../../../xml/AbstractWriter.h"
 #include "../../../../../../xml/Reader.h"
+#include "../../../../../../core/encoding/CharEncoding.h"
 #include "../../WMSLayer.h"
 
 
@@ -20,6 +21,15 @@ te::map::AbstractLayer *te::ws::ogc::wms::serialize::LayerReader(te::xml::Reader
   reader.next();
   std::string visible = te::map::serialize::ReadLayerVisibility(reader);
 
+  /* Enconding Element */
+  reader.next();
+  std::string encodingStr = te::map::serialize::ReadLayerEncoding(reader);
+
+  te::core::EncodingType encoding = te::core::CharEncoding::getEncodingType(encodingStr);
+
+  /* DataSetName Element */
+  reader.next();
+  std::string dataset = te::map::serialize::ReadDataSetName(reader);
 
   /* DataSourceId Element */
   reader.next();
@@ -57,17 +67,21 @@ te::map::AbstractLayer *te::ws::ogc::wms::serialize::LayerReader(te::xml::Reader
 
   te::ws::ogc::wms::WMSGetMapRequest request = GetMapRequestReader(reader);
 
-  assert(reader.getElementLocalName() == "WMSLayer");
-
   reader.next();
+  assert(reader.getElementLocalName() == "OGCWMSLayer");
 
   std::auto_ptr<te::ws::ogc::wms::WMSLayer> wmsLayer (new te::ws::ogc::wms::WMSLayer(id, title));
+  wmsLayer->setDataSetName(dataset);
   wmsLayer->setDataSourceId(datasourceId);
+  wmsLayer->setEncoding(encoding);
   wmsLayer->setSRID(srid);
   wmsLayer->setExtent(*mbr.get());
   wmsLayer->setRendererType(rendererId);
   wmsLayer->setVisibility(te::map::serialize::GetVisibility(visible));
   wmsLayer->setGetMapRequest(request);
+
+  reader.next();
+  assert(reader.getElementLocalName() == "LayerList");
 
   return wmsLayer.release();
 }
@@ -81,7 +95,7 @@ void te::ws::ogc::wms::serialize::LayerWriter(const te::map::AbstractLayer *alay
 
   te::ws::ogc::wms::WMSGetMapRequest request = layer->getRequest();
 
-  writer.writeStartElement("te_map:WMSLayer");
+  writer.writeStartElement("te_map:OGCWMSLayer");
 
   // Write mandatory attributes.
   writer.writeAttribute("width", request.m_width);
@@ -106,6 +120,8 @@ void te::ws::ogc::wms::serialize::LayerWriter(const te::map::AbstractLayer *alay
   writer.writeElement("te_map:SRID", layer->getSRID());
   te::serialize::xml::SaveExtent(layer->getExtent(), writer);
   writer.writeElement("te_map:RendererId", layer->getRendererType());
+
+  writer.writeStartElement("te_map:WMSGetMapRequest");
 
   writer.writeStartElement("te_map:Layers");
 
@@ -132,6 +148,10 @@ void te::ws::ogc::wms::serialize::LayerWriter(const te::map::AbstractLayer *alay
   }
 
   writer.writeEndElement("te_map:Styles");
+
+  writer.writeEndElement("te_map:WMSGetMapRequest");
+
+  writer.writeEndElement("te_map:OGCWMSLayer");
 }
 
 te::ws::ogc::wms::WMSGetMapRequest te::ws::ogc::wms::serialize::GetMapRequestReader(te::xml::Reader &reader)
@@ -183,29 +203,30 @@ te::ws::ogc::wms::WMSGetMapRequest te::ws::ogc::wms::serialize::GetMapRequestRea
     }
   }
 
+  reader.next();
   request.m_layers = layerNames;
 
   // BoundingBox Element
   reader.next();
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "BoundingBox");
 
   te::ws::ogc::wms::BoundingBox bbox;
 
   for(size_t i = 0; i < reader.getNumberOfAttrs(); i++)
   {
-    if(reader.getAttrLocalName(i), "CRS")
+    if(reader.getAttrLocalName(i) == "CRS")
       bbox.m_crs = reader.getAttr("CRS");
-    else if (reader.getAttrLocalName(i), "minx")
+    else if (reader.getAttrLocalName(i) == "minx")
       bbox.m_minX = reader.getAttrAsDouble("minx");
-    else if (reader.getAttrLocalName(i), "miny")
+    else if (reader.getAttrLocalName(i) == "miny")
       bbox.m_minY = reader.getAttrAsDouble("miny");
-    else if (reader.getAttrLocalName(i), "maxx")
+    else if (reader.getAttrLocalName(i) == "maxx")
       bbox.m_maxX = reader.getAttrAsDouble("maxx");
-    else if (reader.getAttrLocalName(i), "maxy")
+    else if (reader.getAttrLocalName(i) == "maxy")
       bbox.m_maxY = reader.getAttrAsDouble("maxy");
   }
 
+  reader.next();
   request.m_boundingBox = bbox;
   request.m_srs = bbox.m_crs;
 
@@ -224,7 +245,12 @@ te::ws::ogc::wms::WMSGetMapRequest te::ws::ogc::wms::serialize::GetMapRequestRea
     }
   }
 
+  reader.next();
   request.m_styles = styleNames;
+
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  assert(reader.getElementLocalName() == "WMSGetMapRequest");
 
   return request;
 }
