@@ -110,6 +110,89 @@ BOOST_AUTO_TEST_CASE (rasterCopyConstructor_test)
 {
 }
 
+BOOST_AUTO_TEST_CASE (metadata_persistence_test)
+{
+  std::map<std::string, std::string> dsinfo;
+  dsinfo["URI"] = "raster_metadata_persistence_test.tif";  
+  
+  // Creating the output raster
+  
+  {
+    std::vector<te::rst::BandProperty*> vecBandProp;
+    vecBandProp.push_back( new te::rst::BandProperty( 0, te::dt::UCHAR_TYPE ) );
+    vecBandProp[ 0 ]->m_blkh = 100;
+    vecBandProp[ 0 ]->m_blkw = 100;
+    vecBandProp[ 0 ]->m_nblocksx = 1;
+    vecBandProp[ 0 ]->m_nblocksy = 1;
+    vecBandProp[ 0 ]->m_noDataValue = 0;
+    vecBandProp[ 0 ]->m_type = te::dt::UCHAR_TYPE;
+    vecBandProp[ 0 ]->m_categoryNames.push_back( "category_0" );
+    vecBandProp[ 0 ]->m_categoryNames.push_back( "category_1" );
+    vecBandProp[ 0 ]->m_description = "metadata_persistence_test";
+    vecBandProp[ 0 ]->m_metadata.push_back( 
+       std::pair<std::string, std::string>( "meta0name", "meta0value" ) );
+    vecBandProp[ 0 ]->m_metadata.push_back( 
+       std::pair<std::string, std::string>( "meta1name", "meta1value" ) );
+    
+    const te::gm::Coord2D ulc( 0, 0 );
+    te::rst::Grid* grid = new te::rst::Grid( 100, 100, 1.0, 1.0, &ulc, 0 );
+    
+    std::auto_ptr<te::rst::Raster> rst(te::rst::RasterFactory::make("GDAL", 
+      grid, vecBandProp, dsinfo));
+    
+    BOOST_REQUIRE( rst.get() );
+    BOOST_CHECK( rst->getBand( 0 )->getProperty()->m_description
+      == "metadata_persistence_test" );    
+    BOOST_REQUIRE( rst->getBand( 0 )->getProperty()->m_metadata.size()
+      == 2 );        
+    BOOST_CHECK( rst->getBand( 0 )->getProperty()->m_metadata[ 0 ].first
+      == "meta0name" );        
+    BOOST_CHECK( rst->getBand( 0 )->getProperty()->m_metadata[ 0 ].second
+      == "meta0value" );            
+    BOOST_CHECK( rst->getBand( 0 )->getProperty()->m_metadata[ 1 ].first
+      == "meta1name" );        
+    BOOST_CHECK( rst->getBand( 0 )->getProperty()->m_metadata[ 1 ].second
+      == "meta1value" );       
+    
+    // Geotiff do not have support for category names
+/*    BOOST_CHECK( rst->getBand( 0 )->getProperty()->m_categoryNames.size()
+      == 2 );    
+    BOOST_CHECK( rst->getBand( 0 )->getProperty()->m_categoryNames[ 0 ]
+      == "category_0" );
+    BOOST_CHECK( rst->getBand( 0 )->getProperty()->m_categoryNames[ 1 ]
+      == "category_1" );   */ 
+  }
+  
+  // Reopen raster
+  
+  {
+    boost::shared_ptr< te::rst::Raster > inputRasterPtr ( 
+      te::rst::RasterFactory::open( dsinfo ) );
+    
+    BOOST_REQUIRE( inputRasterPtr.get() );  
+    BOOST_CHECK( inputRasterPtr->getBand( 0 )->getProperty()->m_description
+      == "metadata_persistence_test" );    
+    BOOST_REQUIRE( inputRasterPtr->getBand( 0 )->getProperty()->m_metadata.size()
+      == 2 );        
+    BOOST_CHECK( inputRasterPtr->getBand( 0 )->getProperty()->m_metadata[ 0 ].first
+      == "meta0name" );        
+    BOOST_CHECK( inputRasterPtr->getBand( 0 )->getProperty()->m_metadata[ 0 ].second
+      == "meta0value" );            
+    BOOST_CHECK( inputRasterPtr->getBand( 0 )->getProperty()->m_metadata[ 1 ].first
+      == "meta1name" );        
+    BOOST_CHECK( inputRasterPtr->getBand( 0 )->getProperty()->m_metadata[ 1 ].second
+      == "meta1value" ); 
+    
+    // Geotiff do not have support for category names    
+/*    BOOST_CHECK( inputRasterPtr->getBand( 0 )->getProperty()->m_categoryNames.size()
+      == 2 );    
+    BOOST_CHECK( inputRasterPtr->getBand( 0 )->getProperty()->m_categoryNames[ 0 ]
+      == "category_0" );
+    BOOST_CHECK( inputRasterPtr->getBand( 0 )->getProperty()->m_categoryNames[ 1 ]
+      == "category_1" );*/    
+  }
+}
+
 BOOST_AUTO_TEST_CASE (rasterize_test)
 {
   std::vector< te::gm::Geometry* > geomPtrs;

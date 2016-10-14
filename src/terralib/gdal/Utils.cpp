@@ -61,6 +61,8 @@
 #include <boost/graph/graph_concepts.hpp>
 #include <boost/scoped_array.hpp>
 
+#define TL_B_PROP_DESC_KEY "TERRALIB_BAND_PROPERTY_GDAL_DESCRIPTION_KEY_TEXT"
+
 std::string te::gdal::GetSubDataSetName(const std::string& name, const std::string& driverName)
 {
   std::vector<std::string> words;
@@ -219,7 +221,8 @@ te::rst::BandProperty* te::gdal::GetBandProperty(GDALRasterBand* gband,
   if (!gband)
     return 0;
 
-  te::rst::BandProperty* bprop = new te::rst::BandProperty(gband->GetBand()-1, GetTeDataType(gband->GetRasterDataType()), "");
+  std::auto_ptr< te::rst::BandProperty > bprop( new te::rst::BandProperty(
+    gband->GetBand()-1, GetTeDataType(gband->GetRasterDataType()), "") );
   
   bprop->m_idx = bandIndex;
   
@@ -278,22 +281,85 @@ te::rst::BandProperty* te::gdal::GetBandProperty(GDALRasterBand* gband,
   }
 
   // find if there is a no data value
+  
   int noDataValueIsUsed = 0;
   double nodataval = gband->GetNoDataValue(&noDataValueIsUsed);
   if (noDataValueIsUsed) 
     bprop->m_noDataValue = nodataval;
+  
+  // category names
+  
+  {
+    char** categoriesListPtr = gband->GetCategoryNames();
+    
+    if( categoriesListPtr )
+    {
+      const int categoriesListSize = CSLCount( categoriesListPtr );
+      
+      for( int categoriesListIdx = 0 ; categoriesListIdx < categoriesListSize ;
+        ++categoriesListIdx )
+      {
+        bprop->m_categoryNames.push_back( std::string( 
+          categoriesListPtr[ categoriesListIdx ] ) );
+      }
+    }
+  }
+  
+  // Metadata & Description
+  
+  {
+    char** metadataDomainListPtr = gband->GetMetadataDomainList();
+    
+    char** metadataListPtr = gband->GetMetadata( ( metadataDomainListPtr ? 
+          metadataDomainListPtr[ 0 ] : 0 ) );
+    
+    if( metadataListPtr )
+    {
+      const int metadataListSize = CSLCount( metadataListPtr );
+      char* namePtr = 0;
+      const char* valuePtr = 0;
+      
+      for( int metadataListIdx = 0 ; metadataListIdx < metadataListSize ;
+        ++metadataListIdx )
+      {
+        valuePtr = CPLParseNameValue( metadataListPtr[ metadataListIdx ],
+          &namePtr );
+        
+        if( std::strcmp( namePtr, TL_B_PROP_DESC_KEY ) == 0 )
+        {
+          bprop->m_description = std::string( valuePtr );
+        }
+        else
+        {
+          bprop->m_metadata.push_back( std::pair<std::string, std::string>(
+            std::string( namePtr ), std::string( valuePtr ) ) );
+        }
+        
+        VSIFree( namePtr ); 
+      }
+    }
+    
+    if( metadataDomainListPtr ) CSLDestroy( metadataDomainListPtr );
+  }  
+  
+  // unit 
 
   std::string unitName = gband->GetUnitType();
   if (!unitName.empty())
     bprop->setUnitOfMeasure(te::common::UnitsOfMeasureManager::getInstance().find(unitName));
+  
+  // scale and offset
+  
   bprop->m_valuesOffset = gband->GetOffset(0);
   bprop->m_valuesScale = gband->GetScale(0);
+  
+  // blocking scheme
 
   gband->GetBlockSize(&bprop->m_blkw, &bprop->m_blkh);
   bprop->m_nblocksx = (gband->GetXSize() + bprop->m_blkw - 1) / bprop->m_blkw;
   bprop->m_nblocksy = (gband->GetYSize() + bprop->m_blkh - 1) / bprop->m_blkh;
 
-  return bprop;
+  return bprop.release();
 }
 
 void te::gdal::GetBands(te::gdal::Raster* rst, std::vector<te::gdal::Band*>& bands)
@@ -542,7 +608,66 @@ GDALDataset* te::gdal::CreateRaster(const std::string& name, te::rst::Grid* g, c
     rasterBand->SetOffset(bands[dIdx]->m_valuesOffset.real());
     rasterBand->SetScale(bands[dIdx]->m_valuesScale.real());
     
-    // maybe there is something else here...
+    // category names
+    
+    {
+      char** categoryNamesListPtr = 0;
+      
+      for( std::size_t categoryNamesIdx = 0 ; categoryNamesIdx <
+        bands[ dIdx ]->m_categoryNames.size() ; ++categoryNamesIdx )
+      {
+        if( ! bands[ dIdx ]->m_categoryNames[ categoryNamesIdx ].empty() )
+        {
+          categoryNamesListPtr = CSLAddString( categoryNamesListPtr, 
+             bands[ dIdx ]->m_categoryNames[ categoryNamesIdx ].c_str() );
+        }
+      }
+      
+      if( categoryNamesListPtr )
+      {
+        rasterBand->SetCategoryNames( categoryNamesListPtr );
+        CSLDestroy(categoryNamesListPtr);
+      }
+    }
+    
+    // Metadata & Description
+    
+    {
+      char** metadataDomainListPtr = rasterBand->GetMetadataDomainList();
+      
+      char** metadataListPtr = 0;
+      
+      if( ! bands[ dIdx ]->m_description.empty() )
+      {
+        metadataListPtr = CSLAddNameValue( metadataListPtr, 
+           TL_B_PROP_DESC_KEY,
+           bands[ dIdx ]->m_description.c_str() );   
+      }
+      
+      for( std::size_t metadataIdx = 0 ; metadataIdx <
+        bands[ dIdx ]->m_metadata.size() ; ++metadataIdx )
+      {
+        if( !
+            ( bands[ dIdx ]->m_metadata[ metadataIdx ].first.empty() )
+            ||
+            ( bands[ dIdx ]->m_metadata[ metadataIdx ].second.empty() )
+          )
+        {
+          metadataListPtr = CSLAddString( metadataListPtr, 
+             ( bands[ dIdx ]->m_metadata[ metadataIdx ].first + "=" +
+             bands[ dIdx ]->m_metadata[ metadataIdx ].second ).c_str() );
+        }
+      }
+      
+      if( metadataListPtr )
+      {
+        rasterBand->SetMetadata( metadataListPtr, ( metadataDomainListPtr ? 
+          metadataDomainListPtr[ 0 ] : 0 ) );
+        CSLDestroy(metadataListPtr);
+      }
+      
+      if( metadataDomainListPtr ) CSLDestroy( metadataDomainListPtr );
+    }
   }
   
   return poDataset;
@@ -694,10 +819,12 @@ std::string te::gdal::GetDriverName(const std::string& name)
   std::string ext = te::common::Convert2UCase(mpath.extension().string());
   if( ext[ 0 ] == '.' ) ext = ext.substr( 1, ext.size() - 1);
   
+  std::multimap< std::string, std::string > extensionsMap = GetGDALAllDriversUCaseExt2DriversMap();
+  
   std::multimap< std::string, std::string >::const_iterator exttMapIt =
-    GetGDALAllDriversUCaseExt2DriversMap().find( ext );
+    extensionsMap.find( ext );
     
-  if( exttMapIt == GetGDALAllDriversUCaseExt2DriversMap().end() )
+  if( exttMapIt == extensionsMap.end() )
   {
     return std::string();
   }
