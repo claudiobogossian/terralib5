@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../common/Exception.h"
+#include "../core/encoding/CharEncoding.h"
 #include "../core/translator/Translator.h"
 #include "ErrorHandler.h"
 #include "Exception.h"
@@ -117,7 +118,7 @@ void te::xerces::Reader::read(const std::string& fileURI)
 
   try
   {
-    std::ifstream file(fileURI.c_str());
+    std::ifstream file(te::core::CharEncoding::fromUTF8(fileURI).c_str());
     std::string text((std::istreambuf_iterator<char>(file)),
       std::istreambuf_iterator<char>());
     xercesc::MemBufInputSource xmlbuffer((const ::XMLByte*)text.c_str(), text.size(), "");

@@ -166,7 +166,7 @@ void LoadProject(const QString& projFile, ProjectMetadata& proj, std::list<te::m
 
   std::auto_ptr<te::xml::Reader> xmlReader(te::xml::ReaderFactory::make());
 
-  xmlReader->read(te::core::CharEncoding::fromUTF8(fName));
+  xmlReader->read(fName);
 
   if(!xmlReader->next())
   {
