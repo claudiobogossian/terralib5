@@ -62,6 +62,7 @@
 #include <boost/scoped_array.hpp>
 
 #define TL_B_PROP_DESC_KEY "TERRALIB_BAND_PROPERTY_GDAL_DESCRIPTION_KEY_TEXT"
+#define TL_B_PROP_CATNAME_KEY "TERRALIB_BAND_PROPERTY_GDAL_CATEGORY_NAME_KEY_TEXT"
 
 std::string te::gdal::GetSubDataSetName(const std::string& name, const std::string& driverName)
 {
@@ -289,6 +290,8 @@ te::rst::BandProperty* te::gdal::GetBandProperty(GDALRasterBand* gband,
   
   // category names
   
+  bool categoryNamesLoaded = false;
+  
   {
     char** categoriesListPtr = gband->GetCategoryNames();
     
@@ -301,8 +304,21 @@ te::rst::BandProperty* te::gdal::GetBandProperty(GDALRasterBand* gband,
       {
         bprop->m_categoryNames.push_back( std::string( 
           categoriesListPtr[ categoriesListIdx ] ) );
+        
+        categoryNamesLoaded = true;
       }
     }
+  }
+  
+  // Description
+  
+  bool descriptionLoaded = false;
+  
+  if( gband->GetDescription() )
+  {
+    bprop->m_description = std::string( gband->GetDescription() );
+    
+    descriptionLoaded = true;
   }
   
   // Metadata & Description
@@ -318,6 +334,7 @@ te::rst::BandProperty* te::gdal::GetBandProperty(GDALRasterBand* gband,
       const int metadataListSize = CSLCount( metadataListPtr );
       char* namePtr = 0;
       const char* valuePtr = 0;
+      const std::size_t catNameKeySize = std::strlen( TL_B_PROP_CATNAME_KEY );
       
       for( int metadataListIdx = 0 ; metadataListIdx < metadataListSize ;
         ++metadataListIdx )
@@ -327,7 +344,17 @@ te::rst::BandProperty* te::gdal::GetBandProperty(GDALRasterBand* gband,
         
         if( std::strcmp( namePtr, TL_B_PROP_DESC_KEY ) == 0 )
         {
-          bprop->m_description = std::string( valuePtr );
+          if( descriptionLoaded == false )
+          {
+            bprop->m_description = std::string( valuePtr );
+          }
+        }
+        else if( std::strncmp( namePtr, TL_B_PROP_CATNAME_KEY, catNameKeySize ) == 0 )
+        {
+          if( categoryNamesLoaded == false )
+          {
+            bprop->m_categoryNames.push_back( std::string( valuePtr ) );
+          }
         }
         else
         {
@@ -610,6 +637,8 @@ GDALDataset* te::gdal::CreateRaster(const std::string& name, te::rst::Grid* g, c
     
     // category names
     
+    bool categoryNamesSaved = false;
+    
     {
       char** categoryNamesListPtr = 0;
       
@@ -625,17 +654,49 @@ GDALDataset* te::gdal::CreateRaster(const std::string& name, te::rst::Grid* g, c
       
       if( categoryNamesListPtr )
       {
-        rasterBand->SetCategoryNames( categoryNamesListPtr );
+        if( rasterBand->SetCategoryNames( categoryNamesListPtr ) == CE_None )
+        {
+          categoryNamesSaved = true;
+        }
+        
         CSLDestroy(categoryNamesListPtr);
       }
     }
     
-    // Metadata & Description
+    // Description
+    
+    if( ! bands[ dIdx ]->m_description.empty() )
+    {
+       rasterBand->SetDescription( bands[ dIdx ]->m_description.c_str() );   
+    }
+    
+    // Metadata
     
     {
-      char** metadataDomainListPtr = rasterBand->GetMetadataDomainList();
-      
       char** metadataListPtr = 0;
+      
+      // If categoy names saving failed, it will be saved as metadata
+      
+      if( 
+          ( ! bands[ dIdx ]->m_categoryNames.empty() )
+          &&
+          ( categoryNamesSaved == false )
+        )
+      {
+        for( std::size_t categoryNamesIdx = 0 ; categoryNamesIdx <
+          bands[ dIdx ]->m_categoryNames.size() ; ++categoryNamesIdx )
+        {
+          if( ! bands[ dIdx ]->m_categoryNames[ categoryNamesIdx ].empty() )
+          {
+            metadataListPtr = CSLAddNameValue( metadataListPtr, 
+               ( std::string( TL_B_PROP_CATNAME_KEY ) +
+               boost::lexical_cast< std::string >( categoryNamesIdx ) ).c_str(),
+               bands[ dIdx ]->m_categoryNames[ categoryNamesIdx ].c_str() );               
+          }
+        }
+      }
+      
+      // Band description will be also saved as metadata
       
       if( ! bands[ dIdx ]->m_description.empty() )
       {
@@ -643,6 +704,8 @@ GDALDataset* te::gdal::CreateRaster(const std::string& name, te::rst::Grid* g, c
            TL_B_PROP_DESC_KEY,
            bands[ dIdx ]->m_description.c_str() );   
       }
+      
+      // Other metadata
       
       for( std::size_t metadataIdx = 0 ; metadataIdx <
         bands[ dIdx ]->m_metadata.size() ; ++metadataIdx )
@@ -661,12 +724,14 @@ GDALDataset* te::gdal::CreateRaster(const std::string& name, te::rst::Grid* g, c
       
       if( metadataListPtr )
       {
+        char** metadataDomainListPtr = rasterBand->GetMetadataDomainList();
+        
         rasterBand->SetMetadata( metadataListPtr, ( metadataDomainListPtr ? 
           metadataDomainListPtr[ 0 ] : 0 ) );
         CSLDestroy(metadataListPtr);
+        
+        if( metadataDomainListPtr ) CSLDestroy( metadataDomainListPtr );
       }
-      
-      if( metadataDomainListPtr ) CSLDestroy( metadataDomainListPtr );
     }
   }
   

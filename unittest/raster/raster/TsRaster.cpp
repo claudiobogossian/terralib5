@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE (metadata_persistence_test)
     vecBandProp[ 0 ]->m_type = te::dt::UCHAR_TYPE;
     vecBandProp[ 0 ]->m_categoryNames.push_back( "category_0" );
     vecBandProp[ 0 ]->m_categoryNames.push_back( "category_1" );
-    vecBandProp[ 0 ]->m_description = "metadata_persistence_test";
+    vecBandProp[ 0 ]->m_description = "description0";
     vecBandProp[ 0 ]->m_metadata.push_back( 
        std::pair<std::string, std::string>( "meta0name", "meta0value" ) );
     vecBandProp[ 0 ]->m_metadata.push_back( 
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE (metadata_persistence_test)
     
     BOOST_REQUIRE( rst.get() );
     BOOST_CHECK( rst->getBand( 0 )->getProperty()->m_description
-      == "metadata_persistence_test" );    
+      == "description0" );    
     BOOST_REQUIRE( rst->getBand( 0 )->getProperty()->m_metadata.size()
       == 2 );        
     BOOST_CHECK( rst->getBand( 0 )->getProperty()->m_metadata[ 0 ].first
@@ -153,14 +153,12 @@ BOOST_AUTO_TEST_CASE (metadata_persistence_test)
       == "meta1name" );        
     BOOST_CHECK( rst->getBand( 0 )->getProperty()->m_metadata[ 1 ].second
       == "meta1value" );       
-    
-    // Geotiff do not have support for category names
-/*    BOOST_CHECK( rst->getBand( 0 )->getProperty()->m_categoryNames.size()
+    BOOST_REQUIRE( rst->getBand( 0 )->getProperty()->m_categoryNames.size()
       == 2 );    
     BOOST_CHECK( rst->getBand( 0 )->getProperty()->m_categoryNames[ 0 ]
       == "category_0" );
     BOOST_CHECK( rst->getBand( 0 )->getProperty()->m_categoryNames[ 1 ]
-      == "category_1" );   */ 
+      == "category_1" );    
   }
   
   // Reopen raster
@@ -171,7 +169,7 @@ BOOST_AUTO_TEST_CASE (metadata_persistence_test)
     
     BOOST_REQUIRE( inputRasterPtr.get() );  
     BOOST_CHECK( inputRasterPtr->getBand( 0 )->getProperty()->m_description
-      == "metadata_persistence_test" );    
+      == "description0" );    
     BOOST_REQUIRE( inputRasterPtr->getBand( 0 )->getProperty()->m_metadata.size()
       == 2 );        
     BOOST_CHECK( inputRasterPtr->getBand( 0 )->getProperty()->m_metadata[ 0 ].first
@@ -182,14 +180,12 @@ BOOST_AUTO_TEST_CASE (metadata_persistence_test)
       == "meta1name" );        
     BOOST_CHECK( inputRasterPtr->getBand( 0 )->getProperty()->m_metadata[ 1 ].second
       == "meta1value" ); 
-    
-    // Geotiff do not have support for category names    
-/*    BOOST_CHECK( inputRasterPtr->getBand( 0 )->getProperty()->m_categoryNames.size()
+    BOOST_REQUIRE( inputRasterPtr->getBand( 0 )->getProperty()->m_categoryNames.size()
       == 2 );    
     BOOST_CHECK( inputRasterPtr->getBand( 0 )->getProperty()->m_categoryNames[ 0 ]
       == "category_0" );
     BOOST_CHECK( inputRasterPtr->getBand( 0 )->getProperty()->m_categoryNames[ 1 ]
-      == "category_1" );*/    
+      == "category_1" );    
   }
 }
 
