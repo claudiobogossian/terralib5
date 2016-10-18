@@ -42,7 +42,7 @@ bool loadSHPFile( const std::string& shpFileName,
 {
   std::string connInfo("File://");
   connInfo += shpFileName;
-  std::auto_ptr< te::da::DataSource > ogrDataSourcePtr(
+  std::unique_ptr< te::da::DataSource > ogrDataSourcePtr(
     te::da::DataSourceFactory::make("OGR", connInfo) );
   BOOST_CHECK( ogrDataSourcePtr.get() != 0 );
 

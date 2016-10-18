@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE (rasterVectorizer_test)
     remove( "RasterVectorizerTestPolygons.shx" );
 
     std::string connInfo("file://RasterVectorizerTestPolygons.shp");
-    std::auto_ptr<te::da::DataSource> dsOGR( te::da::DataSourceFactory::make("OGR", connInfo) );
+    std::unique_ptr<te::da::DataSource> dsOGR( te::da::DataSourceFactory::make("OGR", connInfo) );
     dsOGR->open();
     
     memDataSetPtr->moveBeforeFirst();

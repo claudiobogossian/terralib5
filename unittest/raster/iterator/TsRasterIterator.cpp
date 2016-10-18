@@ -93,7 +93,7 @@ void Copy2DiskShp(std::vector<te::gm::Polygon*> polygons, std::string shpName)
 
     std::string connInfo("File://" + shpName);
 
-    std::auto_ptr<te::da::DataSource> dsOGR(te::da::DataSourceFactory::make("OGR", connInfo));
+    std::unique_ptr<te::da::DataSource> dsOGR(te::da::DataSourceFactory::make("OGR", connInfo));
     dsOGR->open();
 
     memDataSetPtr->moveBeforeFirst();
