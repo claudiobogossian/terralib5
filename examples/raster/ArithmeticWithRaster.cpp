@@ -49,7 +49,7 @@ void ArithmeticWithRaster()
 // access a raster datasource to create temporary raster
     std::string connInfoRaster("File://");
     connInfoRaster  += base_path;
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", connInfoRaster);
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", connInfoRaster);
     ds->open();
     std::auto_ptr<te::da::DataSourceTransactor> tr = ds->getTransactor();
 

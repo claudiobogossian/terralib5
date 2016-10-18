@@ -66,7 +66,7 @@ te::da::DataSourcePtr LoadPGISDataSource(const std::string& dsId)
   strURI += query;
 
   // create a data source using the data source factory
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS", strURI);
+  std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS", strURI);
 
   try
   {
@@ -83,7 +83,7 @@ te::da::DataSourcePtr LoadPGISDataSource(const std::string& dsId)
   }
 
   ds->setId(dsId);
-  te::da::DataSourcePtr dsPtrPGIS(ds);
+  te::da::DataSourcePtr dsPtrPGIS(ds.release());
   te::da::DataSourceManager::getInstance().insert(dsPtrPGIS);
 
   return dsPtrPGIS;

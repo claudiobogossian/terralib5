@@ -24,7 +24,7 @@ void CoverageSeriesExamples()
     //Extract time series from coverage series     
     //Load the centroide of the Angra city -> from a shapefile with the Angra city
     const std::string connInfo("File://" TERRALIB_DATA_DIR "/st/coverage/angra_city.shp");
-    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("OGR", connInfo));
+    std::unique_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("OGR", connInfo));
     ds->open();
     
     std::auto_ptr<te::da::DataSet> dSet = ds->getDataSet("angra_city"); 

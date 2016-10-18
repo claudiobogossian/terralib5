@@ -49,7 +49,7 @@ int main(int /*argc*/, char** /*argv*/)
 
     LoadModules();
 
-    std::auto_ptr<te::da::DataSource> ds = GetADOConnection();
+    std::unique_ptr<te::da::DataSource> ds = GetADOConnection();
 
     // Show the information about datasets stored in the data source catalog
     PrintCatalog(ds.get());

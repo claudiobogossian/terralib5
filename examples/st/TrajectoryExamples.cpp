@@ -41,7 +41,7 @@ void TrajectoryExamples()
     //Load the geometry from a shapefile
     const std::string connInfo("File://" TERRALIB_DATA_DIR "/st/trajectory/t41_region.shp");
 
-    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("OGR", connInfo));
+    std::unique_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("OGR", connInfo));
     ds->open();
     
     std::auto_ptr<te::da::DataSet> dSet = ds->getDataSet("t41_region"); 

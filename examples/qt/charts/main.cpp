@@ -149,7 +149,7 @@ int main(int /*argc*/, char** /*argv*/)
     std::string data_dir = TERRALIB_DATA_DIR;
     connInfo += data_dir + "/shape";  
 
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", connInfo);
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", connInfo);
     ds->open();
     
     std::auto_ptr<te::da::DataSourceTransactor> transactor = ds->getTransactor();

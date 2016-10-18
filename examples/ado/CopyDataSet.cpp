@@ -62,10 +62,10 @@ void CreateDataSource(std::string name)
     connInfo += "?&PROVIDER=Microsoft.ACE.OLEDB.12.0";
   #endif
 
-  std::auto_ptr<te::da::DataSource> outDs = te::da::DataSource::create("ADO", connInfo);
+  std::unique_ptr<te::da::DataSource> outDs = te::da::DataSource::create("ADO", connInfo);
 }
 
-void Copy(std::string dataSetName, std::auto_ptr<te::da::DataSource> inDs, te::da::DataSource* outDs)
+void Copy(std::string dataSetName, std::unique_ptr<te::da::DataSource> inDs, te::da::DataSource* outDs)
 {
   std::auto_ptr<te::da::DataSetType> inDst = inDs->getDataSetType(dataSetName);
 
@@ -92,11 +92,11 @@ void CopyFromShapeFile(te::da::DataSource* ds)
   else
     connInfo += data_dir + "/shape/poligono_unico.shp";
 
-  std::auto_ptr<te::da::DataSource> inDs = te::da::DataSourceFactory::make("OGR", connInfo);
+  std::unique_ptr<te::da::DataSource> inDs = te::da::DataSourceFactory::make("OGR", connInfo);
   inDs->open();
 
   if(!aux.empty())
-    Copy(aux, inDs, ds);
+    Copy(aux, std::move(inDs), ds);
   else
-    Copy("poligono_unico", inDs, ds);
+    Copy("poligono_unico", std::move(inDs), ds);
 }

@@ -141,7 +141,7 @@ void SaveTIN_shp(std::string dir, std::string out, std::auto_ptr<geos::geom::Geo
   filename.append(out);
   filename.append(".shp");
 
-  std::auto_ptr< te::da::DataSource > datasource = te::da::DataSourceFactory::make("OGR", ("File://" + filename) );
+  std::unique_ptr< te::da::DataSource > datasource = te::da::DataSourceFactory::make("OGR", ("File://" + filename) );
   datasource->open();
 
   dataset->moveBeforeFirst();
@@ -163,7 +163,7 @@ void LoadIsolines(const std::string &filename,
   double maxdist = 20.*tol;
   double minedge = tol / 5.;
 
-  std::auto_ptr<te::da::DataSource> datasource = te::da::DataSourceFactory::make("OGR", ("File://" + filename));
+  std::unique_ptr<te::da::DataSource> datasource = te::da::DataSourceFactory::make("OGR", ("File://" + filename));
   datasource->open();
 
   te::da::DataSourceTransactor* transactor = (datasource->getTransactor()).release();

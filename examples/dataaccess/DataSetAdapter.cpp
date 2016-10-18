@@ -51,7 +51,7 @@ void DataSetAdapter()
   std::string data_dir = TERRALIB_DATA_DIR;
   connInfo += data_dir + "/shape/munic_2001.shp";
 
-  std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR", connInfo);
+  std::unique_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR", connInfo);
   dsOGR->open();
 
   std::auto_ptr<te::da::DataSourceTransactor> ogrTransactor = dsOGR->getTransactor();

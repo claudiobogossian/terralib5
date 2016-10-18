@@ -99,9 +99,9 @@ void PrintDataSourceNames(const std::string& dsType, const std::string& connInfo
     std::cout << dataSourceNames[i] << std::endl;
 }
 
-std::auto_ptr<te::da::DataSource> CreateDataSource(const std::string& dsType, const std::string& connInfo)
+std::unique_ptr<te::da::DataSource> CreateDataSource(const std::string& dsType, const std::string& connInfo)
 {
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSource::create(dsType, connInfo);
+  std::unique_ptr<te::da::DataSource> ds = te::da::DataSource::create(dsType, connInfo);
 
   return ds;
 }

@@ -52,7 +52,7 @@ void openFile(const std::string& filename, const std::string dstype)
   std::string connInfo("File://");
   connInfo += filename;
   
-  std::auto_ptr<te::da::DataSource> dsptr = te::da::DataSourceFactory::make(dstype, connInfo);
+  std::unique_ptr<te::da::DataSource> dsptr = te::da::DataSourceFactory::make(dstype, connInfo);
   dsptr->open();
   
   std::vector<std::string> dsNames = dsptr->getDataSetNames();
@@ -72,7 +72,7 @@ void openDirectory(const std::string& filename, const std::string dstype)
   std::string connInfo("File://");
   connInfo += filename;
   
-  std::auto_ptr<te::da::DataSource> dsptr = te::da::DataSourceFactory::make(dstype, connInfo);
+  std::unique_ptr<te::da::DataSource> dsptr = te::da::DataSourceFactory::make(dstype, connInfo);
   dsptr->open();
   
   std::vector<std::string> dsNames = dsptr->getDataSetNames();
@@ -115,7 +115,7 @@ void saveUsingOGR(const std::string& filename, const std::string drivername)
   connInfo += filename;
   //connInfo += ("?&DRIVER=" + drivername);
   
-  std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR", connInfo);
+  std::unique_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR", connInfo);
   dsOGR->open();
   
   dataset->moveBeforeFirst();

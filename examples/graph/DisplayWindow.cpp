@@ -203,7 +203,7 @@ void DisplayWindow::addVectorialLayer(std::string path, int srid)
   // Creates and connects data source
   std::string connInfo ("File://" + path);
 
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", connInfo);
+  std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", connInfo);
   ds->open();
 
   // let's include the new datasource in the managers

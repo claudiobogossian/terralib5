@@ -25,7 +25,7 @@ void DrawPNG()
 
     std::string connInfo ("File://");
     connInfo += data_dir + "/shape/munic_2001.shp";
-    std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR", connInfo);
+    std::unique_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR", connInfo);
 
     dsOGR->open();
 

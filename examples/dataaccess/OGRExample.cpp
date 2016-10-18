@@ -26,7 +26,7 @@ void OGRExampleRead()
     else
       connInfo += data_dir + "/shape/poligono_unico.shp";
   
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", connInfo);
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", connInfo);
     ds->open();
     
     // check point: the datasource exists and is opened to be used
@@ -92,7 +92,7 @@ void ORGExampleWrite()
     else
       connInfo += data_dir + "/shape";
 
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", connInfo);
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", connInfo);
     ds->open();
 
     // check point: the datasource exists and is opened to be used

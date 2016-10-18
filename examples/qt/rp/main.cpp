@@ -233,7 +233,7 @@ void MixtureModelDialogExample(int argc, char** argv)
   const std::string dsname("cbers2b_rgb342_crop.tif");
   std::string rinfo ("File://");
   rinfo += data_dir + "/geotiff/cbers2b_rgb342_crop.tif";
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", rinfo);
+  std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", rinfo);
  
   ds->open();
   if(!ds->isOpened())

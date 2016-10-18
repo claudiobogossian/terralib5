@@ -9,7 +9,7 @@
 // STL
 #include <iostream>
 
-std::auto_ptr<te::da::DataSource> GetPostGISConnection();
+std::unique_ptr<te::da::DataSource> GetPostGISConnection();
 
 void CopyingData()
 {
@@ -27,7 +27,7 @@ void CopyingData()
     else
       connInfo += data_dir + "/shape/munic_2001.shp";
     
-    std::auto_ptr<te::da::DataSource> dsOrigin = te::da::DataSourceFactory::make("OGR", connInfo);
+    std::unique_ptr<te::da::DataSource> dsOrigin = te::da::DataSourceFactory::make("OGR", connInfo);
     dsOrigin->open();
     
     if (!dsOrigin->isValid())
@@ -43,7 +43,7 @@ void CopyingData()
     std::auto_ptr<te::da::DataSet> datasetOrigin = tOrigin->getDataSet(datasets[0]);
     std::auto_ptr<te::da::DataSetType> dtOrigin = tOrigin->getDataSetType(datasets[0]);
     
-    std::auto_ptr<te::da::DataSource> dsDestination = GetPostGISConnection();
+    std::unique_ptr<te::da::DataSource> dsDestination = GetPostGISConnection();
     if (!dsDestination.get())
       return;
       

@@ -16,7 +16,7 @@ void MemoryExample()
     std::string data_dir = TERRALIB_DATA_DIR;
     
     // creates a datasource in memory
-    std::auto_ptr<te::da::DataSource> dsMem = te::da::DataSourceFactory::make("MEM", "memory:");
+    std::unique_ptr<te::da::DataSource> dsMem = te::da::DataSourceFactory::make("MEM", "memory:");
 
     // creates a datasettype, named "SoilMeasures", in the memory datasource
     std::string dsName("SoilMeasures");

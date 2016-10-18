@@ -55,7 +55,6 @@ bool BufferOGRToOGR()
   std::string file_result = data_dir + "/shape/Buffer/file_result.shp";
   std::string tgrInfo("File://" + file_result);
 
-  //std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("OGR");
   te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR", tgrInfo));
   trgDs->open();
 
@@ -97,8 +96,7 @@ bool BufferOGRToPGIS()
   
   std::string filename(data_dir + "/shape/Buffer/SP_meso.shp");  
   std::string srcInfo("File://" + filename);
-  
-  //std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("OGR");
+
   te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR", filename));
   srcDs->open();
   
@@ -196,7 +194,6 @@ bool BufferPGISToPGIS()
   bool copyInputColumns = false;
   int levels = 2;
 
-  //std::auto_ptr<te::da::DataSource> outDsource = te::da::DataSourceFactory::make("POSTGIS");
   te::da::DataSourcePtr outDsource(te::da::DataSourceFactory::make("POSTGIS", connInfo));
   outDsource->open();
 

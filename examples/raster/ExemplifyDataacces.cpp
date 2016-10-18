@@ -33,7 +33,7 @@ void DataSetTypePersistence()
     std::string connInfo("File://");
     connInfo += TERRALIB_DATA_DIR "/geotiff";
 
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", connInfo);
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", connInfo);
     ds->open();
 
     std::auto_ptr<te::da::DataSourceTransactor> tr = ds->getTransactor();
@@ -79,7 +79,7 @@ void DataSet()
     std::string connInfo("File://");
     connInfo += TERRALIB_DATA_DIR "/geotiff";
 
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", connInfo);
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", connInfo);
     ds->open();
 
     std::auto_ptr<te::da::DataSourceTransactor> tr = ds->getTransactor();
@@ -124,7 +124,7 @@ void DataSetPersistence()
     std::string connInfo("File://");
     connInfo += TERRALIB_DATA_DIR "/geotiff";
 
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", connInfo);
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", connInfo);
     ds->open();
 
     std::auto_ptr<te::da::DataSourceTransactor> tr = ds->getTransactor();
@@ -163,7 +163,7 @@ void DataSource()
     std::string connInfo("File://");
     connInfo += TERRALIB_DATA_DIR "/geotiff";
 
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", connInfo);
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", connInfo);
     ds->open();
 
     std::auto_ptr<te::da::DataSourceTransactor> transactor = ds->getTransactor();

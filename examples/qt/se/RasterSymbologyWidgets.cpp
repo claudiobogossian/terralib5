@@ -28,7 +28,7 @@ void RasterSymbologyWidgets()
   rinfo += data_dir + "/geotiff/cbers2b_rgb342_crop.tif";
 
 // open input raster
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", rinfo);
+  std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", rinfo);
   ds->open();
 
   std::auto_ptr<te::da::DataSourceTransactor> tr = ds->getTransactor();

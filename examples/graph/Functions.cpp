@@ -32,18 +32,18 @@ std::auto_ptr<te::rst::Raster> OpenRaster(const std::string& pathName, const int
   return rst;
 }
 
-std::auto_ptr<te::da::DataSource> OpenDataSource(std::string connInfo, std::string dsType)
+std::unique_ptr<te::da::DataSource> OpenDataSource(std::string connInfo, std::string dsType)
 {
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make(dsType, connInfo);
+  std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make(dsType, connInfo);
   ds->open();
 
-  return ds;
+  return std::move(ds);
 }
 
-std::auto_ptr<te::da::DataSource> OpenOGRDataSource(const std::string& pathName)
+std::unique_ptr<te::da::DataSource> OpenOGRDataSource(const std::string& pathName)
 {
   std::string connInfo("File://" + pathName);
-  return OpenDataSource(connInfo, "OGR");
+  return std::move(OpenDataSource(connInfo, "OGR"));
 }
 
 std::auto_ptr<te::gm::Envelope> getDataSetExtent(te::da::DataSource* ds, std::string dataSetName)

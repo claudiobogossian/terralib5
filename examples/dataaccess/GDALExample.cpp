@@ -21,7 +21,7 @@ void OpenFile()
     else
       connInfo += data_dir + "/geotiff/cbers2b_rgb342_crop.tif";
     
-    std::auto_ptr<te::da::DataSource> dsGDAL = te::da::DataSourceFactory::make("GDAL", connInfo);
+    std::unique_ptr<te::da::DataSource> dsGDAL = te::da::DataSourceFactory::make("GDAL", connInfo);
     std::cout << "Datasource is opened? " << std::boolalpha << dsGDAL->isOpened() << '\n' << '\n';
 
     dsGDAL->open();
@@ -60,7 +60,7 @@ void OpenDirectory()
     else
       connInfo += data_dir + "/geotiff";
   
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", connInfo);
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", connInfo);
  
     bool res;
     res = ds->isOpened();  // expect false
@@ -104,7 +104,7 @@ void DataSourceTransactor()
     else
       connInfo += data_dir + "/geotiff";
   
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", connInfo);
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", connInfo);
     ds->open();
 
     std::auto_ptr<te::da::DataSourceTransactor> tr = ds->getTransactor();  // caller gets the pointer ownership, delete it later

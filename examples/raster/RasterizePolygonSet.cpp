@@ -19,7 +19,7 @@ void RasterizePolygonSet()
 
     std::string ogrInfo("File://");
     ogrInfo += TERRALIB_DATA_DIR"/shape/munic_2001.shp";
-    std::auto_ptr<te::da::DataSource> ds_pols = te::da::DataSourceFactory::make("OGR", ogrInfo);
+    std::unique_ptr<te::da::DataSource> ds_pols = te::da::DataSourceFactory::make("OGR", ogrInfo);
     ds_pols->open();
 
 // get a transactor to interact to the data source

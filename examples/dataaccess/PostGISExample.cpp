@@ -10,7 +10,7 @@
 #include <iostream>
 #include <exception>
 
-std::auto_ptr<te::da::DataSource> GetPostGISConnection()
+std::unique_ptr<te::da::DataSource> GetPostGISConnection()
 {
   // let's give the minimal server connection information needed to connect to the database server
   std::string aux, user, password, host, port, path, query;
@@ -52,7 +52,7 @@ std::auto_ptr<te::da::DataSource> GetPostGISConnection()
   strURI += query;
 
   // create a data source using the data source factory
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS", strURI);
+  std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS", strURI);
 
   try
   {
@@ -63,25 +63,25 @@ std::auto_ptr<te::da::DataSource> GetPostGISConnection()
     std::cout << "Datasource " << host << "/" <<  path << " can not be used!\nMake sure to have the correct connection parameters\n";
     std::cout << "Error: " << e.what() << std::endl;
     ds.reset();
-    return ds;
+    return std::move(ds);
   }
   catch(...)
   {
     std::cout << "Datasource " << host << "/" << path << " can not be used!\nMake sure to have the correct connection parameters\n";
     ds.reset();
-    return ds;
+    return std::move(ds);
   }
   
   std::cout << "Using datasource " << host << "/" <<  path << std::endl;
   ds->close();
-  return ds;
+  return std::move(ds);
 }
 
 void PostGISExample()
 {
   try
   {
-    std::auto_ptr<te::da::DataSource> ds = GetPostGISConnection();
+    std::unique_ptr<te::da::DataSource> ds = GetPostGISConnection();
     if (!ds.get())
       return;
     

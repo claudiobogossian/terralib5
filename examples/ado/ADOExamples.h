@@ -62,9 +62,9 @@ void CopyFromShapeFile(te::da::DataSource* ds);
  */
 void PrintDataSetValues(const std::string& datasetName, te::da::DataSet* dataset);
 
-void Copy(std::string dataSetName, std::auto_ptr<te::da::DataSource> inDs, te::da::DataSource* outDs);
+void Copy(std::string dataSetName, std::unique_ptr<te::da::DataSource> inDs, te::da::DataSource* outDs);
 
-std::auto_ptr<te::da::DataSource> GetADOConnection();
+std::unique_ptr<te::da::DataSource> GetADOConnection();
 
 
 

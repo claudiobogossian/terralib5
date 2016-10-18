@@ -34,7 +34,7 @@
 // STL
 #include <iostream>
 
-std::auto_ptr<te::da::DataSource> GetADOConnection()
+std::unique_ptr<te::da::DataSource> GetADOConnection()
 {
   // Set the minimum server connection information needed to connect to the database server
   std::string connInfo("File://");
@@ -61,13 +61,13 @@ std::auto_ptr<te::da::DataSource> GetADOConnection()
 #endif
 
   // Create a data source using the data source factory
-  std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("ADO", connInfo));
+  std::unique_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("ADO", connInfo));
 
   try
   {
     //Open the data source using the connection information given above
     ds->open();
-    return ds;
+    return std::move(ds);
   }
   catch (const std::exception& e)
   {
