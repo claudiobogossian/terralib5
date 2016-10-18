@@ -179,7 +179,7 @@ bool te::qt::widgets::MultiResolutionWidget::fromFolder()
   }
 
   const std::string dsInfo("File://" + std::string(m_ui->m_folderLineEdit->text().toUtf8().data()));
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", dsInfo);
+  std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", dsInfo);
 
   ds->open();
 

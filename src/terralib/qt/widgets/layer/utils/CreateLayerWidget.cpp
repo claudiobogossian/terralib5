@@ -296,7 +296,7 @@ void te::qt::widgets::CreateLayerWidget::onTargetFileToolButtonPressed()
   boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
   const std::string connInfo("File://" + uri.string());
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", connInfo);
+  std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", connInfo);
   ds->open();
 
   boost::uuids::basic_random_generator<boost::mt19937> gen;

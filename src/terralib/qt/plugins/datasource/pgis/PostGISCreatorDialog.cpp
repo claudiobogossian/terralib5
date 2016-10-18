@@ -109,10 +109,10 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::onApplyPushButtonPressed()
       strURI += aux.port() + "/";
       strURI += kvp["PG_NEWDB_NAME"] + "?";
 
-      strURI += "PG_NEWDB_ENCODING=";
+      strURI += "PG_CLIENT_ENCODING=";
       strURI += te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8);
 
-      std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS", strURI);
+      std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS", strURI);
       ds->open();
 
       m_driver.reset(ds.release());
@@ -317,7 +317,7 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::onLineEditEditingFinished()
       // Try to go the owners
       m_ui->m_ownerComboBox->clear();
 
-      std::auto_ptr<te::da::DataSource> auxDs = te::da::DataSourceFactory::make("POSTGIS", getConnectionInfo(true));
+      std::unique_ptr<te::da::DataSource> auxDs = te::da::DataSourceFactory::make("POSTGIS", getConnectionInfo(true));
       auxDs->open();
 
       std::auto_ptr<te::da::DataSet> dsRoles = auxDs->query("select * from pg_roles");

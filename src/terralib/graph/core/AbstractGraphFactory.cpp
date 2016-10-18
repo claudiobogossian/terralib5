@@ -112,7 +112,7 @@ te::graph::GraphMetadata* te::graph::AbstractGraphFactory::getMetadata(const std
   //create data source
   it = gInfo.find("GRAPH_DATA_SOURCE_TYPE");
 
-  std::auto_ptr<te::da::DataSource> dsPtr;
+  std::unique_ptr<te::da::DataSource> dsPtr;
 
   if(it != itend)
   {

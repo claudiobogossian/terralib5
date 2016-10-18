@@ -49,7 +49,7 @@ te::map::AbstractLayerPtr te::qt::widgets::createLayer(const std::string& driver
   boost::uuids::uuid valU = gen();
   std::string id = boost::uuids::to_string(valU);
 
-  std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make(driverName, connInfo));
+  std::unique_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make(driverName, connInfo));
   ds->open();
 
   std::vector<std::string> dsNames = ds->getDataSetNames();
@@ -115,6 +115,7 @@ te::map::AbstractLayerPtr te::qt::widgets::createLayer(const std::string& driver
     if (it->first == "URI" || it->first == "SOURCE")
     {
       connStr += it->second + "?";
+      ++it;
       continue;
     }
 
@@ -122,7 +123,7 @@ te::map::AbstractLayerPtr te::qt::widgets::createLayer(const std::string& driver
     ++it;
   }
 
-  std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make(driverName, connStr));
+  std::unique_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make(driverName, connStr));
   ds->open();
 
   std::vector<std::string> dsNames = ds->getDataSetNames();

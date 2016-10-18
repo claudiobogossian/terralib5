@@ -128,7 +128,7 @@ namespace te
           \return Data source.
 
         */
-        std::auto_ptr<te::da::DataSource> getDataSource(const std::string fileName);
+        std::unique_ptr<te::da::DataSource> getDataSource(const std::string fileName);
 
         /*!
           \brief Function used to get the data set with the vectorial data

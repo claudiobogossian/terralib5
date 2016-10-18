@@ -188,7 +188,7 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToFile()
     //create data source
     const std::string connInfo("File://" + std::string(m_ui->m_dataSetLineEdit->text().toUtf8().data()));
 
-    std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make(m_outputDataSourceType, connInfo);
+    std::unique_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make(m_outputDataSourceType, connInfo);
 
     dsOGR->open();
 

@@ -35,9 +35,9 @@
 std::map<std::string, te::da::DataSourceFactory::FactoryFnctType>
 te::da::DataSourceFactory::sm_factories;
 
-std::auto_ptr<te::da::DataSource> te::da::DataSourceFactory::make(const std::string& driver, const te::core::URI& connInfo)
+std::unique_ptr<te::da::DataSource> te::da::DataSourceFactory::make(const std::string& driver, const te::core::URI& connInfo)
 {
-  std::auto_ptr<DataSource> ds;
+  std::unique_ptr<DataSource> ds;
   if (connInfo.isValid())
   {
     std::map<std::string, FactoryFnctType>::const_iterator it = sm_factories.find(driver);
@@ -51,10 +51,10 @@ std::auto_ptr<te::da::DataSource> te::da::DataSourceFactory::make(const std::str
   return std::move(ds);
 }
 
-std::auto_ptr<te::da::DataSource> te::da::DataSourceFactory::make(const std::string& driver, const std::string& connInfo)
+std::unique_ptr<te::da::DataSource> te::da::DataSourceFactory::make(const std::string& driver, const std::string& connInfo)
 {
   const te::core::URI dsURI(connInfo);
-  std::auto_ptr<DataSource> ds;
+  std::unique_ptr<DataSource> ds;
 
   if(dsURI.isValid())
   {

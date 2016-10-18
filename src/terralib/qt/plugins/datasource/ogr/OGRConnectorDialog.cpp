@@ -108,8 +108,7 @@ void te::qt::plugins::ogr::OGRConnectorDialog::openPushButtonPressed()
    const std::string dsInfo = getConnectionInfo();
 
 // perform connection
-    //m_driver.reset(te::da::DataSourceFactory::open("OGR", dsInfo));
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", dsInfo);
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", dsInfo);
     ds->open();
     m_driver.reset(ds.release());
 
@@ -197,7 +196,7 @@ void te::qt::plugins::ogr::OGRConnectorDialog::testPushButtonPressed()
       throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for OGR data sources!"));
 
     // perform connection
-    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("OGR", getConnectionInfo()));
+    std::unique_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("OGR", getConnectionInfo()));
     ds->open();
 
     if(ds.get() == 0)

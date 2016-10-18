@@ -126,7 +126,7 @@ void te::qt::widgets::PostGIS2SHPDialog::onOkPushButtonClicked()
       te::da::LoadProperties(dsType.get(), layer->getDataSourceId());
 
     //create data source
-    std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR", ("File://" + std::string(m_ui->m_dataSetLineEdit->text().toUtf8().data())));
+    std::unique_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR", ("File://" + std::string(m_ui->m_dataSetLineEdit->text().toUtf8().data())));
     dsOGR->open();
 
     te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(dsType.get(), dsOGR->getCapabilities());

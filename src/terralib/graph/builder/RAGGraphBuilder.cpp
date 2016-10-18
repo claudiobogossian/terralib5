@@ -90,13 +90,13 @@ int  te::graph::RAGGraphBuilder::getEdgeId()
 }
 
 
-std::auto_ptr<te::da::DataSource> te::graph::RAGGraphBuilder::getDataSource(const std::string& fileName)
+std::unique_ptr<te::da::DataSource> te::graph::RAGGraphBuilder::getDataSource(const std::string& fileName)
 {
   // Creates and connects data source
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", ("File://" + fileName));
+  std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", ("File://" + fileName));
   ds->open();
 
-  return ds;
+  return std::move(ds);
 }
 
 std::auto_ptr<te::da::DataSet> te::graph::RAGGraphBuilder::getDataSet(te::da::DataSource* ds)
@@ -122,7 +122,7 @@ boost::ptr_vector<te::dt::Property> te::graph::RAGGraphBuilder::getProperties(te
 bool te::graph::RAGGraphBuilder::createVertexObjects(const std::string& shapeFileName, const std::string& linkColumn, const int& srid)
 {
  //get data source
-  std::auto_ptr<te::da::DataSource> ds = getDataSource(shapeFileName);
+  std::unique_ptr<te::da::DataSource> ds = getDataSource(shapeFileName);
 
   if(ds.get() == 0)
   {
@@ -198,7 +198,7 @@ bool te::graph::RAGGraphBuilder::createVertexObjects(const std::string& shapeFil
 bool te::graph::RAGGraphBuilder::createEdgeObjects(const std::string& shapeFileName, const std::string& linkColumn)
 {
  //get data source
-  std::auto_ptr<te::da::DataSource> ds = getDataSource(shapeFileName);
+  std::unique_ptr<te::da::DataSource> ds = getDataSource(shapeFileName);
 
   if(ds.get() == 0)
   {
@@ -283,7 +283,7 @@ bool te::graph::RAGGraphBuilder::createEdgeObjects(const std::string& shapeFileN
 bool te::graph::RAGGraphBuilder::getGeometryColumn(const std::string& shapeFileName, std::string& columnName)
 {
  //get data source
-  std::auto_ptr<te::da::DataSource> ds = getDataSource(shapeFileName);
+  std::unique_ptr<te::da::DataSource> ds = getDataSource(shapeFileName);
 
   if(ds.get() == 0)
   {

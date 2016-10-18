@@ -74,7 +74,7 @@ namespace te
                     std::string attribute,
                     bool outputLayer);
       
-      void setOutput(std::auto_ptr<te::da::DataSource> outDsrc, std::string dsname);
+      void setOutput(std::unique_ptr<te::da::DataSource> outDsrc, std::string dsname);
 
       std::vector<std::string> GetOutputDSetNames();
       
@@ -94,7 +94,7 @@ namespace te
       std::string m_attribute;
       bool m_outputLayer;
       
-      std::auto_ptr<te::da::DataSource> m_outDsrc;
+      std::unique_ptr<te::da::DataSource> m_outDsrc;
       std::string m_outDsetName;
       std::vector<std::string> m_outDsetNameVec;
     };

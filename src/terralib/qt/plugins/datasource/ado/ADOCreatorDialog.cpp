@@ -98,7 +98,7 @@ void te::qt::plugins::ado::ADOCreatorDialog::applyPushButtonPressed()
       te::da::DataSource::create("ADO", connInfo);
 
       // Connect
-      std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("ADO", connInfo);
+      std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("ADO", connInfo);
       ds->open();
 
       m_driver.reset(ds.release());

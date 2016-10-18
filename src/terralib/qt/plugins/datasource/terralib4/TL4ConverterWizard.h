@@ -124,7 +124,7 @@ namespace te
 
             std::string m_rasterFolderPath;
 
-            std::auto_ptr<te::da::DataSource> m_tl4Database;
+            std::unique_ptr<te::da::DataSource> m_tl4Database;
 
             te::da::DataSourceInfoPtr m_targetDataSource;
             std::vector<std::pair<std::string, std::string> > m_rasterFiles; //TeRasterFile is external and wíll not be converted

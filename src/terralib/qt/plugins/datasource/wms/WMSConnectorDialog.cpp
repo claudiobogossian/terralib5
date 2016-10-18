@@ -100,7 +100,7 @@ void te::qt::plugins::wms::WMSConnectorDialog::openPushButtonPressed()
     std::string dsInfo = getConnectionInfo();
 
     // Perform connection
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("WMS", dsInfo);
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("WMS", dsInfo);
     ds->open();
     m_driver.reset(ds.release());
 
@@ -163,7 +163,7 @@ void te::qt::plugins::wms::WMSConnectorDialog::testPushButtonPressed()
       throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for WMS data sources!"));
 
     // Perform connection
-    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("WMS", getConnectionInfo()));
+    std::unique_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("WMS", getConnectionInfo()));
 
     if(ds.get() == 0)
       throw te::qt::widgets::Exception(TE_TR("Could not open WMS server!"));

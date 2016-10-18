@@ -279,7 +279,7 @@ void te::qt::widgets::SaveSelectedObjectsWidget::onTargetFileToolButtonPressed()
 
   const std::string dsInfo("File://" + uri.string());
 
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", dsInfo);
+  std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", dsInfo);
   ds->open();
 
   boost::uuids::basic_random_generator<boost::mt19937> gen;

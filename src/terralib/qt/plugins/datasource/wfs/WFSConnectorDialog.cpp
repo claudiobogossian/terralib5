@@ -98,7 +98,7 @@ void te::qt::plugins::wfs::WFSConnectorDialog::openPushButtonPressed()
     std::string dsInfo = getConnectionInfo();
 
     // Perform connection
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("WFS", dsInfo);
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("WFS", dsInfo);
     ds->open();
     m_driver.reset(ds.release());
 
@@ -161,7 +161,7 @@ void te::qt::plugins::wfs::WFSConnectorDialog::testPushButtonPressed()
       throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for WFS data sources!"));
 
     // Perform connection
-    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("WFS", getConnectionInfo()));
+    std::unique_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("WFS", getConnectionInfo()));
 
     if(ds.get() == 0)
       throw te::qt::widgets::Exception(TE_TR("Could not open WFS server!"));

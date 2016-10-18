@@ -415,7 +415,7 @@ bool te::qt::widgets::MosaicWizard::executeSequenceMosaic()
   algoInputParams.m_outDataSetsNamePrefix = m_rasterInfoPage->getWidget()->getShortName();
   algoInputParams.m_outDataSetsNameSufix = m_rasterInfoPage->getWidget()->getExtension();
 
-  std::auto_ptr<te::da::DataSource> ds = m_rasterInfoPage->getWidget()->getDataSource();
+  std::unique_ptr<te::da::DataSource> ds = m_rasterInfoPage->getWidget()->getDataSource();
 
   te::rp::SequenceMosaic::OutputParameters algoOutputParams = m_mosaicPage->getOutputSeqParams();
   algoOutputParams.m_outputDSPtr = ds.get();

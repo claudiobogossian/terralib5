@@ -524,21 +524,21 @@ void te::da::DataSource::setEncoding(const te::core::EncodingType& et)
 
 }
 
-std::auto_ptr<te::da::DataSource> te::da::DataSource::create(const std::string& dsType, const std::string& connInfo)
+std::unique_ptr<te::da::DataSource> te::da::DataSource::create(const std::string& dsType, const std::string& connInfo)
 {
-  std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType, connInfo));
+  std::unique_ptr<DataSource> ds(DataSourceFactory::make(dsType, connInfo));
 
   if(ds.get() == 0)
     throw Exception(TE_TR("Could not find the appropriate factory to create a data source instance!"));
 
   ds->create(connInfo);
 
-  return ds;
+  return std::move(ds);
 }
 
 void te::da::DataSource::drop(const std::string& dsType, const std::string& connInfo)
 {
-  std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType, connInfo));
+  std::unique_ptr<DataSource> ds(DataSourceFactory::make(dsType, connInfo));
 
   if(ds.get() == 0)
     throw Exception(TE_TR("Could not find the appropriate factory to create a data source instance!"));
@@ -548,7 +548,7 @@ void te::da::DataSource::drop(const std::string& dsType, const std::string& conn
 
 bool te::da::DataSource::exists(const std::string& dsType, const std::string& connInfo)
 {
-  std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType, connInfo));
+  std::unique_ptr<DataSource> ds(DataSourceFactory::make(dsType, connInfo));
 
   if(ds.get() == 0)
     throw Exception(TE_TR("Could not find the appropriate factory in order to create a data source instance!"));
@@ -558,7 +558,7 @@ bool te::da::DataSource::exists(const std::string& dsType, const std::string& co
 
 std::vector<std::string> te::da::DataSource::getDataSourceNames(const std::string& dsType, const std::string& connInfo)
 {
-  std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType, connInfo));
+  std::unique_ptr<DataSource> ds(DataSourceFactory::make(dsType, connInfo));
 
   if(ds.get() == 0)
     throw Exception(TE_TR("Could not find the appropriate factory to create a data source instance!"));

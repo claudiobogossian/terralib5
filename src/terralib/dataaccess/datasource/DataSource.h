@@ -1324,7 +1324,7 @@ namespace te
 
           \note Thread-safe!
         */
-        static std::auto_ptr<DataSource> create(const std::string& dsType, const std::string& connInfo);
+        static std::unique_ptr<DataSource> create(const std::string& dsType, const std::string& connInfo);
 
        /* static std::unique_ptr<DataSource> create(const std::string& dsType, const std::string& uri);*/
 

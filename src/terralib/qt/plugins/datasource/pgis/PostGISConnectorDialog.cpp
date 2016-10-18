@@ -104,7 +104,7 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::openPushButtonPressed()
       throw te::qt::widgets::Exception(TE_TR("No data access driver loaded for PostgreSQL + PostGIS data sources!"));
 
     // Perform connection
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS", getConnectionInfo(true));
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS", getConnectionInfo(true));
     ds->open();
     m_driver.reset(ds.release());
 
@@ -169,7 +169,7 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::testPushButtonPressed()
       throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for PostgreSQL + PostGIS data sources!"));
 
     // Perform connection
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS", getConnectionInfo(true));
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS", getConnectionInfo(true));
     if(ds.get() == 0)
       throw te::qt::widgets::Exception(TE_TR("Could not open PostgreSQL + PostGIS database!"));
 

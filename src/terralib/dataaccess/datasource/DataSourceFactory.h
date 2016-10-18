@@ -62,9 +62,9 @@ namespace te
 
         typedef boost::function<DataSource* (const te::core::URI& uri)> FactoryFnctType;
 
-        static std::auto_ptr<DataSource> make(const std::string& driver, const te::core::URI& connInfo);
+        static std::unique_ptr<DataSource> make(const std::string& driver, const te::core::URI& connInfo);
 
-        static std::auto_ptr<DataSource> make(const std::string& driver, const std::string& connInfo);
+        static std::unique_ptr<DataSource> make(const std::string& driver, const std::string& connInfo);
 
         static void add(const std::string& dsType, FactoryFnctType f);
 

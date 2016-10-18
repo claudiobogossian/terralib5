@@ -110,8 +110,7 @@ void te::qt::plugins::ado::ADOConnectorDialog::openPushButtonPressed()
       throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for ADO data sources!"));
 
     // perform connection
-    //m_driver.reset(te::da::DataSourceFactory::open("ADO", dsInfo));
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("ADO", getConnectionInfo(true));
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("ADO", getConnectionInfo(true));
     ds->open();
     m_driver.reset(ds.release());
 
@@ -176,8 +175,7 @@ void te::qt::plugins::ado::ADOConnectorDialog::testPushButtonPressed()
       throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for ADO data sources!"));
 
 // perform connection
-    //std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::open("ADO", dsInfo));
-    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("ADO", getConnectionInfo(true)));
+    std::unique_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("ADO", getConnectionInfo(true)));
     ds->open();
 
     if(ds.get() == 0)

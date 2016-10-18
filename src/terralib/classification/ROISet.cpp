@@ -88,7 +88,7 @@ void te::cl::ROISet::exportToFile(std::string fileName, int srid)
 
   //create data source
   std::string connInfo("File://" + fileName);
-  std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR", connInfo);
+  std::unique_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR", connInfo);
 
   dsOGR->open();
 

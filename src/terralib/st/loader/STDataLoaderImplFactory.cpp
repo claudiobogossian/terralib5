@@ -45,7 +45,7 @@ te::st::STDataLoaderImpl* te::st::STDataLoaderImplFactory::make(const std::strin
 te::st::STDataLoaderImpl* te::st::STDataLoaderImplFactory::make(const std::string& dsType, const std::string& connInfo)
 {
   //use the factory only to create a data source
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make(dsType, connInfo);
+  std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make(dsType, connInfo);
   if (ds.get() == 0)
     throw Exception(TE_TR("ST Loader: Could not find a data source!"));
 

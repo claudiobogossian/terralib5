@@ -96,13 +96,13 @@ int  te::graph::FlowGraphBuilder::getEdgeId()
   return id;
 }
 
-std::auto_ptr<te::da::DataSource> te::graph::FlowGraphBuilder::getDataSource(const std::string fileName)
+std::unique_ptr<te::da::DataSource> te::graph::FlowGraphBuilder::getDataSource(const std::string fileName)
 {
   // Creates and connects data source
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", ("File://" + fileName));
+  std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", ("File://" + fileName));
   ds->open();
 
-  return ds;
+  return std::move(ds);
 }
 
 std::auto_ptr<te::da::DataSet> te::graph::FlowGraphBuilder::getDataSet(te::da::DataSource* ds)
@@ -128,7 +128,7 @@ boost::ptr_vector<te::dt::Property> te::graph::FlowGraphBuilder::getProperties(t
 bool te::graph::FlowGraphBuilder::createVertexObjects(const std::string& shapeFileName, const std::string& linkColumn, const int& srid)
 {
  //get data source
-  std::auto_ptr<te::da::DataSource> ds = getDataSource(shapeFileName);
+  std::unique_ptr<te::da::DataSource> ds = getDataSource(shapeFileName);
 
   if(ds.get() == 0)
   {

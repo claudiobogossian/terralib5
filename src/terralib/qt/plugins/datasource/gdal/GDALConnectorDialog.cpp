@@ -109,7 +109,7 @@ void te::qt::plugins::gdal::GDALConnectorDialog::openPushButtonPressed()
     std::string dsInfo = getConnectionInfo();
 
 // perform connection
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", getConnectionInfo());
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", getConnectionInfo());
     ds->open();
     m_driver.reset(ds.release());
 
@@ -174,7 +174,7 @@ void te::qt::plugins::gdal::GDALConnectorDialog::testPushButtonPressed()
       throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for GDAL data sources!"));
 
     // perform connection
-    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("GDAL", getConnectionInfo()));
+    std::unique_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("GDAL", getConnectionInfo()));
     ds->open();
 
     if(ds.get() == 0)

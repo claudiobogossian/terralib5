@@ -289,7 +289,7 @@ bool te::vp::GeometricOpWizard::execute()
       std::string dsinfo("File://");
       dsinfo += uri.string();
 
-      std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR", dsinfo);
+      std::unique_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR", dsinfo);
       dsOGR->open();
       if (dsOGR->dataSetExists(outputdataset))
       {
@@ -318,7 +318,7 @@ bool te::vp::GeometricOpWizard::execute()
       }
 
       geomOp->setInput(inDataSource, dsLayer->getDataSetName(), converter);
-      geomOp->setOutput(dsOGR, outputdataset);
+      geomOp->setOutput(std::move(dsOGR), outputdataset);
       geomOp->setParams(geoProps, 
                         m_ops, 
                         m_geomOpOutputPage->getObjectStrategy(), 
@@ -362,7 +362,7 @@ bool te::vp::GeometricOpWizard::execute()
     else
     {
       m_outputDatasource = m_geomOpOutputPage->getDsInfoPtr();
-      std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make(m_outputDatasource->getType(), m_outputDatasource->getConnInfo());
+      std::unique_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make(m_outputDatasource->getType(), m_outputDatasource->getConnInfo());
       trgDs->open();
 
       if (!trgDs.get())
@@ -397,7 +397,7 @@ bool te::vp::GeometricOpWizard::execute()
       }
 
       geomOp->setInput(inDataSource, dsLayer->getDataSetName(), converter);
-      geomOp->setOutput(trgDs, outputdataset);
+      geomOp->setOutput(std::move(trgDs), outputdataset);
       geomOp->setParams(geoProps,
                         m_ops,
                         m_geomOpOutputPage->getObjectStrategy(),
