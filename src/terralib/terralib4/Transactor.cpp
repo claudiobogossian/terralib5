@@ -464,7 +464,26 @@ std::auto_ptr<te::da::DataSetType> terralib4::Transactor::getDataSetType(const s
 
       if (vec.size() > 1)
       {
-        geomProp = new te::gm::GeometryProperty("spatial_data", srid, te::gm::GeometryCollectionType);
+
+        TeGeomRep geomRep;
+        for (std::size_t i = 0; i < vec.size(); ++i)
+        {
+          if (i == 0)
+          {
+            geomRep = vec[i]->geomRep_;
+          }
+          else
+          {
+            if (vec[i]->geomRep_ < geomRep)
+              geomRep = vec[i]->geomRep_;
+          }
+        }
+
+        te::gm::GeomType geomType = GetCollection(geomRep);
+
+        geomProp = new te::gm::GeometryProperty("spatial_data", srid, geomType);
+
+        //geomProp = new te::gm::GeometryProperty("spatial_data", srid, te::gm::GeometryCollectionType);
       }
       else
       {
