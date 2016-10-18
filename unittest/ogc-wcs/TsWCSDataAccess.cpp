@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(datasource_open_test)
   std::string connInfo(url + "?VERSION=" + version + "&USERDATADIR=" + usrDataDir);
 
   // Perform connection
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("WCS2", connInfo);
+  std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("WCS2", connInfo);
   ds->open();
 
   BOOST_CHECK(ds->isOpened());
@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE(datasource_open_exception_test)
   std::string connInfo;
 
   // Perform connection
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("WCS2", connInfo);
+  std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("WCS2", connInfo);
 
   // Test without any correct connection parameter
   BOOST_CHECK_THROW(ds->open(), te::ws::ogc::wcs::da::Exception);

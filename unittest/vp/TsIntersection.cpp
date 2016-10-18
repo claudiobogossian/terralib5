@@ -49,13 +49,7 @@ void TsIntersection::tcIntersectionQuery1()
   boost::uuids::uuid u = gen();
   std::string id = boost::uuids::to_string(u);
 
-  std::map<std::string, std::string> connInfo;
-  connInfo["PG_HOST"] = "localhost";
-  connInfo["PG_PORT"] = "5432";
-  connInfo["PG_USER"] = "postgres";
-  connInfo["PG_DB_NAME"] = "TerraView5";
-  connInfo["PG_CONNECT_TIMEOUT"] = "4";
-  connInfo["PG_CLIENT_ENCODING"] = "UTF-8";
+  std::string connInfo("ppgsql://postgres:postgres@localhost:5432/TerraView5");
 
   te::da::DataSourceInfoPtr dsInfoPtr(new te::da::DataSourceInfo);
   dsInfoPtr->setConnInfo(connInfo);
@@ -117,13 +111,7 @@ void TsIntersection::tcIntersectionQuery1()
   boost::uuids::uuid out_u = out_gen();
   std::string out_id = boost::uuids::to_string(out_u);
 
-  std::map<std::string, std::string> out_connInfo;
-  out_connInfo["PG_HOST"] = "localhost";
-  out_connInfo["PG_PORT"] = "5432";
-  out_connInfo["PG_USER"] = "postgres";
-  out_connInfo["PG_DB_NAME"] = "TerraView";
-  out_connInfo["PG_CONNECT_TIMEOUT"] = "4";
-  out_connInfo["PG_CLIENT_ENCODING"] = "UTF-8";
+  std::string out_connInfo("ppgsql://postgres:postgres@localhost:5432/TerraView");
 
   te::da::DataSourceInfoPtr out_dsInfoPtr(new te::da::DataSourceInfo);
   out_dsInfoPtr->setConnInfo(out_connInfo);
@@ -179,13 +167,7 @@ void TsIntersection::tcIntersectionQuery2()
   boost::uuids::uuid u = gen();
   std::string id = boost::uuids::to_string(u);
 
-  std::map<std::string, std::string> connInfo;
-  connInfo["PG_HOST"] = "localhost";
-  connInfo["PG_PORT"] = "5432";
-  connInfo["PG_USER"] = "postgres";
-  connInfo["PG_DB_NAME"] = "TerraView5";
-  connInfo["PG_CONNECT_TIMEOUT"] = "4";
-  connInfo["PG_CLIENT_ENCODING"] = "UTF-8";
+  std::string connInfo("ppgsql://postgres:postgres@localhost:5432/TerraView5");
 
   te::da::DataSourceInfoPtr dsInfoPtr(new te::da::DataSourceInfo);
   dsInfoPtr->setConnInfo(connInfo);
@@ -249,13 +231,7 @@ void TsIntersection::tcIntersectionQuery2()
   boost::uuids::uuid out_u = out_gen();
   std::string out_id = boost::uuids::to_string(out_u);
 
-  std::map<std::string, std::string> out_connInfo;
-  out_connInfo["PG_HOST"] = "localhost";
-  out_connInfo["PG_PORT"] = "5432";
-  out_connInfo["PG_USER"] = "postgres";
-  out_connInfo["PG_DB_NAME"] = "TerraView";
-  out_connInfo["PG_CONNECT_TIMEOUT"] = "4";
-  out_connInfo["PG_CLIENT_ENCODING"] = "UTF-8";
+  std::string out_connInfo("ppgsql://postgres:postgres@localhost:5432/TerraView");
 
   te::da::DataSourceInfoPtr out_dsInfoPtr(new te::da::DataSourceInfo);
   out_dsInfoPtr->setConnInfo(out_connInfo);
