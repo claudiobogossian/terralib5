@@ -18,58 +18,32 @@
  */
 
 /*!
-  \file terralib/qt/af/Utils.h
+  \file terralib/wms/WMSLayerRendererFactory.cpp
 
-  \brief Utility routines for the TerraLib Application Framework module.
+  \brief This is the concrete factory for renderers of a WMSLayer.
 */
 
-#ifndef __TERRAVIEW__INTERNAL_UTILS_H
-#define __TERRAVIEW__INTERNAL_UTILS_H
-
-// TerraLib
-#include <terralib/common/Exception.h>
-#include "Config.h"
-
-// Forward declarations
-class QString;
-
-/*
-\brief
-
-\param[out]
-
-\param[out]
-*/
-void GetProjectInformationsFromSettings(QString& defaultAuthor, int& maxSaved);
-
-/*
-\brief
-
-\param
-
-\param
-*/
-void SaveProjectInformationsOnSettings(const QString& defaultAuthor, const int& maxSaved);
-
-/*!
-\brief
-
-\param
-*/
-void SaveOpenLastProjectOnSettings(bool openLast);
-
-/*!
-\brief
-
-\return
-*/
-bool GetOpenLastProjectFromSettings();
-
-/*!
-\brief Writes the default project file.
-*/
-void WriteDefaultProjectFile(const QString& fileName);
+//TerraLib
+#include "WMSLayerRenderer.h"
+#include "WMSLayerRendererFactory.h"
 
 
-#endif  // __TERRAVIEW__INTERNAL_UTILS_H
+te::ws::ogc::wms::WMSLayerRendererFactory te::ws::ogc::wms::WMSLayerRendererFactory::sm_factory;
+
+te::ws::ogc::wms::WMSLayerRendererFactory::~WMSLayerRendererFactory()
+{
+
+}
+
+te::map::AbstractRenderer *te::ws::ogc::wms::WMSLayerRendererFactory::build()
+{
+  return new te::ws::ogc::wms::WMSLayerRenderer;
+}
+
+te::ws::ogc::wms::WMSLayerRendererFactory::WMSLayerRendererFactory()
+  : te::map::RendererFactory("OGC_WMS_LAYER_RENDERER")
+{
+
+}
+
 

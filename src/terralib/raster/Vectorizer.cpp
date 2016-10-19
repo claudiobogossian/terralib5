@@ -308,6 +308,7 @@ bool te::rst::Vectorizer::run(std::vector<te::gm::Geometry*>& polygons,
   // generating output data
   
   const std::size_t containerPolygonsSize = containerPolygons.size(); 
+  std::size_t fixedSize = 0;
   
   for( std::size_t containerPolygonsIdx = 0 ; containerPolygonsIdx <
     containerPolygonsSize ; ++containerPolygonsIdx )
@@ -317,12 +318,17 @@ bool te::rst::Vectorizer::run(std::vector<te::gm::Geometry*>& polygons,
     if( polStructure.m_value != m_noDataValue )
     {
       std::vector<te::gm::Geometry*> fixed = te::gm::FixSelfIntersection(polStructure.m_polygonPtr.get());
+      fixedSize = fixed.size();
 
       polygons.insert(polygons.end(), fixed.begin(), fixed.end());
       
       if( polygonsValues )
       {
-        polygonsValues->push_back( polStructure.m_value );
+        while( fixedSize )
+        {
+          polygonsValues->push_back( polStructure.m_value );
+          --fixedSize;
+        }
       }
       
       polStructure.clear();

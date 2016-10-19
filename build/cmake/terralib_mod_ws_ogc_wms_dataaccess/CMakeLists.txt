@@ -38,15 +38,44 @@ source_group("Header Files"  FILES ${TERRALIB_HDR_FILES})
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-add_library(terralib_mod_ws_ogc_wms_dataaccess SHARED ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+if(TERRALIB_MOD_XML_ENABLED)
 
-target_link_libraries(terralib_mod_ws_ogc_wms_dataaccess terralib_mod_common
-                                                         terralib_mod_dataaccess
-                                                         terralib_mod_datatype
-                                                         terralib_mod_plugin
-														 terralib_mod_ws_core
-                                                         terralib_mod_ws_ogc_wms_client
-														 ${GDAL_LIBRARY})
+  file(GLOB TERRALIB_XML_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ws/ogc/wms/dataaccess/serialization/xml/*.cpp)
+  file(GLOB TERRALIB_XML_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ws/ogc/wms/dataaccess/serialization/xml/*.h)
+
+  source_group("Source Files\\serialization\\xml"  FILES ${TERRALIB_XML_SRC_FILES})
+  source_group("Header Files\\serialization\\xml"  FILES ${TERRALIB_XML_HDR_FILES})
+
+  set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_XML_SRC_FILES} ${TERRALIB_XML_HDR_FILES})
+
+else()
+
+  set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+
+endif()
+
+add_library(terralib_mod_ws_ogc_wms_dataaccess SHARED ${TERRALIB_FILES})
+
+if(TERRALIB_MOD_XML_ENABLED)
+  target_link_libraries(terralib_mod_ws_ogc_wms_dataaccess terralib_mod_common
+                                                           terralib_mod_dataaccess
+                                                           terralib_mod_datatype
+														   terralib_mod_maptools
+                                                           terralib_mod_plugin
+                                                           terralib_mod_ws_core
+                                                           terralib_mod_ws_ogc_wms_client
+                                                           terralib_mod_xml
+                                                           ${GDAL_LIBRARY})
+else()
+  target_link_libraries(terralib_mod_ws_ogc_wms_dataaccess terralib_mod_common
+                                                           terralib_mod_dataaccess
+                                                           terralib_mod_datatype
+														   terralib_mod_maptools
+                                                           terralib_mod_plugin
+                                                           terralib_mod_ws_core
+                                                           terralib_mod_ws_ogc_wms_client
+                                                           ${GDAL_LIBRARY})
+endif()
 
 set_target_properties(terralib_mod_ws_ogc_wms_dataaccess
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
@@ -60,6 +89,11 @@ install(TARGETS terralib_mod_ws_ogc_wms_dataaccess
 
 install(FILES ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/ws/ogc/wms/da COMPONENT devel)
+
+if(TERRALIB_MOD_XML_ENABLED)
+  install(FILES ${TERRALIB_XML_HDR_FILES}
+          DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/ws/ogc/wms/da/serialization/xml COMPONENT devel)
+endif()
 
 install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.ogc.wms.teplg
         DESTINATION ${TERRALIB_DESTINATION_PLUGINS} COMPONENT runtime)

@@ -18,58 +18,47 @@
  */
 
 /*!
-  \file terralib/qt/af/Utils.h
+  \file terralib/ws/ogc/wms/WMSLayerRenderer.h
 
-  \brief Utility routines for the TerraLib Application Framework module.
+  \brief A renderer to draw WMS Layers.
 */
 
-#ifndef __TERRAVIEW__INTERNAL_UTILS_H
-#define __TERRAVIEW__INTERNAL_UTILS_H
+#ifndef __TERRALIB_WS_OGC_WMSLAYERRENDERER_H
+#define __TERRALIB_WS_OGC_WMSLAYERRENDERER_H
 
-// TerraLib
-#include <terralib/common/Exception.h>
 #include "Config.h"
 
-// Forward declarations
-class QString;
+#include "../../../../maptools/AbstractRenderer.h"
 
-/*
-\brief
+namespace te
+{
+  namespace ws
+  {
+    namespace ogc
+    {
+      namespace wms
+      {
 
-\param[out]
+      /*!
+        \class WMSLayerRenderer
 
-\param[out]
-*/
-void GetProjectInformationsFromSettings(QString& defaultAuthor, int& maxSaved);
+        \brief It renders the data associated to a OGC WMS layer.
+      */
+      class TEOGCWMSDATAACCESSEXPORT WMSLayerRenderer : public te::map::AbstractRenderer
+      {
+      public:
 
-/*
-\brief
+        WMSLayerRenderer();
 
-\param
+        ~WMSLayerRenderer();
 
-\param
-*/
-void SaveProjectInformationsOnSettings(const QString& defaultAuthor, const int& maxSaved);
+        void draw(te::map::AbstractLayer* layer, te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid, const double& scale, bool* cancel);
 
-/*!
-\brief
+      };
 
-\param
-*/
-void SaveOpenLastProjectOnSettings(bool openLast);
+      }
+    }
+  }
+}
 
-/*!
-\brief
-
-\return
-*/
-bool GetOpenLastProjectFromSettings();
-
-/*!
-\brief Writes the default project file.
-*/
-void WriteDefaultProjectFile(const QString& fileName);
-
-
-#endif  // __TERRAVIEW__INTERNAL_UTILS_H
-
+#endif

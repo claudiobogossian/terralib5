@@ -62,6 +62,10 @@ void te::gdal::Module::startup()
 {
   if(m_initialized)
     return;
+  
+  // initializing the static mutex
+  getStaticMutex();  
+  
 // for all platforms, first look at an environment variable 
 // defined by macro TERRALIB_GDAL_DATA.
 // note: TERRALIB_GDAL_DATA is detected by CMAKE.
@@ -127,39 +131,67 @@ void te::gdal::Module::startup()
   
   // Supported file extensions capability
   
-  std::set< std::string > supportedExtensionsSet;
+  std::set< std::string > supportedRasterExtensionsSet;
+  std::set< std::string > supportedVectorExtensionsSet;
 
   for( std::map< std::string, DriverMetadata >::const_iterator it = 
     GetGDALDriversMetadata().begin() ; it !=
     GetGDALDriversMetadata().end() ; ++it )
   {
-    if( !it->second.m_extension.empty() )
+    if( !it->second.m_extensions.empty() )
     {
-      if( supportedExtensionsSet.find( it->second.m_extension ) ==
-        supportedExtensionsSet.end() )
+      for( std::size_t extensionsIdx = 0 ; extensionsIdx < it->second.m_extensions.size() ;
+        ++extensionsIdx )
       {
-        supportedExtensionsSet.insert( it->second.m_extension );
+        if( it->second.m_isRaster )
+        {
+          if( supportedRasterExtensionsSet.find( it->second.m_extensions[ extensionsIdx ] ) ==
+            supportedRasterExtensionsSet.end() )
+          {
+            supportedRasterExtensionsSet.insert( it->second.m_extensions[ extensionsIdx ] );
+          }
+        }
+        
+        if( it->second.m_isVector )
+        {
+          if( supportedVectorExtensionsSet.find( it->second.m_extensions[ extensionsIdx ] ) ==
+            supportedVectorExtensionsSet.end() )
+          {
+            supportedVectorExtensionsSet.insert( it->second.m_extensions[ extensionsIdx ] );
+          }
+        }
       }
     }
   }
   
-  std::string supportedExtensionsStr;
-  for( std::set< std::string >::const_iterator it = supportedExtensionsSet.begin() ; 
-    it != supportedExtensionsSet.end() ; ++it )
+  std::string supportedRasterExtensionsStr;
+  
+  for( std::set< std::string >::const_iterator it = supportedRasterExtensionsSet.begin() ; 
+    it != supportedRasterExtensionsSet.end() ; ++it )
   {
-    if( !supportedExtensionsStr.empty() )
+    if( !supportedRasterExtensionsStr.empty() )
     {
-      supportedExtensionsStr.append( ";" );
+      supportedRasterExtensionsStr.append( ";" );
     }
-    supportedExtensionsStr.append( *it );
-  }  
+    supportedRasterExtensionsStr.append( *it );
+  }
+  
+  std::string supportedVectorExtensionsStr;
+  
+  for( std::set< std::string >::const_iterator it = supportedVectorExtensionsSet.begin() ; 
+    it != supportedVectorExtensionsSet.end() ; ++it )
+  {
+    if( !supportedVectorExtensionsStr.empty() )
+    {
+      supportedVectorExtensionsStr.append( ";" );
+    }
+    supportedVectorExtensionsStr.append( *it );
+  }   
 
-  capabilities.addSpecificCapability( "SUPPORTED_EXTENSIONS", supportedExtensionsStr );
+  capabilities.addSpecificCapability( "SUPPORTED_RASTER_EXTENSIONS", supportedRasterExtensionsStr );
+  capabilities.addSpecificCapability( "SUPPORTED_VECTOR_EXTENSIONS", supportedVectorExtensionsStr );
 
   te::gdal::DataSource::setCapabilities(capabilities);
-  
-  // initializing the static mutex
-  getStaticMutex();
   
   TE_LOG_TRACE(TE_TR("TerraLib GDAL driver startup!"));
 

@@ -88,11 +88,6 @@ te::qt::widgets::WhereClauseWidget::~WhereClauseWidget()
   clear();
 }
 
-Ui::WhereClauseWidgetForm* te::qt::widgets::WhereClauseWidget::getForm() const
-{
-  return m_ui.get();
-}
-
 te::da::Where* te::qt::widgets::WhereClauseWidget::getWhere()
 {
   int row = m_ui->m_whereClauseTableWidget->rowCount();
@@ -242,6 +237,25 @@ void te::qt::widgets::WhereClauseWidget::setLayerList(std::list<te::map::Abstrac
 void te::qt::widgets::WhereClauseWidget::setFromItems(std::vector<std::pair<std::string, std::string> > vec)
 {
   m_fromItems = vec;
+}
+
+void te::qt::widgets::WhereClauseWidget::addLayer(te::map::AbstractLayerPtr layer)
+{
+  m_ui->m_layerComboBox->addItem(layer->getTitle().c_str(), QVariant::fromValue(layer));
+}
+
+void te::qt::widgets::WhereClauseWidget::removeLayer(te::map::AbstractLayerPtr layer)
+{
+  for (int i = 0; i < m_ui->m_layerComboBox->count(); ++i)
+  {
+    QVariant varLayer = m_ui->m_layerComboBox->itemData(i, Qt::UserRole);
+    te::map::AbstractLayerPtr l = varLayer.value<te::map::AbstractLayerPtr>();
+
+    if (l == layer)
+    {
+      m_ui->m_layerComboBox->removeItem(i);
+    }
+  }
 }
 
 void te::qt::widgets::WhereClauseWidget::setAttributeList(const std::vector<std::string>& vec)
