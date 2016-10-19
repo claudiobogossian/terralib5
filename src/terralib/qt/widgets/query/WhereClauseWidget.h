@@ -106,14 +106,15 @@ namespace te
 
           ~WhereClauseWidget();
 
-          Ui::WhereClauseWidgetForm* getForm() const;
-
           te::da::Where* getWhere();
 
           std::string getWhereString();
 
-
         public:
+
+          void addLayer(te::map::AbstractLayerPtr layer);
+
+          void removeLayer(te::map::AbstractLayerPtr layer);
 
           void setDataSource(const te::da::DataSourcePtr& ds);
 

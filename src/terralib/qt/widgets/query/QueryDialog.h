@@ -75,8 +75,6 @@ namespace te
 
         public:
 
-          te::qt::widgets::WhereClauseWidget* getWidget();
-
           /*!
             \brief This method is used to set the list of layers
             
