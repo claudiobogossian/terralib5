@@ -28,6 +28,7 @@
 
 
 #include "../../maptools/Enums.h"
+#include "Config.h"
 
 #include <string>
 
@@ -45,7 +46,7 @@ namespace te
      *
      * \return An ImageType according to specified format.
      */
-    te::map::ImageType FormatToImageType(const std::string& format);
+      TEWSCOREEXPORT te::map::ImageType FormatToImageType(const std::string& format);
 
     }
   }

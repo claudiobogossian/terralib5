@@ -276,17 +276,6 @@ void TerraView::init()
   //init base application
   BaseApplication::init(te::core::FindInTerraLibPath(TERRAVIEW_APPLICATION_CONFIG_FILE).c_str());
 
-  //check user settings file
-  QSettings user_settings(QSettings::IniFormat,
-    QSettings::UserScope,
-    QApplication::instance()->organizationName(),
-    QApplication::instance()->applicationName());
-
-  QFileInfo info(user_settings.fileName());
-
-  if (!info.exists())
-    CreateDefaultSettings();
-
   m_tvController = new TerraViewController(m_app, te::core::FindInTerraLibPath(TERRAVIEW_APPLICATION_CONFIG_FILE).c_str());
 
   m_tvController->initializeProjectMenus();
@@ -439,6 +428,84 @@ void TerraView::initSlotsConnections()
   connect(m_toolsQueryDataSource, SIGNAL(triggered()), SLOT(onToolsQueryDataSourceTriggered()));
   connect(m_toolsRasterMultiResolution, SIGNAL(triggered()), SLOT(onToolsRasterMultiResolutionTriggered()));
   connect(m_toolsDataSourceExplorer, SIGNAL(triggered()), SLOT(onDataSourceExplorerTriggered()));
+}
+
+void TerraView::createDefaultSettings()
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  sett.beginGroup("toolbars");
+
+  sett.beginGroup("File Tool Bar");
+  sett.setValue("name", "File Tool Bar");
+  sett.beginWriteArray("Actions");
+  sett.setArrayIndex(0);
+  sett.setValue("action", "File.New Project");
+  sett.setArrayIndex(1);
+  sett.setValue("action", "File.Open Project");
+  sett.setArrayIndex(2);
+  sett.setValue("action", "File.Save Project");
+  sett.setArrayIndex(3);
+  sett.setValue("action", "");
+  sett.setArrayIndex(4);
+  sett.setValue("action", "Project.New Folder");
+  sett.setArrayIndex(5);
+  sett.setValue("action", "Project.Add Layer.All Sources");
+  sett.endArray();
+  sett.endGroup();
+
+  sett.beginGroup("View Tool Bar");
+  sett.setValue("name", "View Tool Bar");
+  sett.beginWriteArray("Actions");
+  sett.setArrayIndex(0);
+  sett.setValue("action", "View.Layer Explorer");
+  sett.setArrayIndex(1);
+  sett.setValue("action", "View.Map Display");
+  sett.setArrayIndex(2);
+  sett.setValue("action", "View.Data Table");
+  sett.setArrayIndex(3);
+  sett.setValue("action", "View.Style Explorer");
+  sett.endArray();
+  sett.endGroup();
+
+  sett.beginGroup("Map Tool Bar");
+  sett.setValue("name", "Map Tool Bar");
+  sett.beginWriteArray("Actions");
+  sett.setArrayIndex(0);
+  sett.setValue("action", "Map.Draw");
+  sett.setArrayIndex(1);
+  sett.setValue("action", "Map.Previous Extent");
+  sett.setArrayIndex(2);
+  sett.setValue("action", "Map.Next Extent");
+  sett.setArrayIndex(3);
+  sett.setValue("action", "Map.Zoom Extent");
+  sett.setArrayIndex(4);
+  sett.setValue("action", "");
+  sett.setArrayIndex(5);
+  sett.setValue("action", "Map.Zoom In");
+  sett.setArrayIndex(6);
+  sett.setValue("action", "Map.Zoom Out");
+  sett.setArrayIndex(7);
+  sett.setValue("action", "Map.Pan");
+  sett.setArrayIndex(8);
+  sett.setValue("action", "");
+  sett.setArrayIndex(9);
+  sett.setValue("action", "Map.Info");
+  sett.setArrayIndex(10);
+  sett.setValue("action", "Map.Selection");
+  sett.setArrayIndex(11);
+  sett.setValue("action", "Layer.Invert Selection");
+  sett.endArray();
+  sett.endGroup();
+
+  sett.endGroup();
+
+  sett.beginGroup("projects");
+
+  sett.setValue("author_name", "");
+  sett.setValue("recents_history_size", "8");
+
+  sett.endGroup();
 }
 
 void TerraView::addMenusActions()

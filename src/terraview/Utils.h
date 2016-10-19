@@ -70,11 +70,6 @@ bool GetOpenLastProjectFromSettings();
 */
 void WriteDefaultProjectFile(const QString& fileName);
 
-/*!
-\brief Creates a default QSettings.
-*/
-void CreateDefaultSettings();
-
 
 #endif  // __TERRAVIEW__INTERNAL_UTILS_H
 

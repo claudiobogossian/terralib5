@@ -88,6 +88,8 @@ class TerraView : public te::qt::af::BaseApplication
 
     virtual void initSlotsConnections();
 
+    virtual void createDefaultSettings();
+
     void addMenusActions();
 
     void addPopUpMenu();
