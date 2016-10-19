@@ -23,6 +23,7 @@
 #include "../widgets/layer/utils/CharEncodingMenuWidget.h"
 #include "../widgets/layer/utils/SaveSelectedObjectsDialog.h"
 #include "../widgets/tools/Info.h"
+#include "../widgets/tools/Measure.h"
 #include "../widgets/tools/Pan.h"
 #include "../widgets/tools/Selection.h"
 #include "../widgets/tools/ZoomArea.h"
@@ -42,6 +43,7 @@
 // Qt
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QToolBar>
 #include <QToolButton>
 
 
@@ -337,6 +339,39 @@ void te::qt::af::BaseApplication::onMapSetUnknwonSRIDTriggered()
   m_app->trigger(&mapSRIDChagned);
 
   m_display->getDisplay()->setSRID(TE_UNKNOWN_SRS);
+}
+
+void te::qt::af::BaseApplication::onMeasureDistanceToggled(bool checked)
+{
+  if (!checked)
+    return;
+
+  QCursor measureDistanceCursor(QIcon::fromTheme("distance-measure-cursor").pixmap(m_mapCursorSize), 0, 0);
+
+  te::qt::widgets::Measure* distance = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Distance, measureDistanceCursor);
+  m_display->getDisplay()->setCurrentTool(distance);
+}
+
+void te::qt::af::BaseApplication::onMeasureAreaToggled(bool checked)
+{
+  if (!checked)
+    return;
+
+  QCursor measureAreaCursor(QIcon::fromTheme("area-measure-cursor").pixmap(m_mapCursorSize), 0, 0);
+
+  te::qt::widgets::Measure* area = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Area, measureAreaCursor);
+  m_display->getDisplay()->setCurrentTool(area);
+}
+
+void te::qt::af::BaseApplication::onMeasureAngleToggled(bool checked)
+{
+  if (!checked)
+    return;
+
+  QCursor measureAngleCursor(QIcon::fromTheme("angle-measure-cursor").pixmap(m_mapCursorSize), 0, 0);
+
+  te::qt::widgets::Measure* angle = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Angle, measureAngleCursor);
+  m_display->getDisplay()->setCurrentTool(angle);
 }
 
 void te::qt::af::BaseApplication::onStopDrawTriggered()
@@ -985,27 +1020,33 @@ void te::qt::af::BaseApplication::onLayerSelectedObjectsChanged(const te::map::A
 
 void te::qt::af::BaseApplication::makeDialog()
 {
-  //start menu 
   QMainWindow::setCentralWidget(m_ui->m_display);
 
+  //start menu 
   initMenus();
+
+  //start actions
+  initActions();
 
   //start main components
   m_layerExplorer = new LayerExplorer(m_ui->m_layerExplorer);
   m_display = new MapDisplay(m_ui->m_display, m_app);
   m_styleExplorer = new StyleExplorer(m_ui->m_styleExplorer);
 
-  //start actions
-  initActions();
-
   initSlotsConnections();
 
   initStatusBar();
+
+  initToolbars();
 
   m_viewLayerExplorer->setChecked(true);
   m_display->getDisplay()->setResizePolicy(te::qt::widgets::MapDisplay::Center);
   m_viewStyleExplorer->setChecked(false);
   m_styleExplorer->getExplorer()->setVisible(false);
+
+  //define startup tool
+  onSelectionToggled(true);
+  m_mapSelection->setChecked(true);
 
   //connect components
   m_app->addListener(m_layerExplorer);
@@ -1156,6 +1197,9 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_mapInfo, "pointer-info", "Map.Info", tr("&Info"), tr(""), true, true, true, m_menubar);
   initAction(m_mapRemoveSelection, "pointer-remove-selection", "Map.Remove Selection", tr("&Remove Selection"), tr(""), true, false, true, m_menubar);
   initAction(m_mapSelection, "pointer-selection", "Map.Selection", tr("&Selection"), tr(""), true, true, true, m_menubar);
+  initAction(m_mapMeasureDistance, "distance-measure", "Map.Measure Distance", tr("Measure &Distance"), tr(""), true, true, true, m_menubar);
+  initAction(m_mapMeasureArea, "area-measure", "Map.Measure Area", tr("Measure &Area"), tr(""), true, true, true, m_menubar);
+  initAction(m_mapMeasureAngle, "angle-measure", "Map.Measure Angle", tr("Measure &Angle"), tr(""), true, true, true, m_menubar);
 
   initAction(m_mapSRID, "srs", "Map.SRID", tr("&SRS..."), tr("Config the Map SRS"), true, false, true, m_menubar);
   initAction(m_mapUnknownSRID, "srs-unknown", "Map.UnknownSRID", tr("&Set Unknown SRS"), tr("Set the Map SRS to unknown"), true, false, true, m_menubar);
@@ -1164,8 +1208,18 @@ void te::qt::af::BaseApplication::initActions()
 
   m_layerRename->setShortcut(QKeySequence(Qt::Key_F2));
 
-  onSelectionToggled(true);
-  m_mapSelection->setChecked(true);
+  // Group the map tools
+  QActionGroup* mapToolsGroup = new QActionGroup(this->menuBar());
+  mapToolsGroup->setObjectName("Map.ToolsGroup");
+  mapToolsGroup->addAction(m_mapZoomIn);
+  mapToolsGroup->addAction(m_mapZoomOut);
+  mapToolsGroup->addAction(m_mapPan);
+  mapToolsGroup->addAction(m_mapInfo);
+  mapToolsGroup->addAction(m_mapSelection);
+  mapToolsGroup->addAction(m_mapRemoveSelection);
+  mapToolsGroup->addAction(m_mapMeasureDistance);
+  mapToolsGroup->addAction(m_mapMeasureArea);
+  mapToolsGroup->addAction(m_mapMeasureAngle);
 }
 
 void te::qt::af::BaseApplication::initMenus()
@@ -1177,6 +1231,19 @@ void te::qt::af::BaseApplication::initMenus()
   setMenuBar(m_menubar);
 
   m_app->registerMenuBar(m_menubar);
+}
+
+void te::qt::af::BaseApplication::initToolbars()
+{
+  std::vector<QToolBar*> bars = te::qt::af::ReadToolBarsFromSettings(m_app, this);
+  std::vector<QToolBar*>::iterator it;
+
+  for (it = bars.begin(); it != bars.end(); ++it)
+  {
+    QToolBar* bar = *it;
+    addToolBar(Qt::TopToolBarArea, bar);
+    m_app->registerToolBar(bar->objectName(), bar);
+  }
 }
 
 void te::qt::af::BaseApplication::initSlotsConnections()
@@ -1191,6 +1258,9 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_mapInfo, SIGNAL(toggled(bool)), SLOT(onInfoToggled(bool)));
   connect(m_mapRemoveSelection, SIGNAL(triggered()), SLOT(onMapRemoveSelectionTriggered()));
   connect(m_mapSelection, SIGNAL(toggled(bool)), SLOT(onSelectionToggled(bool)));
+  connect(m_mapMeasureDistance, SIGNAL(toggled(bool)), SLOT(onMeasureDistanceToggled(bool)));
+  connect(m_mapMeasureArea, SIGNAL(toggled(bool)), SLOT(onMeasureAreaToggled(bool)));
+  connect(m_mapMeasureAngle, SIGNAL(toggled(bool)), SLOT(onMeasureAngleToggled(bool)));
 
   connect(m_layerRemove, SIGNAL(triggered()), SLOT(onLayerRemoveTriggered()));
   connect(m_layerRename, SIGNAL(triggered()), SLOT(onLayerRenameTriggered()));
