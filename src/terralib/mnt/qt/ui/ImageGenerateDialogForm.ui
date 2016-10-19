@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>403</width>
-    <height>669</height>
+    <width>364</width>
+    <height>643</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -190,71 +190,33 @@
           </layout>
          </item>
          <item>
-          <widget class="QCheckBox" name="m_previewCheckBox">
-           <property name="text">
-            <string>Preview</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
           <layout class="QHBoxLayout" name="horizontalLayout_3">
            <item>
-            <widget class="QRadioButton" name="m_allImageRadioButton">
-             <property name="text">
-              <string>Use All Image</string>
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
              </property>
-            </widget>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
            <item>
-            <widget class="QRadioButton" name="m_visibleAreaRadioButton">
+            <widget class="QToolButton" name="m_previewToolButton">
              <property name="text">
-              <string>Use Visible Area</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
+              <string>Preview</string>
              </property>
              <property name="checked">
               <bool>false</bool>
              </property>
             </widget>
            </item>
-           <item>
-            <widget class="QRadioButton" name="m_roiRadioButton">
-             <property name="text">
-              <string>Use ROI</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="m_newROIPushButton">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="text">
-              <string>New ROI</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
           </layout>
          </item>
         </layout>
-        <zorder>label_2</zorder>
-        <zorder>label_3</zorder>
-        <zorder>m_elevationLineEdit</zorder>
-        <zorder>m_reliefLineEdit</zorder>
-        <zorder>label</zorder>
-        <zorder>m_azimuthLineEdit</zorder>
-        <zorder>m_previewCheckBox</zorder>
-        <zorder>m_allImageRadioButton</zorder>
-        <zorder>m_roiRadioButton</zorder>
-        <zorder>m_newROIPushButton</zorder>
-        <zorder>m_visibleAreaRadioButton</zorder>
        </widget>
       </item>
      </layout>
