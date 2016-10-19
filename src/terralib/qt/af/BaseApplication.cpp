@@ -41,6 +41,7 @@
 #include "../../plugin/PluginManager.h"
 
 // Qt
+#include <QFileInfo>
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QToolBar>
@@ -1071,6 +1072,17 @@ void te::qt::af::BaseApplication::initFramework(const QString& cfgFile)
   m_app = &AppCtrlSingleton::getInstance();
   m_app->setConfigFile(cfgFile.toUtf8().data());
   m_app->initialize();
+
+  //check user settings file
+  QSettings user_settings(QSettings::IniFormat,
+    QSettings::UserScope,
+    QApplication::instance()->organizationName(),
+    QApplication::instance()->applicationName());
+
+  QFileInfo info(user_settings.fileName());
+
+  if (!info.exists())
+    createDefaultSettings();
 }
 
 void te::qt::af::BaseApplication::initStatusBar()

@@ -197,6 +197,8 @@ namespace te
 
         virtual void initSlotsConnections();
 
+        virtual void createDefaultSettings() = 0;
+
         virtual void initAction(QAction*& act, const QString& icon, const QString& name,
           const QString& text, const QString& tooltip,
           bool iconVisibleInMenu, bool isCheckable, bool enabled, QObject* parent);
