@@ -2,6 +2,7 @@
 
 //TerraLib
 #include "../../../core/Exception.h"
+#include "../../../../raster/RasterProperty.h"
 
 //STL
 #include <algorithm>
@@ -40,17 +41,17 @@ void te::ws::ogc::wms::da::Transactor::rollBack()
 
 std::auto_ptr<te::da::DataSet> te::ws::ogc::wms::da::Transactor::getDataSet(const std::string &name, te::common::TraverseType travType, bool connected, const te::common::AccessPolicy accessPolicy)
 {
-  return std::auto_ptr<te::da::DataSet>();
+  throw te::ws::core::Exception() << te::ErrorDescription(TE_TR("The method getDataSet() is not supported by the WMS driver!"));
 }
 
 std::auto_ptr<te::da::DataSet> te::ws::ogc::wms::da::Transactor::getDataSet(const std::string &name, const std::string &propertyName, const te::gm::Envelope *e, te::gm::SpatialRelation r, te::common::TraverseType travType, bool connected, const te::common::AccessPolicy accessPolicy)
 {
-  return std::auto_ptr<te::da::DataSet>();
+  throw te::ws::core::Exception() << te::ErrorDescription(TE_TR("The method getDataSet() is not supported by the WMS driver!"));
 }
 
 std::auto_ptr<te::da::DataSet> te::ws::ogc::wms::da::Transactor::getDataSet(const std::string &name, const std::string &propertyName, const te::gm::Geometry *g, te::gm::SpatialRelation r, te::common::TraverseType travType, bool connected, const te::common::AccessPolicy accessPolicy)
 {
-  return std::auto_ptr<te::da::DataSet>();
+  throw te::ws::core::Exception() << te::ErrorDescription(TE_TR("The method getDataSet() is not supported by the WMS driver!"));
 }
 
 std::auto_ptr<te::da::DataSet> te::ws::ogc::wms::da::Transactor::getDataSet(const std::string &name,
@@ -138,6 +139,9 @@ std::auto_ptr<te::da::DataSetType> te::ws::ogc::wms::da::Transactor::getDataSetT
 
   te::da::DataSetType* type = new te::da::DataSetType(layer.m_name, 0);
   type->setTitle(layer.m_title);
+
+  te::rst::RasterProperty* rp = new te::rst::RasterProperty("raster");
+  type->add(rp);
 
   return std::auto_ptr<te::da::DataSetType>(type);
 }
