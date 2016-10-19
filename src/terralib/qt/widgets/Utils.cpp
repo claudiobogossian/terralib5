@@ -410,9 +410,9 @@ QString te::qt::widgets::GetDiskRasterFileSelFilter()
     {
       std::map< std::string, std::string > specCap = dsPtr->getCapabilities().getSpecificCapabilities();
       
-      if( specCap.find( "SUPPORTED_EXTENSIONS" ) != specCap.end() )
+      if( specCap.find( "SUPPORTED_RASTER_EXTENSIONS" ) != specCap.end() )
       {
-        std::string fileExtensions = specCap[ "SUPPORTED_EXTENSIONS" ];
+        std::string fileExtensions = specCap[ "SUPPORTED_RASTER_EXTENSIONS" ];
         std::string extFilter;
         std::string uCaseToken;
         std::string lCaseToken;
