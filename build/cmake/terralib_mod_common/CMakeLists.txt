@@ -55,11 +55,6 @@ add_library(terralib_mod_common SHARED ${TERRALIB_FILES})
 
 set(TERRALIB_LIBRARIES_DEPENDENCIES ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
 
-if(LOG4CXX_FOUND)
-  include_directories(${LOG4CXX_INCLUDE_DIR})
-  list(APPEND TERRALIB_LIBRARIES_DEPENDENCIES ${LOG4CXX_LIBRARY})
-endif()
-
 target_link_libraries(terralib_mod_common terralib_mod_core ${TERRALIB_LIBRARIES_DEPENDENCIES})
 
 set_target_properties(terralib_mod_common

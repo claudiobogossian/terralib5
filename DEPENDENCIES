@@ -142,15 +142,7 @@ GEOS is available from http://trac.osgeo.org/geos.
 Make sure to have at least version 3.4.2 installed. (3.5.0 used)
 
 
-10. Apache log4cxx (Optional)
------------------------------
-
-Apache log4cxx is available from http://logging.apache.org/log4cxx.
-
-Make sure to have at least version 0.10.0 installed.
-
-
-11. Proj4 (Optional)
+10. Proj4 (Optional)
 --------------------
 
 Proj4 is available from http://trac.osgeo.org/proj.
@@ -158,7 +150,7 @@ Proj4 is available from http://trac.osgeo.org/proj.
 Make sure to have at least version 4.8.0 installed. (4.9.1 used)
 
 
-12. GNU Iconv (Optional)
+11. GNU Iconv (Optional)
 ------------------------
 
 GNU Iconv is available from https://www.gnu.org/software/libiconv.
@@ -166,7 +158,7 @@ GNU Iconv is available from https://www.gnu.org/software/libiconv.
 Any recent version may be used.
 
 
-13. GNU gettext (Optional)
+12. GNU gettext (Optional)
 --------------------------
 
 GNU gettext is available from https://www.gnu.org/software/gettext.
@@ -174,7 +166,7 @@ GNU gettext is available from https://www.gnu.org/software/gettext.
 Any recent version may be used.
 
 
-14. Google Test and Google Mock (Optional)
+13. Google Test and Google Mock (Optional)
 --------------------------
 
 Google Test and Google Mock are available from https://github.com/google/googletest.
