@@ -153,7 +153,7 @@ te::ws::ogc::wms::WMSGetMapResponse te::ws::ogc::wms::da::DataSource::getMap(con
   return m_wms->getMap(request);
 }
 
-void te::ws::ogc::wms::da::DataSource::create(const std::map<std::string, std::string>& /*dsInfo*/)
+void te::ws::ogc::wms::da::DataSource::create(const std::string& /*connInfo*/)
 {
   throw te::ws::core::Exception() << te::ErrorDescription(TE_TR("The create() method is not supported by the WMS driver!"));
 }
