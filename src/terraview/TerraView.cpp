@@ -276,25 +276,12 @@ void TerraView::init()
   //init base application
   BaseApplication::init(te::core::FindInTerraLibPath(TERRAVIEW_APPLICATION_CONFIG_FILE).c_str());
 
-  //check user settings file
-  QSettings user_settings(QSettings::IniFormat,
-    QSettings::UserScope,
-    QApplication::instance()->organizationName(),
-    QApplication::instance()->applicationName());
-
-  QFileInfo info(user_settings.fileName());
-
-  if (!info.exists())
-    CreateDefaultSettings();
-
   m_tvController = new TerraViewController(m_app, te::core::FindInTerraLibPath(TERRAVIEW_APPLICATION_CONFIG_FILE).c_str());
 
   m_tvController->initializeProjectMenus();
 
   QStringList prjTitles,
       prjPaths;
-
-  initToolbars();
 
   GetProjectsFromSettings(prjTitles, prjPaths);
 
@@ -399,11 +386,6 @@ void TerraView::initActions()
   initAction(m_fileExit, "system-log-out", "File.Exit", tr("E&xit"), tr(""), true, false, true, m_menubar);
   initAction(m_filePrintPreview, "document-print-preview", "File.Print Preview", tr("Print Pre&view..."), tr(""), true, false, false, m_menubar);
   initAction(m_filePrint, "document-print", "File.Print", tr("&Print..."), tr(""), true, false, false, m_menubar);
-
-  // Menu -Map- actions
-  initAction(m_mapMeasureDistance, "distance-measure", "Map.Measure Distance", tr("Measure &Distance"), tr(""), true, true, true, m_menubar);
-  initAction(m_mapMeasureArea, "area-measure", "Map.Measure Area", tr("Measure &Area"), tr(""), true, true, true, m_menubar);
-  initAction(m_mapMeasureAngle, "angle-measure", "Map.Measure Angle", tr("Measure &Angle"), tr(""), true, true, true, m_menubar);
 }
 
 void TerraView::initSlotsConnections()
@@ -428,10 +410,6 @@ void TerraView::initSlotsConnections()
   connect(m_layerCompositionMode, SIGNAL(hovered()), SLOT(onLayerCompositionModeTriggered()));
   connect(m_layerQuery, SIGNAL(triggered()), SLOT(onQueryLayerTriggered()));
 
-  connect(m_mapMeasureDistance, SIGNAL(toggled(bool)), SLOT(onMeasureDistanceToggled(bool)));
-  connect(m_mapMeasureArea, SIGNAL(toggled(bool)), SLOT(onMeasureAreaToggled(bool)));
-  connect(m_mapMeasureAngle, SIGNAL(toggled(bool)), SLOT(onMeasureAngleToggled(bool)));
-
   connect(m_projectAddLayerDataset, SIGNAL(triggered()), SLOT(onAddDataSetLayerTriggered()));
   connect(m_projectAddLayerQueryDataSet, SIGNAL(triggered()), SLOT(onAddQueryLayerTriggered()));
   connect(m_projectAddLayerTabularDataSet, SIGNAL(triggered()), SLOT(onAddTabularLayerTriggered()));
@@ -450,6 +428,84 @@ void TerraView::initSlotsConnections()
   connect(m_toolsQueryDataSource, SIGNAL(triggered()), SLOT(onToolsQueryDataSourceTriggered()));
   connect(m_toolsRasterMultiResolution, SIGNAL(triggered()), SLOT(onToolsRasterMultiResolutionTriggered()));
   connect(m_toolsDataSourceExplorer, SIGNAL(triggered()), SLOT(onDataSourceExplorerTriggered()));
+}
+
+void TerraView::createDefaultSettings()
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  sett.beginGroup("toolbars");
+
+  sett.beginGroup("File Tool Bar");
+  sett.setValue("name", "File Tool Bar");
+  sett.beginWriteArray("Actions");
+  sett.setArrayIndex(0);
+  sett.setValue("action", "File.New Project");
+  sett.setArrayIndex(1);
+  sett.setValue("action", "File.Open Project");
+  sett.setArrayIndex(2);
+  sett.setValue("action", "File.Save Project");
+  sett.setArrayIndex(3);
+  sett.setValue("action", "");
+  sett.setArrayIndex(4);
+  sett.setValue("action", "Project.New Folder");
+  sett.setArrayIndex(5);
+  sett.setValue("action", "Project.Add Layer.All Sources");
+  sett.endArray();
+  sett.endGroup();
+
+  sett.beginGroup("View Tool Bar");
+  sett.setValue("name", "View Tool Bar");
+  sett.beginWriteArray("Actions");
+  sett.setArrayIndex(0);
+  sett.setValue("action", "View.Layer Explorer");
+  sett.setArrayIndex(1);
+  sett.setValue("action", "View.Map Display");
+  sett.setArrayIndex(2);
+  sett.setValue("action", "View.Data Table");
+  sett.setArrayIndex(3);
+  sett.setValue("action", "View.Style Explorer");
+  sett.endArray();
+  sett.endGroup();
+
+  sett.beginGroup("Map Tool Bar");
+  sett.setValue("name", "Map Tool Bar");
+  sett.beginWriteArray("Actions");
+  sett.setArrayIndex(0);
+  sett.setValue("action", "Map.Draw");
+  sett.setArrayIndex(1);
+  sett.setValue("action", "Map.Previous Extent");
+  sett.setArrayIndex(2);
+  sett.setValue("action", "Map.Next Extent");
+  sett.setArrayIndex(3);
+  sett.setValue("action", "Map.Zoom Extent");
+  sett.setArrayIndex(4);
+  sett.setValue("action", "");
+  sett.setArrayIndex(5);
+  sett.setValue("action", "Map.Zoom In");
+  sett.setArrayIndex(6);
+  sett.setValue("action", "Map.Zoom Out");
+  sett.setArrayIndex(7);
+  sett.setValue("action", "Map.Pan");
+  sett.setArrayIndex(8);
+  sett.setValue("action", "");
+  sett.setArrayIndex(9);
+  sett.setValue("action", "Map.Info");
+  sett.setArrayIndex(10);
+  sett.setValue("action", "Map.Selection");
+  sett.setArrayIndex(11);
+  sett.setValue("action", "Layer.Invert Selection");
+  sett.endArray();
+  sett.endGroup();
+
+  sett.endGroup();
+
+  sett.beginGroup("projects");
+
+  sett.setValue("author_name", "");
+  sett.setValue("recents_history_size", "8");
+
+  sett.endGroup();
 }
 
 void TerraView::addMenusActions()
@@ -562,19 +618,6 @@ void TerraView::addMenusActions()
   m_mapMenu->addSeparator();
   m_mapMenu->addAction(m_mapSRID);
   m_mapMenu->addAction(m_mapUnknownSRID);
-
-  // Group the map tools
-  QActionGroup* mapToolsGroup = new QActionGroup(m_mapMenu);
-  mapToolsGroup->setObjectName("Map.ToolsGroup");
-  mapToolsGroup->addAction(m_mapZoomIn);
-  mapToolsGroup->addAction(m_mapZoomOut);
-  mapToolsGroup->addAction(m_mapPan);
-  mapToolsGroup->addAction(m_mapMeasureDistance);
-  mapToolsGroup->addAction(m_mapMeasureArea);
-  mapToolsGroup->addAction(m_mapMeasureAngle);
-  mapToolsGroup->addAction(m_mapInfo);
-  mapToolsGroup->addAction(m_mapSelection);
-  mapToolsGroup->addAction(m_mapRemoveSelection);
 
   // Tools menu
   m_toolsMenu->setObjectName("Tools");
@@ -779,18 +822,18 @@ void TerraView::initMenus()
 
 void TerraView::initToolbars()
 {
-  std::vector<QToolBar*> bars = te::qt::af::ReadToolBarsFromSettings(m_app, this);
-  std::vector<QToolBar*>::iterator it;
+  te::qt::af::BaseApplication::initToolbars();
 
-  for (it = bars.begin(); it != bars.end(); ++it)
+  std::vector<QToolBar*> toolBars = m_app->getToolBars();
+
+
+  for (std::size_t t = 0; t < toolBars.size(); ++t)
   {
-    QToolBar* bar = *it;
-    addToolBar(Qt::TopToolBarArea, bar);
+    QToolBar* bar = toolBars[t];
+
     m_viewToolBarsMenu->addAction(bar->toggleViewAction());
-    m_app->registerToolBar(bar->objectName(), bar);
   }
 }
-
 
 void TerraView::showAboutDialog()
 {
@@ -1313,41 +1356,6 @@ void TerraView::onQueryLayerTriggered()
 
   m_queryDlg->show();
 }
-
-
-void TerraView::onMeasureDistanceToggled(bool checked)
-{
-  if (!checked)
-    return;
-
-  QCursor measureDistanceCursor(QIcon::fromTheme("distance-measure-cursor").pixmap(m_mapCursorSize), 0, 0);
-
-  te::qt::widgets::Measure* distance = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Distance, measureDistanceCursor);
-  m_display->getDisplay()->setCurrentTool(distance);
-}
-
-void TerraView::onMeasureAreaToggled(bool checked)
-{
-  if (!checked)
-    return;
-
-  QCursor measureAreaCursor(QIcon::fromTheme("area-measure-cursor").pixmap(m_mapCursorSize), 0, 0);
-
-  te::qt::widgets::Measure* area = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Area, measureAreaCursor);
-  m_display->getDisplay()->setCurrentTool(area);
-}
-
-void TerraView::onMeasureAngleToggled(bool checked)
-{
-  if (!checked)
-    return;
-
-  QCursor measureAngleCursor(QIcon::fromTheme("angle-measure-cursor").pixmap(m_mapCursorSize), 0, 0);
-
-  te::qt::widgets::Measure* angle = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Angle, measureAngleCursor);
-  m_display->getDisplay()->setCurrentTool(angle);
-}
-
 
 void TerraView::onAddDataSetLayerTriggered()
 {

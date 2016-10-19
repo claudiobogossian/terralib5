@@ -144,7 +144,16 @@ const te::da::SQLDialect* te::ws::ogc::wms::da::DataSource::getDialect() const
   return 0;
 }
 
-void te::ws::ogc::wms::da::DataSource::create(const std::string& /*connInfo*/)
+
+te::ws::ogc::wms::WMSGetMapResponse te::ws::ogc::wms::da::DataSource::getMap(const te::ws::ogc::wms::WMSGetMapRequest &request)
+{
+  if(!isOpened())
+    throw te::ws::core::Exception() << te::ErrorDescription(TE_TR("The WMS DataSource is not opened."));
+
+  return m_wms->getMap(request);
+}
+
+void te::ws::ogc::wms::da::DataSource::create(const std::map<std::string, std::string>& /*dsInfo*/)
 {
   throw te::ws::core::Exception() << te::ErrorDescription(TE_TR("The create() method is not supported by the WMS driver!"));
 }

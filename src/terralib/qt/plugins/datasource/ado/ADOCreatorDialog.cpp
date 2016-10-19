@@ -178,7 +178,7 @@ void te::qt::plugins::ado::ADOCreatorDialog::searchDatabaseToolButtonPressed()
 const std::string te::qt::plugins::ado::ADOCreatorDialog::getConnectionInfo(bool getPrivateKeys) const
 {
   std::string strURI = "file://"; // The base of the URI
-  QString qstr;  // Auxialiary string used to hold temporary data
+  QString qstr;  // Auxiliary string used to hold temporary data
 
   qstr = m_ui->m_fileLineEdit->text().trimmed();
 

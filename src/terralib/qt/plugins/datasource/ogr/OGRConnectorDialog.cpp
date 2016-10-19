@@ -264,7 +264,7 @@ void te::qt::plugins::ogr::OGRConnectorDialog::searchFeatureToolButtonPressed()
 
 const std::string te::qt::plugins::ogr::OGRConnectorDialog::getConnectionInfo() const
 {
-  QString qstr; // Auxialiary string used to hold temporary data
+  QString qstr; // Auxiliary string used to hold temporary data
 
   std::string strURI = "File://"; // The base of the URI
 

@@ -349,12 +349,12 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validTerraLib4Connection()
 {
   setCursor(Qt::WaitCursor);
 
-  std::map<std::string, std::string> connInfo = m_connectorPage->getConnInfo();
+  const std::string& connInfo = m_connectorPage->getConnInfo();
 
   try
   {
     te::qt::widgets::ScopedCursor sc(Qt::WaitCursor);
-    m_tl4Database = te::da::DataSourceFactory::make("TERRALIB4", "Converter:");
+    m_tl4Database = te::da::DataSourceFactory::make("TERRALIB4", connInfo);
     m_tl4Database->open();
   }
   catch(const te::da::Exception& e)

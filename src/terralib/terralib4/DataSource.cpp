@@ -85,12 +85,14 @@ void terralib4::DataSource::open()
     dbInfo = terralib4::Convert2Latin1(it->second);
   else
     throw te::da::Exception(TE_TR("The connection information is invalid. Missing T4_DRIVER parameter!"));
+  
+  if(dbInfo == "Ado")
+    auxDbName = m_uri.host() + m_uri.path();
+  else 
+    auxDbName = m_uri.path();
 
-  it = kvp.find("T4_DB_NAME");
-  if (it != itend && !it->second.empty())
-    auxDbName = terralib4::Convert2Latin1(it->second);
-  else
-    throw te::da::Exception(TE_TR("The connection information is invalid. Missing T4_DB_NAME parameter!"));
+  if (auxDbName.empty())
+    throw te::da::Exception(TE_TR("The connection information is invalid. Missing the database name!"));
 
   std::string hostName = "";
   std::string userName = "";

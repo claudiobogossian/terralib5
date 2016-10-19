@@ -197,7 +197,7 @@ void te::qt::plugins::wfs::WFSConnectorDialog::helpPushButtonPressed()
 
 const std::string te::qt::plugins::wfs::WFSConnectorDialog::getConnectionInfo() const
 {
-  QString qstr; // Auxialiary string used to hold temporary data
+  QString qstr; // Auxiliary string used to hold temporary data
 
   std::string strURI("WFS:"); // The base of the URI
 

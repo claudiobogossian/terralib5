@@ -205,7 +205,7 @@ void te::ws::ogc::wcs::qt::WCSConnectorDialog::helpPushButtonPressed()
 
 const std::string te::ws::ogc::wcs::qt::WCSConnectorDialog::getConnectionInfo() const
 {
-  QString qstr; // Auxialiary string used to hold temporary data
+  QString qstr; // Auxiliary string used to hold temporary data
 
   // Get the server URL
   qstr = m_ui->m_serverLineEdit->text().trimmed();

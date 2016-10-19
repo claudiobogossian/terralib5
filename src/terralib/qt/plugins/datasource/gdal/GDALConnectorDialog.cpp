@@ -236,7 +236,7 @@ void te::qt::plugins::gdal::GDALConnectorDialog::searchDatasetToolButtonPressed(
 
 const std::string te::qt::plugins::gdal::GDALConnectorDialog::getConnectionInfo() const
 {
-  QString qstr; // Auxialiary string used to hold temporary data
+  QString qstr; // Auxiliary string used to hold temporary data
 
   std::string strURI = "File://"; // The base of the URI
 

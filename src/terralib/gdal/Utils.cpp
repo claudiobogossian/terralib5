@@ -61,6 +61,9 @@
 #include <boost/graph/graph_concepts.hpp>
 #include <boost/scoped_array.hpp>
 
+#define TL_B_PROP_DESC_KEY "TERRALIB_BAND_PROPERTY_GDAL_DESCRIPTION_KEY_TEXT"
+#define TL_B_PROP_CATNAME_KEY "TERRALIB_BAND_PROPERTY_GDAL_CATEGORY_NAME_KEY_TEXT"
+
 std::string te::gdal::GetSubDataSetName(const std::string& name, const std::string& driverName)
 {
   std::vector<std::string> words;
@@ -219,7 +222,8 @@ te::rst::BandProperty* te::gdal::GetBandProperty(GDALRasterBand* gband,
   if (!gband)
     return 0;
 
-  te::rst::BandProperty* bprop = new te::rst::BandProperty(gband->GetBand()-1, GetTeDataType(gband->GetRasterDataType()), "");
+  std::auto_ptr< te::rst::BandProperty > bprop( new te::rst::BandProperty(
+    gband->GetBand()-1, GetTeDataType(gband->GetRasterDataType()), "") );
   
   bprop->m_idx = bandIndex;
   
@@ -278,22 +282,111 @@ te::rst::BandProperty* te::gdal::GetBandProperty(GDALRasterBand* gband,
   }
 
   // find if there is a no data value
+  
   int noDataValueIsUsed = 0;
   double nodataval = gband->GetNoDataValue(&noDataValueIsUsed);
   if (noDataValueIsUsed) 
     bprop->m_noDataValue = nodataval;
+  
+  // category names
+  
+  bool categoryNamesLoaded = false;
+  
+  {
+    char** categoriesListPtr = gband->GetCategoryNames();
+    
+    if( categoriesListPtr )
+    {
+      const int categoriesListSize = CSLCount( categoriesListPtr );
+      
+      for( int categoriesListIdx = 0 ; categoriesListIdx < categoriesListSize ;
+        ++categoriesListIdx )
+      {
+        bprop->m_categoryNames.push_back( std::string( 
+          categoriesListPtr[ categoriesListIdx ] ) );
+        
+        categoryNamesLoaded = true;
+      }
+    }
+  }
+  
+  // Description
+  
+  bool descriptionLoaded = false;
+  
+  if( gband->GetDescription() )
+  {
+    bprop->m_description = std::string( gband->GetDescription() );
+    
+    descriptionLoaded = true;
+  }
+  
+  // Metadata & Description
+  
+  {
+    char** metadataDomainListPtr = gband->GetMetadataDomainList();
+    
+    char** metadataListPtr = gband->GetMetadata( ( metadataDomainListPtr ? 
+          metadataDomainListPtr[ 0 ] : 0 ) );
+    
+    if( metadataListPtr )
+    {
+      const int metadataListSize = CSLCount( metadataListPtr );
+      char* namePtr = 0;
+      const char* valuePtr = 0;
+      const std::size_t catNameKeySize = std::strlen( TL_B_PROP_CATNAME_KEY );
+      
+      for( int metadataListIdx = 0 ; metadataListIdx < metadataListSize ;
+        ++metadataListIdx )
+      {
+        valuePtr = CPLParseNameValue( metadataListPtr[ metadataListIdx ],
+          &namePtr );
+        
+        if( std::strcmp( namePtr, TL_B_PROP_DESC_KEY ) == 0 )
+        {
+          if( descriptionLoaded == false )
+          {
+            bprop->m_description = std::string( valuePtr );
+          }
+        }
+        else if( std::strncmp( namePtr, TL_B_PROP_CATNAME_KEY, catNameKeySize ) == 0 )
+        {
+          if( categoryNamesLoaded == false )
+          {
+            bprop->m_categoryNames.push_back( std::string( valuePtr ) );
+          }
+        }
+        else
+        {
+          bprop->m_metadata.push_back( std::pair<std::string, std::string>(
+            std::string( namePtr ), std::string( valuePtr ) ) );
+        }
+        
+        VSIFree( namePtr ); 
+      }
+    }
+    
+    if( metadataDomainListPtr ) CSLDestroy( metadataDomainListPtr );
+  }  
+  
+  // unit 
 
   std::string unitName = gband->GetUnitType();
   if (!unitName.empty())
     bprop->setUnitOfMeasure(te::common::UnitsOfMeasureManager::getInstance().find(unitName));
+  
+  // scale and offset
+  
   bprop->m_valuesOffset = gband->GetOffset(0);
   bprop->m_valuesScale = gband->GetScale(0);
+  
+  // blocking scheme
 
   gband->GetBlockSize(&bprop->m_blkw, &bprop->m_blkh);
   bprop->m_nblocksx = (gband->GetXSize() + bprop->m_blkw - 1) / bprop->m_blkw;
   bprop->m_nblocksy = (gband->GetYSize() + bprop->m_blkh - 1) / bprop->m_blkh;
 
-  return bprop;
+  return bprop.release();
 }
 
 void te::gdal::GetBands(te::gdal::Raster* rst, std::vector<te::gdal::Band*>& bands)
@@ -542,7 +635,104 @@ GDALDataset* te::gdal::CreateRaster(const std::string& name, te::rst::Grid* g, c
     rasterBand->SetOffset(bands[dIdx]->m_valuesOffset.real());
     rasterBand->SetScale(bands[dIdx]->m_valuesScale.real());
     
-    // maybe there is something else here...
+    // category names
+    
+    bool categoryNamesSaved = false;
+    
+    {
+      char** categoryNamesListPtr = 0;
+      
+      for( std::size_t categoryNamesIdx = 0 ; categoryNamesIdx <
+        bands[ dIdx ]->m_categoryNames.size() ; ++categoryNamesIdx )
+      {
+        if( ! bands[ dIdx ]->m_categoryNames[ categoryNamesIdx ].empty() )
+        {
+          categoryNamesListPtr = CSLAddString( categoryNamesListPtr, 
+             bands[ dIdx ]->m_categoryNames[ categoryNamesIdx ].c_str() );
+        }
+      }
+      
+      if( categoryNamesListPtr )
+      {
+        if( rasterBand->SetCategoryNames( categoryNamesListPtr ) == CE_None )
+        {
+          categoryNamesSaved = true;
+        }
+        
+        CSLDestroy(categoryNamesListPtr);
+      }
+    }
+    
+    // Description
+    
+    if( ! bands[ dIdx ]->m_description.empty() )
+    {
+       rasterBand->SetDescription( bands[ dIdx ]->m_description.c_str() );   
+    }
+    
+    // Metadata
+    
+    {
+      char** metadataListPtr = 0;
+      
+      // If categoy names saving failed, it will be saved as metadata
+      
+      if( 
+          ( ! bands[ dIdx ]->m_categoryNames.empty() )
+          &&
+          ( categoryNamesSaved == false )
+        )
+      {
+        for( std::size_t categoryNamesIdx = 0 ; categoryNamesIdx <
+          bands[ dIdx ]->m_categoryNames.size() ; ++categoryNamesIdx )
+        {
+          if( ! bands[ dIdx ]->m_categoryNames[ categoryNamesIdx ].empty() )
+          {
+            metadataListPtr = CSLAddNameValue( metadataListPtr, 
+               ( std::string( TL_B_PROP_CATNAME_KEY ) +
+               boost::lexical_cast< std::string >( categoryNamesIdx ) ).c_str(),
+               bands[ dIdx ]->m_categoryNames[ categoryNamesIdx ].c_str() );               
+          }
+        }
+      }
+      
+      // Band description will be also saved as metadata
+      
+      if( ! bands[ dIdx ]->m_description.empty() )
+      {
+        metadataListPtr = CSLAddNameValue( metadataListPtr, 
+           TL_B_PROP_DESC_KEY,
+           bands[ dIdx ]->m_description.c_str() );   
+      }
+      
+      // Other metadata
+      
+      for( std::size_t metadataIdx = 0 ; metadataIdx <
+        bands[ dIdx ]->m_metadata.size() ; ++metadataIdx )
+      {
+        if( !
+            ( bands[ dIdx ]->m_metadata[ metadataIdx ].first.empty() )
+            ||
+            ( bands[ dIdx ]->m_metadata[ metadataIdx ].second.empty() )
+          )
+        {
+          metadataListPtr = CSLAddString( metadataListPtr, 
+             ( bands[ dIdx ]->m_metadata[ metadataIdx ].first + "=" +
+             bands[ dIdx ]->m_metadata[ metadataIdx ].second ).c_str() );
+        }
+      }
+      
+      if( metadataListPtr )
+      {
+        char** metadataDomainListPtr = rasterBand->GetMetadataDomainList();
+        
+        rasterBand->SetMetadata( metadataListPtr, ( metadataDomainListPtr ? 
+          metadataDomainListPtr[ 0 ] : 0 ) );
+        CSLDestroy(metadataListPtr);
+        
+        if( metadataDomainListPtr ) CSLDestroy( metadataDomainListPtr );
+      }
+    }
   }
   
   return poDataset;
@@ -694,10 +884,12 @@ std::string te::gdal::GetDriverName(const std::string& name)
   std::string ext = te::common::Convert2UCase(mpath.extension().string());
   if( ext[ 0 ] == '.' ) ext = ext.substr( 1, ext.size() - 1);
   
+  std::multimap< std::string, std::string > extensionsMap = GetGDALAllDriversUCaseExt2DriversMap();
+  
   std::multimap< std::string, std::string >::const_iterator exttMapIt =
-    GetGDALDriversUCaseExt2DriversMap().find( ext );
+    extensionsMap.find( ext );
     
-  if( exttMapIt == GetGDALDriversUCaseExt2DriversMap().end() )
+  if( exttMapIt == extensionsMap.end() )
   {
     return std::string();
   }
@@ -833,12 +1025,13 @@ boost::mutex& te::gdal::getStaticMutex()
 
 std::map< std::string, te::gdal::DriverMetadata >&  te::gdal::GetGDALDriversMetadata()
 {
-  if(m_driversMetadata.empty() )
+  static std::map< std::string, DriverMetadata > driversMetadataMap;
+  
+  if(driversMetadataMap.empty() )
   {
     GDALDriverManager* driverManagerPtr = GetGDALDriverManager();
     
     int driversCount = driverManagerPtr->GetDriverCount();
-    char** metaInfoPtr = 0;
     const char* valuePtr = 0;
     
     for( int driverIndex = 0 ; driverIndex < driversCount ; ++driverIndex )
@@ -850,51 +1043,131 @@ std::map< std::string, te::gdal::DriverMetadata >&  te::gdal::GetGDALDriversMeta
         DriverMetadata auxMD;
         auxMD.m_driverName = driverPtr->GetDescription();
         
-        metaInfoPtr = driverPtr->GetMetadata();
+        CPLStringList metaInfo( driverPtr->GetMetadata(), false );
+        CPLStringList metaDomainList( driverPtr->GetMetadataDomainList(), true );        
         
-        if( metaInfoPtr )
+        valuePtr = metaInfo.FetchNameValue( GDAL_DMD_EXTENSIONS );
+        if( valuePtr )
         {
-          valuePtr = CSLFetchNameValue( metaInfoPtr, "DMD_EXTENSION" );
-          if( valuePtr ) auxMD.m_extension = valuePtr;
-          
-          valuePtr = CSLFetchNameValue( metaInfoPtr, "DMD_LONGNAME" );
-          if( valuePtr ) auxMD.m_longName = valuePtr;    
-          
-          valuePtr = CSLFetchNameValue( metaInfoPtr, "DMD_SUBDATASETS" );
-          if( ( valuePtr != 0 ) && ( std::strcmp( "YES", valuePtr ) == 0 ) )
-          {
-            auxMD.m_subDatasetsSupport = true;
-          }
-          else
-          {
-            auxMD.m_subDatasetsSupport = false;
-          }
+          te::common::Tokenize( std::string( valuePtr ), auxMD.m_extensions, " " );
         }
         
-        m_driversMetadata[ auxMD.m_driverName ] = auxMD;
+        valuePtr = metaInfo.FetchNameValue( GDAL_DMD_LONGNAME );
+        if( valuePtr ) auxMD.m_longName = valuePtr;    
+        
+        valuePtr = metaInfo.FetchNameValue( GDAL_DMD_SUBDATASETS );
+        if( ( valuePtr != 0 ) && ( std::strcmp( "YES", valuePtr ) == 0 ) )
+        {
+          auxMD.m_subDatasetsSupport = true;
+        }
+        else
+        {
+          auxMD.m_subDatasetsSupport = false;
+        }
+        
+        valuePtr = metaInfo.FetchNameValue( GDAL_DCAP_RASTER );
+        if( ( valuePtr != 0 ) && ( std::strcmp( "YES", valuePtr ) == 0 ) )
+        {
+          auxMD.m_isRaster = true;
+        }
+        else
+        {
+          auxMD.m_isRaster = false;
+        }        
+        
+        valuePtr = metaInfo.FetchNameValue( GDAL_DCAP_VECTOR );
+        if( ( valuePtr != 0 ) && ( std::strcmp( "YES", valuePtr ) == 0 ) )
+        {
+          auxMD.m_isVector = true;
+        }
+        else
+        {
+          auxMD.m_isVector = false;
+        }          
+        
+        driversMetadataMap[ auxMD.m_driverName ] = auxMD;
       }
     }
   }
   
-  return m_driversMetadata;
+  return driversMetadataMap;
 }
 
-std::multimap< std::string, std::string >& te::gdal::GetGDALDriversUCaseExt2DriversMap()
+std::multimap< std::string, std::string >& te::gdal::GetGDALRasterDriversUCaseExt2DriversMap()
 {  
-  if(m_extensions.empty() )
+  static std::multimap< std::string, std::string > extensionsMap;
+  
+  if(extensionsMap.empty() )
   {
     const std::map< std::string, DriverMetadata >& driversMetadata = GetGDALDriversMetadata();
     
     for( std::map< std::string, DriverMetadata >::const_iterator it = driversMetadata.begin() ;
       it != driversMetadata.end() ; ++it )
     {
-      if( ! it->second.m_extension.empty() )
+      if( 
+          ( ! it->second.m_extensions.empty() ) 
+          &&
+          it->second.m_isRaster 
+        )
       {
-        m_extensions.insert( std::pair< std::string, std::string >(
-          te::common::Convert2UCase( it->second.m_extension ), it->first ) );;
+        for( std::size_t extensionsIdx = 0 ; extensionsIdx < it->second.m_extensions.size() ;
+          ++extensionsIdx )
+        {        
+          extensionsMap.insert( std::pair< std::string, std::string >(
+            te::common::Convert2UCase( it->second.m_extensions[ extensionsIdx ] ), it->first ) );;
+        }
       }
     }
   }
   
-  return m_extensions;
+  return extensionsMap;
 }
+
+std::multimap< std::string, std::string >& te::gdal::GetGDALVectorDriversUCaseExt2DriversMap()
+{  
+  static std::multimap< std::string, std::string > extensionsMap;
+  
+  if(extensionsMap.empty() )
+  {
+    const std::map< std::string, DriverMetadata >& driversMetadata = GetGDALDriversMetadata();
+    
+    for( std::map< std::string, DriverMetadata >::const_iterator it = driversMetadata.begin() ;
+      it != driversMetadata.end() ; ++it )
+    {
+      if( 
+          ( ! it->second.m_extensions.empty() ) 
+          &&
+          it->second.m_isVector 
+        )
+      {
+        for( std::size_t extensionsIdx = 0 ; extensionsIdx < it->second.m_extensions.size() ;
+          ++extensionsIdx )
+        {        
+          extensionsMap.insert( std::pair< std::string, std::string >(
+            te::common::Convert2UCase( it->second.m_extensions[ extensionsIdx ] ), it->first ) );;
+        }
+      }
+    }
+  }
+  
+  return extensionsMap;
+}
+
+std::multimap< std::string, std::string > te::gdal::GetGDALAllDriversUCaseExt2DriversMap()
+{  
+  std::multimap< std::string, std::string > extensionsMap( GetGDALVectorDriversUCaseExt2DriversMap() );
+  
+  std::multimap< std::string, std::string >::const_iterator it = 
+    GetGDALRasterDriversUCaseExt2DriversMap().begin();
+  std::multimap< std::string, std::string >::const_iterator itEnd = 
+    GetGDALRasterDriversUCaseExt2DriversMap().end();
+    
+  while( it != itEnd )
+  {
+    extensionsMap.insert( std::pair< std::string, std::string >( it->first, it->second ) );
+    ++it;
+  }
+  
+  return extensionsMap;
+}
+

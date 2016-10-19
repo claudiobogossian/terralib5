@@ -61,6 +61,7 @@
 #include <QFileDialog>
 #include <QMenu>
 #include <QMessageBox>
+#include <QToolBar>
 
 std::list<te::da::DataSetTypePtr> GetDataSetsInfo(const te::da::DataSourceInfoPtr& info)
 {
@@ -162,6 +163,7 @@ void te::qt::plugins::ogr::Plugin::startup()
   {
 //    QWidget* parent = act->parentWidget();
     m_showWindow = new QAction(QIcon::fromTheme("file-vector"), tr("Vector File..."), this);
+    m_showWindow->setToolTip(tr("Add new vector file as a layer."));
     m_showWindow->setObjectName("Project.Add Layer.Vector File");
 
     te::qt::af::evt::NewActionsAvailable e;
@@ -171,6 +173,12 @@ void te::qt::plugins::ogr::Plugin::startup()
     emit triggered(&e);
 
     connect (m_showWindow, SIGNAL(triggered()), SLOT(showWindow()));
+
+    //register actions into application tool bar
+    QToolBar* toolBar = te::qt::af::AppCtrlSingleton::getInstance().getToolBar("File Tool Bar");
+
+    if (toolBar)
+      toolBar->addAction(m_showWindow);
   }
 }
 

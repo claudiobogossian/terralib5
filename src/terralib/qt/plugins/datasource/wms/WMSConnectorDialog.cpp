@@ -199,7 +199,7 @@ void te::qt::plugins::wms::WMSConnectorDialog::helpPushButtonPressed()
 
 const std::string te::qt::plugins::wms::WMSConnectorDialog::getConnectionInfo() const
 {
-  QString qstr; // Auxialiary string used to hold temporary data
+  QString qstr; // Auxiliary string used to hold temporary data
 
   qstr = m_ui->m_serverLineEdit->text().trimmed();
   std::string strURI("WMS:");

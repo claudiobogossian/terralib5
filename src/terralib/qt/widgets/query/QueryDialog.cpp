@@ -36,7 +36,6 @@
 #include "QueryDialog.h"
 #include "WhereClauseWidget.h"
 #include "ui_QueryDialogForm.h"
-#include "ui_WhereClauseWidgetForm.h"
 
 // Qt
 #include <QGridLayout>
@@ -80,11 +79,6 @@ te::qt::widgets::QueryDialog::QueryDialog(QWidget* parent, Qt::WindowFlags f)
 
 te::qt::widgets::QueryDialog::~QueryDialog()
 {
-}
-
-te::qt::widgets::WhereClauseWidget* te::qt::widgets::QueryDialog::getWidget()
-{
-  return m_whereClauseWidget.get();
 }
 
 void te::qt::widgets::QueryDialog::setLayerList(std::list<te::map::AbstractLayerPtr>& layerList)
@@ -188,8 +182,8 @@ void te::qt::widgets::QueryDialog::layerAdded(te::map::AbstractLayerPtr layer)
   }
 
   //add layer to spatial layer combo box
-  if(dsLayer)
-    m_whereClauseWidget->getForm()->m_layerComboBox->addItem(layer->getTitle().c_str(), QVariant::fromValue(layer));
+  if (dsLayer)
+    m_whereClauseWidget->addLayer(layer);
 }
 
 void te::qt::widgets::QueryDialog::layerRemoved(te::map::AbstractLayerPtr layer)
@@ -225,18 +219,7 @@ void te::qt::widgets::QueryDialog::layerRemoved(te::map::AbstractLayerPtr layer)
   }
 
   //remove layer from spatial layer combo box
-  curIdx = m_whereClauseWidget->getForm()->m_layerComboBox->currentIndex();
-
-  for(int i = 0; i < m_whereClauseWidget->getForm()->m_layerComboBox->count(); ++i)
-  {
-    QVariant varLayer = m_whereClauseWidget->getForm()->m_layerComboBox->itemData(i, Qt::UserRole);
-    te::map::AbstractLayerPtr l = varLayer.value<te::map::AbstractLayerPtr>();
-
-    if(l == layer)
-    {
-      m_whereClauseWidget->getForm()->m_layerComboBox->removeItem(i);
-    }
-  }
+  m_whereClauseWidget->removeLayer(layer);
 }
 
 void te::qt::widgets::QueryDialog::onInputLayerActivated(QString value)

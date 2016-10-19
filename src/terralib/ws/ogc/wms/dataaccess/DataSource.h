@@ -36,6 +36,7 @@
 //Terralib
 #include "Config.h"
 #include "../client/WMSClient.h"
+#include "../client/DataTypes.h"
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceCapabilities.h"
 
@@ -80,6 +81,8 @@ namespace te
           static void setCapabilities(const te::da::DataSourceCapabilities& capabilities);
 
           const te::da::SQLDialect* getDialect() const;
+
+          te::ws::ogc::wms::WMSGetMapResponse getMap(const te::ws::ogc::wms::WMSGetMapRequest& request);
 
         protected:
 

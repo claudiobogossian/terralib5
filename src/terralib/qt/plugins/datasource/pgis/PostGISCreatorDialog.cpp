@@ -185,7 +185,7 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::onAdvancedCreationOptionsCheck
 
 const std::string te::qt::plugins::pgis::PostGISCreatorDialog::getConnectionInfo(bool getPrivateKeys) const
 {
-  QString qstr; // Auxialiary string used to hold temporary data
+  QString qstr; // Auxiliary string used to hold temporary data
 
   std::string strURI = "pgsql://"; // THe base of the URI
 

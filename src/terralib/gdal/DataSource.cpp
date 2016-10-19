@@ -151,7 +151,7 @@ void te::gdal::DataSource::setCapabilities(const te::da::DataSourceCapabilities&
 
 void te::gdal::DataSource::create(const std::string& connInfo)
 {
-  //Auxialiary URI
+  //Auxiliary URI
   te::core::URI auxURI(connInfo);
 
   if (!auxURI.isValid())
@@ -183,7 +183,7 @@ void te::gdal::DataSource::create(const std::string& connInfo)
 
 bool te::gdal::DataSource::exists(const std::string& connInfo)
 {
-  //Auxialiary URI
+  //Auxiliary URI
   te::core::URI auxURI(connInfo);
 
   if (!auxURI.isValid())
@@ -216,7 +216,7 @@ bool te::gdal::DataSource::exists(const std::string& connInfo)
  
 void te::gdal::DataSource::drop(const std::string& connInfo)
 {
-  //Auxialiary URI
+  //Auxiliary URI
   te::core::URI auxURI(connInfo);
 
   std::string path = auxURI.host() + auxURI.path();
@@ -237,7 +237,7 @@ void te::gdal::DataSource::drop(const std::string& connInfo)
 
 std::vector<std::string> te::gdal::DataSource::getDataSourceNames(const std::string& connInfo)
 {
-  //Auxialiary URI
+  //Auxiliary URI
   te::core::URI auxURI(connInfo);
 
   std::string path = auxURI.host() + auxURI.path();
