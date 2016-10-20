@@ -431,6 +431,7 @@ void te::core::PluginManager::stop(const std::string& plugin_name)
     {
       if(p->info().name == plugin_name)
       {
+        m_pimpl->dependency_map.erase(it);
         p->shutdown();
         return;
       }
@@ -494,8 +495,9 @@ void te::core::PluginManager::clear()
   for(auto it = m_pimpl->plugins.rbegin(); it != m_pimpl->plugins.rend(); ++it)
     remove((*it)->info().name);
 
-  for(auto plugin : m_pimpl->plugins)
-    remove(plugin->info().name);
+  m_pimpl->broken_plugins.clear();
+  m_pimpl->dependency_map.clear();
+  m_pimpl->unloaded_plugins.clear();
 }
 
 te::core::PluginManager& te::core::PluginManager::instance()
