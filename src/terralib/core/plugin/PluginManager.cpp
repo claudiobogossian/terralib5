@@ -482,7 +482,7 @@ void te::core::PluginManager::unload(const std::string& plugin_name)
           "The plugin '%1%' is initialized, stop it before trying to unload "
           "it."));
 
-      throw PluginShutdownException()
+      throw PluginUnloadException()
           << ErrorDescription((err_msg % plugin_name).str());
     }
   }

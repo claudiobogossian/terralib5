@@ -34,6 +34,22 @@
 // Boost
 #include <boost/test/unit_test.hpp>
 
+std::vector<te::core::PluginInfo> LoadPluginsInfo()
+{
+  std::vector<te::core::PluginInfo> v_pInfo;
+
+  v_pInfo.push_back(te::core::JSONPluginInfoSerializer(
+      te::core::FindInTerraLibPath("unittest/plugins/plugin1.teplg.json")));
+  v_pInfo.push_back(te::core::JSONPluginInfoSerializer(
+      te::core::FindInTerraLibPath("unittest/plugins/plugin2.teplg.json")));
+  v_pInfo.push_back(te::core::JSONPluginInfoSerializer(
+      te::core::FindInTerraLibPath("unittest/plugins/plugin3.teplg.json")));
+  v_pInfo.push_back(te::core::JSONPluginInfoSerializer(
+      te::core::FindInTerraLibPath("unittest/plugins/plugin4.teplg.json")));
+
+  return v_pInfo;
+}
+
 BOOST_AUTO_TEST_SUITE(plugin_test_case)
 
 BOOST_AUTO_TEST_CASE(plugin_engine_test)
@@ -60,16 +76,19 @@ BOOST_AUTO_TEST_CASE(plugin_engine_test)
   BOOST_CHECK_NO_THROW(te::core::PluginEngineManager::instance().remove("C++"));
   BOOST_CHECK_THROW(te::core::PluginEngineManager::instance().remove("C++"),
                     te::OutOfRangeException);
+
+  BOOST_CHECK_NO_THROW(te::core::plugin::InitializePluginSystem());
+  BOOST_CHECK_NO_THROW(te::core::plugin::FinalizePluginSystem());
 }
 
 BOOST_AUTO_TEST_CASE(plugin_serializer_test)
 {
   BOOST_CHECK_THROW(
-      te::core::JSONPluginInfoSerializer("plugin/plugin.teplg.json"),
+      te::core::JSONPluginInfoSerializer("plugin/plugin1.teplg.json"),
       te::InvalidArgumentException);
 
   std::string p_manifest =
-      te::core::FindInTerraLibPath("unittest/plugins/plugin.teplg.json");
+      te::core::FindInTerraLibPath("unittest/plugins/plugin1.teplg.json");
   BOOST_CHECK_NO_THROW(te::core::JSONPluginInfoSerializer(p_manifest));
 }
 
@@ -83,7 +102,7 @@ BOOST_AUTO_TEST_CASE(plugin_load_test)
       te::core::PluginEngineManager::instance().get("C++");
 
   std::string p_manifest =
-      te::core::FindInTerraLibPath("unittest/plugins/plugin.teplg.json");
+      te::core::FindInTerraLibPath("unittest/plugins/plugin1.teplg.json");
 
   te::core::PluginInfo p_info = te::core::JSONPluginInfoSerializer(p_manifest);
 
@@ -103,7 +122,7 @@ BOOST_AUTO_TEST_CASE(plugin_usage_test)
       te::core::PluginEngineManager::instance().get("C++");
 
   std::string p_manifest =
-      te::core::FindInTerraLibPath("unittest/plugins/plugin.teplg.json");
+      te::core::FindInTerraLibPath("unittest/plugins/plugin1.teplg.json");
 
   te::core::PluginInfo p_info = te::core::JSONPluginInfoSerializer(p_manifest);
 
@@ -120,6 +139,120 @@ BOOST_AUTO_TEST_CASE(plugin_usage_test)
   BOOST_CHECK_NO_THROW(plugin_engine.unload(std::move(plugin)));
 
   te::core::PluginEngineManager::instance().remove("C++");
+}
+
+BOOST_AUTO_TEST_CASE(plugin_sort_test)
+{
+  te::core::PluginInfo pInfo1;
+  te::core::PluginInfo pInfo2;
+  te::core::PluginInfo pInfo3;
+  te::core::PluginInfo pInfo4;
+
+  pInfo1.name = "plugin1";
+  pInfo2.name = "plugin2";
+  pInfo3.name = "plugin3";
+  pInfo4.name = "plugin4";
+                                               //  1<------+4
+  pInfo2.dependencies.push_back(pInfo3.name);  //  ^        +
+  pInfo3.dependencies.push_back(pInfo1.name);  //  |        |
+  pInfo4.dependencies.push_back(pInfo1.name);  //  |        |
+  pInfo4.dependencies.push_back(pInfo2.name);  //  +        v
+                                               //  3<------+2
+  std::vector<te::core::PluginInfo> v_pInfo;
+  v_pInfo.push_back(pInfo1);
+  v_pInfo.push_back(pInfo2);
+  v_pInfo.push_back(pInfo3);
+  v_pInfo.push_back(pInfo4);
+
+  BOOST_CHECK_NO_THROW(v_pInfo = te::core::plugin::TopologicalSort(v_pInfo));
+
+  BOOST_CHECK(v_pInfo[0].name == "plugin1");
+
+  BOOST_CHECK(v_pInfo[1].name == "plugin3");
+
+  BOOST_CHECK(v_pInfo[2].name == "plugin2");
+
+  BOOST_CHECK(v_pInfo[3].name == "plugin4");
+}
+
+BOOST_AUTO_TEST_CASE(plugin_cyclic_dependency_test)
+{
+  te::core::PluginInfo pInfo1;
+  te::core::PluginInfo pInfo2;
+
+  pInfo1.name = "plugin1";
+  pInfo2.name = "plugin2";
+
+  pInfo1.dependencies.push_back(pInfo2.name);
+  pInfo2.dependencies.push_back(pInfo1.name);
+
+  std::vector<te::core::PluginInfo> v_pInfo;
+  v_pInfo.push_back(pInfo1);
+  v_pInfo.push_back(pInfo2);
+
+  BOOST_CHECK_THROW(te::core::plugin::TopologicalSort(v_pInfo),
+                    te::core::PluginCyclicDependencyException);
+}
+
+BOOST_AUTO_TEST_CASE(plugin_dependency_test)
+{
+  BOOST_CHECK_NO_THROW(te::core::plugin::InitializePluginSystem());
+
+  std::vector<te::core::PluginInfo> v_pInfo = LoadPluginsInfo();
+
+  BOOST_CHECK_NO_THROW(v_pInfo = te::core::plugin::TopologicalSort(v_pInfo));
+
+  for(const te::core::PluginInfo& pinfo : v_pInfo)
+  {
+    BOOST_CHECK_NO_THROW(te::core::PluginManager::instance().insert(pinfo));
+    BOOST_CHECK_NO_THROW(te::core::PluginManager::instance().load(pinfo.name));
+  }
+  std::vector<te::core::PluginInfo> pVec =
+      te::core::PluginManager::instance().getLoadedPlugins();
+
+  for(auto plugin = pVec.rbegin(); plugin != pVec.rend(); ++plugin)
+  {
+    BOOST_CHECK_NO_THROW(
+        te::core::PluginManager::instance().stop(plugin->name));
+    BOOST_CHECK_NO_THROW(
+        te::core::PluginManager::instance().unload(plugin->name));
+  }
+  BOOST_CHECK_NO_THROW(te::core::PluginManager::instance().clear());
+  BOOST_CHECK_NO_THROW(te::core::plugin::FinalizePluginSystem());
+}
+BOOST_AUTO_TEST_CASE(plugin_missing_dependency_test)
+{
+  BOOST_CHECK_NO_THROW(te::core::plugin::InitializePluginSystem());
+
+  std::vector<te::core::PluginInfo> v_pInfo = LoadPluginsInfo();
+
+  // plugin 3 depends of plugin 1
+  BOOST_CHECK_NO_THROW(te::core::PluginManager::instance().insert(v_pInfo[2]));
+  BOOST_CHECK_THROW(te::core::PluginManager::instance().load(v_pInfo[2].name),
+                    te::core::PluginLoadException);
+
+  te::core::PluginManager::instance().clear();
+  te::core::plugin::FinalizePluginSystem();
+}
+BOOST_AUTO_TEST_CASE(plugin_unload_with_dependent_test)
+{
+  te::core::plugin::InitializePluginSystem();
+
+  std::vector<te::core::PluginInfo> v_pInfo = LoadPluginsInfo();
+
+  v_pInfo = te::core::plugin::TopologicalSort(v_pInfo);
+
+  for(const te::core::PluginInfo& pinfo : v_pInfo)
+  {
+    te::core::PluginManager::instance().insert(pinfo);
+    te::core::PluginManager::instance().load(pinfo.name);
+  }
+  // plugin 1 has plugin 4 and plugin 2 as dependents
+  BOOST_CHECK_THROW(te::core::PluginManager::instance().unload(v_pInfo[0].name),
+                    te::core::PluginUnloadException);
+
+  te::core::PluginManager::instance().clear();
+  te::core::plugin::FinalizePluginSystem();
 }
 
 BOOST_AUTO_TEST_SUITE_END()
