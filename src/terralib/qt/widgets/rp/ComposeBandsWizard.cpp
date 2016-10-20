@@ -268,13 +268,10 @@ bool te::qt::widgets::ComposeBandsWizard::executeDecompose()
 
     std::string type = m_rasterInfoPage->getWidget()->getType();
 
-    for(std::size_t t = 0; t < outputDataSetNames.size(); ++t)
+    for (std::size_t t = 0; t < outputRastersInfos.size(); ++t)
     {
-      std::map<std::string, std::string> rinfo;
-      rinfo["URI"] = outputDataSetNamePath + outputDataSetNames[t];
-
+      std::map<std::string, std::string> rinfo = outputRastersInfos[t];
       te::map::AbstractLayerPtr layer = te::qt::widgets::createLayer(type, rinfo);
-
       m_outputLayerList.push_back(layer);
     }
   }
