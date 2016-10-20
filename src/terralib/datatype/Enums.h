@@ -220,7 +220,7 @@ namespace te
     /*! \brief An anonymous union that marks the last common data type supported by TerraLib. */
     enum
     {
-      LAST_COMMON_DATATYPE_CODE = POLYMORPHIC_TYPE
+      LAST_COMMON_DATATYPE_CODE = R1BIT_TYPE
     };
 
   } // end namespace dt
