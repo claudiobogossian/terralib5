@@ -15,7 +15,7 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_3">
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_7">
+    <layout class="QVBoxLayout" name="verticalLayout_8">
      <item>
       <widget class="QGroupBox" name="groupBox">
        <property name="title">
@@ -52,15 +52,8 @@
        <property name="flat">
         <bool>false</bool>
        </property>
-       <layout class="QGridLayout" name="gridLayout">
-        <item row="0" column="0">
-         <widget class="QCheckBox" name="m_normalizeOutputCheckBox">
-          <property name="text">
-           <string>Normalize output.</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
+       <layout class="QVBoxLayout" name="verticalLayout_7">
+        <item>
          <widget class="QCheckBox" name="m_createErrorRasterCheckBox">
           <property name="toolTip">
            <string/>
@@ -70,10 +63,10 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label">
+        <item>
+         <widget class="QCheckBox" name="m_decomposeCheckBox">
           <property name="text">
-           <string>* Error images will be created inside the output raster.</string>
+           <string>Decompose output image.</string>
           </property>
          </widget>
         </item>
@@ -455,7 +448,6 @@
  </widget>
  <tabstops>
   <tabstop>m_typeComboBox</tabstop>
-  <tabstop>m_normalizeOutputCheckBox</tabstop>
   <tabstop>m_createErrorRasterCheckBox</tabstop>
  </tabstops>
  <resources/>

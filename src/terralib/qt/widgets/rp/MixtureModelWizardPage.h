@@ -184,6 +184,8 @@ namespace te
 
           void onLoadToolButtonClicked();
 
+          void onDisplayPaintEvent(QPainter* painter);
+
           void onMapDisplayExtentChanged();
 
           void onPointPicked(double x, double y);

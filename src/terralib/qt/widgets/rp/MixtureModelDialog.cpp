@@ -264,7 +264,7 @@ void te::qt::widgets::MixtureModelDialog::on_okPushButton_clicked()
   te::rp::MixtureModel::OutputParameters algoOutputParameters;
   algoOutputParameters.m_rInfo = m_outpuRasterInfo;
   algoOutputParameters.m_rType = m_outpuRasterDSType;
-  algoOutputParameters.m_normalizeOutput = m_uiPtr->m_normalizeOutputCheckBox->isChecked();
+  //algoOutputParameters.m_normalizeOutput = m_uiPtr->m_normalizeOutputCheckBox->isChecked();
   algoOutputParameters.m_createErrorRaster = m_uiPtr->m_createErrorRasterCheckBox->isChecked();
 
 // execute the algorithm
