@@ -223,7 +223,7 @@ void te::ws::core::CurlWrapper::post(const te::core::URI &uri, const std::string
   // Check for errors
   if(status != CURLE_OK)
   {
-    std::string msg = curl_easy_strerror(status) + ':' + std::string(errbuf);
+    std::string msg = curl_easy_strerror(status) + (':' + std::string(errbuf));
     throw te::common::Exception(msg);
   }
 }
@@ -271,7 +271,7 @@ void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const std::fst
   // Check for errors
   if(status != CURLE_OK)
   {
-    std::string msg = curl_easy_strerror(status) + ':' + std::string(errbuf);
+    std::string msg = curl_easy_strerror(status) + (':' + std::string(errbuf));
     throw te::common::Exception(msg);
   }
 }
@@ -306,7 +306,7 @@ void te::ws::core::CurlWrapper::customRequest(const te::core::URI &uri, const st
 
   if(status != CURLE_OK)
   {
-    std::string msg = curl_easy_strerror(status) + ':' + std::string(errbuf);
+    std::string msg = curl_easy_strerror(status) + (':' + std::string(errbuf));
     throw te::common::Exception(msg);
   }
 }
@@ -336,7 +336,7 @@ void te::ws::core::CurlWrapper::get(const te::core::URI &uri, std::string &buffe
 
   if(status != CURLE_OK)
   {
-    std::string msg = curl_easy_strerror(status) + ':' + std::string(errbuf);
+    std::string msg = curl_easy_strerror(status) + (':' + std::string(errbuf));
     throw te::common::Exception(msg);
   }
 }

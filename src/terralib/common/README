@@ -15,7 +15,6 @@ The third-party software needed:
 1. Boost.FileSystem
 2. Boost.Locale
 3. Boost.Thread
-4. Apache log4cxx
 5. Gnu Iconv
 6. Gnu Gettext
 

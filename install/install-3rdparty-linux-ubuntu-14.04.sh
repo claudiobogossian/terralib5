@@ -242,21 +242,6 @@ else
     fi
 fi
 
-
-#
-# liblog4cxx10-dev
-#
-log4cxx_test=`dpkg -s liblog4cxx10-dev | grep Status`
-
-if [ "$log4cxx_test" != "Status: install ok installed" ]; then
-  sudo apt-get -y install liblog4cxx10-dev
-  valid $? "Error: could not install liblog4cxx10-dev! Please, install liblog4cxx10-dev: sudo apt-get -y install liblog4cxx10-dev" 
-  echo "liblog4cxx10-dev installed!"
-else
-  echo "liblog4cxx10-dev already installed!"
-fi
-
-
 #
 # libkml
 #

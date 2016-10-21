@@ -27,10 +27,6 @@
 
 include_directories(${Boost_INCLUDE_DIR} ${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
-if(LOG4CXX_FOUND)
-  include_directories(${LOG4CXX_INCLUDE_DIR})
-endif()
-
 if(WIN32)
   add_definitions(-D_SCL_SECURE_NO_WARNINGS -DTEQTAFDLL)
 endif()

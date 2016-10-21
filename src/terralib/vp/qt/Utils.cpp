@@ -142,7 +142,6 @@ te::da::Select* te::vp::GetSelectQueryFromLayer(te::map::AbstractLayerPtr layer,
         {
           te::gm::GeometryProperty* sourceGeomProp = te::da::GetFirstGeomProperty(dsType.get());
           int sourceSRID = sourceGeomProp->getSRID();
-          te::da::LiteralInt32* sourceLiteralSRID = new te::da::LiteralInt32(sourceSRID);
 
           te::da::LiteralInt32* literalSRID = new te::da::LiteralInt32(srid);
 
@@ -202,7 +201,6 @@ te::da::Select* te::vp::GetSelectQueryFromLayer(te::map::AbstractLayerPtr layer,
         {
           te::gm::GeometryProperty* sourceGeomProp = te::da::GetFirstGeomProperty(dsType.get());
           int sourceSRID = sourceGeomProp->getSRID();
-          te::da::LiteralInt32* sourceLiteralSRID = new te::da::LiteralInt32(sourceSRID);
 
           te::da::LiteralInt32* literalSRID = new te::da::LiteralInt32(srid);
 

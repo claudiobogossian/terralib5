@@ -483,7 +483,6 @@ std::auto_ptr<te::dt::DateTime> te::pgis::DataSet::getDateTime(std::size_t i) co
   boost::int64_t ival = 0;
   int iz;
   double dval;
-  long int lval;
 
   switch(tid)
   {
