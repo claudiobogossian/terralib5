@@ -76,6 +76,11 @@ namespace te
          */
         AbstractPluginEngine& get(const std::string& engine_id) const;
 
+        /*!
+          \brief Unregister every plugin engine.
+         */
+        void clear();
+
         /*! \brief Access the singleton. */
         static PluginEngineManager& instance();
 
