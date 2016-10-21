@@ -57,7 +57,7 @@ void te::fe::Module::initialize()
   te::fe::SpatialOperator::loadValidOperatorList();
   te::fe::ComparisonOperators::loadValidOperatorList();
 
-  TE_LOG_INFO(TE_TR("TerraLib Filter Encoding module initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Filter Encoding module initialized!"));
 }
 
 void te::fe::Module::finalize()
@@ -67,7 +67,7 @@ void te::fe::Module::finalize()
   te::fe::SpatialOperator::clearValidOperatorList();
   te::fe::ComparisonOperators::clearValidOperatorList();
 
-  TE_LOG_INFO(TE_TR("TerraLib Filter Encoding module finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Filter Encoding module finalized!"));
 }
 
 

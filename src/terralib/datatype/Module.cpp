@@ -114,12 +114,12 @@ void te::dt::Module::initialize()
 
   // TO DO: more converters...
 
-  TE_LOG_INFO(TE_TR("TerraLib Data Type module initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Data Type module initialized!"));
 }
 
 void te::dt::Module::finalize()
 {
   DataConverterManager::getInstance().clear();
 
-  TE_LOG_INFO(TE_TR("TerraLib Data Type module finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Data Type module finalized!"));
 }

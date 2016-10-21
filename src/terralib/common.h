@@ -42,6 +42,7 @@
 #include "common/HexUtils.h"
 #include "common/LoggedException.h"
 #include "core/logger/Logger.h"
+#include "common/Module.h"
 #include "common/ParameterizedAbstractFactory.h"
 #include "common/PlatformUtils.h"
 #include "common/Singleton.h"

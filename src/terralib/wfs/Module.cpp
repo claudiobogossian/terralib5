@@ -69,7 +69,7 @@ void te::wfs::Module::startup()
 // registers all format drivers built into OGR.
   OGRRegisterAll();
 
-  TE_LOG_INFO(TE_TR("TerraLib WFS driver startup!"));
+  TE_LOG_TRACE(TE_TR("TerraLib WFS driver startup!"));
 
   m_initialized = true;
 }
@@ -85,7 +85,7 @@ void te::wfs::Module::shutdown()
 
 //  OGRCleanupAll();
 
-  TE_LOG_INFO(TE_TR("TerraLib WFS driver shutdown!"));
+  TE_LOG_TRACE(TE_TR("TerraLib WFS driver shutdown!"));
 
   m_initialized = false;
 }

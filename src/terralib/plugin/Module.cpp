@@ -73,7 +73,7 @@ void te::plugin::Module::initialize()
 
   sg_xercesPlugins = te::plugin::PluginManager::getInstance().detach("TERRALIB_XERCES");
 #endif
-  TE_LOG_INFO(TE_TR("TerraLib Plugin module initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Plugin module initialized!"));
 }
 
 void te::plugin::Module::finalize()
@@ -90,7 +90,7 @@ void te::plugin::Module::finalize()
   }
 #endif
 
-  TE_LOG_INFO(TE_TR("TerraLib Plugin module finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Plugin module finalized!"));
 }
 
 

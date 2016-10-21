@@ -70,6 +70,11 @@ namespace te
          */
         void remove(AbstractConnectionPool* pool);
 
+        /*! \brief It starts a new thread of execution that will monitore all the connection pools. */
+        void start();
+
+        /*! \brief It stops the connection pools monitoring thread. */
+        void stop();
 
         /*!
           \brief It returns true if the manager was already started.
@@ -85,12 +90,6 @@ namespace te
 
         /*! \brief Singleton destructor is protected. */
         ~ConnectionPoolManager();
-
-        /*! \brief It starts a new thread of execution that will monitore all the connection pools. */
-        void start();
-
-        /*! \brief It stops the connection pools monitoring thread. */
-        void stop();
 
       public:
 

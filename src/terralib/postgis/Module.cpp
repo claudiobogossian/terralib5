@@ -64,7 +64,7 @@ void te::pgis::Module::startup()
 
   te::serialize::xml::Read(capabilitiesFile, *te::pgis::Globals::sm_capabilities, *te::pgis::Globals::sm_queryDialect);
 
-  TE_LOG_INFO(TE_TR("TerraLib PostGIS driver support initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib PostGIS driver support initialized!"));
 
   m_initialized = true;
 }
@@ -80,7 +80,7 @@ void te::pgis::Module::shutdown()
 // Free the PostGIS registered drivers
   te::da::DataSourceManager::getInstance().detachAll(PGIS_DRIVER_IDENTIFIER);
  
-  TE_LOG_INFO(TE_TR("TerraLib PostGIS driver shutdown!"));
+  TE_LOG_TRACE(TE_TR("TerraLib PostGIS driver shutdown!"));
 
   m_initialized = false;
 }

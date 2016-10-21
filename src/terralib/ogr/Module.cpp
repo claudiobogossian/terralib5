@@ -116,7 +116,7 @@ void te::ogr::Module::startup()
   // initializing the static mutex
   getStaticMutex();
 
-  TE_LOG_INFO(TE_TR("TerraLib OGR driver startup!"));
+  TE_LOG_TRACE(TE_TR("TerraLib OGR driver startup!"));
 
   m_initialized = true;
 }
@@ -136,7 +136,7 @@ void te::ogr::Module::shutdown()
 
   DataSource::setDialect(0);
 
-  TE_LOG_INFO(TE_TR("TerraLib OGR driver shutdown!"));
+  TE_LOG_TRACE(TE_TR("TerraLib OGR driver shutdown!"));
 
   m_initialized = false;
 }

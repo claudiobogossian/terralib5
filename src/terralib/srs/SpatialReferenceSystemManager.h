@@ -113,7 +113,24 @@ namespace te
       //! An iterator by SRS <id,authority>
       typedef boost::multi_index::nth_index<srs_set,0>::type::iterator iterator;
       
+      //! Destructor.
+      ~SpatialReferenceSystemManager();
       
+      /*!
+       \brief Inializes the manager from a JSON file containing instances of SRSs
+       
+       This methods reads the file "TE_JSON_FILES_LOCATION/srs.json" for SRSs definitions and insert them on the manager if it is empty.
+       \exception te::srs::Exception if the JSON file is not well formed.
+       */
+      void init();
+
+      /*!
+       \brief Inializes the manager from a JSON file containing instances of SRSs.
+
+       \param fileName Name of the JSON file.
+       \exception te::srs::Exception if the JSON file is not well formed.
+       */
+      void init(const std::string& fileName);
       
       /*!
        \brief Adds a  <id, authority> to the manager.
@@ -197,6 +214,8 @@ namespace te
        */
       void remove (unsigned int id, const std::string& authName="EPSG");
       
+      //! Removes all coordinate system representations from the manager.
+      void clear();
       
       //! Returns the number of objects in the manager.
       size_t size() const;
@@ -225,7 +244,7 @@ namespace te
       /*!
        \brief Checks if the System Manager is already initialized.
        */
-      bool isInitialized();
+      bool isInitialized();	  
       
       /*!
        \brief Returns a SRID, not yet used, to identify an SRS created by an user. 
@@ -237,28 +256,6 @@ namespace te
       
       /*! \brief Constructor. */
       SpatialReferenceSystemManager();
-
-      //! Destructor.
-      ~SpatialReferenceSystemManager();
-
-      /*!
-       \brief Inializes the manager from a JSON file containing instances of SRSs
-
-       This methods reads the file "TE_JSON_FILES_LOCATION/srs.json" for SRSs definitions and insert them on the manager if it is empty.
-       \exception te::srs::Exception if the JSON file is not well formed.
-       */
-      void init();
-
-      /*!
-       \brief Inializes the manager from a JSON file containing instances of SRSs.
-
-       \param fileName Name of the JSON file.
-       \exception te::srs::Exception if the JSON file is not well formed.
-       */
-      void init(const std::string& fileName);
-
-      //! Removes all coordinate system representations from the manager.
-      void clear();
       
     private:
       

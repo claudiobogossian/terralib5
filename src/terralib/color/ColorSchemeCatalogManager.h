@@ -84,6 +84,14 @@ namespace te
         //@{
 
         /*!
+         \brief Inializes the manager from a JSON file containing instances of color schemes
+       
+         This methods reads the file "TE_JSON_FILES_LOCATION/color_ramps.json" for color schemes definitions and insert them on the manager if it is empty.
+         \exception te::srs::Exception if the JSON file is not well formed.
+         */
+        void init();
+
+        /*!
           \brief It inserts a new catalog that will be managed by ColorSchemeCatalogManager.
 
           \param c The new catalog to be managed by this manager.
@@ -148,6 +156,19 @@ namespace te
          */
         bool isEmpty() const;
 
+        /*! \brief It unloads all catalogs managed by ColorSchemeCatalogManager. */
+        void clear();
+
+        //@}
+
+        /** @name Initializer Methods
+         *  Methods related to instantiation and destruction.
+         */
+        //@{
+
+        /*! \brief Destructor. */
+        ~ColorSchemeCatalogManager();
+
         //@}
 
       protected:
@@ -159,20 +180,6 @@ namespace te
 
         /*! \brief It initializes the Singleton. */
         ColorSchemeCatalogManager();
-
-        /*! \brief Destructor. */
-        ~ColorSchemeCatalogManager();
-
-        /*!
-         \brief Inializes the manager from a JSON file containing instances of color schemes
-
-         This methods reads the file "TE_JSON_FILES_LOCATION/color_ramps.json" for color schemes definitions and insert them on the manager if it is empty.
-         \exception te::srs::Exception if the JSON file is not well formed.
-         */
-        void init();
-
-        /*! \brief It unloads all catalogs managed by ColorSchemeCatalogManager. */
-        void clear();
 
         //@}
 

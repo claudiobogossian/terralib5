@@ -18,61 +18,50 @@
  */
 
 /*!
-  \file Module.cpp
-   
-  \brief This singleton defines the TerraLib Spatial Reference System module entry.
+  \file terralib/color/Module.cpp
+
+  \brief This singleton defines the TerraLib Color module entry.
 */
 
 // TerraLib
 #include "../core/logger/Logger.h"
 #include "../common/TerraLib.h"
 #include "../core/translator/Translator.h"
+#include "ColorSchemeCatalogManager.h"
 #include "Config.h"
 #include "Module.h"
-#include "SpatialReferenceSystemManager.h"
 
-const te::srs::Module& sm_module = te::srs::Module::getInstance();
+const te::color::Module& sm_module = te::color::Module::getInstance();
 
-te::srs::Module::Module()
+te::color::Module::Module()
 {
-  TerraLib::Module m = { TE_SRS_MODULE_NAME,
-                         te::srs::Module::initialize,
-                         te::srs::Module::finalize
+  TerraLib::Module m = { TE_COLOR_MODULE_NAME,
+                         te::color::Module::initialize,
+                         te::color::Module::finalize
                        };
 
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
-
-  // initializing the static mutex
-  getStaticMutex();
 }
 
-te::srs::Module::~Module()
+te::color::Module::~Module()
 {
-  TerraLib::getInstance().remove(TE_SRS_MODULE_NAME);
+  TerraLib::getInstance().remove(TE_COLOR_MODULE_NAME);
 }
 
-void te::srs::Module::initialize()
+void te::color::Module::initialize()
 {
 #ifdef TERRALIB_AUTOMATIC_INITIALIZATION
-  te::srs::SpatialReferenceSystemManager::getInstance().init();
+  te::color::ColorSchemeCatalogManager::getInstance().init();
 #endif
 
-  TE_LOG_TRACE(TE_TR("TerraLib SRS initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Color module initialized!"));
 }
 
-void te::srs::Module::finalize()
+void te::color::Module::finalize()
 {
-  te::srs::SpatialReferenceSystemManager::getInstance().clear();
-  TE_LOG_TRACE(TE_TR("TerraLib SRS Finalized!"));
+  te::color::ColorSchemeCatalogManager::getInstance().clear();
+
+  TE_LOG_TRACE(TE_TR("TerraLib Color module finalized!"));
 }
-
-boost::mutex& te::srs::getStaticMutex()
-{
-  static boost::mutex getStaticMutexStaticMutex;
-  return getStaticMutexStaticMutex;
-}
-
-
-
 

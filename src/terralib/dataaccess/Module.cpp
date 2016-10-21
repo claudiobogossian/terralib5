@@ -56,6 +56,10 @@ te::da::Module::~Module()
 
 void te::da::Module::initialize()
 {
+#if TERRALIB_AUTOMATICALLY_INITIALIZE_CONNECTION_POOL_MANAGER
+  ConnectionPoolManager::getInstance().start();
+#endif
+
   // Reg the Attribute Converters
   AttributeConverterManager::getInstance().addConverter("GenericAttributeConverter", te::da::GenericAttributeConverter);
   AttributeConverterManager::getInstance().addConverter("XYToPointConverter", te::da::XYToPointConverter);
@@ -68,13 +72,17 @@ void te::da::Module::initialize()
   AttributeConverterManager::getInstance().addConverter("PointToMConverter", te::da::PointToMConverter);
   AttributeConverterManager::getInstance().addConverter("TupleToStringConverter", te::da::TupleToStringConverter);
 
-  TE_LOG_INFO(TE_TR("TerraLib Data Access module initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Data Access module initialized!"));
 }
 
 void te::da::Module::finalize()
 {
+#if TERRALIB_AUTOMATICALLY_INITIALIZE_CONNECTION_POOL_MANAGER
+  ConnectionPoolManager::getInstance().stop();
+#endif
+
   AttributeConverterManager::getInstance().clear();
 
-  TE_LOG_INFO(TE_TR("TerraLib Data Access module finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Data Access module finalized!"));
 }
 

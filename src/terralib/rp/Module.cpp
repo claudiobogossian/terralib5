@@ -51,11 +51,11 @@ te::rp::Module::~Module()
 
 void te::rp::Module::initialize()
 {
-  TE_LOG_INFO(TE_TR("TerraLib Raster Processing module initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Raster Processing module initialized!"));
 }
 
 void te::rp::Module::finalize()
 {
-  TE_LOG_INFO(TE_TR("TerraLib Raster Processing module finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Raster Processing module finalized!"));
 }
 
