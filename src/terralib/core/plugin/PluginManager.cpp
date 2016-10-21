@@ -42,8 +42,6 @@
 // Boost
 #include <boost/algorithm/string/join.hpp>
 #include <boost/format.hpp>
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/topological_sort.hpp>
 
 struct te::core::PluginManager::Impl
 {
