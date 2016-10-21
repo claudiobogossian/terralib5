@@ -72,7 +72,7 @@ void te::xerces::Module::startup()
   ReaderFactory::initialize();
   WriterFactory::initialize();
 
-  TE_LOG_TRACE(TE_TR("TerraLib Xerces driver startup!"));
+  TE_LOG_INFO(TE_TR("TerraLib Xerces driver startup!"));
   
   m_initialized = true;
 }
@@ -102,7 +102,7 @@ void te::xerces::Module::shutdown()
     throw te::xerces::Exception(m);
   }
 
-  TE_LOG_TRACE(TE_TR("TerraLib Xerces driver shutdown!"));
+  TE_LOG_INFO(TE_TR("TerraLib Xerces driver shutdown!"));
   
   m_initialized = false;
 }

@@ -54,17 +54,12 @@ te::srs::Module::~Module()
 
 void te::srs::Module::initialize()
 {
-#ifdef TERRALIB_AUTOMATIC_INITIALIZATION
-  te::srs::SpatialReferenceSystemManager::getInstance().init();
-#endif
-
-  TE_LOG_TRACE(TE_TR("TerraLib SRS initialized!"));
+  TE_LOG_INFO(TE_TR("TerraLib SRS initialized!"));
 }
 
 void te::srs::Module::finalize()
 {
-  te::srs::SpatialReferenceSystemManager::getInstance().clear();
-  TE_LOG_TRACE(TE_TR("TerraLib SRS Finalized!"));
+  TE_LOG_INFO(TE_TR("TerraLib SRS Finalized!"));
 }
 
 boost::mutex& te::srs::getStaticMutex()

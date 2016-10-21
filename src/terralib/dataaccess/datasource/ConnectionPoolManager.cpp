@@ -93,12 +93,12 @@ bool te::da::ConnectionPoolManager::isInitialized() const
 te::da::ConnectionPoolManager::ConnectionPoolManager()
   : m_initialized(false)
 {
+  start();
 }
 
 te::da::ConnectionPoolManager::~ConnectionPoolManager()
 {
-  //m_thread.interrupt();
-  //m_thread.join();
+  stop();
 }
 
 void te::da::ConnectionPoolManager::monitore()

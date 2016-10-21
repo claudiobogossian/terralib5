@@ -25,7 +25,6 @@
 
 // TerraLib
 #include <terralib/raster_fw.h>
-#include <terralib/common/Module.h>
 #include <terralib/plugin.h>
 #include "Config.h"
 #include "LoadModules.h"

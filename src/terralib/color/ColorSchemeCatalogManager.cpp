@@ -206,5 +206,6 @@ te::color::ColorSchemeCatalogManager::~ColorSchemeCatalogManager()
 
 te::color::ColorSchemeCatalogManager::ColorSchemeCatalogManager()
 {
+  init();
 }
 

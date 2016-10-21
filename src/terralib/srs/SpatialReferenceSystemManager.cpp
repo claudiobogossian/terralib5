@@ -84,6 +84,7 @@ te::srs::SpatialReferenceSystemManager::srs_desc::srid() const
 
 te::srs::SpatialReferenceSystemManager::SpatialReferenceSystemManager()
 {
+  init();
 }
 
 te::srs::SpatialReferenceSystemManager::~SpatialReferenceSystemManager()

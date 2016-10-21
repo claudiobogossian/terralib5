@@ -45,7 +45,9 @@
 #include <boost/property_tree/ptree.hpp>
 
 te::common::UnitsOfMeasureManager::UnitsOfMeasureManager()
-{}
+{
+  init();
+}
 
 te::common::UnitsOfMeasureManager::~UnitsOfMeasureManager()
 {

@@ -115,8 +115,6 @@ namespace te
        */
       UnitOfMeasurePtr findBySymbol(const std::string& symbol) const;
       
-      /*! \brief Removes all units from the catalogue. */
-      void clear();
 
       /*!
        \brief Retrieves the alternative names for a unit of measure.
@@ -151,14 +149,6 @@ namespace te
        */
       double getConversion(const std::string& unitFromName, const std::string& unitToName) const;
       
-      /*!
-       \brief It initializes the list of well kown units of measure.
-       
-       The list is read from the JSON file TERRALIB_DIR/resources/json/uom.json.
-       
-       \exception Exception It throws an exception if it is not possible to initialize the UOM list.
-       */
-      void init();
       
       /*!
        \brief It returns an iterator to the beginning of the conteiner.
@@ -206,6 +196,18 @@ namespace te
       
       /*! \brief Destructor. */
       ~UnitsOfMeasureManager();
+
+      /*!
+       \brief It initializes the list of well kown units of measure.
+
+       The list is read from the JSON file TERRALIB_DIR/resources/json/uom.json.
+
+       \exception Exception It throws an exception if it is not possible to initialize the UOM list.
+       */
+      void init();
+
+      /*! \brief Removes all units from the catalogue. */
+      void clear();
       
     private:
       

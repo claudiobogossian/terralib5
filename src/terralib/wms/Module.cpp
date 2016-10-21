@@ -70,7 +70,7 @@ void te::wms::Module::startup()
                                                                           te::map::serialize::Layer::LayerWriteFnctType(&te::wms::serialize::LayerWriter)));
 #endif
 
-  TE_LOG_TRACE(TE_TR("TerraLib WMS driver startup!"));
+  TE_LOG_INFO(TE_TR("TerraLib WMS driver startup!"));
 
   m_initialized = true;
 }
@@ -84,7 +84,7 @@ void te::wms::Module::shutdown()
 
   te::da::DataSourceManager::getInstance().detachAll(TE_WMS_DRIVER_IDENTIFIER);
 
-  TE_LOG_TRACE(TE_TR("TerraLib WMS driver shutdown!"));
+  TE_LOG_INFO(TE_TR("TerraLib WMS driver shutdown!"));
 
   m_initialized = false;
 }

@@ -58,7 +58,7 @@ void te::st::Module::initialize()
   te::st::STDataLoaderFromDSFactory::initialize();
   te::st::STDataLoaderFromMemDSFactory::initialize();
 
-  TE_LOG_TRACE(TE_TR("TerraLib ST module initialized!"));
+  TE_LOG_INFO(TE_TR("TerraLib ST module initialized!"));
 }
 
 void te::st::Module::finalize()
@@ -67,6 +67,6 @@ void te::st::Module::finalize()
   te::st::STDataLoaderFromDSFactory::finalize();
   te::st::STDataLoaderFromMemDSFactory::finalize();
 
-  TE_LOG_TRACE(TE_TR("TerraLib ST module finalized!"));
+  TE_LOG_INFO(TE_TR("TerraLib ST module finalized!"));
 }
 
