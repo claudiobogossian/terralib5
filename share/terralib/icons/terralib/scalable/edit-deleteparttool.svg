@@ -9,10 +9,12 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    data-name="Layer 1"
    id="Layer_1"
-   viewBox="0 0 60 60"
+   viewBox="0 0 48 48"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="edit-deleteparttool.svg">
+   sodipodi:docname="edit-deleteparttool-2.svg"
+   width="48"
+   height="48">
   <metadata
      id="metadata75">
     <rdf:RDF>
@@ -39,7 +41,7 @@
      id="namedview73"
      showgrid="false"
      inkscape:zoom="3.9333333"
-     inkscape:cx="33.432203"
+     inkscape:cx="36.864406"
      inkscape:cy="30"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
@@ -53,70 +55,83 @@
        id="clip-path">
       <path
          class="cls-1"
-         d="M15.55,8.11A1,1,0,0,0,15,9V28a1,1,0,0,0,1.4.92l16-7A1,1,0,0,0,33,21V1A1,1,0,0,0,31.55.11Zm0.89,1.79,16-8L31,1V21l0.6-.92-16,7L17,28V9ZM-5-20H53V49H-5V-20Z"
-         id="path8" />
+         d="M 15.55,8.11 A 1,1 0 0 0 15,9 l 0,19 a 1,1 0 0 0 1.4,0.92 l 16,-7 A 1,1 0 0 0 33,21 L 33,1 A 1,1 0 0 0 31.55,0.11 Z m 0.89,1.79 16,-8 L 31,1 l 0,20 0.6,-0.92 -16,7 L 17,28 17,9 Z M -5,-20 l 58,0 0,69 -58,0 0,-69 z"
+         id="path8"
+         inkscape:connector-curvature="0"
+         style="clip-rule:evenodd;fill:none" />
     </clipPath>
     <clipPath
        id="clip-path-2">
       <polygon
          class="cls-1"
-         points="16 9 32 1 32 21 16 28 16 9"
-         id="polygon11" />
+         points="16,9 16,9 32,1 32,21 16,28 "
+         id="polygon11"
+         style="clip-rule:evenodd;fill:none" />
     </clipPath>
     <clipPath
        id="clip-path-4">
       <path
          class="cls-1"
-         d="M31.55,37.11A1,1,0,0,0,31,38V57a1,1,0,0,0,1.4.92l16-7A1,1,0,0,0,49,50V30a1,1,0,0,0-1.45-.89Zm0.89,1.79,16-8L47,30V50l0.6-.92-16,7L33,57V38ZM11,9H69V78H11V9Z"
-         id="path14" />
+         d="M 31.55,37.11 A 1,1 0 0 0 31,38 l 0,19 a 1,1 0 0 0 1.4,0.92 l 16,-7 A 1,1 0 0 0 49,50 l 0,-20"
+         id="path14"
+         inkscape:connector-curvature="0"
+         style="clip-rule:evenodd;fill:none" />
     </clipPath>
     <clipPath
        id="clip-path-5">
       <polygon
          class="cls-1"
-         points="32 38 48 30 48 50 32 57 32 38"
-         id="polygon17" />
+         points="32,38 32,38 48,30 48,50 32,57 "
+         id="polygon17"
+         style="clip-rule:evenodd;fill:none" />
     </clipPath>
     <clipPath
        id="clip-path-7">
       <path
          class="cls-1"
-         d="M15,47a1,1,0,0,0,1.51.86L31.42,39a1,1,0,0,0,0-1.72L16.51,28.49a1,1,0,0,0-1.51.86V47Zm2,0V29.35l-1.51.86L30.41,39V37.31L15.49,46.14ZM51.92,8.35V68H-5V8.35H51.92Z"
-         id="path20" />
+         d="m 15,47 a 1,1 0 0 0 1.51,0.86 L 31.42,39 a 1,1 0 0 0 0,-1.72 L 16.51,28.49"
+         id="path20"
+         inkscape:connector-curvature="0"
+         style="clip-rule:evenodd;fill:none" />
     </clipPath>
     <clipPath
        id="clip-path-8">
       <polygon
          class="cls-1"
-         points="16 47 16 29.35 30.91 38.17 16 47"
-         id="polygon23" />
+         points="16,47 16,29.35 30.91,38.17 16,47 "
+         id="polygon23"
+         style="clip-rule:evenodd;fill:none" />
     </clipPath>
     <clipPath
        id="clip-path-10">
       <path
          class="cls-1"
-         d="M49,11.69a1,1,0,0,0-1.51-.86L32.58,19.66a1,1,0,0,0,0,1.72l14.92,8.83A1,1,0,0,0,49,29.35V11.69Zm-2,0V29.35l1.51-.86L33.59,19.66v1.72l14.92-8.83ZM12.08,50.35V-9.31H69V50.35H12.08Z"
-         id="path26" />
+         d="M 49,11.69"
+         id="path26"
+         inkscape:connector-curvature="0"
+         style="clip-rule:evenodd;fill:none" />
     </clipPath>
     <clipPath
        id="clip-path-11">
       <polygon
          class="cls-1"
-         points="48 11.69 48 29.35 33.09 20.52 48 11.69"
-         id="polygon29" />
+         points="48,11.69 48,29.35 33.09,20.52 48,11.69 "
+         id="polygon29"
+         style="clip-rule:evenodd;fill:none" />
     </clipPath>
   </defs>
   <g
      class="cls-3"
      id="g33"
-     clip-path="url(#clip-path)">
+     clip-path="url(#clip-path)"
+     transform="matrix(0.83315678,0,0,0.82748184,-2.6694916,-0.64104109)">
     <g
        class="cls-4"
        id="g35"
        clip-path="url(#clip-path-2)">
       <polygon
          class="cls-5"
-         points="32,21 16,28 16,9 16,9 32,1 "
+         points="32,1 32,21 16,28 16,9 16,9 "
          id="polygon37"
          style="fill:#5ecb66;fill-rule:evenodd" />
     </g>
@@ -124,92 +139,91 @@
   <g
      class="cls-4"
      id="g39"
-     clip-path="url(#clip-path-2)">
+     clip-path="url(#clip-path-2)"
+     transform="matrix(0.83315678,0,0,0.82748184,-2.6694916,-0.64104109)">
     <polygon
        class="cls-6"
-       points="16 9 32 1 32 21 16 28 16 9"
-       id="polygon41" />
+       points="16,9 16,9 32,1 32,21 16,28 "
+       id="polygon41"
+       style="fill:none;stroke:#314e55;stroke-width:4px;stroke-linecap:round;stroke-linejoin:round" />
   </g>
   <g
      class="cls-7"
      id="g43"
-     clip-path="url(#clip-path-4)">
+     clip-path="url(#clip-path-4)"
+     transform="matrix(0.83315678,0,0,0.82748184,-2.6694916,-0.64104109)">
     <g
        class="cls-8"
        id="g45"
        clip-path="url(#clip-path-5)">
       <polygon
          class="cls-5"
-         points="32 38 48 30 48 50 32 57 32 38"
-         id="polygon47" />
+         points="32,38 32,38 48,30 48,50 32,57 "
+         id="polygon47"
+         style="fill:#5ecb66;fill-rule:evenodd" />
     </g>
   </g>
   <g
      class="cls-8"
      id="g49"
-     clip-path="url(#clip-path-5)">
+     clip-path="url(#clip-path-5)"
+     transform="matrix(0.83315678,0,0,0.82748184,-2.6694916,-0.64104109)">
     <polygon
        class="cls-6"
-       points="32 38 48 30 48 50 32 57 32 38"
-       id="polygon51" />
+       points="32,38 32,38 48,30 48,50 32,57 "
+       id="polygon51"
+       style="fill:none;stroke:#314e55;stroke-width:4px;stroke-linecap:round;stroke-linejoin:round" />
   </g>
   <g
      class="cls-9"
      id="g53"
-     clip-path="url(#clip-path-7)">
+     clip-path="url(#clip-path-7)"
+     transform="matrix(0.83315678,0,0,0.82748184,-2.6694916,-0.64104109)">
     <g
        class="cls-10"
        id="g55"
        clip-path="url(#clip-path-8)">
       <polygon
          class="cls-5"
-         points="16 47 16 29.35 30.91 38.17 16 47"
-         id="polygon57" />
+         points="16,29.35 30.91,38.17 16,47 16,47 "
+         id="polygon57"
+         style="fill:#5ecb66;fill-rule:evenodd" />
     </g>
   </g>
   <g
      class="cls-10"
      id="g59"
-     clip-path="url(#clip-path-8)">
+     clip-path="url(#clip-path-8)"
+     transform="matrix(0.83315678,0,0,0.82748184,-2.6694916,-0.64104109)">
     <polygon
        class="cls-6"
-       points="16 47 16 29.35 30.91 38.17 16 47"
-       id="polygon61" />
+       points="16,29.35 30.91,38.17 16,47 16,47 "
+       id="polygon61"
+       style="fill:none;stroke:#314e55;stroke-width:4px;stroke-linecap:round;stroke-linejoin:round" />
   </g>
-  <g
-     class="cls-11"
-     id="g63"
-     clip-path="url(#clip-path-10)">
-    <g
-       class="cls-12"
-       id="g65"
-       clip-path="url(#clip-path-11)">
-      <polygon
-         class="cls-5"
-         points="48 11.69 48 29.35 33.09 20.52 48 11.69"
-         id="polygon67" />
-    </g>
-  </g>
+
   <g
      class="cls-12"
      id="g69"
-     clip-path="url(#clip-path-11)">
+     clip-path="url(#clip-path-11)"
+     transform="matrix(0.83315678,0,0,0.82748184,-2.6694916,-0.64104109)">
     <polygon
        class="cls-6"
-       points="48 11.69 48 29.35 33.09 20.52 48 11.69"
-       id="polygon71" />
+       points="48,29.35 33.09,20.52 48,11.69 48,11.69 "
+       id="polygon71"
+       style="fill:none;stroke:#314e55;stroke-width:4px;stroke-linecap:round;stroke-linejoin:round" />
   </g>
   <text
      xml:space="preserve"
-     style="font-style:normal;font-weight:normal;font-size:24.30174446px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     x="23.992043"
-     y="37.329849"
+     style="font-style:normal;font-weight:normal;font-size:20.17808914px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     x="17.420557"
+     y="30.311115"
      id="text4203"
      sodipodi:linespacing="125%"
-     transform="scale(1.0639909,0.93985766)"><tspan
+     transform="scale(1.0676331,0.93665135)"><tspan
        sodipodi:role="line"
        id="tspan4205"
-       x="23.992043"
-       y="37.329849"
+       x="17.420557"
+       y="30.311115"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial">x</tspan></text>
 </svg>
