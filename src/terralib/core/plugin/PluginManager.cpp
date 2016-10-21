@@ -40,8 +40,10 @@
 #include <map>
 
 // Boost
-#include <boost/foreach.hpp>
+#include <boost/algorithm/string/join.hpp>
 #include <boost/format.hpp>
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/topological_sort.hpp>
 
 struct te::core::PluginManager::Impl
 {
@@ -52,6 +54,8 @@ struct te::core::PluginManager::Impl
   std::vector<PluginInfo> unloaded_plugins;
   /*! \brief The list of plugins that could not be loaded. */
   std::vector<PluginInfo> broken_plugins;
+  /*! \brief The list of plugins dependencies */
+  std::map<std::string, std::vector<std::string> > dependency_map;
 
   void move_from_unload_to_broken_list(std::size_t plugin_pos);
 };
@@ -87,23 +91,38 @@ const te::core::PluginInfo& te::core::PluginManager::getPluginInfo(
   // check in the possible list of loaded plugins first
   for(const std::shared_ptr<AbstractPlugin>& p : m_pimpl->plugins)
   {
-    if(p->info().name == name) return p->info();
+    if(p->info().name == name)
+      return p->info();
   }
 
   // check in the list of plugins not loaded yet
   for(const PluginInfo& p : m_pimpl->unloaded_plugins)
   {
-    if(p.name == name) return p;
+    if(p.name == name)
+      return p;
   }
 
   // check in the list of "problematic"(or broken) plugins
   for(const PluginInfo& p : m_pimpl->broken_plugins)
   {
-    if(p.name == name) return p;
+    if(p.name == name)
+      return p;
   }
 
   throw OutOfRangeException() << ErrorDescription(
       (boost::format("could not find plugin: '%1%'.") % name).str());
+}
+
+std::vector<te::core::PluginInfo> te::core::PluginManager::getLoadedPlugins()
+    const
+{
+  std::vector<te::core::PluginInfo> plugins;
+
+  // retrieve the list of loaded plugins
+  for(std::shared_ptr<AbstractPlugin> p : m_pimpl->plugins)
+    plugins.push_back(p->info());
+
+  return plugins;
 }
 
 std::vector<te::core::PluginInfo> te::core::PluginManager::getUnloadedPlugins()
@@ -122,8 +141,7 @@ bool te::core::PluginManager::isBroken(const std::string& plugin_name) const
 {
   return std::find_if(m_pimpl->broken_plugins.begin(),
                       m_pimpl->broken_plugins.end(),
-                      [&plugin_name](const PluginInfo& p)
-                      {
+                      [&plugin_name](const PluginInfo& p) {
                         return p.name == plugin_name;
                       }) != m_pimpl->broken_plugins.end();
 }
@@ -132,8 +150,7 @@ bool te::core::PluginManager::isUnloaded(const std::string& plugin_name) const
 {
   return std::find_if(m_pimpl->unloaded_plugins.begin(),
                       m_pimpl->unloaded_plugins.end(),
-                      [&plugin_name](const PluginInfo& p)
-                      {
+                      [&plugin_name](const PluginInfo& p) {
                         return p.name == plugin_name;
                       }) != m_pimpl->unloaded_plugins.end();
 }
@@ -141,8 +158,7 @@ bool te::core::PluginManager::isUnloaded(const std::string& plugin_name) const
 bool te::core::PluginManager::isLoaded(const std::string& plugin_name) const
 {
   return std::find_if(m_pimpl->plugins.begin(), m_pimpl->plugins.end(),
-                      [&plugin_name](const std::shared_ptr<AbstractPlugin>& p)
-                      {
+                      [&plugin_name](const std::shared_ptr<AbstractPlugin>& p) {
                         return p->info().name == plugin_name;
                       }) != m_pimpl->plugins.end();
 }
@@ -157,9 +173,9 @@ void te::core::PluginManager::insert(const PluginInfo& pinfo)
 {
   if(isLoaded(pinfo.name))
   {
-    boost::format err_msg(TE_TR(
-        "There is already a plugin registered with name: '%1%', already "
-        "loaded."));
+    boost::format err_msg(
+        TE_TR("There is already a plugin registered with name: '%1%', already "
+              "loaded."));
 
     throw InvalidArgumentException()
         << ErrorDescription((err_msg % pinfo.name).str());
@@ -177,9 +193,9 @@ void te::core::PluginManager::insert(const PluginInfo& pinfo)
 
   if(isBroken(pinfo.name))
   {
-    boost::format err_msg(TE_TR(
-        "There is already a plugin registered with the name: '%1%', but "
-        "presenting some problems to load or startup."));
+    boost::format err_msg(
+        TE_TR("There is already a plugin registered with the name: '%1%', but "
+              "presenting some problems to load or startup."));
 
     throw InvalidArgumentException()
         << ErrorDescription((err_msg % pinfo.name).str());
@@ -194,6 +210,8 @@ void te::core::PluginManager::remove(const std::string& plugin_name)
   // other dependent plugins)
   if(isLoaded(plugin_name))
   {
+    // stop the plugin
+    stop(plugin_name);
     unload(plugin_name);
     // now plugin belongs to the unloaded list!
   }
@@ -329,7 +347,13 @@ void te::core::PluginManager::load(const std::string& plugin_name,
           << ErrorDescription((err_msg % plugin_name).str());
     }
 
-    if(start) plugin->startup();
+    if(start)
+      plugin->startup();
+
+    m_pimpl->dependency_map[pinfo.name] = {};
+
+    for(const std::string& plugin_dependency : pinfo.dependencies)
+      m_pimpl->dependency_map[plugin_dependency].push_back(pinfo.name);
 
     m_pimpl->plugins.push_back(
         std::shared_ptr<AbstractPlugin>(plugin.release()));
@@ -398,20 +422,33 @@ void te::core::PluginManager::start(const std::string& plugin_name)
 
 void te::core::PluginManager::stop(const std::string& plugin_name)
 {
-  for(std::shared_ptr<AbstractPlugin> p : m_pimpl->plugins)
+  const auto it = m_pimpl->dependency_map.find(plugin_name);
+
+  // checks if the plugin has a dependent
+  if(it->second.size() == 0)
   {
-    if(p->info().name == plugin_name)
+    for(std::shared_ptr<AbstractPlugin> p : m_pimpl->plugins)
     {
-      p->shutdown();
-      return;
+      if(p->info().name == plugin_name)
+      {
+        p->shutdown();
+        return;
+      }
     }
+    boost::format err_msg(TE_TR(
+        "The plugin '%1%' is not loaded, load it before trying to stop it."));
+
+    throw PluginShutdownException()
+        << ErrorDescription((err_msg % plugin_name).str());
   }
 
-  boost::format err_msg(TE_TR(
-      "The plugin '%1%' is not loaded, load it before trying to stop it."));
+  boost::format err_msg(
+      TE_TR("The plugin '%1%' cannot be stopped, because is required by: %2%"));
+
+  std::string dependents = boost::algorithm::join(it->second, ", ");
 
   throw PluginShutdownException()
-      << ErrorDescription((err_msg % plugin_name).str());
+      << ErrorDescription((err_msg % plugin_name % dependents).str());
 }
 
 void te::core::PluginManager::unload(const std::string& plugin_name)
@@ -423,9 +460,22 @@ void te::core::PluginManager::unload(const std::string& plugin_name)
     {
       if(!m_pimpl->plugins[plugin_pos]->initialized())
       {
+        // insert the plugin into the unloaded list
         m_pimpl->unloaded_plugins.push_back(
             m_pimpl->plugins[plugin_pos]->info());
+
+        auto dependencies = m_pimpl->plugins[plugin_pos]->info().dependencies;
+        for(std::string dependency : dependencies)
+        {
+          // remove the plugin assossiation with its dependencies
+          m_pimpl->dependency_map[dependency].erase(std::find(
+              m_pimpl->dependency_map[dependency].begin(),
+              m_pimpl->dependency_map[dependency].end(), plugin_name));
+        }
+
+        // remove the plugin from the loaded list
         m_pimpl->plugins.erase(m_pimpl->plugins.begin() + plugin_pos);
+
         return;
       }
 
@@ -439,7 +489,14 @@ void te::core::PluginManager::unload(const std::string& plugin_name)
   }
 }
 
-void te::core::PluginManager::clear() {}
+void te::core::PluginManager::clear()
+{
+  for(auto it = m_pimpl->plugins.rbegin(); it != m_pimpl->plugins.rend(); ++it)
+    remove((*it)->info().name);
+
+  for(auto plugin : m_pimpl->plugins)
+    remove(plugin->info().name);
+}
 
 te::core::PluginManager& te::core::PluginManager::instance()
 {
@@ -453,7 +510,10 @@ te::core::PluginManager::PluginManager() : m_pimpl(nullptr)
   m_pimpl = new Impl;
 }
 
-te::core::PluginManager::~PluginManager() { delete m_pimpl; }
+te::core::PluginManager::~PluginManager()
+{
+  delete m_pimpl;
+}
 
 void te::core::PluginManager::Impl::move_from_unload_to_broken_list(
     std::size_t plugin_pos)
