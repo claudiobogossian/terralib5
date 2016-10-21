@@ -415,8 +415,6 @@ te::gm::Line* te::gm::GetIntersectionLine(te::gm::Geometry* geom, te::gm::Coord2
 
 double te::gm::GetAngle(te::gm::Coord2D coordA, te::gm::Coord2D coordB)
 {
-  double pi = 3.14159265358979323846;
-
   if (coordA.x == coordB.x)
   {
     return 1.57079632679489661923;

@@ -53,15 +53,41 @@ std::string te::core::FindInTerraLibPath(const std::string& path)
   if(te::core::FileSystem::exists(eval_path.string()))
     return eval_path.string();
 
-  // Check for one path above
+// check for one path above
   tl_path /= "..";
   eval_path = tl_path / path;
 
   if(te::core::FileSystem::exists(eval_path.string()))
     return eval_path.string();
 
+#ifdef TERRALIB_BUILD_AS_DEV
+// look into the codebase path
+  tl_path = TERRALIB_CODEBASE_PATH;
+  
+  eval_path = tl_path / path;
+  
+  if(te::core::FileSystem::exists(eval_path.string()))
+    return eval_path.string();
 
-// 2rd: look for an environment variable defined by macro TERRALIB_DIR_VAR_NAME
+// look into the build path
+  tl_path = TERRALIB_BUILD_PATH;
+  
+  eval_path = tl_path / path;
+  
+  if(te::core::FileSystem::exists(eval_path.string()))
+    return eval_path.string();
+  
+#else
+  
+// look into the install path
+  tl_path = TERRALIB_INSTALL_PREFIX_PATH;
+  
+  eval_path = tl_path / path;
+  
+  if(te::core::FileSystem::exists(eval_path.string()))
+    return eval_path.string();
+  
+// look for an environment variable defined by macro TERRALIB_DIR_VAR_NAME
   const char* te_env = getenv(TERRALIB_DIR_VAR_NAME);
 
   if(te_env != 0)
@@ -73,23 +99,7 @@ std::string te::core::FindInTerraLibPath(const std::string& path)
     if(te::core::FileSystem::exists(eval_path.string()))
       return eval_path.string();
   }
-
-// 3th: look into install prefix-path
-  tl_path = TERRALIB_INSTALL_PREFIX_PATH;
-
-  eval_path = tl_path / path;
-
-  if(te::core::FileSystem::exists(eval_path.string()))
-    return eval_path.string();
-
-// 4nd: look into the codebase path
-  tl_path = TERRALIB_CODEBASE_PATH;
-
-  eval_path = tl_path / path;
-
-  if(te::core::FileSystem::exists(eval_path.string()))
-    return eval_path.string();
-
+#endif
 
   return "";
 }
