@@ -50,7 +50,7 @@ if(NOT DEFINED TERRALIB_TRACK_3RDPARTY_DEPENDENCIES)
 endif()
 
 # variables storing absolute paths
-set(TERRALIB_ABSOLUTE_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../..)
+get_filename_component(TERRALIB_ABSOLUTE_ROOT_DIR "../../" ABSOLUTE)
 
 # variables that control paths
 if(NOT DEFINED TERRALIB_DIR_VAR_NAME)
@@ -60,6 +60,11 @@ endif()
 if(NOT DEFINED TERRALIB_DATA_DIR)
   set(TERRALIB_DATA_DIR "${CMAKE_BINARY_DIR}/data" CACHE PATH "Path to a directory containing the data used in the examples and/or in the unit test")
 endif()
+
+if(NOT DEFINED TERRALIB_BUILD_AS_DEV)
+  set(TERRALIB_BUILD_AS_DEV 0 CACHE BOOL "Prepare the TerraLib build for Developers")
+endif()
+
 
 if(NOT DEFINED TERRALIB_REPORT_DIR)
   set(TERRALIB_REPORT_DIR "${CMAKE_BINARY_DIR}/report" CACHE PATH "Path to a directory containing the report used in the examples and/or in the unit test")

@@ -40,8 +40,9 @@
 #include "../../widgets/canvas/ZoomInMapDisplayWidget.h"
 #include "../../widgets/layer/explorer/LayerItemView.h"
 #include "../../widgets/tools/AbstractTool.h"
-#include "../../widgets/tools/ZoomWheel.h"
 #include "../../widgets/tools/CoordTracking.h"
+#include "../../widgets/tools/PanMiddleClick.h"
+#include "../../widgets/tools/ZoomWheel.h"
 #include "../../widgets/Utils.h"
 #include "../events/ApplicationEvents.h"
 #include "../events/LayerEvents.h"
@@ -80,6 +81,9 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display, te::qt:
 
   // Zoom Wheel tool
   m_display->installEventFilter(new te::qt::widgets::ZoomWheel(m_display, 1.5, false, this));
+
+  // Pan Middle Click tool
+  m_display->installEventFilter(new te::qt::widgets::PanMiddleClick(m_display, this));
 
   // Signals & slots
   connect(m_display, SIGNAL(drawLayersFinished(const QMap<QString, QString>&)), SLOT(onDrawLayersFinished(const QMap<QString, QString>&)));

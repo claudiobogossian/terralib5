@@ -172,6 +172,7 @@ namespace te
           void enableActionsByGeomType(QList<QAction*> acts, const bool& enable);
 
         public:
+
           te::map::AbstractLayerPtr getSelectedLayer();
 
           bool m_isEnabled;

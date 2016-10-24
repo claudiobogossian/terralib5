@@ -94,7 +94,7 @@ namespace te
 
       void storeUndoCommand();
 
-      void pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos);
+      void pickFeature(const QPointF& pos);
 
       te::gm::Envelope buildEnvelope(const QPointF& pos);
 
@@ -104,7 +104,6 @@ namespace te
 
     protected:
 
-      std::set<std::string> m_oidsSet;
       MouseEventEdition m_mouseEventToSave;
       UndoStackManager& m_stack;
 

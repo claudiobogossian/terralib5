@@ -66,9 +66,11 @@ te::core::PluginInfo te::core::JSONPluginInfoSerializer(
   plugin.license_URL = doc.get<std::string>("license_URL");
   plugin.site = doc.get<std::string>("site");
   // plugin.description = doc.get<std::string>("provider");
-  // plugin.description = doc.get<std::string>("dependencies");
 
   for (const boost::property_tree::ptree::value_type& v :
+       doc.get_child("dependencies"))
+    plugin.dependencies.push_back(v.second.get_value<std::string>());
+  for(const boost::property_tree::ptree::value_type& v :
        doc.get_child("resources"))
   {
     Resource r;

@@ -54,9 +54,11 @@
 #include "../../../maptools/DataSetLayer.h"
 #include "../../../memory/DataSet.h"
 #include "../../../memory/DataSetItem.h"
+#include "../../widgets/Utils.h"
 #include "../../widgets/canvas/MapDisplay.h"
 #include "../../widgets/canvas/MultiThreadMapDisplay.h"
 #include "../../af/ApplicationController.h"
+#include "../../af/events/ApplicationEvents.h"
 #include "../../af/events/LayerEvents.h"
 #include "../../af/events/MapEvents.h"
 
@@ -219,12 +221,45 @@ te::map::AbstractLayerPtr te::qt::plugins::edit::ToolBar::getLayer(const std::st
 
 bool te::qt::plugins::edit::ToolBar::dataSrcIsPrepared(const te::map::AbstractLayerPtr& layer)
 {
-  te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(layer.get()->getDataSourceId());
+  te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(layer->getDataSourceId());
 
   if (info->getType() != "POSTGIS" && info->getType() != "OGR")
   {
-    m_toolBar->setEnabled(false);
     QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Under Development to this data source: ") + QString(info->getType().c_str()));
+    return false;
+  }
+
+  if (info->getType() == "OGR")
+    return true;
+
+  std::auto_ptr<te::da::DataSetType> toSchema = layer->getSchema();
+
+  if (!toSchema->getPrimaryKey() || toSchema->getPrimaryKey()->getProperties().empty())
+  {
+    QMessageBox::critical(0, tr("TerraLib Edit Qt Plugin"), tr("Invalid Data Set Primary Key."));
+    return false;
+  }
+
+  std::vector<te::dt::Property*> pkProps = toSchema->getPrimaryKey()->getProperties();
+
+  bool hasAutoIncrement = false;
+  for (std::size_t j = 0; j < pkProps.size(); ++j)
+  {
+    te::dt::SimpleProperty* simpleProp = dynamic_cast<te::dt::SimpleProperty*>(pkProps[j]);
+
+    if (simpleProp)
+    {
+      if (simpleProp->isAutoNumber())
+      {
+        hasAutoIncrement = true;
+        break;
+      }
+    }
+  }
+
+  if (!hasAutoIncrement)
+  {
+    QMessageBox::critical(0, tr("TerraLib Edit Qt Plugin"), tr("The Primary Key has not auto-increment!"));
     return false;
   }
 
@@ -234,7 +269,7 @@ bool te::qt::plugins::edit::ToolBar::dataSrcIsPrepared(const te::map::AbstractLa
 void te::qt::plugins::edit::ToolBar::initialize()
 {
   // Create the main toolbar
-  m_toolBar = new QToolBar;
+  m_toolBar = new QToolBar("Edit Tool Bar");
 
   initializeActions();
 
@@ -246,7 +281,6 @@ void te::qt::plugins::edit::ToolBar::initialize()
   m_snapOptionsAction->setEnabled(true);
 
   enableActionsByGeomType(m_tools, false);
-
 }
 
 void te::qt::plugins::edit::ToolBar::initializeActions()
@@ -675,7 +709,8 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
     m_layerIsStashed = false;
 
-    m_currentTool->resetVisualizationTool();
+    if (m_currentTool)
+      m_currentTool->resetVisualizationTool();
   }
   catch(te::common::Exception& ex)
   {
@@ -1038,15 +1073,19 @@ void te::qt::plugins::edit::ToolBar::enableCurrentTool(const bool& enable)
   if(e.m_display == 0)
     return;
 
+  m_currentTool->setInUse(enable);
+
   if(enable)
     e.m_display->getDisplay()->setCurrentTool(m_currentTool);
   else
   {
     e.m_display->getDisplay()->setCursor(Qt::ArrowCursor);
     e.m_display->getDisplay()->setCurrentTool(0, false);
-  }
+    m_currentTool = 0;
 
-  m_currentTool->setInUse(enable);
+    for (int i = 0; i < m_tools.size(); ++i)
+      m_tools[i]->setChecked(false);
+  }
 }
 
 void te::qt::plugins::edit::ToolBar::setCurrentTool(te::edit::GeometriesUpdateTool* tool, te::qt::af::MapDisplay* display)

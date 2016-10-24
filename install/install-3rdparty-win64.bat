@@ -121,7 +121,6 @@ set URIPARSER=%ROOT_DIR%\uriparser-0.8.4\win32\uriparser.lib
 
 :: libraries linked against TerraLib 5 (fully installed)
 :: -------------------------------------------------------------
-set LOG4CXX=%LIBS_DIR%\log4cxx.lib
 set ICONV=%LIBS_DIR%\iconv.lib
 set PROJ=%LIBS_DIR%\proj_i.lib
 set GEOS=%LIBS_DIR%\geos_i.lib
@@ -477,116 +476,60 @@ goto end_openssl_deps
 
 :: APRUTIL-1.5.4
 ::  =========================================
-set APRUTIL_DIR=%ROOT_DIR%\apr-util-1.5.4
-set APRUTIL_INCLUDE_DIR=%APACHE_INSTALL_DIR%\include
-set APRUTIL_LIBRARY=%APACHE_INSTALL_DIR%\lib\libaprutil-1.lib
-set APRUTILD_LIBRARY=%APACHE_INSTALL_DIR%\lib\libaprutil-1d.lib
-
+::set APRUTIL_DIR=%ROOT_DIR%\apr-util-1.5.4
+::set APRUTIL_INCLUDE_DIR=%APACHE_INSTALL_DIR%\include
+::set APRUTIL_LIBRARY=%APACHE_INSTALL_DIR%\lib\libaprutil-1.lib
+::set APRUTILD_LIBRARY=%APACHE_INSTALL_DIR%\lib\libaprutil-1d.lib
+::
 :: Check dependencies
-goto end_apr_util_deps
-:apr_util_deps
-  IF NOT EXIST %APR% call :remove_lib aprutil && goto log4cxx_deps
-  IF NOT EXIST %EXPAT% call :remove_lib aprutil && goto log4cxx_deps
-  goto log4cxx_deps
-:end_apr_util_deps
-
-  echo | set /p="Installing apr-util... "<nul
-  
-  IF EXIST %APRUTIL% call :skip_build && goto log4cxx 
-
-  call :append_log_begin apr_util
-  
-:begin_apr_util
-
-  cd %APRUTIL_DIR% >nul 2>nul
-
-  del building /S /Q >nul 2>nul
-  
-  mkdir building >nul 2>nul
-   
-  cd building >nul 2>nul
-
-  ( %CMAKE_FILEPATH%\cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX="%APACHE_INSTALL_DIR%"^
-  -DCMAKE_DEBUG_POSTFIX="d"^
-  -DINSTALL_PDB=OFF^
-  -D_OPENSSL_VERSION="1.1.0"^
-  -DOPENSSL_INCLUDE_DIR="%SSL_INCLUDE_DIR%"^
-  -DLIB_EAY_LIBRARY_DEBUG="%EAYD_LIBRARY%"^
-  -DLIB_EAY_LIBRARY_RELEASE="%EAY_LIBRARY%"^
-  -DSSL_EAY_LIBRARY_DEBUG="%SSLD_LIBRARY%"^
-  -DSSL_EAY_LIBRARY_RELEASE="%SSL_LIBRARY%"^
-  -DXMLLIB_LIBRARIES:STRING="debug;%EXPATD_LIBRARY%;optimized;%EXPAT_LIBRARY%"^
-  -DXMLLIB_INCLUDE_DIR="%EXPAT_INCLUDE_DIR%"^
-  -DAPR_INCLUDE_DIR="%APACHE_INSTALL_DIR%/include"^
-  -DAPR_LIBRARIES="%APR_LIBRARY%" %APRUTIL_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog apr-util "configuring" && goto log4cxx 
-  
-  ( msbuild /m INSTALL.vcxproj /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog apr-util "build release" && goto log4cxx
-
-  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog apr-util "build debug" && goto log4cxx
-  
-  call :append_log_end apr_util
-  
-:end_apr_util  
-     
-  echo done.
-  
-  cd %ROOT_DIR%
-::  ================================
-
-:log4cxx
-
-:: Log4cxx-0.10.0
-::  =========================================
-set LOG4CXX_DIR=%ROOT_DIR%\apache-log4cxx-0.10.0
-set LOG4CXX_LIBRARY=%LOG4CXX%
-
-:: Check dependencies
-goto end_log4cxx_deps
-:log4cxx_deps
-  IF NOT EXIST %APR% call :remove_lib log4cxx && goto bzip_deps
-  IF NOT EXIST %APRUTIL% call :remove_lib log4cxx && goto bzip_deps
-  goto bzip_deps
-:end_log4cxx_deps
-  
-  echo | set /p="Installing log4cxx... "<nul
-    
-  IF EXIST %LOG4CXX_LIBRARY% call :skip_build && goto bzip 
-
-  call :append_log_begin log4cxx
-  
-:begin_log4cxx
-
-  cd %LOG4CXX_DIR%\projects >nul 2>nul
-  
-  ( msbuild /m /p:Configuration=Release /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx  "clean release" && goto bzip
-
-  ( msbuild /m /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx  "clean debug" && goto bzip
-  
-  ( msbuild /m /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx "build release" && goto bzip
-
-  ( msbuild /m >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx "build debug" && goto bzip
-
-  IF NOT EXIST %TERRALIB_DEPENDENCIES_DIR%\include\log4cxx mkdir %TERRALIB_DEPENDENCIES_DIR%\include\log4cxx >nul 2>nul
-  
-  xcopy ..\src\main\include\log4cxx %TERRALIB_DEPENDENCIES_DIR%\include\log4cxx /S /Y >nul 2>nul
-
-  xcopy Debug\log4cxxd.lib %LIBS_DIR% /Y >nul 2>nul
-
-  xcopy Debug\log4cxxd.dll %LIBS_DIR% /Y >nul 2>nul
-
-  xcopy Release\log4cxx.lib %LIBS_DIR% /Y >nul 2>nul
-  
-  xcopy Release\log4cxx.dll %LIBS_DIR% /Y >nul 2>nul
-
-  xcopy %APACHE_INSTALL_DIR%\bin\libapr*.dll %LIBS_DIR% /Y >nul 2>nul
-  
-  call :append_log_end log4cxx
-  
-:end_log4cxx
-
-  echo done.
-
-  cd %ROOT_DIR%
+::goto end_apr_util_deps
+:::apr_util_deps
+::  IF NOT EXIST %APR% call :remove_lib aprutil && goto log4cxx_deps
+::  IF NOT EXIST %EXPAT% call :remove_lib aprutil && goto log4cxx_deps
+::  goto log4cxx_deps
+:::end_apr_util_deps
+::
+::  echo | set /p="Installing apr-util... "<nul
+::  
+::  IF EXIST %APRUTIL% call :skip_build && goto log4cxx 
+::
+::  call :append_log_begin apr_util
+::  
+:::begin_apr_util
+::
+::  cd %APRUTIL_DIR% >nul 2>nul
+::
+::  del building /S /Q >nul 2>nul
+::  
+::  mkdir building >nul 2>nul
+::   
+::  cd building >nul 2>nul
+::
+::  ( %CMAKE_FILEPATH%\cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_INSTALL_PREFIX="%APACHE_INSTALL_DIR%"^
+::  -DCMAKE_DEBUG_POSTFIX="d"^
+::  -DINSTALL_PDB=OFF^
+::  -D_OPENSSL_VERSION="1.1.0"^
+::  -DOPENSSL_INCLUDE_DIR="%SSL_INCLUDE_DIR%"^
+::  -DLIB_EAY_LIBRARY_DEBUG="%EAYD_LIBRARY%"^
+::  -DLIB_EAY_LIBRARY_RELEASE="%EAY_LIBRARY%"^
+::  -DSSL_EAY_LIBRARY_DEBUG="%SSLD_LIBRARY%"^
+::  -DSSL_EAY_LIBRARY_RELEASE="%SSL_LIBRARY%"^
+::  -DXMLLIB_LIBRARIES:STRING="debug;%EXPATD_LIBRARY%;optimized;%EXPAT_LIBRARY%"^
+::  -DXMLLIB_INCLUDE_DIR="%EXPAT_INCLUDE_DIR%"^
+::  -DAPR_INCLUDE_DIR="%APACHE_INSTALL_DIR%/include"^
+::  -DAPR_LIBRARIES="%APR_LIBRARY%" %APRUTIL_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog apr-util "configuring" && goto log4cxx 
+::  
+::  ( msbuild /m INSTALL.vcxproj /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog apr-util "build release" && goto log4cxx
+::
+::  ( msbuild /m INSTALL.vcxproj >>%BUILD_LOG% 2>nul ) || call :buildFailLog apr-util "build debug" && goto log4cxx
+::  
+::  call :append_log_end apr_util
+::  
+:::end_apr_util  
+::     
+::  echo done.
+::  
+::  cd %ROOT_DIR%
 ::  ================================
 
 :bzip
