@@ -140,6 +140,31 @@ int te::ogr::Convert2TerraLibProjection(OGRSpatialReference* osrs)
       srid = atoi(srsAuth);
     }
   }  
+
+  std::string proj4;
+  if( srid == TE_UNKNOWN_SRS )
+  {
+    char* proj4StrPtr = 0;
+    ogrReturn = osrs->exportToProj4( &proj4StrPtr );
+
+    if( ogrReturn == OGRERR_NONE )
+    {
+      std::pair< std::string, unsigned int > customSRID;
+      proj4 = std::string ( proj4StrPtr );
+
+      OGRFree( proj4StrPtr );
+
+      try
+      {
+        customSRID = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromP4Txt(
+          proj4);
+        srid = (int)customSRID.second;
+      }
+      catch( te::common::Exception& )
+      {
+      }
+    }
+  }
   
   std::string wkt;
   if( srid == TE_UNKNOWN_SRS )
@@ -164,32 +189,7 @@ int te::ogr::Convert2TerraLibProjection(OGRSpatialReference* osrs)
       {
       }
     }
-  }  
-  
-  std::string proj4;
-  if( srid == TE_UNKNOWN_SRS )
-  {
-    char* proj4StrPtr = 0;
-    ogrReturn = osrs->exportToProj4( &proj4StrPtr );
-  
-    if( ogrReturn == OGRERR_NONE )
-    {    
-      std::pair< std::string, unsigned int > customSRID;
-      proj4 = std::string ( proj4StrPtr );
-      
-      OGRFree( proj4StrPtr );
-      
-      try
-      {
-        customSRID = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromP4Txt( 
-          proj4);
-        srid = (int)customSRID.second;
-      }
-      catch( te::common::Exception& )
-      {
-      }
-    }
-  }  
+  }
   
   if( srid == TE_UNKNOWN_SRS )
   {
@@ -238,6 +238,25 @@ OGRSpatialReference* te::ogr::Convert2OGRProjection(int srid)
   std::auto_ptr< OGRSpatialReference > osrs( new OGRSpatialReference() );
   
   OGRErr error = osrs->importFromEPSG(srid);
+
+  if( error != OGRERR_NONE )
+  {
+    try
+    {
+      std::string proj4Str =
+        te::srs::SpatialReferenceSystemManager::getInstance().getP4Txt( srid );
+
+      if( !proj4Str.empty() )
+      {
+        char* proj4StrPtr = (char*)proj4Str.c_str();
+        error = osrs->importFromProj4( proj4StrPtr );
+      }
+    }
+    catch( te::common::Exception& )
+    {
+      error = OGRERR_UNSUPPORTED_SRS;
+    }
+  }
   
   if( error != OGRERR_NONE )
   {
@@ -256,26 +275,7 @@ OGRSpatialReference* te::ogr::Convert2OGRProjection(int srid)
     {
       error = OGRERR_UNSUPPORTED_SRS;
     }
-  }  
-  
-  if( error != OGRERR_NONE )
-  {
-    try
-    {
-      std::string proj4Str = 
-        te::srs::SpatialReferenceSystemManager::getInstance().getP4Txt( srid );
-      
-      if( !proj4Str.empty() )
-      {
-        char* proj4StrPtr = (char*)proj4Str.c_str();
-        error = osrs->importFromProj4( proj4StrPtr );
-      }
-    }
-    catch( te::common::Exception& )
-    {
-      error = OGRERR_UNSUPPORTED_SRS;
-    }
-  }   
+  }
   
   if(error != OGRERR_NONE)
     throw(te::common::Exception(TE_TR("Error converting spatial reference system.")));
