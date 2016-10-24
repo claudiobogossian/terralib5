@@ -27,11 +27,6 @@
 
 include_directories(${Boost_INCLUDE_DIR})
 
-
-if(LOG4CXX_FOUND)
-  include_directories(${LOG4CXX_INCLUDE_DIR})
-endif()
-
 if(WIN32)
   add_definitions(-DTEQTPLUGINVPDLL)
 endif()

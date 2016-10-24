@@ -694,62 +694,6 @@ cd %ROOT_DIR%
 :: cd %ROOT_DIR%
 ::  ================================
 
-:: :log4cxx
-
-:: Log4cxx-0.10.0
-::  =========================================
-:: set LOG4CXX_DIR=%ROOT_DIR%\apache-log4cxx-0.10.0
-:: set LOG4CXX_LIBRARY=%LOG4CXX%
-
-:: Check dependencies
-:: goto end_log4cxx_deps
-:: :log4cxx_deps
-:: IF NOT EXIST %APR% call :remove_lib log4cxx && goto bzip_deps
-:: IF NOT EXIST %APRUTIL% call :remove_lib log4cxx && goto bzip_deps
-:: goto bzip_deps
-:: :end_log4cxx_deps
-
-:: echo | set /p="Installing log4cxx... "<nul
-
-:: IF EXIST %LOG4CXX_LIBRARY% call :skip_build && goto bzip 
-
-:: call :append_log_begin log4cxx
-
-:: :begin_log4cxx
-
-:: cd %LOG4CXX_DIR%\projects >nul 2>nul
-
-:: ( msbuild /m /p:Configuration=Release /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx  "clean release" && goto bzip
-
-:: ( msbuild /m /t:clean >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx  "clean debug" && goto bzip
-
-:: ( msbuild /m /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx "build release" && goto bzip
-
-:: ( msbuild /m >>%BUILD_LOG% 2>nul ) || call :buildFailLog log4cxx "build debug" && goto bzip
-
-:: IF NOT EXIST %TERRALIB_DEPENDENCIES_DIR%\include\log4cxx mkdir %TERRALIB_DEPENDENCIES_DIR%\include\log4cxx >nul 2>nul
-
-:: xcopy ..\src\main\include\log4cxx %TERRALIB_DEPENDENCIES_DIR%\include\log4cxx /S /Y >nul 2>nul
-
-:: xcopy Debug%_X86%\log4cxxd.lib %LIBS_DIR% /Y >nul 2>nul
-
-:: xcopy Debug%_X86%\log4cxxd.dll %LIBS_DIR% /Y >nul 2>nul
-
-:: xcopy Release%_X86%\log4cxx.lib %LIBS_DIR% /Y >nul 2>nul
-
-:: xcopy Release%_X86%\log4cxx.dll %LIBS_DIR% /Y >nul 2>nul
-
-:: xcopy %APACHE_INSTALL_DIR%\bin\libapr*.dll %LIBS_DIR% /Y >nul 2>nul
-
-:: call :append_log_end log4cxx
-
-:: :end_log4cxx
-
-:: echo done.
-
-:: cd %ROOT_DIR%
-::  ================================
-
 :bzip
 
 :: BZIP2
