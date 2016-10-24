@@ -318,12 +318,12 @@
 <context>
     <name>te::attributefill::RasterToVectorDialog</name>
     <message>
-        <location filename="../../../src/terralib/attributefill/qt/RasterToVectorDialog.cpp" line="323"/>
+        <location filename="../../../src/terralib/attributefill/qt/RasterToVectorDialog.cpp" line="324"/>
         <source>Save as...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/attributefill/qt/RasterToVectorDialog.cpp" line="324"/>
+        <location filename="../../../src/terralib/attributefill/qt/RasterToVectorDialog.cpp" line="325"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -331,24 +331,24 @@
 <context>
     <name>te::attributefill::VectorToRasterDialog</name>
     <message>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToRasterDialog.cpp" line="201"/>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToRasterDialog.cpp" line="217"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToRasterDialog.cpp" line="202"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToRasterDialog.cpp" line="218"/>
         <source>Attribute Fill</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToRasterDialog.cpp" line="201"/>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToRasterDialog.cpp" line="217"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToRasterDialog.cpp" line="202"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToRasterDialog.cpp" line="218"/>
         <source>Invalid bounding box.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToRasterDialog.cpp" line="232"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToRasterDialog.cpp" line="233"/>
         <source>Save as...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToRasterDialog.cpp" line="233"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToRasterDialog.cpp" line="234"/>
         <source>TIFF (*.tif *.TIF);;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -356,96 +356,96 @@
 <context>
     <name>te::attributefill::VectorToVectorDialog</name>
     <message>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="154"/>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="162"/>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="168"/>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="174"/>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="203"/>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="220"/>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="249"/>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="255"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="155"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="163"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="169"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="175"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="204"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="221"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="250"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="256"/>
         <source>VectorToVector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="154"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="155"/>
         <source>&quot;From&quot; layer invalid!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="162"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="163"/>
         <source>&quot;To&quot; layer invalid!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="168"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="169"/>
         <source>Define a repository for the result.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="174"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="175"/>
         <source>Define a name for the resulting layer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="203"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="204"/>
         <source>Output file already exists. Remove it or select a new name and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="220"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="221"/>
         <source>There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="249"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="250"/>
         <source>The selected output datasource can not be accessed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="255"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="256"/>
         <source>Dataset already exists. Remove it or select a new name and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="282"/>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="288"/>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="906"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="283"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="289"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="907"/>
         <source>Vector To Vector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="298"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="299"/>
         <source>Some errors occurred during execution.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="300"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="301"/>
         <source> The error log can be found at: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="304"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="305"/>
         <source>Vector to Vector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="547"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="548"/>
         <source>Save as...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="548"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="549"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="913"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="914"/>
         <source>Layer Attributes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="914"/>
+        <location filename="../../../src/terralib/attributefill/qt/VectorToVectorDialog.cpp" line="915"/>
         <source>Selected Attributes</source>
         <translation type="unfinished"></translation>
     </message>

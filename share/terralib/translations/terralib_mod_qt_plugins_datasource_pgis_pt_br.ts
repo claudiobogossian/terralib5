@@ -49,102 +49,101 @@
         <translation>Nome do Banco de Dados</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="220"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="233"/>
         <source>Port</source>
         <translation>Porta</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="264"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="277"/>
         <source>Password</source>
         <translation>Senha</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="291"/>
         <source>Client Encoding</source>
-        <translation>Codificação do Cliente</translation>
+        <translation type="vanished">Codificação do Cliente</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="317"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="306"/>
         <source>Save Password</source>
         <translation>Salvar Senha</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="336"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="325"/>
         <source>Advanced Connection Options</source>
         <translation>Opções de Conecção Avançadas</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="357"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="346"/>
         <source>Advanced Options</source>
         <translation>Opções Avançadas</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="395"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="384"/>
         <source>Tables</source>
         <translation>Tabelas</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="405"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="394"/>
         <source>Tables to be hidden</source>
         <translation>Tabelas a serem ocultadas</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="417"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="406"/>
         <source>Hide spatial metadata tables</source>
         <translation>Ocultar tabelas de metadados espaciais</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="424"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="413"/>
         <source>Hide raster tables</source>
         <translation>Ocultar tabelas matriciais (raster)</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="438"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="427"/>
         <source>Connect timeout</source>
         <translation>Tempo limite de conecção (timeout)</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="474"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="463"/>
         <source>Connection Pooling</source>
         <translation>Pool de Conexão</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="484"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="473"/>
         <source>Max</source>
         <translation>Máximo</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="508"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="497"/>
         <source>Min</source>
         <translation>Mínimo</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="532"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="521"/>
         <source>Max Idle Time</source>
         <translation>Tempo Max Idle</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="571"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="560"/>
         <source>Options</source>
         <translation>Opções</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="616"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="605"/>
         <source>&amp;Help</source>
         <translation>&amp;Ajuda</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="638"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="627"/>
         <source>&amp;Test</source>
         <translation>&amp;Teste</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="645"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="634"/>
         <source>&amp;Open</source>
         <translation>&amp;Abrir</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="652"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISConnectorDialogForm.ui" line="641"/>
         <source>&amp;Close</source>
         <translation>&amp;Fechar</translation>
     </message>
@@ -221,37 +220,36 @@
         <translation>Opções de Criação Avançadas</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISCreatorDialogForm.ui" line="293"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISCreatorDialogForm.ui" line="349"/>
         <source>Owner</source>
         <translation>Proprietário</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISCreatorDialogForm.ui" line="309"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISCreatorDialogForm.ui" line="291"/>
         <source>No limit connections</source>
         <translation>Num. limite de conecções</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISCreatorDialogForm.ui" line="353"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISCreatorDialogForm.ui" line="335"/>
         <source>Tablespace</source>
         <translation>Tablespace</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISCreatorDialogForm.ui" line="380"/>
         <source>Encoding</source>
-        <translation>Codificação</translation>
+        <translation type="vanished">Codificação</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISCreatorDialogForm.ui" line="412"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISCreatorDialogForm.ui" line="394"/>
         <source>&amp;Help</source>
         <translation>&amp;Ajuda</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISCreatorDialogForm.ui" line="434"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISCreatorDialogForm.ui" line="416"/>
         <source>&amp;Apply</source>
         <translation>&amp;Aplicar</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISCreatorDialogForm.ui" line="441"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/pgis/ui/PostGISCreatorDialogForm.ui" line="423"/>
         <source>&amp;Close</source>
         <translation>&amp;Fechar</translation>
     </message>

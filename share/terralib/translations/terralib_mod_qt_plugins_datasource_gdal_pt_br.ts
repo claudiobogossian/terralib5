@@ -92,27 +92,27 @@ Iremos fornecer em breve!</translation>
 <context>
     <name>te::qt::plugins::gdal::GDALConnectorDialog</name>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="154"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="161"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="192"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="198"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="204"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="240"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="155"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="162"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="193"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="199"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="205"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="241"/>
         <source>TerraLib Qt Components</source>
         <translation>Componentes TerraLib Qt</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="162"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="163"/>
         <source>Unknown error while opening dataset via GDAL!</source>
         <translation>Erro desconhecido durante abertura do conjunto de dados via GDAL !</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="193"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="194"/>
         <source>Data source is ok!</source>
         <translation>Fonte de Dados está ok !</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="205"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="206"/>
         <source>Unknown error while testing GDAL data source!</source>
         <translation>Erro desconhecido durante teste da fonte de dados GDAL !</translation>
     </message>
@@ -125,12 +125,12 @@ Iremos fornecer em breve!</translation>
         <translation type="vanished">Arquivo Imagem (*.png *.jpg *.jpeg *.tif *.tiff *.geotif *.geotiff);; Web Map Service - WMS (*.xml *.wms);; Web Coverage Service - WCS (*.xml *.wcs);; Todos Arquivos (*.*)</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="228"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="229"/>
         <source>Select a directory with image files</source>
         <translation>Selecione um diretório com arquivos de imagem</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="241"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.cpp" line="242"/>
         <source>Sorry, network files are not implemented yet!
 We will provide it soon!</source>
         <translation>Desculpe, arquivos de rede não estão implementados ainda !
@@ -140,17 +140,22 @@ Iremos fornecer em breve!</translation>
 <context>
     <name>te::qt::plugins::gdal::Plugin</name>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/Plugin.cpp" line="114"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/Plugin.cpp" line="131"/>
         <source>Raster File...</source>
         <translation>Arquivo Matricial (raster)...</translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/Plugin.cpp" line="116"/>
-        <source>Multiple Raster Files...</source>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/Plugin.cpp" line="132"/>
+        <source>Add new raster file as a layer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/Plugin.cpp" line="249"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/Plugin.cpp" line="134"/>
+        <source>RAW Raster File...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/Plugin.cpp" line="240"/>
         <source>Open Multiple Raster Files</source>
         <translation type="unfinished"></translation>
     </message>
