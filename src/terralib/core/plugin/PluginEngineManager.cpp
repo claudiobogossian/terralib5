@@ -92,6 +92,12 @@ te::core::PluginEngineManager::get(const std::string& engine_id) const
   return *(it->second);
 }
 
+void
+te::core::PluginEngineManager::clear()
+{
+  m_pimpl->engines.clear();
+}
+
 te::core::PluginEngineManager&
 te::core::PluginEngineManager::instance()
 {
