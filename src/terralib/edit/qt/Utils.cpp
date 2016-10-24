@@ -73,7 +73,7 @@ te::map::AbstractLayerPtr te::edit::CreateShapeFileLayer(const te::gm::GeomType&
     return layer;
 
   //create draft layer
-  boost::filesystem::path outfile(fileName.toStdString());
+  boost::filesystem::path outfile(fileName.toUtf8().data());
   std::string layerName = outfile.stem().string();
 
   //create data source info
@@ -82,8 +82,8 @@ te::map::AbstractLayerPtr te::edit::CreateShapeFileLayer(const te::gm::GeomType&
   if (idx != std::string::npos)
     outputdataset = outputdataset.substr(0, idx);
 
-  std::map<std::string, std::string> connInfo;
-  connInfo["URI"] = fileName.toStdString();
+  std::string connInfo("File://");
+  connInfo += fileName.toUtf8().data();
 
   // let's include the new datasource in the managers
   boost::uuids::basic_random_generator<boost::mt19937> gen;
@@ -113,8 +113,7 @@ te::map::AbstractLayerPtr te::edit::CreateShapeFileLayer(const te::gm::GeomType&
     dsType->add(geomProperty);
 
     {
-      std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
-      ds->setConnectionInfo(connInfo);
+      std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", connInfo);
       ds->open();
 
       std::map<std::string, std::string> nopt;

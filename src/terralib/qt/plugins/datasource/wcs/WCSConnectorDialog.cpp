@@ -100,7 +100,7 @@ void te::qt::plugins::wcs::WCSConnectorDialog::openPushButtonPressed()
     std::string dsInfo = getConnectionInfo();
 
     // Perform connection
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("WCS", dsInfo);
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("WCS", dsInfo);
     ds->open();
     m_driver.reset(ds.release());
 
@@ -165,7 +165,7 @@ void te::qt::plugins::wcs::WCSConnectorDialog::testPushButtonPressed()
       throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for WCS data sources!"));
 
     // Perform connection
-    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("WCS", getConnectionInfo()));
+    std::unique_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("WCS", getConnectionInfo()));
 
     if(ds.get() == 0)
       throw te::qt::widgets::Exception(TE_TR("Could not open WCS server!"));
