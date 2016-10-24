@@ -20,9 +20,6 @@
 // TerraLib
 #include <terralib/memory_fw.h>
 
-#include <terralib/common/Module.h>
-//#include <terralib/dataaccess/Module.h>
-//#include <terralib/geometry/Module.h>
 #include <terralib/plugin.h>
 
 // cppUnit

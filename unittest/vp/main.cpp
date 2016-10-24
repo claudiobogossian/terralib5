@@ -17,7 +17,6 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
-#include <terralib/common/Module.h>
 #include <terralib/plugin.h>
 
 // cppUnit

@@ -82,9 +82,6 @@ class TsUnitsOfMeasureManager : public CPPUNIT_NS::TestFixture
 // It sets up context before running the test.
     void setUp();
 
-// It cleans up after the test run.
-    void tearDown();
-
   protected:
 
 // Test Cases:
