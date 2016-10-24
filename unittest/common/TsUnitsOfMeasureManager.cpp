@@ -44,6 +44,11 @@ void TsUnitsOfMeasureManager::setUp()
   te::common::UnitsOfMeasureManager::getInstance().insert(uomD, alternativeNames);
 }
 
+void TsUnitsOfMeasureManager::tearDown()
+{
+  te::common::UnitsOfMeasureManager::getInstance().clear();
+}
+
 /*
 void TsUnitsOfMeasureManager::tcFindUomById ()
 {
