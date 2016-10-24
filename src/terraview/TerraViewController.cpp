@@ -55,19 +55,6 @@
 //STL
 #include <algorithm>
 
-#if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
-//Log4cxx
-#include <log4cxx/basicconfigurator.h>
-#include <log4cxx/consoleappender.h>
-#include <log4cxx/fileappender.h>
-#include <log4cxx/helpers/pool.h>
-#include <log4cxx/helpers/transcoder.h>
-#include <log4cxx/logger.h>
-#include <log4cxx/logmanager.h>
-#include <log4cxx/logstring.h>
-#include <log4cxx/simplelayout.h>
-#endif
-
 TerraViewController::TerraViewController(te::qt::af::ApplicationController* app, std::string appConfigFile)
   : QObject(),
   m_app(app)
