@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+﻿/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -296,11 +296,15 @@ te::rp::MixtureModel::InputParameters te::qt::widgets::MixtureModelWizardPage::g
   return algoInputParams;
 }
 
+bool te::qt::widgets::MixtureModelWizardPage::isDecompose()
+{
+  return m_ui->m_decomposeCheckBox->isChecked();
+}
+
 te::rp::MixtureModel::OutputParameters te::qt::widgets::MixtureModelWizardPage::getOutputParams()
 {
   te::rp::MixtureModel::OutputParameters algoOutputParams;
 
-  algoOutputParams.m_decomposeOutput = m_ui->m_decomposeCheckBox->isChecked();
   algoOutputParams.m_createErrorRaster = m_ui->m_createErrorRasterCheckBox->isChecked();
 
   return algoOutputParams;
@@ -456,6 +460,9 @@ void te::qt::widgets::MixtureModelWizardPage::loadMixtureModelComponents(std::st
         valuesVec.push_back(val);
       }
 
+      if (valuesVec.size() != (size_t)nBands)
+        throw std::exception("Number of component values ​​is invalid!");
+
       std::string color = v.second.get<std::string>("Color");
 
       MixModelComponent mmc;
@@ -481,7 +488,7 @@ void te::qt::widgets::MixtureModelWizardPage::loadMixtureModelComponents(std::st
   }
   catch (std::exception const& e)
   {
-    QString errmsg = e.what();
+    QString errmsg = tr(e.what());
     QMessageBox::warning(this, tr("Warning"), errmsg);
   }
 }

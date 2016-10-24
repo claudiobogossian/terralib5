@@ -150,7 +150,6 @@ namespace te
             std::string m_rType;                                          //!< Output raster data source type (as described in te::raster::RasterFactory ).
             std::map< std::string, std::string > m_rInfo;                 //!< The necessary information to create the raster (as described in te::raster::RasterFactory).
             mutable std::auto_ptr<te::rst::Raster> m_outputRasterPtr;     //!< A pointer to the generated output raster, one band per component plus one error band per component (when parameter m_createErrorRaster is true).
-            bool m_decomposeOutput;                                       //!< A flag to indicate that output raster will decompose.
             bool m_createErrorRaster;                                     //!< A flag to indicate that output raster will include the error bands.
 
         };

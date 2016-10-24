@@ -168,6 +168,8 @@ namespace te
 
           te::rp::MixtureModel::InputParameters getInputParams();
 
+          bool isDecompose();
+
           te::rp::MixtureModel::OutputParameters getOutputParams();
 
           void saveMixtureModelComponents(std::string &fileName);

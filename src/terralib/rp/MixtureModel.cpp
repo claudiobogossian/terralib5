@@ -126,7 +126,6 @@ void te::rp::MixtureModel::OutputParameters::reset() throw(te::rp::Exception)
   m_rType.clear();
   m_rInfo.clear();
   m_outputRasterPtr.reset();
-  m_decomposeOutput = false;
   m_createErrorRaster = false;
 }
 
@@ -137,7 +136,6 @@ const te::rp::MixtureModel::OutputParameters& te::rp::MixtureModel::OutputParame
   m_rType = params.m_rType;
   m_rInfo = params.m_rInfo;
   m_outputRasterPtr = params.m_outputRasterPtr;
-  m_decomposeOutput = params.m_decomposeOutput;
   m_createErrorRaster = params.m_createErrorRaster;
 
   return *this;

@@ -285,7 +285,8 @@ bool te::qt::widgets::MixtureModelWizard::execute()
       if(algorithmInstance.execute(algoOutputParams))
       {
         //set output layer
-        if (algoOutputParams.m_decomposeOutput)
+        //if (algoOutputParams.m_decomposeOutput)
+        if (m_mixtureModelPage->isDecompose())
         { 
           decompose(algoInputParams, algoOutputParams);
         }
