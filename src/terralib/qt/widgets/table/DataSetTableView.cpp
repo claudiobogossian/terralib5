@@ -435,7 +435,8 @@ class TablePopupFilter : public QObject
       m_enabled(true),
       m_autoScrollEnabled(false),
       m_promotionEnabled(false),
-      m_isOGR(false)
+      m_isOGR(false),
+      m_isEditable(true)
     {
       m_view->horizontalHeader()->installEventFilter(this);
       m_view->verticalHeader()->installEventFilter(this);
@@ -565,36 +566,72 @@ class TablePopupFilter : public QObject
                 QAction* act7 = new QAction(m_hMenu);
                 act7->setText(tr("Add column"));
                 act7->setToolTip(tr("Adds a column to the table."));
+                if (m_caps->supportsAddColumn() && m_isEditable)
+                {
+                  act7->setEnabled(true);
+                }
+                else
+                {
+                  act7->setEnabled(false);
+                }
                 m_hMenu->addAction(act7);
-                act7->setEnabled(m_caps->supportsAddColumn());
 
                 QAction* act8 = new QAction(m_hMenu);
                 act8->setText(tr("Remove column"));
                 act8->setToolTip(tr("Removes a column from the table."));
+                if (m_caps->supportsRemoveColumn() && m_isEditable)
+                {
+                  act8->setEnabled(true);
+                }
+                else
+                {
+                  act8->setEnabled(false);
+                }
                 m_hMenu->addAction(act8);
-                act8->setEnabled(m_caps->supportsRemoveColumn());
 
                 QAction* act10 = new QAction(m_hMenu);
                 act10->setText(tr("Rename column"));
                 act10->setToolTip(tr("Renames a column of the table."));
+                act10->setEnabled(m_isEditable);
                 m_hMenu->addAction(act10);
 
                 QAction* act11 = new QAction(m_hMenu);
                 act11->setText(tr("Change column type"));
                 act11->setToolTip(tr("Changes the type of a column of the table."));
-                act11->setEnabled(!m_isOGR);
+                if (m_isEditable && !m_isOGR)
+                {
+                  act11->setEnabled(true);
+                }
+                else
+                {
+                  act11->setEnabled(false);
+                }
                 m_hMenu->addAction(act11);
 
                 QAction* act12 = new QAction(m_hMenu);
                 act12->setText(tr("Change column data"));
                 act12->setToolTip(tr("Changes the data of a column of the table."));
-                act12->setEnabled(!m_isOGR);
+                if (m_isEditable && !m_isOGR)
+                {
+                  act12->setEnabled(true);
+                }
+                else
+                {
+                  act12->setEnabled(false);
+                }
                 m_hMenu->addAction(act12);
 
                 QAction* act13 = new QAction(m_hMenu);
                 act13->setText(tr("Save editions"));
                 act13->setToolTip(tr("Save pendent editions to layer."));
-                act13->setEnabled(m_view->hasEditions());
+                if (m_isEditable && m_view->hasEditions())
+                {
+                  act13->setEnabled(true);
+                }
+                else
+                {
+                  act13->setEnabled(false);
+                }
                 m_hMenu->addAction(act13);
 
                 m_view->connect(act7, SIGNAL(triggered()), SLOT(addColumn()));
@@ -770,6 +807,11 @@ class TablePopupFilter : public QObject
       m_isOGR = isOGR;
     }
 
+    void setIsEditable(const bool& isEditable)
+    {
+      m_isEditable = isEditable;
+    }
+
   protected slots:
 
     void createHistogram()
@@ -899,6 +941,7 @@ class TablePopupFilter : public QObject
     bool m_autoScrollEnabled;
     bool m_promotionEnabled;
     bool m_isOGR;
+    bool m_isEditable;
 };
 
 te::qt::widgets::DataSetTableView::DataSetTableView(QWidget* parent) :
@@ -981,7 +1024,7 @@ bool te::qt::widgets::DataSetTableView::getAcceptDrop()
   return hheader->getAcceptDrop();
 }
 
-void te::qt::widgets::DataSetTableView::setLayer(te::map::AbstractLayer* layer, const bool& clearEditor)
+void te::qt::widgets::DataSetTableView::setLayer(te::map::AbstractLayer* layer, const bool& clearEditor, const bool& editable)
 {
   ScopedCursor cursor(Qt::WaitCursor);
 
@@ -1019,12 +1062,16 @@ void te::qt::widgets::DataSetTableView::setLayer(te::map::AbstractLayer* layer, 
   if(caps)
     m_model->setEditable(caps->supportsDataEdition());
 
+  if (!editable)
+    m_model->setEditable(false);
+
   if(dsc.get() != 0)
   {
     bool isOGR = (dsc->getType().compare("OGR") == 0);
     setSelectionMode(isOGR ? SingleSelection : MultiSelection);
     setSelectionBehavior(isOGR ? QAbstractItemView::SelectColumns : QAbstractItemView::SelectItems);
     m_popupFilter->setIsOGR(isOGR);
+    m_popupFilter->setIsEditable(editable);
   }
 
   highlightOIds(m_layer->getSelected());

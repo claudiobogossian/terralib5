@@ -95,6 +95,8 @@ namespace te
 
         virtual void onApplicationTriggered(te::qt::af::evt::Event* e);
 
+        virtual void onLayerShowTableTriggered();
+
         void onDrawTriggered();
 
         void onZoomInToggled(bool checked);
@@ -164,8 +166,6 @@ namespace te
         void onStyleExplorerVisibilityChanged(bool visible);
 
         void onDisplayDataTableChanged(bool visible);
-
-        void onLayerShowTableTriggered();
 
         void onLayerTableClose(te::qt::af::DataSetTableDockWidget* wid);
 
