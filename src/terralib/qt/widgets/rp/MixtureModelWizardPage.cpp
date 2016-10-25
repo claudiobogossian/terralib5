@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../../common/Exception.h"
 #include "../../../common/STLUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/utils/Utils.h"
@@ -461,7 +462,7 @@ void te::qt::widgets::MixtureModelWizardPage::loadMixtureModelComponents(std::st
       }
 
       if (valuesVec.size() != (size_t)nBands)
-        throw std::exception("Number of component values ​​is invalid!");
+        throw te::common::Exception(TE_TR("Number of component value is invalid!"));
 
       std::string color = v.second.get<std::string>("Color");
 
@@ -486,9 +487,9 @@ void te::qt::widgets::MixtureModelWizardPage::loadMixtureModelComponents(std::st
     QMessageBox::warning(this, tr("Warning"), errmsg);
     return;
   }
-  catch (std::exception const& e)
+  catch (te::common::Exception const& e)
   {
-    QString errmsg = tr(e.what());
+    QString errmsg = e.what();
     QMessageBox::warning(this, tr("Warning"), errmsg);
   }
 }

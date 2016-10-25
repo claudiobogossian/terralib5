@@ -32,39 +32,39 @@ if(WIN32)
 endif()
 
 file(GLOB TERRALIB_UNITTEST_RP_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/*.cpp)
-file(GLOB TERRALIB_UNITTEST_RP_ARITHMETIC_OPERATIONS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/arithmetic_operations/*.cpp)
-file(GLOB TERRALIB_UNITTEST_RP_BLENDER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/blender/*.cpp)
-file(GLOB TERRALIB_UNITTEST_RP_CLASSIFIER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/classifier/*.cpp)
-file(GLOB TERRALIB_UNITTEST_RP_CONTRAST_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/contrast/*.cpp)
-file(GLOB TERRALIB_UNITTEST_RP_FILTER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/filter/*.cpp)
+#file(GLOB TERRALIB_UNITTEST_RP_ARITHMETIC_OPERATIONS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/arithmetic_operations/*.cpp)
+#file(GLOB TERRALIB_UNITTEST_RP_BLENDER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/blender/*.cpp)
+#file(GLOB TERRALIB_UNITTEST_RP_CLASSIFIER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/classifier/*.cpp)
+#file(GLOB TERRALIB_UNITTEST_RP_CONTRAST_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/contrast/*.cpp)
+#file(GLOB TERRALIB_UNITTEST_RP_FILTER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/filter/*.cpp)
 file(GLOB TERRALIB_UNITTEST_RP_FUNCTIONS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/functions/*.cpp)
-file(GLOB TERRALIB_UNITTEST_RP_FUSION_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/fusion/*.cpp)
-file(GLOB TERRALIB_UNITTEST_RP_MATRIX_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/matrix/*.cpp)
+#file(GLOB TERRALIB_UNITTEST_RP_FUSION_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/fusion/*.cpp)
+#file(GLOB TERRALIB_UNITTEST_RP_MATRIX_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/matrix/*.cpp)
 file(GLOB TERRALIB_UNITTEST_RP_MIXTURE_MODEL_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/mixture_model/*.cpp)
-file(GLOB TERRALIB_UNITTEST_RP_MOSAIC_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/mosaic/*.cpp)
-file(GLOB TERRALIB_UNITTEST_RP_RADAR_FUNCTIONS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/radar_functions/*.cpp)
-file(GLOB TERRALIB_UNITTEST_RP_REGISTER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/register/*.cpp)
-file(GLOB TERRALIB_UNITTEST_RP_SEGMENTER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/segmenter/*.cpp)
-file(GLOB TERRALIB_UNITTEST_RP_SKELETON_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/skeleton/*.cpp)
-file(GLOB TERRALIB_UNITTEST_RP_TEXTURE_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/texture/*.cpp)
+#file(GLOB TERRALIB_UNITTEST_RP_MOSAIC_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/mosaic/*.cpp)
+#file(GLOB TERRALIB_UNITTEST_RP_RADAR_FUNCTIONS_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/radar_functions/*.cpp)
+#file(GLOB TERRALIB_UNITTEST_RP_REGISTER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/register/*.cpp)
+#file(GLOB TERRALIB_UNITTEST_RP_SEGMENTER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/segmenter/*.cpp)
+#file(GLOB TERRALIB_UNITTEST_RP_SKELETON_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/skeleton/*.cpp)
+#file(GLOB TERRALIB_UNITTEST_RP_TEXTURE_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/texture/*.cpp)
 file(GLOB TERRALIB_UNITTEST_RP_TIE_POINTS_LOCATOR_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/tie_points_locator/*.cpp)
 
 source_group("Source Files"                         FILES ${TERRALIB_UNITTEST_RP_SRC_FILES})
-source_group("Source Files\\arithmetic_operations"  FILES ${TERRALIB_UNITTEST_RP_ARITHMETIC_OPERATIONS_SRC_FILES})
-source_group("Source Files\\blender"                FILES ${TERRALIB_UNITTEST_RP_BLENDER_SRC_FILES})
-source_group("Source Files\\classifier"             FILES ${TERRALIB_UNITTEST_RP_CLASSIFIER_SRC_FILES})
-source_group("Source Files\\contrast"               FILES ${TERRALIB_UNITTEST_RP_CONTRAST_SRC_FILES})
-source_group("Source Files\\filter"                 FILES ${TERRALIB_UNITTEST_RP_FILTER_SRC_FILES})
+#source_group("Source Files\\arithmetic_operations"  FILES ${TERRALIB_UNITTEST_RP_ARITHMETIC_OPERATIONS_SRC_FILES})
+#source_group("Source Files\\blender"                FILES ${TERRALIB_UNITTEST_RP_BLENDER_SRC_FILES})
+#source_group("Source Files\\classifier"             FILES ${TERRALIB_UNITTEST_RP_CLASSIFIER_SRC_FILES})
+#source_group("Source Files\\contrast"               FILES ${TERRALIB_UNITTEST_RP_CONTRAST_SRC_FILES})
+#source_group("Source Files\\filter"                 FILES ${TERRALIB_UNITTEST_RP_FILTER_SRC_FILES})
 source_group("Source Files\\functions"              FILES ${TERRALIB_UNITTEST_RP_FUNCTIONS_SRC_FILES})
-source_group("Source Files\\fusion"                 FILES ${TERRALIB_UNITTEST_RP_FUSION_SRC_FILES})
-source_group("Source Files\\matrix"                 FILES ${TERRALIB_UNITTEST_RP_MATRIX_SRC_FILES})
+#source_group("Source Files\\fusion"                 FILES ${TERRALIB_UNITTEST_RP_FUSION_SRC_FILES})
+#source_group("Source Files\\matrix"                 FILES ${TERRALIB_UNITTEST_RP_MATRIX_SRC_FILES})
 source_group("Source Files\\mixture_model"          FILES ${TERRALIB_UNITTEST_RP_MIXTURE_MODEL_SRC_FILES})
-source_group("Source Files\\mosaic"                 FILES ${TERRALIB_UNITTEST_RP_MOSAIC_SRC_FILES})
-source_group("Source Files\\radar_functions"        FILES ${TERRALIB_UNITTEST_RP_RADAR_FUNCTIONS_SRC_FILES})
-source_group("Source Files\\register"               FILES ${TERRALIB_UNITTEST_RP_REGISTER_SRC_FILES})
-source_group("Source Files\\segmenter"              FILES ${TERRALIB_UNITTEST_RP_SEGMENTER_SRC_FILES})
-source_group("Source Files\\skeleton"               FILES ${TERRALIB_UNITTEST_RP_SKELETON_SRC_FILES})
-source_group("Source Files\\texture"                FILES ${TERRALIB_UNITTEST_RP_TEXTURE_SRC_FILES})
+#source_group("Source Files\\mosaic"                 FILES ${TERRALIB_UNITTEST_RP_MOSAIC_SRC_FILES})
+#source_group("Source Files\\radar_functions"        FILES ${TERRALIB_UNITTEST_RP_RADAR_FUNCTIONS_SRC_FILES})
+#source_group("Source Files\\register"               FILES ${TERRALIB_UNITTEST_RP_REGISTER_SRC_FILES})
+#source_group("Source Files\\segmenter"              FILES ${TERRALIB_UNITTEST_RP_SEGMENTER_SRC_FILES})
+#source_group("Source Files\\skeleton"               FILES ${TERRALIB_UNITTEST_RP_SKELETON_SRC_FILES})
+#source_group("Source Files\\texture"                FILES ${TERRALIB_UNITTEST_RP_TEXTURE_SRC_FILES})
 source_group("Source Files\\tie_points_locator"     FILES ${TERRALIB_UNITTEST_RP_TIE_POINTS_LOCATOR_SRC_FILES})
 
 
@@ -74,21 +74,21 @@ include_directories(${Boost_INCLUDE_DIR}
 include_directories(${GDAL_INCLUDE_DIR})
 
 add_executable(terralib_unittest_rp ${TERRALIB_UNITTEST_RP_SRC_FILES}
-                                    ${TERRALIB_UNITTEST_RP_ARITHMETIC_OPERATIONS_SRC_FILES}
-                                    ${TERRALIB_UNITTEST_RP_BLENDER_SRC_FILES}
-                                    ${TERRALIB_UNITTEST_RP_CLASSIFIER_SRC_FILES}
-                                    ${TERRALIB_UNITTEST_RP_CONTRAST_SRC_FILES}
-                                    ${TERRALIB_UNITTEST_RP_FILTER_SRC_FILES}
+#                                    ${TERRALIB_UNITTEST_RP_ARITHMETIC_OPERATIONS_SRC_FILES}
+#                                    ${TERRALIB_UNITTEST_RP_BLENDER_SRC_FILES}
+#                                    ${TERRALIB_UNITTEST_RP_CLASSIFIER_SRC_FILES}
+#                                    ${TERRALIB_UNITTEST_RP_CONTRAST_SRC_FILES}
+#                                    ${TERRALIB_UNITTEST_RP_FILTER_SRC_FILES}
                                     ${TERRALIB_UNITTEST_RP_FUNCTIONS_SRC_FILES}
-                                    ${TERRALIB_UNITTEST_RP_FUSION_SRC_FILES}
-                                    ${TERRALIB_UNITTEST_RP_MATRIX_SRC_FILES}
+#                                    ${TERRALIB_UNITTEST_RP_FUSION_SRC_FILES}
+#                                    ${TERRALIB_UNITTEST_RP_MATRIX_SRC_FILES}
                                     ${TERRALIB_UNITTEST_RP_MIXTURE_MODEL_SRC_FILES}
-                                    ${TERRALIB_UNITTEST_RP_MOSAIC_SRC_FILES}
-                                    ${TERRALIB_UNITTEST_RP_RADAR_FUNCTIONS_SRC_FILES}
-                                    ${TERRALIB_UNITTEST_RP_REGISTER_SRC_FILES}
-                                    ${TERRALIB_UNITTEST_RP_SEGMENTER_SRC_FILES}
-                                    ${TERRALIB_UNITTEST_RP_SKELETON_SRC_FILES}
-                                    ${TERRALIB_UNITTEST_RP_TEXTURE_SRC_FILES}
+#                                    ${TERRALIB_UNITTEST_RP_MOSAIC_SRC_FILES}
+#                                    ${TERRALIB_UNITTEST_RP_RADAR_FUNCTIONS_SRC_FILES}
+#                                    ${TERRALIB_UNITTEST_RP_REGISTER_SRC_FILES}
+#                                    ${TERRALIB_UNITTEST_RP_SEGMENTER_SRC_FILES}
+#                                    ${TERRALIB_UNITTEST_RP_SKELETON_SRC_FILES}
+#                                    ${TERRALIB_UNITTEST_RP_TEXTURE_SRC_FILES}
                                     ${TERRALIB_UNITTEST_RP_TIE_POINTS_LOCATOR_SRC_FILES})
 
 target_link_libraries(terralib_unittest_rp terralib_mod_geometry
