@@ -60,6 +60,7 @@ if(TERRALIB_MOD_XML_ENABLED)
   target_link_libraries(terralib_mod_ws_ogc_wms_dataaccess terralib_mod_common
                                                            terralib_mod_dataaccess
                                                            terralib_mod_datatype
+														   terralib_mod_maptools
                                                            terralib_mod_plugin
                                                            terralib_mod_ws_core
                                                            terralib_mod_ws_ogc_wms_client
@@ -69,6 +70,7 @@ else()
   target_link_libraries(terralib_mod_ws_ogc_wms_dataaccess terralib_mod_common
                                                            terralib_mod_dataaccess
                                                            terralib_mod_datatype
+														   terralib_mod_maptools
                                                            terralib_mod_plugin
                                                            terralib_mod_ws_core
                                                            terralib_mod_ws_ogc_wms_client

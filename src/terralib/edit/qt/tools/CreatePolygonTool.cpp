@@ -46,14 +46,15 @@
 #include <memory>
 
 te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, 
-                                               const te::edit::MouseEventEdition  mouseEventToSave, QObject* parent)
+                                               const te::edit::MouseEventEdition  mouseEventToSave, bool showVertexes, QObject* parent)
   : GeometriesUpdateTool(display, layer.get(), parent),
     m_continuousMode(false),
     m_isFinished(false),
     m_mouseEventToSave(mouseEventToSave),
+    m_showVertexes(showVertexes),
     m_stack(UndoStackManager::getInstance())
 {
-  setCursor(cursor);
+  m_display->setCursor(cursor);
 
   draw();
 }
@@ -191,7 +192,7 @@ void te::edit::CreatePolygonTool::drawPolygon()
 
   // Draw the current geometry and the vertexes
   Renderer& renderer = Renderer::getInstance();
-  renderer.draw(polygon, true);
+  renderer.draw(polygon, m_showVertexes);
 
   delete polygon;
 }
@@ -203,7 +204,7 @@ void te::edit::CreatePolygonTool::drawLine()
 
   // Draw the current geometry and the vertexes
   Renderer& renderer = Renderer::getInstance();
-  renderer.draw(line, true);
+  renderer.draw(line, m_showVertexes);
 
   delete line;
 }

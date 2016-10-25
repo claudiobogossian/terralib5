@@ -40,7 +40,6 @@
 #include <sstream>
 #include <fstream>
 
-
 struct CurlProgress
 {
   te::common::TaskProgress* m_task;
@@ -73,13 +72,22 @@ te::ws::core::CurlWrapper::~CurlWrapper()
 }
 
 
+void te::ws::core::CurlWrapper::clean()
+{
+  curl_easy_reset(m_pimpl->m_curl.get());
+
+  m_response = "";
+  m_responseCode = 0;
+}
+
+
 size_t WriteFileCallback(void *ptr, size_t size, size_t nmemb, void *data)
 {
   std::FILE *writehere = (std::FILE *)data;
   return fwrite(ptr, size, nmemb, writehere);
 }
 
-size_t WriteGetResponse(char* data, size_t size, size_t nmemb, std::string* buffer)
+size_t WriteResponse(char* data, size_t size, size_t nmemb, std::string* buffer)
 {
   if(buffer == 0)
       return 0;
@@ -87,6 +95,23 @@ size_t WriteGetResponse(char* data, size_t size, size_t nmemb, std::string* buff
   buffer->append(data, size * nmemb);
 
   return size * nmemb;
+}
+
+
+size_t read_stream_callback(char *buffer, size_t size, size_t nitems, void *instream)
+{
+  std::fstream* stream = static_cast<std::fstream*>(instream);
+
+  if(!stream->is_open())
+  {
+    return 0;
+  }
+
+  size_t nbytes = size * nitems;
+
+  size_t bytesWritten = stream->readsome(buffer, nbytes);
+
+  return bytesWritten;
 }
 
 int DownloadProgress(void *p,
@@ -145,7 +170,7 @@ void te::ws::core::CurlWrapper::downloadFile(const std::string &url, std::FILE* 
     task = new te::common::TaskProgress(m_taskMessage, te::common::TaskProgress::UNDEFINED, 100);
   else
     task = taskProgress;
-  
+
   CurlProgress progress;
 
   progress.m_curl = m_pimpl->m_curl;
@@ -175,32 +200,18 @@ std::string te::ws::core::CurlWrapper::getTaskMessage() const
   return m_taskMessage;
 }
 
+
 void te::ws::core::CurlWrapper::setTaskMessage(const std::string &taskMessage)
 {
   m_taskMessage = taskMessage;
 }
 
 
-size_t read_stream_callback(char *buffer, size_t size, size_t nitems, void *instream)
+void te::ws::core::CurlWrapper::post(const te::core::URI &uri,
+                                     const std::string &postFields,
+                                     const::std::string &header)
 {
-  std::fstream* stream = static_cast<std::fstream*>(instream);
-
-  if(!stream->is_open())
-  {
-    return 0;
-  }
-
-  size_t nbytes = size * nitems;
-
-  size_t bytesWritten = stream->readsome(buffer, nbytes);
-
-  return bytesWritten;
-}
-
-
-void te::ws::core::CurlWrapper::post(const te::core::URI &uri, const std::string &postFields, const::std::string &header) const
-{
-  curl_easy_reset(m_pimpl->m_curl.get());
+  clean();
 
   curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_URL, uri.uri().c_str());
 
@@ -215,10 +226,23 @@ void te::ws::core::CurlWrapper::post(const te::core::URI &uri, const std::string
 
   curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_POSTFIELDS, postFields.c_str());
 
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_WRITEFUNCTION, WriteResponse);
+
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_WRITEDATA, &m_response);
+
   /* Perform the request, status will get the return code */
   CURLcode status = curl_easy_perform(m_pimpl->m_curl.get());
 
   curl_slist_free_all(headers);
+
+  // Check for errors
+  if(status != CURLE_OK)
+  {
+    std::string msg = curl_easy_strerror(status) + (':' + std::string(errbuf));
+    throw te::common::Exception(msg);
+  }
+
+  status = curl_easy_getinfo(m_pimpl->m_curl.get(), CURLINFO_RESPONSE_CODE, &m_responseCode);
 
   // Check for errors
   if(status != CURLE_OK)
@@ -229,7 +253,7 @@ void te::ws::core::CurlWrapper::post(const te::core::URI &uri, const std::string
 }
 
 
-void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const std::string &filePath, const std::string &header) const
+void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const std::string &filePath, const std::string &header)
 {
   std::fstream stream(filePath);
 
@@ -242,9 +266,9 @@ void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const std::str
 }
 
 
-void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const std::fstream& file, const::std::string &header) const
+void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const std::fstream& file, const::std::string &header)
 {
-  curl_easy_reset(m_pimpl->m_curl.get());
+  clean();
 
   curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_URL, uri.uri().c_str());
 
@@ -263,10 +287,23 @@ void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const std::fst
 
   curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_READDATA, (const std::fstream*)&file);
 
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_WRITEFUNCTION, WriteResponse);
+
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_WRITEDATA, &m_response);
+
   /* Perform the request, status will get the return code */
   CURLcode status = curl_easy_perform(m_pimpl->m_curl.get());
 
   curl_slist_free_all(headers);
+
+  // Check for errors
+  if(status != CURLE_OK)
+  {
+    std::string msg = curl_easy_strerror(status) + (':' + std::string(errbuf));
+    throw te::common::Exception(msg);
+  }
+
+  status = curl_easy_getinfo(m_pimpl->m_curl.get(), CURLINFO_RESPONSE_CODE, &m_responseCode);
 
   // Check for errors
   if(status != CURLE_OK)
@@ -277,9 +314,9 @@ void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const std::fst
 }
 
 
-void te::ws::core::CurlWrapper::customRequest(const te::core::URI &uri, const std::string& request, const std::string& body, const::std::string &header) const
+void te::ws::core::CurlWrapper::customRequest(const te::core::URI &uri, const std::string& request, const std::string& body, const::std::string &header)
 {
-  curl_easy_reset(m_pimpl->m_curl.get());
+  clean();
 
   curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_URL, uri.uri().c_str());
 
@@ -299,6 +336,10 @@ void te::ws::core::CurlWrapper::customRequest(const te::core::URI &uri, const st
     curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_POSTFIELDS, body.c_str());
   }
 
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_WRITEFUNCTION, WriteResponse);
+
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_WRITEDATA, &m_response);
+
   /* Perform the request, status will get the return code */
   CURLcode status = curl_easy_perform(m_pimpl->m_curl.get());
 
@@ -306,14 +347,23 @@ void te::ws::core::CurlWrapper::customRequest(const te::core::URI &uri, const st
 
   if(status != CURLE_OK)
   {
+    std::string msg = curl_easy_strerror(status) + (':' + std::string(errbuf));
+    throw te::common::Exception(msg);
+  }
+
+  status = curl_easy_getinfo(m_pimpl->m_curl.get(), CURLINFO_RESPONSE_CODE, &m_responseCode);
+
+  // Check for errors
+  if(status != CURLE_OK)
+  {
     std::string msg = curl_easy_strerror(status) + ':' + std::string(errbuf);
     throw te::common::Exception(msg);
   }
 }
 
-void te::ws::core::CurlWrapper::get(const te::core::URI &uri, std::string &buffer) const
-{
 
+void te::ws::core::CurlWrapper::get(const te::core::URI &uri, std::string &buffer)
+{
   buffer.clear();
 
   std::string url = uri.uri();
@@ -327,16 +377,39 @@ void te::ws::core::CurlWrapper::get(const te::core::URI &uri, std::string &buffe
 
   curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_URL, url.c_str());
 
-  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_WRITEFUNCTION, WriteGetResponse);
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_WRITEFUNCTION, WriteResponse);
 
   curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_WRITEDATA, &buffer);
 
   /* Perform the request, status will get the return code */
   CURLcode status = curl_easy_perform(m_pimpl->m_curl.get());
 
+  m_response = buffer;
+
+  if(status != CURLE_OK)
+  {
+    std::string msg = curl_easy_strerror(status) + (':' + std::string(errbuf));
+    throw te::common::Exception(msg);
+  }
+
+  status = curl_easy_getinfo(m_pimpl->m_curl.get(), CURLINFO_RESPONSE_CODE, &m_responseCode);
+
+  // Check for errors
   if(status != CURLE_OK)
   {
     std::string msg = curl_easy_strerror(status) + ':' + std::string(errbuf);
     throw te::common::Exception(msg);
   }
+}
+
+
+const long te::ws::core::CurlWrapper::responseCode() const
+{
+  return m_responseCode;
+}
+
+
+const std::string& te::ws::core::CurlWrapper::response() const
+{
+  return m_response;
 }

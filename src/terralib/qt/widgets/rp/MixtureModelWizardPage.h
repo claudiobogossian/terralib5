@@ -27,18 +27,27 @@
   {"MixModel_Components":
     [
       {"Component":
-        {"id" : ****},
         {"name" : "******"},
-        {"coordGrid":
+        {"geomGrid":
           [
-            {"x" : ******},
-            {"y" : ******}
+          {"x0" : ******},
+          {"y0" : ******},
+          .
+          .
+          .
+          {"xn" : ******},
+          {"yn" : ******}
           ]
         }
-        {"coordGeo":
+        {"geomGeo":
           [
-            {"x" : ******},
-            {"y" : ******}
+          {"x0" : ******},
+          {"y0" : ******},
+          .
+          .
+          .
+          {"xn" : ******},
+          {"yn" : ******}
           ]
         }
         {"values":
@@ -48,17 +57,19 @@
             {"pixelValue" : *****}
           ]
         }
+        {"Color":"#******"
+        }
       }
     ]
   }
 
   struct MixModelComponent
   {
-    std::string m_id;
     std::string m_name;
-    te::gm::Coord2D m_coordGrid;
-    te::gm::Coord2D m_coordGeo;
+    te::gm::Geometry* m_geomGrid;
+    te::gm::Geometry* m_geomGeo;
     std::vector<double> m_values;
+    te::color::RGBAColor m_color;
   };
 */
 
@@ -67,7 +78,7 @@
 
 // TerraLib
 #include "../../../color/RGBAColor.h"
-#include "../../../geometry/Coord2D.h"
+#include "../../../geometry/Geometry.h"
 #ifndef Q_MOC_RUN
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
@@ -124,8 +135,8 @@ namespace te
           struct MixModelComponent
           {
             std::string m_name;
-            te::gm::Coord2D m_coordGrid;
-            te::gm::Coord2D m_coordGeo;
+            te::gm::Geometry *m_geomGrid;
+            te::gm::Geometry *m_geomGeo;
             std::vector<double> m_values;
             te::color::RGBAColor m_color;
           };
@@ -177,6 +188,10 @@ namespace te
 
           void onPointPicked(double x, double y);
 
+          void onEnvelopeAcquired(te::gm::Envelope env);
+
+          void onGeomAquired(te::gm::Polygon* poly);
+
           void onRemoveToolButtonClicked();
 
           void clearCanvas();
@@ -198,7 +213,9 @@ namespace te
 
           double GetMediumWavelength(std::string sensor);
 
-        private:
+          void addGeometryComponent();
+
+      private:
 
           std::auto_ptr<Ui::MixtureModelWizardPageForm> m_ui;
           std::auto_ptr<te::qt::widgets::RpToolsWidget> m_navigator;
@@ -215,6 +232,9 @@ namespace te
           te::qt::widgets::ChartDisplayWidget *m_displayWidget;
           QGridLayout* m_layoutg;
           QColor m_color;
+
+          //te::cl::ROISet* m_rs;
+          te::gm::Geometry* m_geom;
 
       };
 

@@ -76,23 +76,17 @@ namespace te
       void setSRID(int newSRID);
 
       void setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay);
+      void getRaster();
 
-      bool calcLocalGradient(te::rst::Raster* inputRaster, int line, int col, double vmin, double vmax, double& dx, double& dy, double *val);
+      void drawPreview(std::unique_ptr<te::rst::Raster>& raster);
 
-      void applyPreview();
-      void getRasterFromROI();
-
-      void drawPreview(te::rst::Raster* raster);
+      void resetDraw();
 
       protected slots:
 
       void onInputComboBoxChanged(int index);
       void onlayerSearchToolButtonClicked();
-      void onPreviewCheckBoxToggled(bool isChecked);
-      void onAllImageRadioButtonToggled(bool isChecked);
-      void onVisibleAreaRadioButtonToggled(bool isChecked);
-      void onRoiRadioButtonToggled(bool isChecked);
-      void onNewROIPushButtonClicked();
+      void onPreviewPushButtonClicked();
 
       void onResXLineEditEditingFinished();
       void onResYLineEditEditingFinished();
@@ -105,7 +99,6 @@ namespace te
     private:
 
       std::unique_ptr<Ui::ImageGenerationDialogForm> m_ui;
-      std::unique_ptr<te::qt::widgets::RasterNavigatorWidget> m_navigator;
 
       te::da::DataSourceInfoPtr m_outputDatasource;                                     //!< DataSource information.
       std::string m_outputArchive;                                                      //!< Archive information.
@@ -113,9 +106,7 @@ namespace te
       te::map::AbstractLayerPtr m_inputLayer;                                        //!< Input layer
       te::qt::widgets::MapDisplay* m_mapDisplay;
       te::qt::widgets::Canvas* m_canvas;
-      te::rst::Raster* m_raster;
-      te::gm::Geometry* m_geom;
-      te::rst::Raster* m_previewRaster;
+      std::unique_ptr<te::rst::Raster> m_previewRaster;
       te::map::AbstractLayerPtr m_outputLayer;                                          //!< Generated Layer.
       te::da::DataSourcePtr     m_inDataSource;   //!< input DataSourcePtr
       std::string m_inSetName;  //!< input DataSetLayer name

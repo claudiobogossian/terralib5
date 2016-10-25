@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/edit/qt/tools/CreatePointsTool.h
+  \file terralib/edit/qt/tools/CreatePointTool.h
 
   \brief This class implements a concrete tool to create points.
 */
 
 #ifndef __TERRALIB_EDIT_QT_INTERNAL_CREATEPOINTTOOL_H
-#define __TERRALIB_EDIT_QT_INTERNAL_CREATEPOINSTOOL_H
+#define __TERRALIB_EDIT_QT_INTERNAL_CREATEPOINTTOOL_H
 
 // TerraLib
 #include "../../../geometry/Coord2D.h"

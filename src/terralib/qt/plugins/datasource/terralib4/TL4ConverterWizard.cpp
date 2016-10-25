@@ -76,6 +76,7 @@
 
 // Boost
 #include <boost/filesystem.hpp>
+#include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 
 // Qt
@@ -312,6 +313,12 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
         QTableWidgetItem *oldNameItem = new QTableWidgetItem(selectedLayerItems[i]->text(), selectedLayerItems[i]->type());
         oldNameItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
         m_resolveNameTableWidget->setItem((int)i, 1, oldNameItem);
+
+        bool changed = false;
+        std::string strChanged = te::common::ReplaceSpecialChars(targetDatasetName, changed);
+
+        if (changed)
+          targetDatasetName = strChanged;
 
         QTableWidgetItem *newNameItem = new QTableWidgetItem(targetDatasetName.c_str(), selectedLayerItems[i]->type());
         m_resolveNameTableWidget->setItem((int)i, 2, newNameItem);
@@ -940,7 +947,8 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
         te::da::DataSetTypePtr dstPtr(dst.release());
 
         layer = converter(dstPtr);
-        layer->setTitle(themes[i].m_name);
+        bool changed;
+        layer->setTitle(te::common::ReplaceSpecialChars(themes[i].m_name, changed));
 
         // Get Style
         te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dstPtr.get());
@@ -951,9 +959,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
           layer->setGrouping(GetGrouping(theme));
       }
 
-      layer->setStyle(style->clone());
-
-      delete style;
+      layer->setStyle(style);
 
       te::qt::af::evt::LayerAdded evt(layer);
 

@@ -95,6 +95,8 @@ namespace te
 
         virtual void onApplicationTriggered(te::qt::af::evt::Event* e);
 
+        virtual void onLayerShowTableTriggered();
+
         void onDrawTriggered();
 
         void onZoomInToggled(bool checked);
@@ -118,6 +120,12 @@ namespace te
         void onMapSRIDTriggered();
 
         void onMapSetUnknwonSRIDTriggered();
+
+        void onMeasureDistanceToggled(bool checked);
+
+        void onMeasureAreaToggled(bool checked);
+
+        void onMeasureAngleToggled(bool checked);
 
         void onStopDrawTriggered();
 
@@ -159,8 +167,6 @@ namespace te
 
         void onDisplayDataTableChanged(bool visible);
 
-        void onLayerShowTableTriggered();
-
         void onLayerTableClose(te::qt::af::DataSetTableDockWidget* wid);
 
         void onChartDisplayCreated(te::qt::widgets::ChartDisplayWidget* chartDisplay, te::map::AbstractLayer* layer);
@@ -187,7 +193,11 @@ namespace te
 
         virtual void initMenus();
 
+        virtual void initToolbars();
+
         virtual void initSlotsConnections();
+
+        virtual void createDefaultSettings() = 0;
 
         virtual void initAction(QAction*& act, const QString& icon, const QString& name,
           const QString& text, const QString& tooltip,
@@ -209,7 +219,9 @@ namespace te
         QAction* m_mapInfo;
         QAction* m_mapRemoveSelection;
         QAction* m_mapSelection;
-
+        QAction* m_mapMeasureDistance;
+        QAction* m_mapMeasureArea;
+        QAction* m_mapMeasureAngle;
         QAction* m_layerShowTable;
         QAction* m_layerRemove;
         QAction* m_layerRename;

@@ -230,7 +230,6 @@ te::dt::AbstractData* te::mem::ExpansibleRaster::clone() const
     new te::rst::Grid( *m_grid ), bandsProperties,  
     m_blocksManagerPtr->getMaxNumberOfRAMBlocks() ) );  
   
-  int bufferSize = 0;
   int nblcksX = 0;
   int nblkksY = 0;
   int blkXIdx = 0;

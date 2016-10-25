@@ -55,6 +55,15 @@ BOOST_AUTO_TEST_CASE (rasterVectorizer_test)
   vectorizerInstance.run( polygons, &polygonsValues);
   BOOST_CHECK( !polygons.empty() );
   BOOST_CHECK( polygons.size() == polygonsValues.size() );
+  
+  /* Checking geometries */
+
+  {
+    for( unsigned int polygonsIdx = 0 ; polygonsIdx < polygons.size() ; ++polygonsIdx )
+    {
+      BOOST_CHECK( polygons[ polygonsIdx ]->isValid() );
+    }
+  }  
 
   /* Exporting to disk */
 

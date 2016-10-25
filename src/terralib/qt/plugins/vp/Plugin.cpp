@@ -42,20 +42,6 @@
 #include "PolygonToLineAction.h"
 #include "UnionAction.h"
 
-#if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
-//Log4cxx
-#include <log4cxx/basicconfigurator.h>
-#include <log4cxx/consoleappender.h>
-#include <log4cxx/fileappender.h>
-#include <log4cxx/helpers/pool.h>
-#include <log4cxx/helpers/transcoder.h>
-#include <log4cxx/logger.h>
-#include <log4cxx/logmanager.h>
-#include <log4cxx/logstring.h>
-#include <log4cxx/patternlayout.h>
-#include <log4cxx/rollingfileappender.h>
-#endif
-
 // QT
 #include <QMenu>
 #include <QMenuBar>
@@ -109,28 +95,6 @@ void te::qt::plugins::vp::Plugin::startup()
 // register actions
   registerActions();
 
-// vp log startup
-  std::string path = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toUtf8().data();
-  path += "/log/terralib_vp.log";
-
-#if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
-  std::string layout = "%d{ISO8601} [%t] %-5p %c - %m%n";
-  log4cxx::LogString lString(layout.begin(), layout.end());
-
-  log4cxx::FileAppender* fileAppender = new log4cxx::RollingFileAppender(log4cxx::LayoutPtr(new log4cxx::PatternLayout(lString)),
-    log4cxx::helpers::Transcoder::decode(path.c_str()), true);
-
-  log4cxx::helpers::Pool p;
-  fileAppender->activateOptions(p);
-
-  log4cxx::BasicConfigurator::configure(log4cxx::AppenderPtr(fileAppender));
-  log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getDebug());
-
-  log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("vp");
-  logger->setAdditivity(false);
-  logger->addAppender(fileAppender);
-
-#endif
   m_initialized = true;
 
   te::qt::af::AppCtrlSingleton::getInstance().addListener(this, te::qt::af::SENDER);
@@ -146,10 +110,6 @@ void te::qt::plugins::vp::Plugin::shutdown()
 
 // unregister actions
   unRegisterActions();
-
-#if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
-  log4cxx::LogManager::shutdown();
-#endif
 
   TE_LOG_TRACE(TE_TR("TerraLib Qt VP Plugin shutdown!"));
 
