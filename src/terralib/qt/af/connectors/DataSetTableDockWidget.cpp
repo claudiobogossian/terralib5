@@ -56,7 +56,7 @@ te::qt::af::DataSetTableDockWidget::~DataSetTableDockWidget()
   emit closed(this);
 }
 
-void te::qt::af::DataSetTableDockWidget::setLayer(te::map::AbstractLayer* layer)
+void te::qt::af::DataSetTableDockWidget::setLayer(te::map::AbstractLayer* layer, const bool& editable)
 {
   m_layer = layer;
 
@@ -65,7 +65,7 @@ void te::qt::af::DataSetTableDockWidget::setLayer(te::map::AbstractLayer* layer)
 
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
 
-  m_view->setLayer(m_layer);
+  m_view->setLayer(m_layer, true, editable);
 
   if(m_layer->getSelected() != 0)
     m_view->highlightOIds(m_layer->getSelected());

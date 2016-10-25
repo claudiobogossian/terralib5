@@ -93,8 +93,10 @@ namespace te
             \brief Sets the layer to be showed on view. This DOES NOT takes the ownership of \a layer.
 
             \param layer The layer to be showed.
+
+            \param editable True to allow layer editions.
           */
-          void setLayer(te::map::AbstractLayer* layer);
+          void setLayer(te::map::AbstractLayer* layer, const bool& editable = true);
 
           /*!
             \brief Returns the layer being used.

@@ -129,8 +129,10 @@ namespace te
             \param layer Pointer to the layer to be presented.
 
             \param clearEditor True for reset editions, false to maintain it.
+
+            \param editable True to allow layer editions.
           */
-          void setLayer(te::map::AbstractLayer* layer, const bool& clearEditor = true);
+          void setLayer(te::map::AbstractLayer* layer, const bool& clearEditor = true, const bool& editable = true);
 
           /*!
             \brief Updates the data set being visualized.
