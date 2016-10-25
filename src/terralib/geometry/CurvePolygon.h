@@ -264,10 +264,7 @@ namespace te
 
           \note TerraLib extended method.
         */
-        void add(Curve* ring)
-        {
-          m_rings.push_back(ring);
-        }
+        void add(Curve* ring);
 
         /*!
           \brief It adds the curve to the curve polygon.
@@ -276,10 +273,7 @@ namespace te
 
           \note TerraLib extended method.
         */
-        void push_back(Curve* ring)
-        {
-          m_rings.push_back(ring);
-        }
+        void push_back(Curve* ring);
 
         /*!
           \brief It deletes all the rings of the CurvePolygon and clear it.
