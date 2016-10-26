@@ -245,6 +245,11 @@ void te::qt::widgets::LayerItemView::addRasterLayerAction(QAction* act)
   m_mnuMger->addAction(LayerViewMenuManager::RASTER_LAYER, act);
 }
 
+void te::qt::widgets::LayerItemView::addTabularLayerAction(QAction* act)
+{
+  m_mnuMger->addAction(LayerViewMenuManager::TABULAR_LAYER, act);
+}
+
 void te::qt::widgets::LayerItemView::addFolderLayerAction(QAction* act)
 {
   m_mnuMger->addAction(LayerViewMenuManager::FOLDER_LAYER, act);
