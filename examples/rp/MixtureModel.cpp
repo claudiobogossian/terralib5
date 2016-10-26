@@ -62,7 +62,6 @@ void MixtureModel()
 // defining output parameters
       mmOutputParameters.m_rInfo = orinfo;
       mmOutputParameters.m_rType = "GDAL";
-      mmOutputParameters.m_normalizeOutput = true;
       mmOutputParameters.m_createErrorRaster = true;
 
 // execute the algorithm

@@ -92,7 +92,9 @@ void te::qt::plugins::rp::MixtureModelAction::onPopUpActionActivated(bool checke
     if(dlg.exec() == QDialog::Accepted)
     {
       //add new layer
-      addNewLayer(dlg.getOutputLayer());
+      std::list<te::map::AbstractLayerPtr>::iterator itl;
+      for (itl = dlg.getOutputLayers().begin(); itl != dlg.getOutputLayers().end();++itl)
+        addNewLayer(*itl);
     }
   }
   else

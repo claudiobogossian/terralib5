@@ -29,6 +29,7 @@
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
+#include "../../../rp/MixtureModel.h"
 #include "../Config.h"
 
 // STL
@@ -67,7 +68,7 @@ namespace te
 
           virtual bool validateCurrentPage();
 
-          te::map::AbstractLayerPtr getOutputLayer();
+          std::list<te::map::AbstractLayerPtr> getOutputLayers();
 
           void setList(std::list<te::map::AbstractLayerPtr>& layerList);
 
@@ -78,6 +79,7 @@ namespace te
           void setLayer(std::list<te::map::AbstractLayerPtr> layers);
 
         protected:
+          bool decompose(te::rp::MixtureModel::InputParameters &algoInputParams, te::rp::MixtureModel::OutputParameters &algoOutputParams);
 
           void addPages();
 
@@ -93,7 +95,7 @@ namespace te
           std::auto_ptr<te::qt::widgets::LayerSearchWizardPage> m_layerSearchPage;
           std::auto_ptr<te::qt::widgets::RasterInfoWizardPage> m_rasterInfoPage;
 
-          te::map::AbstractLayerPtr m_outputLayer;
+          std::list<te::map::AbstractLayerPtr> m_outputLayerList;
 
           int m_layerSearchId;
       };

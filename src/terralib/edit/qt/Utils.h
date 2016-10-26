@@ -27,6 +27,7 @@
 #define __TERRALIB_EDIT_INTERNAL_QTUTILS_H
 
 // TerraLib
+#include "../../maptools/AbstractLayer.h"
 #include "Config.h"
 
 // Qt
@@ -50,6 +51,7 @@ namespace te
   {
     TEEDITQTEXPORT QPointF GetPosition(QMouseEvent* e);
 
+    TEEDITQTEXPORT te::map::AbstractLayerPtr CreateShapeFileLayer(const te::gm::GeomType& type, const int& srid);
   } // end namespace edit
 }   // end namespace te
 

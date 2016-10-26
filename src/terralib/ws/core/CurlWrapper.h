@@ -92,7 +92,7 @@ namespace te
        * \param postFields The parameters and values to post
        * \param header A header to the post request
        */
-      virtual void post(const te::core::URI& uri, const std::string &postFields, const::std::string &header) const;
+      virtual void post(const te::core::URI& uri, const std::string &postFields, const::std::string &header);
 
       /*!
        * \brief Method to request a put with a file in a determined URI
@@ -100,7 +100,7 @@ namespace te
        * \param file Path The full path of the file to put
        * \param header A header to the put request
        */
-      virtual void putFile(const te::core::URI& uri, const std::string &filePath, const::std::string &header) const;
+      virtual void putFile(const te::core::URI& uri, const std::string &filePath, const::std::string &header);
 
       /*!
        * \brief Method to request a put a file in a determined URI
@@ -108,27 +108,49 @@ namespace te
        * \param file Contains the file opened by the fstream
        * \param header A header to the put request
        */
-      virtual void putFile(const te::core::URI& uri, const std::fstream& file,  const::std::string &header) const;
+      virtual void putFile(const te::core::URI& uri, const std::fstream& file,  const::std::string &header);
 
       /*!
        * \brief Method to make a custom request, useful for performing a HTTP DELETE request.
        * \param uri The URI with the address information
        * \param request The custom request
        */
-      virtual void customRequest(const te::core::URI& uri, const std::string& request, const std::string& body = std::string(""), const::std::string &header = std::string("")) const;
+      virtual void customRequest(const te::core::URI& uri, const std::string& request, const std::string& body = std::string(""), const::std::string &header = std::string(""));
 
       /*!
        * \brief Method to make a GET request.
        * \param uri The URI with the address information
        * \param buffer Where the server answer will be write.
        */
-      virtual void get(const te::core::URI &uri, std::string& buffer) const;
+      virtual void get(const te::core::URI &uri, std::string& buffer);
+
+
+      /*!
+       * \brief Returns the last operation response code
+       * \return The response code
+       */
+      virtual const long responseCode() const;
+
+      /*!
+       * \brief Returns the last operation response if the protocol allows it
+       * \return The response
+       */
+      virtual const std::string& response() const;
+
+      protected:
+
+      /*!
+       * \brief Reset the curl handle and the class members
+       */
+      virtual void clean();
 
     private:
       struct Impl;
 
       std::unique_ptr<Impl>  m_pimpl;
       std::string            m_taskMessage;
+      std::string            m_response;
+      long                   m_responseCode;
     };
 
     }

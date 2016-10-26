@@ -70,6 +70,9 @@ namespace te
        */
       const PluginInfo& getPluginInfo(const std::string& name) const;
 
+      /*! \brief Return the list of plugins that are loaded. */
+      std::vector<PluginInfo> getLoadedPlugins() const;
+
       /*! \brief Return the list of plugins that were not loaded. */
       std::vector<PluginInfo> getUnloadedPlugins() const;
 

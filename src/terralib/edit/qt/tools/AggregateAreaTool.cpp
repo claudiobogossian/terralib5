@@ -57,6 +57,7 @@ te::edit::AggregateAreaTool::AggregateAreaTool(te::qt::widgets::MapDisplay* disp
   m_mouseEventToSave(mouseEventToSave),
   m_stack(UndoStackManager::getInstance())
 {
+  m_display->setCursor(Qt::ArrowCursor);
 }
 
 te::edit::AggregateAreaTool::~AggregateAreaTool()
@@ -74,7 +75,7 @@ bool te::edit::AggregateAreaTool::mousePressEvent(QMouseEvent* e)
     m_isFinished = false;
   }
 
-  pickFeature(m_layer, GetPosition(e));
+  pickFeature(GetPosition(e));
 
   return te::edit::CreateLineTool::mousePressEvent(e);
 }
@@ -128,6 +129,8 @@ bool te::edit::AggregateAreaTool::aggregatePolygon()
     return false;
   }
 
+  m_display->setCursor(Qt::WaitCursor);
+
   m_isFinished = true;
 
   draw();
@@ -139,6 +142,10 @@ bool te::edit::AggregateAreaTool::aggregatePolygon()
   te::edit::CreateLineTool::clear();
 
   emit geometriesEdited();
+
+  m_feature == 0;
+
+  m_display->setCursor(Qt::ArrowCursor);
 
   return true;
 }
@@ -186,42 +193,44 @@ void te::edit::AggregateAreaTool::drawPolygon()
 
 te::gm::Geometry* te::edit::AggregateAreaTool::buildPolygon()
 {
-    te::gm::Geometry* geoUnion = 0;
+  te::gm::Geometry* geoAggregate = 0;
 
-    // Build the geometry
-    te::gm::LinearRing* ring = new te::gm::LinearRing(m_coords.size() + 1, te::gm::LineStringType);
-    for (std::size_t i = 0; i < m_coords.size(); ++i)
-      ring->setPoint(i, m_coords[i].x, m_coords[i].y);
-    ring->setPoint(m_coords.size(), m_coords[0].x, m_coords[0].y); // Closing...
+  // Build the geometry
+  te::gm::LinearRing* ring = new te::gm::LinearRing(m_coords.size() + 1, te::gm::LineStringType);
+  for (std::size_t i = 0; i < m_coords.size(); ++i)
+    ring->setPoint(i, m_coords[i].x, m_coords[i].y);
+  ring->setPoint(m_coords.size(), m_coords[0].x, m_coords[0].y); // Closing...
 
-    te::gm::Polygon* polygon = new te::gm::Polygon(1, te::gm::PolygonType);
-    polygon->setRingN(0, ring);
+  te::gm::Polygon* polygon = new te::gm::Polygon(1, te::gm::PolygonType);
+  polygon->setRingN(0, ring);
 
-    polygon->setSRID(m_display->getSRID());
+  polygon->setSRID(m_display->getSRID());
 
-    if (polygon->getSRID() != m_layer->getSRID())
-      polygon->transform(m_layer->getSRID());
+  if (polygon->getSRID() != m_layer->getSRID())
+    polygon->transform(m_layer->getSRID());
 
-    if (polygon->getSRID() != m_feature->getGeometry()->getSRID())
-      m_feature->getGeometry()->transform(polygon->getSRID());
+  if (polygon->getSRID() != m_feature->getGeometry()->getSRID())
+    m_feature->getGeometry()->transform(polygon->getSRID());
 
-    if (!polygon->intersects(m_feature->getGeometry()))
-    { 
-      m_isFinished = false;
-      return dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone());
-    }
+  te::gm::Geometry* aggr = te::gm::Validate(polygon);
 
-    geoUnion = ConvertGeomType(m_layer, unionGeometry(polygon, m_feature->getGeometry()));
+  if (!aggr->intersects(m_feature->getGeometry()))
+  { 
+    m_isFinished = false;
+    return dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone());
+  }
 
-    geoUnion->setSRID(m_display->getSRID());
+  geoAggregate = ConvertGeomType(m_layer, unionGeometry(aggr, m_feature->getGeometry()));
 
-    if (geoUnion->getSRID() == m_layer->getSRID())
-      return geoUnion;
+  geoAggregate->setSRID(m_display->getSRID());
 
-    // else, need conversion...
-    geoUnion->transform(m_layer->getSRID());
+  if (geoAggregate->getSRID() == m_layer->getSRID())
+    return geoAggregate;
 
-    return geoUnion;
+  // else, need conversion...
+  geoAggregate->transform(m_layer->getSRID());
+
+  return geoAggregate;
 
 }
 
@@ -249,44 +258,25 @@ void te::edit::AggregateAreaTool::storeFeature()
 
 te::gm::Geometry* te::edit::AggregateAreaTool::unionGeometry(te::gm::Geometry* g1, te::gm::Geometry* g2)
 {
-  return te::gm::Validate(g1)->Union(te::gm::Validate(g2));
+  return g1->Union(g2);
 }
 
-void te::edit::AggregateAreaTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)
+void te::edit::AggregateAreaTool::pickFeature(const QPointF& pos)
 {
+  m_display->setCursor(Qt::WaitCursor);
+
   te::gm::Envelope env = buildEnvelope(pos);
 
   try
   {
     if (m_feature == 0)
-    {
-      m_feature = PickFeature(layer, env, m_display->getSRID(), te::edit::TO_UPDATE);
+      m_feature = PickFeature(m_layer, env, m_display->getSRID(), te::edit::TO_UPDATE);
 
-      if (m_feature)
-        m_oidsSet.insert(m_feature->getId()->getValueAsString());
-
-    }
-    else
-    {
-      Feature* feature = PickFeature(layer, env, m_display->getSRID(), te::edit::TO_UPDATE);
-      if (feature)
-      {
-        if (m_oidsSet.find(feature->getId()->clone()->getValueAsString()) == m_oidsSet.end())
-        {
-          m_oidsSet.insert(feature->getId()->clone()->getValueAsString());
-          m_feature = feature;
-        }
-        else
-        {
-          if (m_feature->getId()->clone()->getValueAsString() != feature->getId()->clone()->getValueAsString())
-            m_feature = feature;
-        }
-      }
-    }
-
+    m_display->setCursor(Qt::ArrowCursor);
   }
   catch (std::exception& e)
   {
+    m_display->setCursor(Qt::ArrowCursor);
     QMessageBox::critical(m_display, tr("Error"), QString(tr("The geometry cannot be selected from the layer. Details:") + " %1.").arg(e.what()));
   }
 }

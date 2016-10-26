@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+﻿/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../../common/Exception.h"
 #include "../../../common/STLUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/utils/Utils.h"
@@ -160,8 +161,6 @@ te::qt::widgets::MixtureModelWizardPage::MixtureModelWizardPage(QWidget* parent)
   px.fill(m_color);
   m_ui->m_colorToolButton->setIcon(px);
 
-  m_ui->m_normalizeOutputCheckBox->setVisible(false); //In future see this option, currently not normalizes
-
 }
 
 te::qt::widgets::MixtureModelWizardPage::~MixtureModelWizardPage()
@@ -219,6 +218,7 @@ void te::qt::widgets::MixtureModelWizardPage::setMapDisplay(te::qt::widgets::Map
   m_navigator->setMapDisplay(mapDisplay);
 
   connect(m_mapDisplay, SIGNAL(extentChanged()), this, SLOT(onMapDisplayExtentChanged()));
+  connect(m_mapDisplay, SIGNAL(displayPaintEvent(QPainter*)), this, SLOT(onDisplayPaintEvent(QPainter*)));
 }
 
 void te::qt::widgets::MixtureModelWizardPage::setActionGroup(QActionGroup* actionGroup)
@@ -297,11 +297,15 @@ te::rp::MixtureModel::InputParameters te::qt::widgets::MixtureModelWizardPage::g
   return algoInputParams;
 }
 
+bool te::qt::widgets::MixtureModelWizardPage::isDecompose()
+{
+  return m_ui->m_decomposeCheckBox->isChecked();
+}
+
 te::rp::MixtureModel::OutputParameters te::qt::widgets::MixtureModelWizardPage::getOutputParams()
 {
   te::rp::MixtureModel::OutputParameters algoOutputParams;
 
-  algoOutputParams.m_normalizeOutput = m_ui->m_normalizeOutputCheckBox->isChecked();
   algoOutputParams.m_createErrorRaster = m_ui->m_createErrorRasterCheckBox->isChecked();
 
   return algoOutputParams;
@@ -457,6 +461,9 @@ void te::qt::widgets::MixtureModelWizardPage::loadMixtureModelComponents(std::st
         valuesVec.push_back(val);
       }
 
+      if (valuesVec.size() != (size_t)nBands)
+        throw te::common::Exception(TE_TR("Number of component value is invalid!"));
+
       std::string color = v.second.get<std::string>("Color");
 
       MixModelComponent mmc;
@@ -480,7 +487,7 @@ void te::qt::widgets::MixtureModelWizardPage::loadMixtureModelComponents(std::st
     QMessageBox::warning(this, tr("Warning"), errmsg);
     return;
   }
-  catch (std::exception const& e)
+  catch (te::common::Exception const& e)
   {
     QString errmsg = e.what();
     QMessageBox::warning(this, tr("Warning"), errmsg);
@@ -509,6 +516,12 @@ void te::qt::widgets::MixtureModelWizardPage::onMapDisplayExtentChanged()
     drawMarks();
 }
 
+void te::qt::widgets::MixtureModelWizardPage::onDisplayPaintEvent(QPainter* painter)
+{
+  if (m_components.empty() == false)
+    drawMarks();
+}
+
 void te::qt::widgets::MixtureModelWizardPage::onPointPicked(double x, double y)
 {
   assert(m_layers.size());
@@ -529,8 +542,8 @@ void te::qt::widgets::MixtureModelWizardPage::onPointPicked(double x, double y)
     {
       te::gm::Coord2D pixelLocation = inputRst->getGrid()->geoToGrid(x, y);
 
-      int currentColumn = pixelLocation.x;
-      int currentRow = pixelLocation.y;
+      int currentColumn = te::rst::Round(pixelLocation.x);
+      int currentRow = te::rst::Round(pixelLocation.y);
 
       if (currentColumn < 0 || currentColumn >= (int) inputRst->getNumberOfColumns())
         return;
@@ -761,7 +774,7 @@ void te::qt::widgets::MixtureModelWizardPage::drawMarks()
     ++it;
   }
 
-  m_mapDisplay->repaint();
+ // m_mapDisplay->repaint();
 }
 
 void te::qt::widgets::MixtureModelWizardPage::updateComponents()
@@ -807,7 +820,7 @@ void te::qt::widgets::MixtureModelWizardPage::updateComponents()
     }
   }
 
-  drawMarks();
+   m_mapDisplay->repaint();
 
   PlotSpectralSignature();
 
@@ -1046,8 +1059,8 @@ void te::qt::widgets::MixtureModelWizardPage::addGeometryComponent()
         for (std::size_t i = 0; i < lr->getNPoints(); i++)
         {
           te::gm::Coord2D pixelLocation = inputRst->getGrid()->geoToGrid(lr->getPointN(i)->getX(), lr->getPointN(i)->getY());
-          int currentColumn = pixelLocation.x;
-          int currentRow = pixelLocation.y;
+          int currentColumn = te::rst::Round(pixelLocation.x);
+          int currentRow = te::rst::Round(pixelLocation.y);
           lrg->setX(i, currentColumn);
           lrg->setY(i, currentRow);
         }

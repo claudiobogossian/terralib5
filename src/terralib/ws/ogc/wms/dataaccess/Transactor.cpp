@@ -140,9 +140,6 @@ std::auto_ptr<te::da::DataSetType> te::ws::ogc::wms::da::Transactor::getDataSetT
   te::da::DataSetType* type = new te::da::DataSetType(layer.m_name, 0);
   type->setTitle(layer.m_title);
 
-  te::rst::RasterProperty* rp = new te::rst::RasterProperty("raster");
-  type->add(rp);
-
   return std::auto_ptr<te::da::DataSetType>(type);
 }
 

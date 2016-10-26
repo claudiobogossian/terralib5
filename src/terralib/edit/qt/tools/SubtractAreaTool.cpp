@@ -52,6 +52,7 @@ te::edit::SubtractAreaTool::SubtractAreaTool(te::qt::widgets::MapDisplay* displa
   m_mouseEventToSave(mouseEventToSave),
   m_stack(UndoStackManager::getInstance())
 {
+  m_display->setCursor(Qt::ArrowCursor);
 }
 
 te::edit::SubtractAreaTool::~SubtractAreaTool()
@@ -69,7 +70,7 @@ bool te::edit::SubtractAreaTool::mousePressEvent(QMouseEvent* e)
     m_isFinished = false;
   }
 
-  pickFeature(m_layer, GetPosition(e));
+  pickFeature(GetPosition(e));
 
   return te::edit::CreateLineTool::mousePressEvent(e);
 }
@@ -123,6 +124,8 @@ bool te::edit::SubtractAreaTool::subtractPolygon()
     return false;
   }
 
+  m_display->setCursor(Qt::WaitCursor);
+
   m_isFinished = true;
 
   draw();
@@ -134,6 +137,10 @@ bool te::edit::SubtractAreaTool::subtractPolygon()
   te::edit::CreateLineTool::clear();
 
   emit geometriesEdited();
+
+  m_feature == 0;
+
+  m_display->setCursor(Qt::ArrowCursor);
 
   return true;
 }
@@ -190,24 +197,26 @@ te::gm::Geometry* te::edit::SubtractAreaTool::buildPolygon()
     ring->setPoint(i, m_coords[i].x, m_coords[i].y);
   ring->setPoint(m_coords.size(), m_coords[0].x, m_coords[0].y); // Closing...
 
-  te::gm::Polygon* pHole = new te::gm::Polygon(1, te::gm::PolygonType);
-  pHole->setRingN(0, ring);
+  te::gm::Polygon* polygon = new te::gm::Polygon(1, te::gm::PolygonType);
+  polygon->setRingN(0, ring);
 
-  pHole->setSRID(m_display->getSRID());
+  polygon->setSRID(m_display->getSRID());
 
-  if (pHole->getSRID() != m_layer->getSRID())
-    pHole->transform(m_layer->getSRID());
+  if (polygon->getSRID() != m_layer->getSRID())
+    polygon->transform(m_layer->getSRID());
 
-  if (pHole->getSRID() != m_feature->getGeometry()->getSRID())
-    m_feature->getGeometry()->transform(pHole->getSRID());
+  if (polygon->getSRID() != m_feature->getGeometry()->getSRID())
+    m_feature->getGeometry()->transform(polygon->getSRID());
 
-  if (!pHole->intersects(m_feature->getGeometry()) || pHole->covers(m_feature->getGeometry()))
+  te::gm::Geometry* hole = te::gm::Validate(polygon);
+
+  if (!hole->intersects(m_feature->getGeometry()) || hole->covers(m_feature->getGeometry()))
   {
     m_isFinished = false;
     return dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone());
   }
 
-  geoSubtract = ConvertGeomType(m_layer, differenceGeometry(m_feature->getGeometry(), pHole));
+  geoSubtract = ConvertGeomType(m_layer, differenceGeometry(m_feature->getGeometry(), hole));
 
   geoSubtract->setSRID(m_display->getSRID());
 
@@ -244,44 +253,25 @@ void te::edit::SubtractAreaTool::storeFeature()
 
 te::gm::Geometry* te::edit::SubtractAreaTool::differenceGeometry(te::gm::Geometry* g1, te::gm::Geometry* g2)
 {
-  return te::gm::Validate(g1)->difference(te::gm::Validate(g2));
+  return g1->difference(g2);
 }
 
-void te::edit::SubtractAreaTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)
+void te::edit::SubtractAreaTool::pickFeature(const QPointF& pos)
 {
+  m_display->setCursor(Qt::WaitCursor);
+
   te::gm::Envelope env = buildEnvelope(pos);
 
   try
   {
     if (m_feature == 0)
-    {
-      m_feature = PickFeature(layer, env, m_display->getSRID(), te::edit::TO_UPDATE);
-
-      if (m_feature)
-        m_oidsSet.insert(m_feature->getId()->getValueAsString());
-
-    }
-    else
-    {
-      Feature* feature = PickFeature(layer, env, m_display->getSRID(), te::edit::TO_UPDATE);
-      if (feature)
-      {
-        if (m_oidsSet.find(feature->getId()->clone()->getValueAsString()) == m_oidsSet.end())
-        {
-          m_oidsSet.insert(feature->getId()->clone()->getValueAsString());
-          m_feature = feature;
-        }
-        else
-        {
-          if (m_feature->getId()->clone()->getValueAsString() != feature->getId()->clone()->getValueAsString())
-            m_feature = feature;
-        }
-      }
-    }
-
+      m_feature = PickFeature(m_layer, env, m_display->getSRID(), te::edit::TO_UPDATE);
+    
+    m_display->setCursor(Qt::ArrowCursor);
   }
   catch (std::exception& e)
   {
+    m_display->setCursor(Qt::ArrowCursor);
     QMessageBox::critical(m_display, tr("Error"), QString(tr("The geometry cannot be selected from the layer. Details:") + " %1.").arg(e.what()));
   }
 }
