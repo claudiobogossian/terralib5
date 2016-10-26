@@ -72,6 +72,7 @@ namespace te
         {
           VECTOR_LAYER,   //!< Vector layers menu.
           RASTER_LAYER,   //!< Raster layers menu.
+          TABULAR_LAYER,  //!< Tabular layers menu.
           FOLDER_LAYER,   //!< Folder layers menu.
           MULTI_LAYERS,   //!< Multiple layers selected menu.
           NO_LAYERS,      //!< No selected layers menu.
@@ -121,6 +122,7 @@ namespace te
 
         std::auto_ptr<QueueAction> m_VL_actions;  //!< Vector layers action list.
         std::auto_ptr<QueueAction> m_RL_actions;  //!< Raster layers action list.
+        std::auto_ptr<QueueAction> m_TL_actions;  //!< Tabular layers action list.
         std::auto_ptr<QueueAction> m_FL_actions;  //!< Folder layers action list.
         std::auto_ptr<QueueAction> m_ML_actions;  //!< Multiple selected items action list.
         std::auto_ptr<QueueAction> m_NL_actions;  //!< No selected items action list.

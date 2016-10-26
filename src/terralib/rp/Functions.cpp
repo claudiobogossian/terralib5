@@ -638,18 +638,18 @@ namespace te
       bandNames.push_back("DMC_RED");
       bandNames.push_back("DMC_GREEN");
 
-      bandNames.push_back("Landsat8-OLI1_COASTAL_AEROSOL");
-      bandNames.push_back("Landsat8-OLI2_BLUE");
-      bandNames.push_back("Landsat8-OLI3_GREEN");
-      bandNames.push_back("Landsat8-OLI4_RED");
-      bandNames.push_back("Landsat8-OLI5_NIR");
-      bandNames.push_back("Landsat8-OLI6_SWIR1");
-      bandNames.push_back("Landsat8-OLI7_SWIR2");
-      bandNames.push_back("Landsat8-OLI8_PAN");
-      bandNames.push_back("Landsat8-OLI9_CIRRUS");
+      bandNames.push_back("LANDSAT8-OLI1_COASTAL_AEROSOL");
+      bandNames.push_back("LANDSAT8-OLI2_BLUE");
+      bandNames.push_back("LANDSAT8-OLI3_GREEN");
+      bandNames.push_back("LANDSAT8-OLI4_RED");
+      bandNames.push_back("LANDSAT8-OLI5_NIR");
+      bandNames.push_back("LANDSAT8-OLI6_SWIR1");
+      bandNames.push_back("LANDSAT8-OLI7_SWIR2");
+      bandNames.push_back("LANDSAT8-OLI8_PAN");
+      bandNames.push_back("LANDSAT8-OLI9_CIRRUS");
 
-      bandNames.push_back("Landsat8-TIRS1");
-      bandNames.push_back("Landsat8-TIRS2");
+      bandNames.push_back("LANDSAT8-TIRS1");
+      bandNames.push_back("LANDSAT8-TIRS2");
 
       bandNames.push_back("CBERS4_PAN_PAN");
       bandNames.push_back("CBERS4_PAN_GREEN");
@@ -732,18 +732,18 @@ namespace te
       BandInfo["DMC_RED"] = std::pair<double, double>(0.63, 0.69);
       BandInfo["DMC_GREEN"] = std::pair<double, double>(0.52, 0.60);
 
-      BandInfo["Landsat8-OLI1_COASTAL_AEROSOL"] = std::pair<double, double>(0.43, 0.45);
-      BandInfo["Landsat8-OLI2_BLUE"] = std::pair<double, double>(0.45, 0.51);
-      BandInfo["Landsat8-OLI3_GREEN"] = std::pair<double, double>(0.53, 0.59);
-      BandInfo["Landsat8-OLI4_RED"] = std::pair<double, double>(0.64, 0.67);
-      BandInfo["Landsat8-OLI5_NIR"] = std::pair<double, double>(0.85, 0.88);
-      BandInfo["Landsat8-OLI6_SWIR1"] = std::pair<double, double>(1.57, 1.65);
-      BandInfo["Landsat8-OLI7_SWIR2"] = std::pair<double, double>(2.11, 2.29);
-      BandInfo["Landsat8-OLI8_PAN"] = std::pair<double, double>(0.50, 0.68);
-      BandInfo["Landsat8-OLI9_CIRRUS"] = std::pair<double, double>(1.36, 1.38);
+      BandInfo["LANDSAT8-OLI1_COASTAL_AEROSOL"] = std::pair<double, double>(0.43, 0.45);
+      BandInfo["LANDSAT8-OLI2_BLUE"] = std::pair<double, double>(0.45, 0.51);
+      BandInfo["LANDSAT8-OLI3_GREEN"] = std::pair<double, double>(0.53, 0.59);
+      BandInfo["LANDSAT8-OLI4_RED"] = std::pair<double, double>(0.64, 0.67);
+      BandInfo["LANDSAT8-OLI5_NIR"] = std::pair<double, double>(0.85, 0.88);
+      BandInfo["LANDSAT8-OLI6_SWIR1"] = std::pair<double, double>(1.57, 1.65);
+      BandInfo["LANDSAT8-OLI7_SWIR2"] = std::pair<double, double>(2.11, 2.29);
+      BandInfo["LANDSAT8-OLI8_PAN"] = std::pair<double, double>(0.50, 0.68);
+      BandInfo["LANDSAT8-OLI9_CIRRUS"] = std::pair<double, double>(1.36, 1.38);
 
-      BandInfo["Landsat8-TIRS1"] = std::pair<double, double>(10.60, 11.19);
-      BandInfo["Landsat8-TIRS2"] = std::pair<double, double>(11.50, 12.51);
+      BandInfo["LANDSAT8-TIRS1"] = std::pair<double, double>(10.60, 11.19);
+      BandInfo["LANDSAT8-TIRS2"] = std::pair<double, double>(11.50, 12.51);
 
       BandInfo["CBERS4_PAN_PAN"] = std::pair<double, double>(0.51, 0.85);
       BandInfo["CBERS4_PAN_GREEN"] = std::pair<double, double>(0.52, 0.59);
@@ -841,18 +841,18 @@ namespace te
       DNBandInfo["DMC_RED"] = std::pair<double, double>(0.0, 1024.0);
       DNBandInfo["DMC_GREEN"] = std::pair<double, double>(0.0, 1024.0);
 
-      DNBandInfo["Landsat8-OLI1_COASTAL_AEROSOL"] = std::pair<double, double>(0.0, 65536.0);
-      DNBandInfo["Landsat8-OLI2_BLUE"] = std::pair<double, double>(0.0, 65536.0);
-      DNBandInfo["Landsat8-OLI3_GREEN"] = std::pair<double, double>(0.0, 65536.0);
-      DNBandInfo["Landsat8-OLI4_RED"] = std::pair<double, double>(0.0, 65536.0);
-      DNBandInfo["Landsat8-OLI5_NIR"] = std::pair<double, double>(0.0, 65536.0);
-      DNBandInfo["Landsat8-OLI6_SWIR1"] = std::pair<double, double>(0.0, 65536.0);
-      DNBandInfo["Landsat8-OLI7_SWIR2"] = std::pair<double, double>(0.0, 65536.0);
-      DNBandInfo["Landsat8-OLI8_PAN"] = std::pair<double, double>(0.0, 65536.0);
-      DNBandInfo["Landsat8-OLI9_CIRRUS"] = std::pair<double, double>(0.0, 65536.0);
+      DNBandInfo["LANDSAT8-OLI1_COASTAL_AEROSOL"] = std::pair<double, double>(0.0, 65536.0);
+      DNBandInfo["LANDSAT8-OLI2_BLUE"] = std::pair<double, double>(0.0, 65536.0);
+      DNBandInfo["LANDSAT8-OLI3_GREEN"] = std::pair<double, double>(0.0, 65536.0);
+      DNBandInfo["LANDSAT8-OLI4_RED"] = std::pair<double, double>(0.0, 65536.0);
+      DNBandInfo["LANDSAT8-OLI5_NIR"] = std::pair<double, double>(0.0, 65536.0);
+      DNBandInfo["LANDSAT8-OLI6_SWIR1"] = std::pair<double, double>(0.0, 65536.0);
+      DNBandInfo["LANDSAT8-OLI7_SWIR2"] = std::pair<double, double>(0.0, 65536.0);
+      DNBandInfo["LANDSAT8-OLI8_PAN"] = std::pair<double, double>(0.0, 65536.0);
+      DNBandInfo["LANDSAT8-OLI9_CIRRUS"] = std::pair<double, double>(0.0, 65536.0);
 
-      DNBandInfo["Landsat8-TIRS1"] = std::pair<double, double>(0.0, 65536.0);
-      DNBandInfo["Landsat8-TIRS2"] = std::pair<double, double>(0.0, 65536.0);
+      DNBandInfo["LANDSAT8-TIRS1"] = std::pair<double, double>(0.0, 65536.0);
+      DNBandInfo["LANDSAT8-TIRS2"] = std::pair<double, double>(0.0, 65536.0);
 
       DNBandInfo["CBERS4_PAN_PAN"] = std::pair<double, double>(0.0, 255.0);
       DNBandInfo["CBERS4_PAN_GREEN"] = std::pair<double, double>(0.0, 255.0);

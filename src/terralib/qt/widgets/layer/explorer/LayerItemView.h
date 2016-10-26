@@ -190,6 +190,12 @@ namespace te
         void addRasterLayerAction(QAction* act);
 
         /*!
+        * \brief Adds the action to the popup menu presented when the selected layer has tabular representation.
+        * \param act Action to be added.
+        */
+        void addTabularLayerAction(QAction* act);
+
+        /*!
         * \brief Adds the action to the popup menu presented when the selected item is a folder.
         * \param act Action to be added.
         */

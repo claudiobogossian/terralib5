@@ -117,6 +117,8 @@ void te::gm::CurvePolygon::setRingN(std::size_t i, Curve* r)
 {
   assert(i < m_rings.size());
   delete m_rings[i];
+
+  r->setSRID(this->getSRID());
   m_rings[i] = r;
 }
 
@@ -125,6 +127,18 @@ void te::gm::CurvePolygon::removeRingN(std::size_t i)
   assert(i < m_rings.size());
   delete m_rings[i];
   m_rings.erase(m_rings.begin() + i);
+}
+
+void te::gm::CurvePolygon::add(Curve* ring)
+{
+  ring->setSRID(this->getSRID());
+  m_rings.push_back(ring);
+}
+
+void te::gm::CurvePolygon::push_back(Curve* ring)
+{
+  ring->setSRID(this->getSRID());
+  m_rings.push_back(ring);
 }
 
 void te::gm::CurvePolygon::clear()

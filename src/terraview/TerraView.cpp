@@ -781,6 +781,35 @@ void TerraView::addPopUpMenu()
   treeView->addRasterLayerAction(m_layerCompositionMode);
   treeView->addRasterLayerAction(m_layerProperties);
 
+  //// Actions for tabular layers
+  treeView->addTabularLayerAction(m_layerRename);
+
+  actionStyleSep1 = new QAction(this);
+  actionStyleSep1->setSeparator(true);
+  treeView->addTabularLayerAction(actionStyleSep1);
+
+  treeView->addTabularLayerAction(m_toolsDataExchangerDirectPopUp);
+  treeView->addTabularLayerAction(m_layerChartsHistogram);
+  treeView->addTabularLayerAction(m_layerChartsScatter);
+
+  actionChartSep = new QAction(this);
+  actionChartSep->setSeparator(true);
+  treeView->addTabularLayerAction(actionChartSep);
+
+  treeView->addTabularLayerAction(m_layerShowTable);
+
+  actionSaveAsSep = new QAction(this);
+  actionSaveAsSep->setSeparator(true);
+  treeView->addTabularLayerAction(actionSaveAsSep);
+
+  treeView->addTabularLayerAction(m_layerCharEncoding);
+
+  actionSRSSep = new QAction(this);
+  actionSRSSep->setSeparator(true);
+  treeView->addTabularLayerAction(actionSRSSep);
+
+  treeView->addTabularLayerAction(m_layerProperties);
+
   //// Actions for invalid layers
   treeView->addInvalidLayerAction(m_projectUpdateLayerDataSource);
 

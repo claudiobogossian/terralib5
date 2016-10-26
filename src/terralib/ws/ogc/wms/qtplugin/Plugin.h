@@ -27,10 +27,27 @@
 #define __TERRALIB_WS_OGC_WMS_QTPLUGIN_PLUGIN_H
 
 #include "../../../../plugin/Plugin.h"
+#include "../qt/WMSItemDelegate.h"
+
 #include "Config.h"
+
+// Qt
+#include <QObject>
 
 namespace te
 {
+  namespace qt
+  {
+    namespace af
+    {
+      namespace evt
+      {
+        // Forward declarations
+        struct Event;
+      }
+    }
+  }
+
   namespace ws
   {
     namespace ogc
@@ -39,8 +56,10 @@ namespace te
       {
         namespace qtplugin
         {
-          class TEOGCWMSQTPLUGINEXPORT Plugin : public te::plugin::Plugin
+          class TEOGCWMSQTPLUGINEXPORT Plugin : public QObject, public te::plugin::Plugin
           {
+            Q_OBJECT
+
             public:
 
               Plugin(const te::plugin::PluginInfo& pluginInfo);
@@ -50,6 +69,16 @@ namespace te
               void startup();
 
               void shutdown();
+
+          Q_SIGNALS:
+
+            void triggered(te::qt::af::evt::Event* e);
+
+          protected:
+
+              void updateDelegate(const bool& add);
+
+              te::ws::ogc::wms::qt::WMSItemDelegate* m_delegate;
           };
         } // end namespace qtplugin
       }   // end namespace wms
