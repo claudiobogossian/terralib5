@@ -24,9 +24,10 @@
 */
 
 // TerraLib
+#include "../../core/filesystem/FileSystem.h"
 #include "../../core/logger/Logger.h"
-#include "../../common/progress/ProgressManager.h"
 #include "../../core/translator/Translator.h"
+#include "../../common/progress/ProgressManager.h"
 #include "../../common/STLUtils.h"
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/dataset/ObjectIdSet.h"
@@ -473,7 +474,7 @@ void te::addressgeocoding::MainWindowDialog::onOkPushButtonClicked()
     {
       boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
-      if (te::core::FileSystem::exists(uri))
+      if (te::core::FileSystem::exists(uri.string()))
       {
         QMessageBox::information(this, "Address Geocoding", "Output file already exists. Remove it or select a new name and try again.");
         return;
