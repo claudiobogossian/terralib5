@@ -55,9 +55,9 @@ namespace te
       TECOREEXPORT std::vector<PluginInfo> TopologicalSort(
           const std::vector<PluginInfo>& v_pinfo);
 
-      TECOREEXPORT void loadAll(bool start = true);
+      TECOREEXPORT void LoadAll(bool start = true);
 
-      TECOREEXPORT void unloadAll();
+      TECOREEXPORT void UnloadAll();
 
       TECOREEXPORT void UnloadPlugin(const std::string& plugin_name);
     }

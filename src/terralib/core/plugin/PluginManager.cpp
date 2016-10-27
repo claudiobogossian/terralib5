@@ -134,6 +134,19 @@ std::vector<te::core::PluginInfo> te::core::PluginManager::getBrokenPlugins()
 {
   return m_pimpl->broken_plugins;
 }
+std::vector<std::string> te::core::PluginManager::getDependents(
+    const std::string plugin_name)
+{
+  auto it = m_pimpl->dependency_map.find(plugin_name);
+
+  if(it != m_pimpl->dependency_map.end())
+    return it->second;
+
+  boost::format err_msg(TE_TR("Could not find plugin: '%1%'."));
+
+  throw OutOfRangeException()
+      << ErrorDescription((err_msg % plugin_name).str());
+}
 
 bool te::core::PluginManager::isBroken(const std::string& plugin_name) const
 {
@@ -311,19 +324,23 @@ void te::core::PluginManager::load(const std::string& plugin_name,
                          : m_pimpl->broken_plugins[plugin_pos];
 
   // check if required plugins is already loaded
+  std::vector<std::string> missing_deps;
   for(const std::string& plugin_dependency : pinfo.dependencies)
   {
     if(!isLoaded(plugin_dependency))
-    {
-      if(found_in_unloaded_list)
-        m_pimpl->move_from_unload_to_broken_list(plugin_pos);
+      missing_deps.push_back(plugin_dependency);
+  }
+  if(!missing_deps.empty())
+  {
+    if(found_in_unloaded_list)
+      m_pimpl->move_from_unload_to_broken_list(plugin_pos);
 
-      boost::format err_msg(
-          TE_TR("Plugin '%1%' has the following dependency: '%2%'."));
+    boost::format err_msg(
+        TE_TR("Plugin '%1%' has the following dependency: '%2%'."));
 
-      throw PluginLoadException() << ErrorDescription(
-          (err_msg % plugin_name % plugin_dependency).str());
-    }
+    throw PluginLoadException()
+        << ErrorDescription((err_msg % plugin_name %
+                             boost::algorithm::join(missing_deps, ", ")).str());
   }
 
   std::unique_ptr<AbstractPlugin> plugin(nullptr);
@@ -376,7 +393,7 @@ void te::core::PluginManager::load(const std::string& plugin_name,
   }
   catch(const boost::exception& e)
   {
-    // WARNING: if plugin goes out-of scope the exception thorwn exception is
+    // WARNING: if plugin goes out-of scope the exception thrown exception is
     // not valid this is why we make a copy here
     if(found_in_unloaded_list)
       m_pimpl->move_from_unload_to_broken_list(plugin_pos);
@@ -446,7 +463,7 @@ void te::core::PluginManager::stop(const std::string& plugin_name)
 
   std::string dependents = boost::algorithm::join(it->second, ", ");
 
-  throw PluginShutdownException()
+  throw PluginHasDependentException()
       << ErrorDescription((err_msg % plugin_name % dependents).str());
 }
 
@@ -488,10 +505,27 @@ void te::core::PluginManager::unload(const std::string& plugin_name)
   }
 }
 
+void te::core::PluginManager::recursiveUnload(const std::string& plugin_name)
+{
+  PluginInfo pInfo = getPluginInfo(plugin_name);
+
+  for(auto dependent : getDependents(plugin_name))
+    recursiveUnload(dependent);
+
+  if(isUnloaded(plugin_name))
+    return;
+
+  stop(plugin_name);
+  unload(plugin_name);
+}
+
 void te::core::PluginManager::clear()
 {
   for(auto it = m_pimpl->plugins.rbegin(); it != m_pimpl->plugins.rend(); ++it)
-    remove((*it)->info().name);
+  {
+    std::string plugin_name = (*it)->info().name;
+    remove(plugin_name);
+  }
 
   m_pimpl->broken_plugins.clear();
   m_pimpl->dependency_map.clear();

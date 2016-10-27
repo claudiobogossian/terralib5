@@ -55,9 +55,16 @@ namespace te
     //! An exception indicating an error when releasing a given plugin.
     struct PluginEngineUnloadException: virtual Exception { };
 
+    //! An exception indicating an error when a dependecy is missing
+    struct PluginMissingDependencyException: virtual Exception { };
+
     //! An exception indicating an error when two or more plugins have cyclic
     //! dependecy
     struct PluginCyclicDependencyException: virtual Exception { };
+
+    //! An exception indicating an error when trying to shutdown a plugin with a
+    //! dependent
+    struct PluginHasDependentException: virtual Exception { };
 
     //! An exception indicating that a plugin serializer with the same name was
     //already registered in the system.
