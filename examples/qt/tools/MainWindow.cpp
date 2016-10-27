@@ -213,7 +213,7 @@ void MainWindow::setupActions()
 void MainWindow::addDataSetLayer(const QString& path, const std::string& driver)
 {
   // Creates and connects data source
-  std::string connInfo ("File://");
+  std::string connInfo ("file://");
   connInfo += path.toUtf8().data();
 
   te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().open(boost::lexical_cast<std::string>(ms_id++), driver, connInfo);

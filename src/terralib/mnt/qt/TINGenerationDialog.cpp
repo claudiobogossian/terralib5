@@ -509,7 +509,7 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
 
     std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
 
-    std::string dsinfo("File://");
+    std::string dsinfo("file://");
     boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
     if (m_toFile)

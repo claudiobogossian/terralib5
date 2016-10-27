@@ -23,7 +23,7 @@ bool VectorToRaster()
 {
   std::string filename(TERRALIB_DATA_DIR "/shape/SP_cities.shp");
   
-  std::string srcInfo("File://" + filename);
+  std::string srcInfo("file://" + filename);
 
   te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR", srcInfo).release());
   srcDs->open();
@@ -61,7 +61,7 @@ bool VectorToRaster()
     return false;
   }
 
-  std::string dsinfo("File://" + uri.string());
+  std::string dsinfo("file://" + uri.string());
   te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR", dsinfo).release());
   dsOGR->open();
   if (dsOGR->dataSetExists(dsName))

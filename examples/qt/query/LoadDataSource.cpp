@@ -11,7 +11,7 @@
 te::da::DataSourcePtr LoadShapeDataSource(const std::string& fileName, const std::string& dsId)
 {
   //shape
-  std::string connInfo ("File://" + fileName);
+  std::string connInfo ("file://" + fileName);
   
   te::da::DataSource* dsShape = te::da::DataSourceFactory::make("OGR", connInfo).get();
   dsShape->open();

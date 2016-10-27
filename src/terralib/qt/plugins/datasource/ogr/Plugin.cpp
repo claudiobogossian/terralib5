@@ -225,7 +225,7 @@ void te::qt::plugins::ogr::Plugin::showWindow()
     ds->setAccessDriver("OGR");
     
     std::string fpath = it->toUtf8().data();
-    ds->setConnInfo("File://" + fpath);
+    ds->setConnInfo("file://" + fpath);
     
     std::string desc("A single vector file: ");
     desc += fpath;

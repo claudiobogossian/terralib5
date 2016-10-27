@@ -25,7 +25,7 @@ void MapDisplay()
 
   try
   {
-    std::string connInfo ("File://");
+    std::string connInfo ("file://");
     connInfo += TERRALIB_DATA_DIR "/shape/munic_2001.shp";
 
     // Creates and connects data source

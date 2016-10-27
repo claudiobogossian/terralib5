@@ -39,7 +39,7 @@ void TrajectoryExamples()
     
     //Calculate the intersection between the first trajectory and a geometry
     //Load the geometry from a shapefile
-    const std::string connInfo("File://" TERRALIB_DATA_DIR "/st/trajectory/t41_region.shp");
+    const std::string connInfo("file://" TERRALIB_DATA_DIR "/st/trajectory/t41_region.shp");
 
     std::unique_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("OGR", connInfo));
     ds->open();

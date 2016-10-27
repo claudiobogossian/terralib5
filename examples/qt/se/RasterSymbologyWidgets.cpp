@@ -17,7 +17,7 @@ void RasterSymbologyWidgets()
   QApplication app(argc, 0);
 
   // set input raster name
-  std::string rinfo ("File://");
+  std::string rinfo ("file://");
   
   std::string data_dir = TERRALIB_DATA_DIR;
   

@@ -37,7 +37,7 @@
 void CreateDataSource(std::string name)
 {
   // Set the minimum server connection information needed to connect to the database server
-  std::string connInfo("File://");
+  std::string connInfo("file://");
   std::string data_dir = TERRALIB_DATA_DIR;
   std::string aux("");
 
@@ -81,7 +81,7 @@ void Copy(std::string dataSetName, std::unique_ptr<te::da::DataSource> inDs, te:
 void CopyFromShapeFile(te::da::DataSource* ds)
 {
   // let's take the input dataset from a shape file
-  std::string connInfo("File://");
+  std::string connInfo("file://");
   std::string data_dir = TERRALIB_DATA_DIR;
 
   std::string aux("");

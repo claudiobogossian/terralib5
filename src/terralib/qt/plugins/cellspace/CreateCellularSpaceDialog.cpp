@@ -412,7 +412,7 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onTargetFileToolButt
   
   m_ui->m_newLayerNameLineEdit->setEnabled(false);
   
-  std::string connInfo("File://");
+  std::string connInfo("file://");
   connInfo += m_ui->m_repositoryLineEdit->text().toUtf8().data();
   
   m_outDataSourceInfo.reset(new te::da::DataSourceInfo);

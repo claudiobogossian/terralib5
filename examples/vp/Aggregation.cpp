@@ -21,7 +21,7 @@ bool AggregOGRToOGR()
 
   std::string filename(data_dir + "/Nulos/nulos2.shp");
   
-  std::string srcInfo ("File://" + filename);
+  std::string srcInfo ("file://" + filename);
   
   te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR", srcInfo));
   srcDs->open();
@@ -53,7 +53,7 @@ bool AggregOGRToOGR()
   stats.insert(std::make_pair(prop1.release(), stat1));
   
   std::string filename2(data_dir + "/Nulos/result.shp");
-  std::string tgrInfo ("File://" + filename2);
+  std::string tgrInfo ("file://" + filename2);
 
   te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR", tgrInfo));
   trgDs->open();
@@ -92,7 +92,7 @@ bool AggregOGRToPGIS()
   
   std::string filename(data_dir + "/Nulos/nulos2.shp");
   
-  std::string srcInfo("File://" + filename);
+  std::string srcInfo("file://" + filename);
 
   te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR", srcInfo));
   srcDs->open();
@@ -255,7 +255,7 @@ bool AggregPGISToOGR()
   
   std::string uriResult(data_dir + "/Nulos/result.shp");
   
-  std::string tgrInfo("File://" + uriResult);
+  std::string tgrInfo("file://" + uriResult);
 
   te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR", tgrInfo));
   trgDs->open();

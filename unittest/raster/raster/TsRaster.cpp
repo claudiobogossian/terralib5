@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_SUITE ( raster_tests )
 bool loadSHPFile( const std::string& shpFileName,
   std::vector< te::gm::Geometry* >& geomPtrs )
 {
-  std::string connInfo("File://");
+  std::string connInfo("file://");
   connInfo += shpFileName;
   std::unique_ptr< te::da::DataSource > ogrDataSourcePtr(
     te::da::DataSourceFactory::make("OGR", connInfo) );

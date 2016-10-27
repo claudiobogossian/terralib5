@@ -389,7 +389,7 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
       if(idx != std::string::npos)
         outputdataset = outputdataset.substr(0, idx);
 
-      std::string dsinfo("File://");
+      std::string dsinfo("file://");
       dsinfo += uri.string();
 
       te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR", dsinfo).release());

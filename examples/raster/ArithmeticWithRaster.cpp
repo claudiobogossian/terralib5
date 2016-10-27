@@ -47,7 +47,7 @@ void ArithmeticWithRaster()
     te::rst::Raster* rden = te::rst::RasterFactory::make(gden, bdsden, deninfo);
 
 // access a raster datasource to create temporary raster
-    std::string connInfoRaster("File://");
+    std::string connInfoRaster("file://");
     connInfoRaster  += base_path;
     std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", connInfoRaster);
     ds->open();

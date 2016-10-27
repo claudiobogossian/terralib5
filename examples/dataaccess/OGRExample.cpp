@@ -15,7 +15,7 @@ void OGRExampleRead()
   try
   {
     // let's take the input dataset from a shape file
-    std::string connInfo("File://");
+    std::string connInfo("file://");
     std::string data_dir = TERRALIB_DATA_DIR;
     
     std::string aux("");
@@ -81,7 +81,7 @@ void ORGExampleWrite()
     dSet->moveBeforeFirst();
   
     // create a datasource using OGR
-    std::string connInfo("File://");
+    std::string connInfo("file://");
     std::string data_dir = TERRALIB_DATA_DIR;
     aux.clear();
     std::cout << "Inform a location to write your shapefile (ENTER to accept default \'" << (data_dir + "/shape") << "\'): ";

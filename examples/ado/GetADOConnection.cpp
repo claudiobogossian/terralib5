@@ -37,7 +37,7 @@
 std::unique_ptr<te::da::DataSource> GetADOConnection()
 {
   // Set the minimum server connection information needed to connect to the database server
-  std::string connInfo("File://");
+  std::string connInfo("file://");
   std::string data_dir = TERRALIB_DATA_DIR;
   std::string user, pass, path;
 

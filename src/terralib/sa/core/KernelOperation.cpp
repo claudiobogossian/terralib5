@@ -161,7 +161,7 @@ void te::sa::KernelOperation::saveDataSet(te::da::DataSet* dataSet, te::da::Data
   std::string id_ds = boost::uuids::to_string(u);
 
   //create data source
-  te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().get(id_ds, "OGR", ("File://" + fileName));
+  te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().get(id_ds, "OGR", ("file://" + fileName));
 
   //save dataset
   dataSet->moveBeforeFirst();

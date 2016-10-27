@@ -112,7 +112,7 @@ void CreateCellSpace()
 {
   std::string data_dir = TERRALIB_DATA_DIR;
   std::string filename(data_dir + "/shape/Intersection/brazil_cells.shp");
-  std::string ogrInfo("File://" + filename);
+  std::string ogrInfo("file://" + filename);
 
   boost::uuids::basic_random_generator<boost::mt19937> gen;
   boost::uuids::uuid u = gen();
@@ -144,7 +144,7 @@ void CreateMaskCellSpace()
 
   std::string data_dir = TERRALIB_DATA_DIR;
 
-  std::string connInfo("File://");
+  std::string connInfo("file://");
   connInfo += data_dir + "/shp/munic_2001.shp";
 
   te::da::DataSourcePtr source( te::da::DataSourceFactory::make("OGR", connInfo) );
@@ -177,7 +177,7 @@ void CreateMaskCellSpace()
 
     std::string data_dir = TERRALIB_DATA_DIR;
     std::string filename(data_dir + "/shape/Intersection/brazil_cells_mask.shp");
-    std::string ogrInfo("File://" + filename);
+    std::string ogrInfo("file://" + filename);
 
     std::string id_source = boost::uuids::to_string(u);
 

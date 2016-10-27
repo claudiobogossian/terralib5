@@ -23,7 +23,7 @@ void DrawPNG()
   {
     std::string data_dir = TERRALIB_DATA_DIR;
 
-    std::string connInfo ("File://");
+    std::string connInfo ("file://");
     connInfo += data_dir + "/shape/munic_2001.shp";
     std::unique_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR", connInfo);
 

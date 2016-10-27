@@ -238,7 +238,7 @@ const std::string te::qt::plugins::gdal::GDALConnectorDialog::getConnectionInfo(
 {
   QString qstr; // Auxiliary string used to hold temporary data
 
-  std::string strURI = "File://"; // The base of the URI
+  std::string strURI = "file://"; // The base of the URI
 
   qstr = m_ui->m_datasetLineEdit->text().trimmed();
   

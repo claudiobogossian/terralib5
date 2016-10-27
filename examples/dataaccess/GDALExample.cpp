@@ -10,7 +10,7 @@ void OpenFile()
   try
   {
     // let's take the input dataset from a raster file
-    std::string connInfo("File://");
+    std::string connInfo("file://");
     std::string data_dir = TERRALIB_DATA_DIR;
     
     std::string aux("");
@@ -49,7 +49,7 @@ void OpenDirectory()
 {
   try
   {
-    std::string connInfo("File://");
+    std::string connInfo("file://");
     std::string data_dir = TERRALIB_DATA_DIR;
     
     std::string aux("");
@@ -93,7 +93,7 @@ void DataSourceTransactor()
 {
   try
   {
-    std::string connInfo("File://");
+    std::string connInfo("file://");
     std::string data_dir = TERRALIB_DATA_DIR;
 
     std::string aux("");

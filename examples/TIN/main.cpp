@@ -141,7 +141,7 @@ void SaveTIN_shp(std::string dir, std::string out, std::auto_ptr<geos::geom::Geo
   filename.append(out);
   filename.append(".shp");
 
-  std::unique_ptr< te::da::DataSource > datasource = te::da::DataSourceFactory::make("OGR", ("File://" + filename) );
+  std::unique_ptr< te::da::DataSource > datasource = te::da::DataSourceFactory::make("OGR", ("file://" + filename) );
   datasource->open();
 
   dataset->moveBeforeFirst();
@@ -163,7 +163,7 @@ void LoadIsolines(const std::string &filename,
   double maxdist = 20.*tol;
   double minedge = tol / 5.;
 
-  std::unique_ptr<te::da::DataSource> datasource = te::da::DataSourceFactory::make("OGR", ("File://" + filename));
+  std::unique_ptr<te::da::DataSource> datasource = te::da::DataSourceFactory::make("OGR", ("file://" + filename));
   datasource->open();
 
   te::da::DataSourceTransactor* transactor = (datasource->getTransactor()).release();
@@ -304,7 +304,7 @@ void GenerateTIN()
   std::string atributoz_iso("Avg_Z");
   std::string atributoz_sample("Avg_Z");
 
-  te::da::DataSourcePtr srcDsiso(te::da::DataSourceFactory::make("OGR", ("File://" + filename_iso)).release());
+  te::da::DataSourcePtr srcDsiso(te::da::DataSourceFactory::make("OGR", ("file://" + filename_iso)).release());
   srcDsiso->open();
 
   std::string inDsetNameiso = "Isolinhas";
@@ -317,7 +317,7 @@ void GenerateTIN()
   std::auto_ptr<te::da::DataSet> inDsetiso = srcDsiso->getDataSet(inDsetNameiso);
   std::auto_ptr<te::da::DataSetType> inDsetTypeiso(srcDsiso->getDataSetType(inDsetNameiso));
 
-  te::da::DataSourcePtr srcDspts(te::da::DataSourceFactory::make("OGR", ("File://" + filename_pts)).release());
+  te::da::DataSourcePtr srcDspts(te::da::DataSourceFactory::make("OGR", ("file://" + filename_pts)).release());
   srcDspts->open();
 
   std::string inDsetNamepts = "Pontos_cotados";
@@ -332,7 +332,7 @@ void GenerateTIN()
 
   std::string file_result = TERRALIB_DATA_DIR "/mnt/TIN.shp";
 
-  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR",("File://" + file_result)).release());
+  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR",("file://" + file_result)).release());
   trgDs->open();
 
   std::string outDS = "TIN";
@@ -373,7 +373,7 @@ void GenerateIso()
   for (double n = 1010; n <= 1180; n += 10)
     val.push_back(n);
 
-  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR", ("File://" + filename)).release());
+  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR", ("file://" + filename)).release());
   srcDs->open();
 
   std::string inDsetName = "TIN";
@@ -388,7 +388,7 @@ void GenerateIso()
 
   std::string file_result = TERRALIB_DATA_DIR "/mnt/TIN_iso.shp";
 
-    te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR", ("File://" + file_result)).release());
+    te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR", ("file://" + file_result)).release());
   trgDs->open();
 
   std::string outDS = "TIN_iso";
@@ -422,7 +422,7 @@ void CalculateGrid()
   double tol = 2;// 20.;//Pegar da interface (double)SGinfo->Scale()*0.4 / 1000.*multfactor;
   double resx = 30, resy = 30;
 
-  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR", ("File://" + filename)).release());
+  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR", ("file://" + filename)).release());
   srcDs->open();
 
   std::string inDsetName = "TIN";
@@ -445,7 +445,7 @@ void CalculateGrid()
   }
 
 
-  te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR", ("File://" + uri.string())).release());
+  te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR", ("file://" + uri.string())).release());
 
   dsOGR->open();
   if (dsOGR->dataSetExists(dsName))

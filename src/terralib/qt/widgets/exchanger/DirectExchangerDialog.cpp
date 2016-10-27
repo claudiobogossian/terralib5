@@ -186,7 +186,7 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToFile()
     std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
 
     //create data source
-    const std::string connInfo("File://" + std::string(m_ui->m_dataSetLineEdit->text().toUtf8().data()));
+    const std::string connInfo("file://" + std::string(m_ui->m_dataSetLineEdit->text().toUtf8().data()));
 
     std::unique_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make(m_outputDataSourceType, connInfo);
 

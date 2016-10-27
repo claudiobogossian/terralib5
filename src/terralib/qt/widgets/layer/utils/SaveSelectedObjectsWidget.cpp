@@ -277,7 +277,7 @@ void te::qt::widgets::SaveSelectedObjectsWidget::onTargetFileToolButtonPressed()
   //create new data source
   boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
-  const std::string dsInfo("File://" + uri.string());
+  const std::string dsInfo("file://" + uri.string());
 
   std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", dsInfo);
   ds->open();

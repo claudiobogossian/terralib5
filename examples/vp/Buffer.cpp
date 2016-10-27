@@ -21,7 +21,7 @@ bool BufferOGRToOGR()
   
   std::string filename = data_dir + "/shape/Buffer/SP_meso.shp";
   
-  std::string srcInfo("File://" + filename);
+  std::string srcInfo("file://" + filename);
 
   te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR", srcInfo));
   srcDs->open();
@@ -53,7 +53,7 @@ bool BufferOGRToOGR()
   int levels = 1;
 
   std::string file_result = data_dir + "/shape/Buffer/file_result.shp";
-  std::string tgrInfo("File://" + file_result);
+  std::string tgrInfo("file://" + file_result);
 
   te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR", tgrInfo));
   trgDs->open();
@@ -95,7 +95,7 @@ bool BufferOGRToPGIS()
   std::string data_dir = TERRALIB_DATA_DIR;
   
   std::string filename(data_dir + "/shape/Buffer/SP_meso.shp");  
-  std::string srcInfo("File://" + filename);
+  std::string srcInfo("file://" + filename);
 
   te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR", filename));
   srcDs->open();
@@ -261,7 +261,7 @@ bool BufferPGISToOGR()
   
   std::string uriResult(data_dir + "/shape/Buffer/bufferPGISToOGR_distritos.shp");
 
-  std::string tgrInfo("File://" + uriResult);
+  std::string tgrInfo("file://" + uriResult);
 
   te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR", tgrInfo));
   trgDs->open();

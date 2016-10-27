@@ -209,7 +209,7 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
     if (idx != std::string::npos)
       outDataSetName=outDataSetName.substr(0,idx);
 
-    std::string dsinfo("File://" + uri.string());
+    std::string dsinfo("file://" + uri.string());
 
     outSource.reset(te::da::DataSourceFactory::make("OGR", dsinfo).release());
     outSource->open();

@@ -144,7 +144,7 @@ int main(int /*argc*/, char** /*argv*/)
     LoadOGRModule();
     
     // Get a dataset
-    std::string connInfo("File://");
+    std::string connInfo("file://");
   
     std::string data_dir = TERRALIB_DATA_DIR;
     connInfo += data_dir + "/shape";  

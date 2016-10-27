@@ -93,7 +93,7 @@ int  te::graph::RAGGraphBuilder::getEdgeId()
 std::unique_ptr<te::da::DataSource> te::graph::RAGGraphBuilder::getDataSource(const std::string& fileName)
 {
   // Creates and connects data source
-  std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", ("File://" + fileName));
+  std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", ("file://" + fileName));
   ds->open();
 
   return std::move(ds);

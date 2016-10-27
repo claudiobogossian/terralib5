@@ -23,7 +23,7 @@ bool RasterToVectorInSHP()
   std::string dataDirRaster(TERRALIB_DATA_DIR  "/geotiff");
   std::string fileNameRaster = "cbers2b_rgb342_crop.tif";
 
-  std::string connInfoRaster("File://" + dataDirRaster);
+  std::string connInfoRaster("file://" + dataDirRaster);
 
   te::da::DataSourcePtr dsGDAL(te::da::DataSourceFactory::make("GDAL", connInfoRaster).release());
   dsGDAL->open();
@@ -39,7 +39,7 @@ bool RasterToVectorInSHP()
   std::string dataDirVector(TERRALIB_DATA_DIR "/shape/shapeTeste.shp");
   std::string fileNameVector = "shapeTeste";
 
-  std::string connInfoVector("File://" + dataDirVector);
+  std::string connInfoVector("file://" + dataDirVector);
 
   te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR", connInfoVector).release());
   dsOGR->open();
@@ -69,7 +69,7 @@ bool RasterToVectorInSHP()
     return false;
   }
   
-  std::string dsinfo("File://" + uri.string());
+  std::string dsinfo("file://" + uri.string());
 
   te::da::DataSourcePtr outDataSource(te::da::DataSourceFactory::make("OGR", dsinfo).release());
   outDataSource->open();
@@ -113,7 +113,7 @@ bool RasterToVectorInPGIS()
   std::string dataDirRaster(TERRALIB_DATA_DIR "/geotiff");
   std::string fileNameRaster = "cbers2b_rgb342_crop.tif";
 
-  std::string connInfoRaster("File://" + dataDirRaster);
+  std::string connInfoRaster("file://" + dataDirRaster);
   te::da::DataSourcePtr dsGDAL(te::da::DataSourceFactory::make("GDAL", connInfoRaster).release());
   dsGDAL->open();
 
@@ -128,7 +128,7 @@ bool RasterToVectorInPGIS()
   std::string dataDirVector(TERRALIB_DATA_DIR "/shape/shapeTeste.shp");
   std::string fileNameVector = "shapeTeste";
 
-  std::string connInfoVector("File://" + dataDirVector);
+  std::string connInfoVector("file://" + dataDirVector);
 
   te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR", connInfoVector).release());
   dsOGR->open();

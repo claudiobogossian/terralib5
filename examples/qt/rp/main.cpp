@@ -231,7 +231,7 @@ void MixtureModelDialogExample(int argc, char** argv)
   std::string data_dir = TERRALIB_DATA_DIR;
 
   const std::string dsname("cbers2b_rgb342_crop.tif");
-  std::string rinfo ("File://");
+  std::string rinfo ("file://");
   rinfo += data_dir + "/geotiff/cbers2b_rgb342_crop.tif";
   std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", rinfo);
  

@@ -49,7 +49,7 @@ void ExportingOGR()
 
 void openFile(const std::string& filename, const std::string dstype)
 {
-  std::string connInfo("File://");
+  std::string connInfo("file://");
   connInfo += filename;
   
   std::unique_ptr<te::da::DataSource> dsptr = te::da::DataSourceFactory::make(dstype, connInfo);
@@ -69,7 +69,7 @@ void openFile(const std::string& filename, const std::string dstype)
 
 void openDirectory(const std::string& filename, const std::string dstype)
 {
-  std::string connInfo("File://");
+  std::string connInfo("file://");
   connInfo += filename;
   
   std::unique_ptr<te::da::DataSource> dsptr = te::da::DataSourceFactory::make(dstype, connInfo);
@@ -111,7 +111,7 @@ void saveUsingOGR(const std::string& filename, const std::string drivername)
   
   std::auto_ptr<te::da::DataSet> dataset(create_ds_memory("teste10", dt.get()));
   
-  std::string connInfo("File://");
+  std::string connInfo("file://");
   connInfo += filename;
   //connInfo += ("?&DRIVER=" + drivername);
   

@@ -116,7 +116,7 @@ void saveToShp( std::vector<te::gm::Polygon*> polygons, std::vector< double >& p
   remove( ( shpBaseFileName + ".prj" ).c_str() );
   remove( ( shpBaseFileName + ".dbf" ).c_str() );
   
-  std::string connInfo("File://" + shpBaseFileName + ".shp");
+  std::string connInfo("file://" + shpBaseFileName + ".shp");
   
   std::unique_ptr<te::da::DataSource> dsOGR( te::da::DataSourceFactory::make("OGR", connInfo) );
   dsOGR->open();

@@ -26,7 +26,7 @@ bool generatePNG = true;
 te::map::DataSetLayer* CreateRasterLayer(const std::string& path)
 {
   // Connection string to a raster file
-  std::string connInfo("File://" + path);
+  std::string connInfo("file://" + path);
 
   // Creates and connects data source
   te::da::DataSourcePtr datasource = te::da::DataSourceManager::getInstance().open(te::common::Convert2String(G_ID++), "GDAL", connInfo);

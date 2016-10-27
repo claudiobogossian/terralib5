@@ -105,7 +105,7 @@ te::map::AbstractLayerPtr te::qt::widgets::createLayer(const std::string& driver
   std::string id = boost::uuids::to_string(valU);
 
   //Adjusting the URI based on the connection info parameters
-  std::string connStr("File://");
+  std::string connStr("file://");
 
   std::map<std::string, std::string>::const_iterator it = connInfo.begin();
   std::map<std::string, std::string>::const_iterator itend = connInfo.end();

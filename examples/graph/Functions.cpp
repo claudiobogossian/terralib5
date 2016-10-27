@@ -42,7 +42,7 @@ std::unique_ptr<te::da::DataSource> OpenDataSource(std::string connInfo, std::st
 
 std::unique_ptr<te::da::DataSource> OpenOGRDataSource(const std::string& pathName)
 {
-  std::string connInfo("File://" + pathName);
+  std::string connInfo("file://" + pathName);
   return std::move(OpenDataSource(connInfo, "OGR"));
 }
 

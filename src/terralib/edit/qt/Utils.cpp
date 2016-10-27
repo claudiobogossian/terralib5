@@ -82,7 +82,7 @@ te::map::AbstractLayerPtr te::edit::CreateShapeFileLayer(const te::gm::GeomType&
   if (idx != std::string::npos)
     outputdataset = outputdataset.substr(0, idx);
 
-  std::string connInfo("File://");
+  std::string connInfo("file://");
   connInfo += fileName.toUtf8().data();
 
   // let's include the new datasource in the managers

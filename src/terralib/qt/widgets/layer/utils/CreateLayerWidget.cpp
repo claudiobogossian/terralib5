@@ -131,7 +131,7 @@ bool te::qt::widgets::CreateLayerWidget::createLayer(std::string& errorMessage)
   {
     boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
-    const std::string connInfo("File://" + uri.string());
+    const std::string connInfo("file://" + uri.string());
     te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR", connInfo).release());
     dsOGR->open();
 
@@ -295,7 +295,7 @@ void te::qt::widgets::CreateLayerWidget::onTargetFileToolButtonPressed()
   //create new data source
   boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
-  const std::string connInfo("File://" + uri.string());
+  const std::string connInfo("file://" + uri.string());
   std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", connInfo);
   ds->open();
 

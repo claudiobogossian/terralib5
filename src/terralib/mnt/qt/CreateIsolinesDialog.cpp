@@ -567,7 +567,7 @@ void te::mnt::CreateIsolinesDialog::onOkPushButtonClicked()
       throw te::common::Exception(TE_TR("Define a name for the resulting layer."));
 
     std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
-    std::string outdsinfo("File://");
+    std::string outdsinfo("file://");
     boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
     bool result = false;

@@ -47,7 +47,7 @@ te::dt::AbstractData* TupleToStringUpperCaseConverter(te::da::DataSet* dataset, 
 void DataSetAdapter()
 {
   /* Accessing a shapefile */
-  std::string connInfo("File://");
+  std::string connInfo("file://");
   std::string data_dir = TERRALIB_DATA_DIR;
   connInfo += data_dir + "/shape/munic_2001.shp";
 

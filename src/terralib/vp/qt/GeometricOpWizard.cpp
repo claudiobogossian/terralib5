@@ -286,7 +286,7 @@ bool te::vp::GeometricOpWizard::execute()
       if (idx != std::string::npos)
         outputdataset=outputdataset.substr(0,idx);
 
-      std::string dsinfo("File://");
+      std::string dsinfo("file://");
       dsinfo += uri.string();
 
       std::unique_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR", dsinfo);

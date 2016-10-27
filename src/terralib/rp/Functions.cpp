@@ -128,7 +128,7 @@ namespace te
       // Creating a new datasource
 
       std::unique_ptr< te::da::DataSource > dataSourcePtr(
-        te::da::DataSourceFactory::make( dataSourceType, ("File://" + outDataSetName)));
+        te::da::DataSourceFactory::make( dataSourceType, ("file://" + outDataSetName)));
       if( dataSourcePtr.get() == 0 ) return false;      
       
       RasterHandler internalRasterHandler;

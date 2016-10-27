@@ -685,7 +685,7 @@ void te::qt::widgets::QueryDataSourceDialog::onCreateLayerToolButtonClicked()
     //create new data source
     boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
-    const std::string connInfo("File://" + uri.string());
+    const std::string connInfo("file://" + uri.string());
 
     boost::uuids::basic_random_generator<boost::mt19937> gen;
     boost::uuids::uuid u = gen();

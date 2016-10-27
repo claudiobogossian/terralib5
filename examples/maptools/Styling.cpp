@@ -264,7 +264,7 @@ te::se::Style* MarkPointStyle(const std::string& markName)
 te::map::DataSetLayer* CreateDataSetLayer(const std::string& path)
 {
   // Connection string to a shape file
-  std::string connInfo("File://" + path);
+  std::string connInfo("file://" + path);
 
   // Creates and connects data source
   te::da::DataSourcePtr datasource = te::da::DataSourceManager::getInstance().open(te::common::Convert2String(G_ID++), "OGR", connInfo);

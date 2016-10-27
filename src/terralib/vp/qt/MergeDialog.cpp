@@ -288,7 +288,7 @@ void te::vp::MergeDialog::onOkPushButtonClicked()
     aParams->setSpecificParams(specificParams);
 
     te::da::DataSourcePtr auxSource;
-    std::string ogrDsinfo("File://");
+    std::string ogrDsinfo("file://");
     boost::filesystem::path ogrUri;
 
     if (m_toFile)

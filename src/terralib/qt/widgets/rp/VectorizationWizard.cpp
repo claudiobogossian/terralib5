@@ -144,7 +144,7 @@ bool te::qt::widgets::VectorizationWizard::execute()
     if(idx != std::string::npos)
       outputdataset = outputdataset.substr(0,idx);
 
-    const std::string connInfo("File://" + uri.string());
+    const std::string connInfo("file://" + uri.string());
 
     // let's include the new datasource in the managers
     boost::uuids::basic_random_generator<boost::mt19937> gen;

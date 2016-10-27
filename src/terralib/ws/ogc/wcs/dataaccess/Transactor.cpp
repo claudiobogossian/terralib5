@@ -84,7 +84,7 @@ std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(cons
   
   std::string coveragePath = m_wcs->getCoverage(m_coverageRequest);
 
-  std::unique_ptr<te::da::DataSource> dataSource = te::da::DataSourceFactory::make("GDAL", ("File://" + coveragePath));
+  std::unique_ptr<te::da::DataSource> dataSource = te::da::DataSourceFactory::make("GDAL", ("file://" + coveragePath));
   dataSource->open();
 
   if (!dataSource->isOpened() || !dataSource->isValid())
@@ -112,7 +112,7 @@ std::auto_ptr<te::da::DataSet> te::ws::ogc::wcs::da::Transactor::getDataSet(cons
 
   std::string coveragePath = m_wcs->getCoverage(m_coverageRequest);
 
-  std::unique_ptr<te::da::DataSource> dataSource = te::da::DataSourceFactory::make("GDAL", ("File://" + coveragePath));
+  std::unique_ptr<te::da::DataSource> dataSource = te::da::DataSourceFactory::make("GDAL", ("file://" + coveragePath));
   dataSource->open();
 
   if (!dataSource->isOpened() || !dataSource->isValid())

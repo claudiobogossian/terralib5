@@ -17,7 +17,7 @@ bool IntersectionOGRToOGR()
   
   std::string filename1(data_dir + "shp/Intersection/rodovias.shp");
   
-  std::string srcInfo1("File://" + filename1);
+  std::string srcInfo1("file://" + filename1);
 
   te::da::DataSourcePtr srcDs1(te::da::DataSourceFactory::make("OGR", srcInfo1));
   srcDs1->open();
@@ -33,7 +33,7 @@ bool IntersectionOGRToOGR()
   std::auto_ptr<te::da::DataSetType> inDsetType1 = srcDs1->getDataSetType(inDsetName1);
 
   std::string filename2(data_dir + "/shape/Intersection/SP_meso.shp");
-  std::string srcInfo2 ("File://" + srcInfo1);
+  std::string srcInfo2 ("file://" + srcInfo1);
 
   te::da::DataSourcePtr srcDs2(te::da::DataSourceFactory::make("OGR", filename2));
   srcDs2->open();
@@ -52,7 +52,7 @@ bool IntersectionOGRToOGR()
 
   std::string filenameResult(data_dir + "/shape/Intersection/intersectionOGR2OGR.shp");
 
-  std::string tgrInfo("File://" + filenameResult);
+  std::string tgrInfo("file://" + filenameResult);
 
   te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR", tgrInfo));
   trgDs->open();
@@ -92,7 +92,7 @@ bool IntersectionOGRToPGIS()
   std::string data_dir = TERRALIB_DATA_DIR;
   
   std::string filename1(data_dir + "/shape/Intersection/rodovias.shp");  
-  std::string srcInfo1 ("File://" + filename1);
+  std::string srcInfo1 ("file://" + filename1);
 
   te::da::DataSourcePtr srcDs1(te::da::DataSourceFactory::make("OGR", srcInfo1));
   srcDs1->open();
@@ -109,7 +109,7 @@ bool IntersectionOGRToPGIS()
 
 
   std::string filename2(data_dir + "/shape/Intersection/SP_meso.shp");
-  std::string srcInfo2("File://" + filename2);
+  std::string srcInfo2("file://" + filename2);
 
   te::da::DataSourcePtr srcDs2(te::da::DataSourceFactory::make("OGR", srcInfo2));
   srcDs2->open();
@@ -263,7 +263,7 @@ bool IntersectionPGISToOGR()
 
   std::string uriResult(data_dir + "/shape/Intersection/intersectionPGIS2OGR.shp");
   
-  std::string tgrInfo ("File://" + uriResult);
+  std::string tgrInfo ("file://" + uriResult);
 
   te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR", tgrInfo));
   trgDs->open();

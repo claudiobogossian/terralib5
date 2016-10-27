@@ -264,7 +264,7 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
 
     //Getting the connection info
     std::string ogrInfo("connection_string=" + std::string(fileName.toUtf8().data()));
-    const std::string connInfo("File://" + std::string(fileName.toUtf8().data()));
+    const std::string connInfo("file://" + std::string(fileName.toUtf8().data()));
 
     boost::filesystem::path uri(fileName.toUtf8().data());
     std::string file = uri.stem().string();

@@ -192,7 +192,7 @@ void te::qt::plugins::gdal::Plugin::openFileDialog()
     ds->setAccessDriver("GDAL");
 
     std::string fpath = it->toUtf8().data();
-    ds->setConnInfo("File://" + fpath);
+    ds->setConnInfo("file://" + fpath);
     ds->setDescription("A single raster file");
 
     boost::uuids::basic_random_generator<boost::mt19937> gen;
@@ -252,7 +252,7 @@ void te::qt::plugins::gdal::Plugin::openMultipleFilesDialog()
     ds->setAccessDriver("GDAL");
 
     std::string fpath = it->toUtf8().data();
-    ds->setConnInfo("File://" + fpath);
+    ds->setConnInfo("file://" + fpath);
 
     ds->setDescription("A single raster file");
 

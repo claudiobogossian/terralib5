@@ -255,7 +255,7 @@ void te::vp::LineToPolygonDialog::onOkPushButtonClicked()
       if (idx != std::string::npos)
         outputDataSet=outputDataSet.substr(0,idx);
 
-      std::string dsinfo("File://");
+      std::string dsinfo("file://");
       dsinfo += uri.string();
 
       te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR", dsinfo).release());

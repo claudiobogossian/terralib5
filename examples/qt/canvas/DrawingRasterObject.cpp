@@ -21,7 +21,7 @@ void DrawingRasterObject()
   // set input raster name
   std::string data_dir = TERRALIB_DATA_DIR;
   
-  std::string rinfo("File://");
+  std::string rinfo("file://");
   rinfo += data_dir + "/geotiff/cbers2b_rgb342_crop.tif";
 
   // open input raster

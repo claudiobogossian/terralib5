@@ -30,7 +30,7 @@ void DataSetTypePersistence()
     dstp->add(rstp);
 
     // access a datasource to persist it
-    std::string connInfo("File://");
+    std::string connInfo("file://");
     connInfo += TERRALIB_DATA_DIR "/geotiff";
 
     std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", connInfo);
@@ -76,7 +76,7 @@ void DataSet()
     dstp->add(rstp);
 
 // access a datasource to persist it
-    std::string connInfo("File://");
+    std::string connInfo("file://");
     connInfo += TERRALIB_DATA_DIR "/geotiff";
 
     std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", connInfo);
@@ -121,7 +121,7 @@ void DataSetPersistence()
   try
   {
     std::cout << "=== Example DataSetPersistence === " << std::endl;
-    std::string connInfo("File://");
+    std::string connInfo("file://");
     connInfo += TERRALIB_DATA_DIR "/geotiff";
 
     std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", connInfo);
@@ -160,7 +160,7 @@ void DataSource()
   try
   {
     std::cout << "=== Example Data Source === " << std::endl;
-    std::string connInfo("File://");
+    std::string connInfo("file://");
     connInfo += TERRALIB_DATA_DIR "/geotiff";
 
     std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", connInfo);

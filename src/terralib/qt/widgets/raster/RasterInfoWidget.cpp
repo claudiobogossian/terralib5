@@ -161,7 +161,7 @@ std::unique_ptr<te::da::DataSource> te::qt::widgets::RasterInfoWidget::getDataSo
 {
   boost::filesystem::path path(m_ui->m_fileNameLineEdit->text().toUtf8().data());
 
-  const std::string connInfoRaster("File://" + path.parent_path().string());
+  const std::string connInfoRaster("file://" + path.parent_path().string());
 
   std::unique_ptr< te::da::DataSource > dsPtr(te::da::DataSourceFactory::make("GDAL", connInfoRaster));
   dsPtr->open();
