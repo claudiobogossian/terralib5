@@ -126,7 +126,6 @@ void te::rp::MixtureModel::OutputParameters::reset() throw(te::rp::Exception)
   m_rType.clear();
   m_rInfo.clear();
   m_outputRasterPtr.reset();
-  m_normalizeOutput = false;
   m_createErrorRaster = false;
 }
 
@@ -137,7 +136,6 @@ const te::rp::MixtureModel::OutputParameters& te::rp::MixtureModel::OutputParame
   m_rType = params.m_rType;
   m_rInfo = params.m_rInfo;
   m_outputRasterPtr = params.m_outputRasterPtr;
-  m_normalizeOutput = params.m_normalizeOutput;
   m_createErrorRaster = params.m_createErrorRaster;
 
   return *this;
@@ -215,9 +213,6 @@ bool te::rp::MixtureModel::execute(AlgorithmOutputParameters& outputParams) thro
                                                  m_inputParameters.m_inputSensorBands, m_inputParameters.m_components,
                                                  *outputParamsPtr->m_outputRasterPtr, true),
                             "Unable to execute the mixture model strategy");
-
-  if (outputParamsPtr->m_normalizeOutput)
-    NormalizeRaster(*outputParamsPtr->m_outputRasterPtr);
 
   return true;
 }
