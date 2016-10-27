@@ -26,19 +26,24 @@
 #
 
 include_directories(${Boost_INCLUDE_DIR})
+include_directories(${XERCES_INCLUDE_DIR})
 
 if(WIN32)
   add_definitions(-DTEXMLDLL)
 endif()
 
-file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/xml/*.cpp)
-file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/xml/*.h)
+file(GLOB TERRALIB_MOD_XML_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/xml/*.cpp)
+file(GLOB TERRALIB_MOD_XML_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/xml/*.h)
+file(GLOB TERRALIB_MOD_XERCES_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/xerces/*.cpp)
+file(GLOB TERRALIB_MOD_XERCES_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/xerces/*.h)
 
 set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
-add_library(terralib_mod_xml SHARED ${TERRALIB_FILES})
+add_library(terralib_mod_xml SHARED ${TERRALIB_MOD_XML_SRC_FILES} ${TERRALIB_MOD_XML_HDR_FILES}
+                                    ${TERRALIB_MOD_XERCES_SRC_FILES} ${TERRALIB_MOD_XERCES_HDR_FILES})
 
-target_link_libraries(terralib_mod_xml terralib_mod_common)
+target_link_libraries(terralib_mod_xml terralib_mod_common
+                                       ${XERCES_LIBRARY})
 
 set_target_properties(terralib_mod_xml
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
@@ -50,6 +55,8 @@ install(TARGETS terralib_mod_xml
         LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
         ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
-install(FILES ${TERRALIB_HDR_FILES}
+install(FILES ${TERRALIB_MOD_XML_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/xml COMPONENT devel)
 
+install(FILES ${TERRALIB_MOD_XERCES_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/xerces COMPONENT devel)

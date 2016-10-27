@@ -44,7 +44,7 @@ namespace te
 
       \sa te::xml::AbstractWriter, te::xml::AbstractWriterFactory
     */
-    class TEXERCESEXPORT WriterFactory : public te::xml::AbstractWriterFactory
+    class  WriterFactory : public te::xml::AbstractWriterFactory
     {
       public:
 

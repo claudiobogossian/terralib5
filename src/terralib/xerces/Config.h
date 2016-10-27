@@ -52,38 +52,5 @@
 
 //@}
 
-/** @name DLL/LIB Module
- *  Flags for building TerraLib as a DLL or as a Static Library
- */
-//@{
-
-/*!
-  \def TEXERCESEXPORT
-
-  \brief You can use this macro in order to export/import classes and functions from this module.
-
-  \note If you want to compile TerraLib as DLL in Windows, remember to insert TEXERCESDLL into the project's list of defines.
-
-  \note If you want to compile TerraLib as an Static Library under Windows, remember to insert the TEXERCESSTATIC flag into the project list of defines.
- */
-#ifdef WIN32
-
-  #ifdef _MSC_VER 
-    #pragma warning( disable : 4251 )
-  #endif
-
-  #ifdef TEXERCESSTATIC
-    #define TEXERCESEXPORT                          // Don't need to export/import... it is a static library
-  #elif TEXERCESDLL
-    #define TEXERCESEXPORT  __declspec(dllexport)   // export DLL information
-  #else
-    #define TEXERCESEXPORT  __declspec(dllimport)   // import DLL information
-  #endif 
-#else
-  #define TEXERCESEXPORT
-#endif
-
-//@}        
-
 #endif  // __TERRALIB_XERCES_INTERNAL_CONFIG_H
 

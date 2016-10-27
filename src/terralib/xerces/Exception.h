@@ -35,7 +35,7 @@ namespace te
 {
   namespace xerces
   {
-    TE_DECLARE_EXCEPTION_CLASS(TEXERCESEXPORT, Exception, te::xml::Exception)
+    TE_DECLARE_EXCEPTION_CLASS(, Exception, te::xml::Exception)
 
   } // end namespace xerces
 }   // end namespace te

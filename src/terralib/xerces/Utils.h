@@ -163,7 +163,7 @@ namespace te
 
       \exception Exception If the parser can not read the file it will raise an exception.
     */
-    TEXERCESEXPORT xercesc::DOMDocument* readXML(const std::string& xmlFile,
+     xercesc::DOMDocument* readXML(const std::string& xmlFile,
                                                  const bool doNamespace = false,
                                                  const bool doSchema = false,
                                                  const bool valid = false);

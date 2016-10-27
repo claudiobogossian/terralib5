@@ -42,7 +42,7 @@ namespace te
 
       \brief A singleton class with global definitions.
      */
-    class TEXERCESEXPORT Globals : public te::common::Singleton<Globals>
+    class  Globals : public te::common::Singleton<Globals>
     {
       friend class te::common::Singleton<Globals>;
 

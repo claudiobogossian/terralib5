@@ -26,6 +26,7 @@
 // TerraLib
 #include "../core/logger/Logger.h"
 #include "../core/translator/Translator.h"
+#include "../common/TerraLib.h"
 
 #include "Exception.h"
 #include "Module.h"
@@ -36,18 +37,27 @@
 #include <xercesc/util/PlatformUtils.hpp>
 #include <xercesc/util/XMLString.hpp>
 
-bool te::xerces::Module::m_initialized = false;
+const te::xerces::Module& sm_module = te::xerces::Module::getInstance();
+static bool m_initialized(false);
 
-te::xerces::Module::Module(const te::plugin::PluginInfo& pInfo)
-  : te::plugin::CppPlugin(pInfo)
+te::xerces::Module::Module()
 {
+  TerraLib::Module m = { TE_XERCES_MODULE_NAME,
+                         te::xerces::Module::initialize,
+                         te::xerces::Module::finalize
+                       };
+
+// initialize TerraLib singleton
+  TerraLib::getInstance().add(m);
 }
 
 te::xerces::Module::~Module()
 {
+  TerraLib::getInstance().remove(TE_XERCES_MODULE_NAME);
 }
 
-void te::xerces::Module::startup()
+
+void te::xerces::Module::initialize()
 {
   if(m_initialized)
     return;
@@ -72,12 +82,12 @@ void te::xerces::Module::startup()
   ReaderFactory::initialize();
   WriterFactory::initialize();
 
-  TE_LOG_TRACE(TE_TR("TerraLib Xerces driver startup!"));
+  TE_LOG_INFO(TE_TR("TerraLib Xerces driver is initialized!"));
   
   m_initialized = true;
 }
 
-void te::xerces::Module::shutdown()
+void te::xerces::Module::finalize()
 {
   if(!m_initialized)
     return;
@@ -102,12 +112,9 @@ void te::xerces::Module::shutdown()
     throw te::xerces::Exception(m);
   }
 
-  TE_LOG_TRACE(TE_TR("TerraLib Xerces driver shutdown!"));
+  TE_LOG_INFO(TE_TR("TerraLib Xerces driver is finilized!"));
   
   m_initialized = false;
 }
-
-PLUGIN_CALL_BACK_IMPL(te::xerces::Module)
-
 
 

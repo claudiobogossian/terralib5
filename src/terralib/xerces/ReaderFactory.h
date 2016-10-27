@@ -44,7 +44,7 @@ namespace te
 
       \sa te::xml::ReaderFactory
     */
-    class TEXERCESEXPORT ReaderFactory : public te::xml::ReaderFactory
+    class  ReaderFactory : public te::xml::ReaderFactory
     {
       public:
 

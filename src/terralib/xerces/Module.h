@@ -1,6 +1,7 @@
 /*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+    This file is part of the TerraLib - a Framework for building GIS enabled
+   applications.
 
     TerraLib is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -19,7 +20,7 @@
 
 /*!
   \file Module.h
-   
+
   \brief This TerraLib Xerces driver as a plugin.
 */
 
@@ -27,8 +28,8 @@
 #define __TERRALIB_XERCES_INTERNAL_MODULE_H
 
 // TerraLib
-#include "../plugin/CppPlugin.h"
 #include "Config.h"
+#include "../common/Singleton.h"
 
 namespace te
 {
@@ -39,67 +40,41 @@ namespace te
 
       \brief The TerraLib Xerces module is a plugin.
     */
-    class Module : public te::plugin::CppPlugin
-    { 
-    public:
-      
-      /*! 
-       \brief Plugin constructor.
-       
-       \param pInfo Basic information needed to initialize the plugin.
-       */
-      Module(const te::plugin::PluginInfo& pInfo);
-      
+    class Module : public te::common::Singleton<Module>
+    {
+      friend class te::common::Singleton<Module>;
+
+     public:
+
+     protected:
+      /*! \brief The singleton constructor is not callable outside the class. */
+      Module();
+
       /* \brief Destructor. */
-      ~Module();        
-      
+      ~Module();
+
+     private:
       /*!
-       \brief This method will be called by TerraLib to startup some plugin's functionality.
-       
-       \exception Exception It throws an exception if the plugin can not be started.
-       */
-      void startup();
-      
-      /*!
-       \brief This method will be called by TerraLib to shutdown plugin's functionality.
-       
-       \exception Exception It throws an exception if the plugin can not be shutdown.
-       */
-      void shutdown();
-      
-      /*! \brief It initializes all TerraLib XERCES driver support.       
-       
-       The initialization includes:
-       <ul>
-       <li>Multilanguage support;</li>
-       <li>Logger initialization.</li>
-       </ul>
-       
-       \note This function must be called once in your program. I think that the best
-       place to call it, is inside the main routine of your application.
-       
-       \warning Not thread safe!
+        \brief This is the startup function for the TerraLib Raster Processing
+        module.
+
+        \note This method doesn't perform operations for this module.
        */
       static void initialize();
-      
-      /*! \brief It finalizes all TerraLib XERCES driver support.
-       
-       \note This function must be called once in your program. This must
-       be the last call to TerraLib XERCES driver. As the Initialize function, this
-       can be called at the end of the main routine of your application.
-       
-       \warning Not thread safe!
+
+      /*!
+        \brief This is the cleanup function for the TerraLib DataType module.
+
+        \note This method doesn't perform operations for this module.
        */
       static void finalize();
-      
-    public:
-      
-      static bool m_initialized;      
-    };
-  } // end namespace xerces
-}   // end namespace te
 
-PLUGIN_CALL_BACK_DECLARATION(TEXERCESEXPORT)
+     private:
+      static const Module&
+          sm_module;            //!< Just to make a static initialization.
+
+    };
+  }  // end namespace xerces
+}  // end namespace te
 
 #endif  // __TERRALIB_XERCES_INTERNAL_MODULE_H
-
