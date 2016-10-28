@@ -18,46 +18,46 @@
  */
 
 /*!
-  \file Module.cpp
+  \file terralib/xml/Module.cpp
    
-  \brief The TerraLib Xerces module is a plugin.
-*/
+  \brief This singleton defines the TerraLib XML module entry.
+ */
 
 // TerraLib
 #include "../core/logger/Logger.h"
-#include "../core/translator/Translator.h"
 #include "../common/TerraLib.h"
-
+#include "../core/translator/Translator.h"
+#include "../xerces/ReaderFactory.h"
+#include "../xerces/WriterFactory.h"
+#include "Config.h"
 #include "Exception.h"
 #include "Module.h"
-#include "ReaderFactory.h"
-#include "WriterFactory.h"
 
-// Xerces-C++ 
+// Xerces-C++
 #include <xercesc/util/PlatformUtils.hpp>
 #include <xercesc/util/XMLString.hpp>
 
-const te::xerces::Module& sm_module = te::xerces::Module::getInstance();
+const te::xml::Module& sm_module = te::xml::Module::getInstance();
 static bool m_initialized(false);
 
-te::xerces::Module::Module()
+
+te::xml::Module::Module()
 {
-  TerraLib::Module m = { TE_XERCES_MODULE_NAME,
-                         te::xerces::Module::initialize,
-                         te::xerces::Module::finalize
+  TerraLib::Module m = { TE_XML_MODULE_NAME,
+                         te::xml::Module::initialize,
+                         te::xml::Module::finalize
                        };
 
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
 }
 
-te::xerces::Module::~Module()
+te::xml::Module::~Module()
 {
-  TerraLib::getInstance().remove(TE_XERCES_MODULE_NAME);
+  TerraLib::getInstance().remove(TE_XML_MODULE_NAME);
 }
 
-
-void te::xerces::Module::initialize()
+void te::xml::Module::initialize()
 {
   if(m_initialized)
     return;
@@ -69,33 +69,33 @@ void te::xerces::Module::initialize()
   catch(const xercesc::XMLException& e)
   {
     char* exceptMesg = xercesc::XMLString::transcode(e.getMessage());
-    
+
     std::string m  = TE_TR("Error during Xerces initialization. Exception messages is: ");
     m += exceptMesg;
-    
-    xercesc::XMLString::release(&exceptMesg);
-    
-    throw te::xerces::Exception(m);
-  }
-  
-    // it initializes the reader factory based on Xerces
-  ReaderFactory::initialize();
-  WriterFactory::initialize();
 
-  TE_LOG_INFO(TE_TR("TerraLib Xerces driver is initialized!"));
-  
+    xercesc::XMLString::release(&exceptMesg);
+
+    throw Exception(m);
+  }
+
+  // it initializes the reader factory based on Xerces
+  te::xerces::ReaderFactory::initialize();
+  te::xerces::WriterFactory::initialize();
+
+  TE_LOG_INFO(TE_TR("TerraLib XML module initialized!"));
+
   m_initialized = true;
 }
 
-void te::xerces::Module::finalize()
+void te::xml::Module::finalize()
 {
   if(!m_initialized)
     return;
-    
+
   // it finalizes  the reader factory based on Xerces
-  ReaderFactory::finalize();
-  WriterFactory::finalize();
-  
+  te::xerces::ReaderFactory::finalize();
+  te::xerces::WriterFactory::finalize();
+
   try
   {
     xercesc::XMLPlatformUtils::Terminate();
@@ -103,18 +103,16 @@ void te::xerces::Module::finalize()
   catch(const xercesc::XMLException& e)
   {
     char* exceptMesg = xercesc::XMLString::transcode(e.getMessage());
-    
+
     std::string m  = TE_TR("Error during Xerces finalization. Exception messages is: ");
     m += exceptMesg;
-    
+
     xercesc::XMLString::release(&exceptMesg);
-    
-    throw te::xerces::Exception(m);
+
+    throw Exception(m);
   }
 
-  TE_LOG_INFO(TE_TR("TerraLib Xerces driver is finilized!"));
-  
+  TE_LOG_INFO(TE_TR("TerraLib XML module finalized!"));
+
   m_initialized = false;
 }
-
-

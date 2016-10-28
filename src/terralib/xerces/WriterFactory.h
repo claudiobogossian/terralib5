@@ -50,17 +50,18 @@ namespace te
 
         ~WriterFactory();
 
+        /*! \brief It initializes the factory: it will be registered in the abstract factory WriterFactory. */
+        static void initialize();
+
+        /*! \brief It finalizes the factory: it will be destroyed and will be unregistered from the abstract factory WriterFactory. */
+        static void finalize();
+
       protected:        
 
         te::xml::AbstractWriter* build();
 
         WriterFactory();
 
-        /*! \brief It initializes the factory: it will be registered in the abstract factory WriterFactory. */
-        static void initialize();
-
-        /*! \brief It finalizes the factory: it will be destroyed and will be unregistered from the abstract factory WriterFactory. */
-        static void finalize();
 
       private:
 

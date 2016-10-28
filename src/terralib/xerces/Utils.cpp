@@ -25,8 +25,8 @@
 
 // TerraLib
 #include "../core/translator/Translator.h"
+#include "../xml/Exception.h"
 #include "ErrorHandler.h"
-#include "Exception.h"
 #include "Utils.h"
 
 // Xerces-C++ 
@@ -71,7 +71,7 @@ xercesc::DOMDocument* te::xerces::readXML(const std::string& xmlFile,
                 m += TE_TR(", due to the following error: ");
                 m += ToString(e.getMessage());
 
-    throw Exception(m);
+    throw te::xml::Exception(m);
   }
   catch(const xercesc::DOMException& e)
   {
@@ -80,7 +80,7 @@ xercesc::DOMDocument* te::xerces::readXML(const std::string& xmlFile,
                 m += TE_TR(", due to the following error: ");
                 m += ToString(e.getMessage());
 
-    throw Exception(m);
+    throw te::xml::Exception(m);
   }
   catch(const xercesc::XMLException& e)
   {
@@ -89,7 +89,7 @@ xercesc::DOMDocument* te::xerces::readXML(const std::string& xmlFile,
                 m += TE_TR(", due to the following error: ");
                 m += ToString(e.getMessage());
 
-    throw Exception(m);
+    throw te::xml::Exception(m);
   }
   
   if(parser->getErrorCount() > 0)
@@ -99,14 +99,14 @@ xercesc::DOMDocument* te::xerces::readXML(const std::string& xmlFile,
                 m += ", due to the following problem: ";
                 m += errHandler->getErrors();
 
-    throw Exception(m);
+    throw te::xml::Exception(m);
   }  
 
 // take the ownershipo of the document and release the parser
   xercesc::DOMDocument* doc = parser->adoptDocument();
 
   if(doc == 0)
-    throw Exception(TE_TR("Unable to read the XML document!"));
+    throw te::xml::Exception(TE_TR("Unable to read the XML document!"));
 
   return doc;
 }
