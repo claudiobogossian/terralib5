@@ -1165,10 +1165,12 @@ endif()
 
 if(TERRALIB_MOD_WS_OGC_WMS_DATAACCESS_ENABLED)
   add_subdirectory(terralib_mod_ws_ogc_wms_dataaccess)
+  list(APPEND TERRALIB_MODULES ws_ogc_wms_dataaccess)
 endif()
 
 if(TERRALIB_MOD_WS_OGC_WMS_QT_ENABLED)
   add_subdirectory(terralib_mod_ws_ogc_wms_qt)
+  list(APPEND TERRALIB_MODULES ws_ogc_wms_qt)
 endif()
 
 if(TERRALIB_MOD_WS_OGC_WMS_QT_PLUGIN_ENABLED)

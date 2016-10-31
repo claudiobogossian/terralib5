@@ -34,26 +34,13 @@ void GetMenu(QMenu* mnu, te::qt::widgets::QueueAction* acts, te::qt::widgets::Qu
     mnu->addAction(acts->getValue(i));
 }
 
-bool IsRasterLayer(te::qt::widgets::TreeItem* item)
-{
-  te::map::AbstractLayerPtr layer = (static_cast<te::qt::widgets::LayerItem*>(item))->getLayer();
-
-  return layer->getSchema()->hasRaster();
-}
-
-bool IsValidLayer(te::qt::widgets::TreeItem* item)
-{
-  te::map::AbstractLayerPtr layer = (static_cast<te::qt::widgets::LayerItem*>(item))->getLayer();
-
-  return layer->isValid();
-}
-
 te::qt::widgets::LayerViewMenuManager::LayerViewMenuManager(LayerItemView* view):
   QObject(view),
   m_view(view)
 {
   m_VL_actions.reset(new QueueAction);
   m_RL_actions.reset(new QueueAction);
+  m_TL_actions.reset(new QueueAction);
   m_FL_actions.reset(new QueueAction);
   m_ML_actions.reset(new QueueAction);
   m_NL_actions.reset(new QueueAction);
@@ -77,6 +64,10 @@ void te::qt::widgets::LayerViewMenuManager::addAction(LayerViewMenuManager::LMEN
 
     case RASTER_LAYER:
       q = m_RL_actions.get();
+      break;
+
+    case TABULAR_LAYER:
+      q = m_TL_actions.get();
       break;
 
     case FOLDER_LAYER:
@@ -159,12 +150,39 @@ bool te::qt::widgets::LayerViewMenuManager::eventFilter(QObject* watched, QEvent
           {
             TreeItem* item = static_cast<TreeItem*>(ls.at(0).internalPointer());
 
-            if(item->getType() == "FOLDER")
+            if (item->getType() == "FOLDER")
+            {
               GetMenu(&mnu, m_FL_actions.get(), m_AL_actions.get());
-            else if(item->getType() == "LAYER" )
-              GetMenu(&mnu, (!IsValidLayer(item)) ? m_IL_actions.get() : (IsRasterLayer(item)) ? m_RL_actions.get() : m_VL_actions.get(), m_AL_actions.get());
+            }
+            else if (item->getType() == "LAYER")
+            {
+              te::map::AbstractLayerPtr layer = (static_cast<te::qt::widgets::LayerItem*>(item))->getLayer();
+
+              if (!layer->isValid())
+              {
+                GetMenu(&mnu, m_IL_actions.get(), m_AL_actions.get());
+              }
+              else if (layer->getSchema()->hasRaster())
+              {
+                GetMenu(&mnu, m_RL_actions.get(), m_AL_actions.get());
+              }
+              else if (layer->getSchema()->hasGeom())
+              {
+                GetMenu(&mnu, m_VL_actions.get(), m_AL_actions.get());
+              }
+              else if (layer->getType() == "DATASETADAPTERLAYER") // tabular layer
+              {
+                GetMenu(&mnu, m_TL_actions.get(), m_AL_actions.get());
+              }
+              else
+              {
+                GetMenu(&mnu, 0, m_AL_actions.get());
+              }
+            }
             else
+            {
               GetMenu(&mnu, 0, m_AL_actions.get());
+            }
           }
 
           mnu.exec(pos);

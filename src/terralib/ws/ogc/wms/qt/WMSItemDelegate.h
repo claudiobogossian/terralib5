@@ -29,6 +29,7 @@
 #define __TERRALIB_WS_OGC_WMS_QT_WMSITEMDELEGATE_H
 
 // TerraLib
+#include "Config.h"
 #include "../../../../common/Decorator.h"
 
 // Qt
@@ -46,7 +47,7 @@ namespace te
         namespace qt
         {
 
-        class WMSItemDelegate : public te::common::Decorator<QStyledItemDelegate>
+          class TEOGCWMSQTEXPORT WMSItemDelegate : public te::common::Decorator<QStyledItemDelegate>
         {
 
         public:
