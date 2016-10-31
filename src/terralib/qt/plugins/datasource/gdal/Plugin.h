@@ -29,6 +29,7 @@
 // TerraLib
 #include "../../../../plugin/Plugin.h"
 #include "Config.h"
+#include "GeoFileDragAndDropHandler.h"
 
 // Qt
 #include <QObject>
@@ -80,6 +81,8 @@ namespace te
 
             QAction* m_openFile;
             QAction* m_openMultipleFiles;
+
+            te::qt::plugins::gdal::GeoFileDragAndDropHandler* m_handler;
         };
 
       } // end namespace gdal

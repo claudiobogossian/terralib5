@@ -29,6 +29,7 @@
 // TerraLib
 #include "../../../../plugin/Plugin.h"
 #include "Config.h"
+#include "GeoFileDragAndDropHandler.h"
 
 // Qt
 #include <QObject>
@@ -76,6 +77,8 @@ namespace te
           protected:
           
             QAction* m_showWindow;
+
+            te::qt::plugins::ogr::GeoFileDragAndDropHandler* m_handler;
         };
 
       } // end namespace ogr
