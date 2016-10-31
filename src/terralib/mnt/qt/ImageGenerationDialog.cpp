@@ -483,13 +483,15 @@ void te::mnt::ImageGenerationDialog::drawPreview(std::unique_ptr<te::rst::Raster
   te::se::CoverageStyle* cs = dynamic_cast<te::se::CoverageStyle*>(style);
   assert(cs);
 
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
   // Draw raster
   te::map::DrawRaster(outrst, m_canvas, *envRst, m_mapDisplay->getSRID(), *envRst, m_outsrid, cs, m_mapDisplay->getScale());
 
   m_mapDisplay->repaint();
-  delete somb;
 
   QApplication::restoreOverrideCursor();
+  delete somb;
 }
 
 void te::mnt::ImageGenerationDialog::setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay)
@@ -519,4 +521,9 @@ void te::mnt::ImageGenerationDialog::setMapDisplay(te::qt::widgets::MapDisplay* 
   connect(m_mapDisplay, SIGNAL(extentChanged()), this, SLOT(onMapDisplayExtentChanged()));
 }
 
+void te::mnt::ImageGenerationDialog::onMapDisplayExtentChanged()
+{
+  if (m_previewRaster.get())
+    drawPreview(m_previewRaster);
+}
 
