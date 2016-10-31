@@ -103,6 +103,12 @@ namespace te
        */
       bool isLoaded(const std::string& plugin_name) const;
 
+      /*!
+        \brief Returns true if the plugin has been fixed and moves it to the
+         unloaded list otherwise returns false.
+       */
+      bool isFixed(const std::string& plugin_name);
+
       /*! \brief Tells if a given plugin is registered or not. */
       bool exists(const std::string& plugin_name) const;
 

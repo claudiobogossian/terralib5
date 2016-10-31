@@ -31,7 +31,6 @@
 
 // STL
 #include <memory>
-#include <set>
 
 // Qt
 #include <QDialog>
@@ -39,15 +38,12 @@
 // Forward declaration
 namespace Ui { class PluginManagerDialogForm; }
 
-class QModelIndex;
-class QNetworkReply;
-class QTableView;
 class QTableWidget;
 class QTableWidgetItem;
 
 namespace te
 {
-  namespace plugin
+  namespace core
   {
 // Forward declaration
     struct PluginInfo;
@@ -57,14 +53,31 @@ namespace te
   {
     namespace widgets
     {
-// Forward declaration
-      class PluginsModel;
-
-      //struct iPluginInfo;
-
       class TEQTWIDGETSEXPORT PluginManagerDialog : public QDialog
       {
         Q_OBJECT
+        enum class PluginStatus
+        {
+          loaded,
+          unloaded,
+          broken,
+          to_load,
+          to_unload,
+          to_remove
+        };
+
+        enum PluginHeader
+        {
+          enabled = 0,
+          display_name = 1,
+          version = 2,
+          license_description = 3,
+          site = 4,
+          provider_name = 5,
+          provider_site = 6,
+          provider_email = 7,
+          name = 8
+        };
 
         public:
 
@@ -73,36 +86,31 @@ namespace te
           ~PluginManagerDialog();
 
         protected slots:
-
-          void applyPushButtonPressed();
-
-          void tableWidgetClicked(QTableWidgetItem* item);
-
-          void replyFinished(QNetworkReply*);
-
-          void addPlugins();
-
-          void removePlugins();
-
-          void dataChanged(const QModelIndex&, const QModelIndex&);
-
-          void onEnableAllChanged(bool st);
+          void onAddPushButtonClicked();
+          void onApplyPushButtonClicked();
+          void onClosePushButtonClicked();
+          void onEnableAllChanged(int state);
+          void onEnabledChanged(int state);
+          void onHelpPushButtonClicked();
+          void onRemovePushButtonClicked();
 
         protected:
-
+          void addEntry(const te::core::PluginInfo& pinfo, PluginStatus status);
+          void changePluginStatus(const std::string& plugin_name);
+          void disableRow(const int row);
           void fillInstalledPlugins();
-          
-          void filliPlugins();
-
-          void addEntry(int i, const te::plugin::PluginInfo& pinfo, bool checked);
+          std::string getPluginName(int row);
+          int getPluginRow(const std::string& plugin_name);
+          PluginStatus getPluginStatus(const int row);
+          void loadPlugins(std::vector<te::core::PluginInfo> v_pInfo);
+          void removeEntries(std::vector<te::core::PluginInfo> v_pInfo);
+          void setChanged(const int row, bool bold);
+          void unloadPlugins(std::vector<core::PluginInfo> v_pInfo);
+          void updateBroken();
 
         private:
 
-          std::auto_ptr<Ui::PluginManagerDialogForm> m_ui;
-          //std::set<iPluginInfo> m_iplugins;
-          std::set<int> m_changedInstalledPlugins;
-          std::set<int> m_downloadPlugins;
-          PluginsModel* m_model;
+          std::unique_ptr<Ui::PluginManagerDialogForm> m_ui;
       };
 
     } // end namespace widgets
