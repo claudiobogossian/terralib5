@@ -74,15 +74,12 @@
 //STL
 #include <algorithm>
 
-//te::qt::af::ApplicationController* te::qt::af::ApplicationController::sm_instance(0);
-
 te::qt::af::ApplicationController::ApplicationController(/*QObject* parent*/)
   : QObject(/*parent*/),
     m_msgBoxParentWidget(0),
     m_defaultSRID(TE_UNKNOWN_SRS),
     m_selectionColor(QColor(0, 255, 0)),
     m_initialized(false),
-//    m_project(0),
     m_resetTerralib(true)
 {
 }
@@ -622,150 +619,16 @@ void te::qt::af::ApplicationController::initializePlugins()
   }
 }
 
-//void te::qt::af::ApplicationController::initializeProjectMenus()
-//{
-//  SplashScreenManager::getInstance().showMessage("Loading recent projects...");
-//
-//  try
-//  {
-//    QSettings user_settings(QSettings::IniFormat,
-//                            QSettings::UserScope,
-//                            QApplication::instance()->organizationName(),
-//                            QApplication::instance()->applicationName());
-//
-//    QVariant projPath = user_settings.value("projects/most_recent/path", "");
-//    QVariant projTitle = user_settings.value("projects/most_recent/title", "");
-//
-//    QMenu* mnu = getMenu("File.Recent Projects");
-//
-//    if(!projPath.toString().isEmpty())
-//    {
-//      QAction* act = mnu->addAction(projPath.toString());
-//      act->setData(projPath);
-//
-//      mnu->addSeparator();
-//
-//      m_recentProjs.append(projPath.toString());
-//      m_recentProjsTitles.append(projTitle.toString());
-//    }
-//    
-//    user_settings.beginGroup("projects");
-//    
-//    int nrc = user_settings.beginReadArray("recents");
-//    
-//    for(int i = 0; i != nrc; ++i)
-//    {
-//      user_settings.setArrayIndex(i);
-//      QString npath = user_settings.value("projects/path").toString();
-//      QString ntitle = user_settings.value("projects/title").toString();
-//      
-//      
-//      QAction* act = mnu->addAction(npath);
-//      act->setData(npath);
-//      m_recentProjs.append(npath);
-//      m_recentProjsTitles.append(ntitle);
-//    }
-//
-//    mnu->setEnabled(true);
-//
-//    SplashScreenManager::getInstance().showMessage("Recent projects loaded!");
-//  }
-//  catch(const std::exception& e)
-//  {
-//    te::qt::widgets::ScopedCursor acursor(Qt::ArrowCursor);
-//
-//    QString msgErr(tr("Error loading the registered projects: %1"));
-//
-//    msgErr = msgErr.arg(e.what());
-//
-//    QMessageBox::warning(m_msgBoxParentWidget, m_appTitle, msgErr);
-//  }
-//}
-//
-//void te::qt::af::ApplicationController::updateRecentProjects(const QString& prjFile, const QString& prjTitle)
-//{
-//  int pos = m_recentProjs.indexOf(prjFile);
-//
-//  QString author;
-//  int maxSaved;
-//
-//  GetProjectInformationsFromSettings(author, maxSaved);
-//
-//  if(pos != 0)
-//  {
-//    if(pos < 0)
-//    {
-//      if(m_recentProjs.size() > maxSaved) // TODO: Size of the list must be configurable.
-//      {
-//        m_recentProjs.removeLast();
-//        m_recentProjsTitles.removeLast();
-//      }
-//
-//      m_recentProjs.prepend(prjFile);
-//      m_recentProjsTitles.prepend(prjTitle);
-//    }
-//    else
-//    {
-//      m_recentProjs.move(pos, 0);
-//      m_recentProjsTitles.move(pos, 0);
-//    }
-//
-//    if(m_recentProjs.isEmpty())
-//      return;
-//
-//    QMenu* mnu = getMenu("File.Recent Projects");
-//
-//    mnu->clear();
-//
-//    mnu->setEnabled(true);
-//
-//    QString recPrj = m_recentProjs.at(0);
-//    QAction* act = mnu->addAction(recPrj);
-//    act->setData(recPrj);
-//
-//    mnu->addSeparator();
-//
-//    if(m_recentProjs.size() > 1)
-//      for(int i=1; i<m_recentProjs.size(); i++)
-//      {
-//        recPrj = m_recentProjs.at(i);
-//        act = mnu->addAction(recPrj);
-//        act->setData(recPrj);
-//      }
-//  }
-//
-//  QAction* act = findAction("File.Save Project As");
-//
-//  if(act != 0)
-//    act->setEnabled(true);
-//}
-
-//void te::qt::af::ApplicationController::set(te::qt::af::Project* prj)
-//{
-//  m_project = prj;
-//}
-
-//te::qt::af::Project* te::qt::af::ApplicationController::getProject()
-//{
-//  return m_project;
-//}
-
 void te::qt::af::ApplicationController::finalize()
 {
   if(!m_initialized)
     return;
-
-//  UpdateUserSettings(m_recentProjs, m_recentProjsTitles, m_appUserSettingsFile);
-
-//  SaveDataSourcesFile();
 
   te::plugin::PluginManager::getInstance().shutdownAll();
 
   te::plugin::PluginManager::getInstance().unloadAll();
 
   te::plugin::PluginManager::getInstance().clear();
-
-//  delete m_project;
 
   if(m_resetTerralib)
     TerraLib::getInstance().finalize();
@@ -800,14 +663,8 @@ void te::qt::af::ApplicationController::finalize()
 
   m_appTitle.clear();
 
-  //m_appProjectExtension.clear();
-
   m_tLibLogo.clear();
           
-  //m_recentProjs.clear();
-
-  //m_recentProjsTitles.clear();
-
   m_appUserSettingsFile.clear();
   
   m_appPluginsPath.clear();
@@ -818,8 +675,6 @@ void te::qt::af::ApplicationController::finalize()
   
   m_selectionColor = QColor();
 
-//  m_project = 0;
-
   m_initialized = false;
 }
 
@@ -827,14 +682,6 @@ QSettings& te::qt::af::ApplicationController::getSettings()
 {
   return m_appSettings;
 }
-
-//void  te::qt::af::ApplicationController::broadcast(te::qt::af::evt::Event* evt)
-//{
-//  // Need to check event send to prevent loops
-//  // -----------------------------------------
-
-//  emit triggered(evt);
-//}
 
 const QString& te::qt::af::ApplicationController::getAppName() const
 {
@@ -845,11 +692,6 @@ const QString& te::qt::af::ApplicationController::getAppTitle() const
 {
   return m_appTitle;
 }
-
-//const QString& te::qt::af::ApplicationController::getAppProjectExtension() const
-//{
-//  return m_appProjectExtension;
-//}
 
 const QString& te::qt::af::ApplicationController::getAppIconName() const
 {
@@ -870,11 +712,6 @@ const QString& te::qt::af::ApplicationController::getTlibLogo() const
 {
   return m_tLibLogo;
 }
-
-//QString te::qt::af::ApplicationController::getMostRecentProject() const
-//{
-//  return m_recentProjs.isEmpty() ? QString("") : m_recentProjs.front();
-//}
 
 int te::qt::af::ApplicationController::getDefaultSRID() const
 {

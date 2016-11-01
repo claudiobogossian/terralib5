@@ -101,15 +101,6 @@ namespace te
           virtual ~ApplicationController();
 
           /*!
-            \brief It gives access to the controller singleton.
-
-            \return A pointer to the application singleton.
-
-            \pre The application must have been initialized before calling this method.
-          */
-//          static ApplicationController& getInstance();
-
-          /*!
             \brief Tells wich configuration file to be used by the controller during its initialization.
 
             \param configFileName The configuration file name with full path.
@@ -313,36 +304,6 @@ namespace te
           virtual void initializePlugins();
 
           /*!
-            \brief Initializes the menus for the most recent open projects.
-          */
-          //virtual void initializeProjectMenus();
-
-          /*!
-            \brief Update the list of recent projects. This is commonly used when there's a new most recent project.
-
-            \param prj_file Complete file name for the project file.
-
-            \param prj_title Title of the project.
-          */
-          //void updateRecentProjects(const QString& prjFile, const QString& prjTitle);
-
-          /*!
-            \brief Set the current project.
-
-            \param prj Pointer to a current project.
-
-          */
-//          void set(te::qt::af::Project* prj);
-
-          /*!
-            \brief Get the current project.
-
-            \return Pointer to a current project if defined or a null pointer in other case.
-
-          */
-//          te::qt::af::Project* getProject();
-
-          /*!
             \brief Finalize the application framework.
 
             \details This method will unload all TerraLib modules, plugins, and dynamic libraries that are loaded.
@@ -465,12 +426,9 @@ namespace te
           QString m_appOrganization;                  //!< Organization name.
           QString m_appName;                          //!< Application name.
           QString m_appTitle;                         //!< Application title.
-          //QString m_appProjectExtension;              //!< Application project extension.
           QString m_appIconName;                      //!< Icon used in the application.
           QString m_aboutLogo;
           QString m_tLibLogo;
-          //QStringList m_recentProjs;                  //!< List of the recent projects.
-          //QStringList m_recentProjsTitles;            //!< List of the titles of the recent projects.
           std::string m_appUserSettingsFile;          //!< Name of the user settings file.
           QString m_appPluginsPath;                   //!< Name of the plugins path.
           QString m_appHelpFile;                      //!< Name of the help file.
@@ -482,8 +440,6 @@ namespace te
           QColor m_selectionColor;                    //!< Default selection color.
 
           bool m_initialized;                         //!< A flag indicating if the controller is initialized.
-
-//          Project* m_project;                         //!< Pointer to current project.
 
           QSettings m_appSettings;
 
