@@ -38,5 +38,6 @@
 #include "plugin/PluginInfo.h"
 #include "plugin/PluginManager.h"
 #include "plugin/Serializers.h"
+#include "plugin/Utils.h"
 
 #endif // __TERRALIB_CORE_PLUGIN_H__

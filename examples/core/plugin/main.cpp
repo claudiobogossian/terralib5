@@ -64,19 +64,19 @@ void WithoutPluginManager()
 
   // find second plugin manifest file, read the manifest, load plugin and start
   // it
-  std::string p2_manifest_file =
-      te::core::FindInTerraLibPath("example/plugins/plugin2.teplg.json");
+  std::string p3_manifest_file =
+      te::core::FindInTerraLibPath("example/plugins/plugin3.teplg.json");
 
-  te::core::PluginInfo p2_info =
-      te::core::JSONPluginInfoSerializer(p2_manifest_file);
+  te::core::PluginInfo p3_info =
+      te::core::JSONPluginInfoSerializer(p3_manifest_file);
 
-  std::unique_ptr<te::core::AbstractPlugin> p2(plugin_engine.load(p2_info));
+  std::unique_ptr<te::core::AbstractPlugin> p3(plugin_engine.load(p3_info));
 
-  p2->startup();
+  p3->startup();
 
   // stop all plugins and unload them
-  p2->shutdown();
-  plugin_engine.unload(std::move(p2));
+  p3->shutdown();
+  plugin_engine.unload(std::move(p3));
 
   p1->shutdown();
   plugin_engine.unload(std::move(p1));
@@ -85,44 +85,47 @@ void WithoutPluginManager()
 void WithPluginManager()
 {
   // Load all the config files for the plugins.
-  std::vector<te::core::PluginInfo> v_pinfo;
+  std::vector<te::core::PluginInfo> v_pInfo;
 
-  v_pinfo.push_back(te::core::JSONPluginInfoSerializer(
-      te::core::FindInTerraLibPath("example/plugins/plugin2.teplg.json")));
-  v_pinfo.push_back(te::core::JSONPluginInfoSerializer(
+  v_pInfo.push_back(te::core::JSONPluginInfoSerializer(
       te::core::FindInTerraLibPath("example/plugins/plugin1.teplg.json")));
+  v_pInfo.push_back(te::core::JSONPluginInfoSerializer(
+      te::core::FindInTerraLibPath("example/plugins/plugin2.teplg.json")));
+  v_pInfo.push_back(te::core::JSONPluginInfoSerializer(
+      te::core::FindInTerraLibPath("example/plugins/plugin3.teplg.json")));
+  v_pInfo.push_back(te::core::JSONPluginInfoSerializer(
+      te::core::FindInTerraLibPath("example/plugins/plugin4.teplg.json")));
 
   // Insert all the plugins stored in the vector from a given PluginInfo.
-  for(const te::core::PluginInfo& pinfo : v_pinfo)
+  v_pInfo = te::core::plugin::TopologicalSort(v_pInfo);
+
+  for(const te::core::PluginInfo& pinfo : v_pInfo)
   {
     te::core::PluginManager::instance().insert(pinfo);
+    te::core::PluginManager::instance().load(pinfo.name);
   }
 
-  // Get all the names for the available plugins
-  std::vector<std::string> v_plugins =
-      te::core::PluginManager::instance().getPlugins();
+  // get all the loaded plugins
+  std::vector<te::core::PluginInfo> pVec =
+      te::core::PluginManager::instance().getLoadedPlugins();
 
-  // Load all the plugins
-  for(const std::string& plugin : v_plugins)
+  // unload it in the reverse order
+  for (auto plugin = pVec.rbegin(); plugin != pVec.rend(); ++plugin)
   {
-    te::core::PluginManager::instance().load(plugin);
+    te::core::PluginManager::instance().stop(plugin->name);
+    te::core::PluginManager::instance().unload(plugin->name);
   }
-
-  // Unload all the plugins
-  for(const std::string& plugin : v_plugins)
-  {
-    te::core::PluginManager::instance().stop(plugin);
-    te::core::PluginManager::instance().unload(plugin);
-  }
+  te::core::PluginManager::instance().clear();
 }
 
 int main(int argc, char* argv[])
 {
   try
   {
-    InitPluginSystem();
+    te::core::plugin::InitializePluginSystem();
     WithoutPluginManager();
     WithPluginManager();
+    te::core::plugin::FinalizePluginSystem();
   }
   catch(boost::exception& e)
   {

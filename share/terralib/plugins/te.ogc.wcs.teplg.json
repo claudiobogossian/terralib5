@@ -1,0 +1,24 @@
+{
+	"name":"te.ogc.wcs",
+	"display_name":"WCS OGC Data Source Driver",
+	"description":"This plugin enables TerraLib to access raster data through the OGC WCS servers",
+	"version":"5.0.0",
+	"release":"2013-01-01",
+	"engine":"C++",
+	"license_description":"GNU Lesser General Public License v 3.0",
+	"license_URL":"http://www.gnu.org/licenses/lgpl-3.0-standalone.html",
+	"site":"http://www.dpi.inpe.br/terralib5/wiki/doku.php",
+	"dependencies":[],
+	"linked_libraries":[],
+	"resources":{"shared_library_name":"terralib_mod_ws_ogc_wcs_dataaccess"},
+	"parameters":[],
+	"provider":{
+		"name":"Terralib Team",
+		"site":"http://www.terralib.org/",
+		"email":"terralib-team@terralib.org"
+	},
+	"host_application":{
+		"name":"TerraLib",
+		"version":"5.0.0-rc"
+	}
+}

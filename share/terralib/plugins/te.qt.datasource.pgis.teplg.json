@@ -1,0 +1,24 @@
+{
+	"name":"te.qt.datasource.pgis",
+	"display_name":"PostGIS Data Source Qt-Widgets",
+	"description":"This plugin enables widgets to create or open data managed by PostGIS driver",
+	"version":"5.0.0",
+	"release":"2013-01-01",
+	"engine":"C++",
+	"license_description":"GNU Lesser General Public License v 3.0",
+	"license_URL":"http://www.gnu.org/licenses/lgpl-3.0-standalone.html",
+	"site":"http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:pgis",
+	"dependencies":["te.da.pgis"],
+	"linked_libraries":[],
+	"resources":{"shared_library_name":"terralib_mod_qt_plugins_datasource_pgis"},
+	"parameters":[],
+	"provider":{
+		"name":"Terralib Team",
+		"site":"http://www.terralib.org/",
+		"email":"terralib-team@terralib.org"
+	},
+	"host_application":{
+		"name":"TerraLib",
+		"version":"5.0.0-rc"
+	}
+}
