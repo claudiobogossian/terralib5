@@ -153,56 +153,33 @@ IF NOT EXIST %LIBS_DIR% (
   goto begin_build
 )
 
-goto gtest_deps
+goto gmock_deps
 
 :begin_build
 
-:gtest
+:gmock
 
 :: ====
 :: GTest and GMock
-set GTEST_DIR=%ROOT_DIR%\googletest-master\googletest
 set GMOCK_DIR=%ROOT_DIR%\googletest-master\googlemock
-set GTEST_INCLUDE_DIR=%TERRALIB_DEPENDENCIES_DIR%\include
-set GTEST_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\gtest.lib
+set GMOCK_INCLUDE_DIR=%TERRALIB_DEPENDENCIES_DIR%\include
+set GMOCK_LIBRARY=%TERRALIB_DEPENDENCIES_DIR%\lib\gmock.lib
 
 :: Check dependencies
-goto end_gtest_deps
-:gtest_deps
+goto end_gmock_deps
+:gmock_deps
 goto cppunit_deps
-:end_gtest_deps
+:end_gmock_deps
 
 echo | set /p="Installing gtest and gmock... "<nul
 
-IF EXIST %LIBS_DIR%\gtest.lib call :skip_build && goto cppunit 
+IF EXIST %LIBS_DIR%\gmock.lib call :skip_build && goto cppunit 
 
-call :append_log_begin gtest
+call :append_log_begin gmock
 
-:begin_gtest
+:begin_gmock
 
-cd %GTEST_DIR% >nul 2>nul
-
-IF EXIST building%_X86% del /s /Q building%_X86% >nul 2>nul
-
-mkdir building%_X86% >nul 2>nul
-
-cd building%_X86% >nul 2>nul
-
-( cmake -G %_CMAKE_GENERATOR% -DCMAKE_INSTALL_PREFIX=%GTEST_DIR% %GTEST_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog gtest "configuring gtest" && goto cppunit 
-
-( msbuild /m gtest.sln /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog gtest "build release gtest" && goto cppunit
-
-( msbuild /m gtest.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog gtest "build debug gtest" && goto cppunit
-
-xcopy %GTEST_DIR%\include %GTEST_INCLUDE_DIR% /S /Y >nul 2>nul
-
-xcopy %GTEST_DIR%\building%_X86%\Release\*.lib %LIBS_DIR% /Y >nul 2>nul
-
-xcopy %GTEST_DIR%\building%_X86%\Debug\*.lib %LIBS_DIR% /Y >nul 2>nul
-
-IF EXIST %LIBS_DIR%\gmock.lib call :skip_build && goto cppunit
-
-cd ..\..\googlemock >nul 2>nul
+cd %GMOCK_DIR% >nul 2>nul
 
 IF EXIST building%_X86% del /s /Q building%_X86% >nul 2>nul
 
@@ -210,21 +187,35 @@ mkdir building%_X86% >nul 2>nul
 
 cd building%_X86% >nul 2>nul
 
-( cmake -G %_CMAKE_GENERATOR% -DCMAKE_INSTALL_PREFIX=%GMOCK_DIR% %GMOCK_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog gtest "configuring gmock" && goto cppunit 
+( cmake -G %_CMAKE_GENERATOR% -DCMAKE_INSTALL_PREFIX=%GMOCK_DIR% %GMOCK_DIR% >>%CONFIG_LOG% 2>nul ) || call :buildFailLog gmock "configuring gmock" && goto cppunit 
 
-( msbuild /m gmock.sln /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog gtest "build release gmock" && goto cppunit
+( msbuild /m /t:clean gmock.sln /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog gmock "clean release gmock" && goto cppunit
 
-( msbuild /m gmock.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog gtest "build debug gmock" && goto cppunit
+( msbuild /m /t:clean gmock.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog gmock "clean debug gmock" && goto cppunit
 
-xcopy %GMOCK_DIR%\include %GTEST_INCLUDE_DIR% /S /Y >nul 2>nul
+( msbuild /m gmock.sln /p:Configuration=Release >>%BUILD_LOG% 2>nul ) || call :buildFailLog gmock "build release gmock" && goto cppunit
+
+( msbuild /m gmock.sln >>%BUILD_LOG% 2>nul ) || call :buildFailLog gmock "build debug gmock" && goto cppunit
+
+xcopy %GMOCK_DIR%\..\googletest\include %GMOCK_INCLUDE_DIR% /S /Y >nul 2>nul
+
+xcopy %GMOCK_DIR%\include %GMOCK_INCLUDE_DIR% /S /Y >nul 2>nul
 
 xcopy %GMOCK_DIR%\building%_X86%\Release\*.lib %LIBS_DIR% /Y >nul 2>nul
 
+ren  %GMOCK_DIR%\building%_X86%\Debug\*.lib ??????????d.lib
+
 xcopy %GMOCK_DIR%\building%_X86%\Debug\*.lib %LIBS_DIR% /Y >nul 2>nul
 
-call :append_log_end gtest
+xcopy %GMOCK_DIR%\building%_X86%\gtest\Release\*.lib %LIBS_DIR% /Y >nul 2>nul
 
-:end_gtest  
+ren  %GMOCK_DIR%\building%_X86%\gtest\Debug\*.lib ??????????d.lib
+
+xcopy %GMOCK_DIR%\building%_X86%\gtest\Debug\*.lib %LIBS_DIR% /Y >nul 2>nul
+
+call :append_log_end gmock
+
+:end_gmock
 
 echo done.
 

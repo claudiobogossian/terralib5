@@ -47,7 +47,7 @@ namespace te
 
       \sa Reader, ReaderHandler
     */
-    class TEXERCESEXPORT ErrorHandler : public xercesc::ErrorHandler
+    class  ErrorHandler : public xercesc::ErrorHandler
     {
       public:
 

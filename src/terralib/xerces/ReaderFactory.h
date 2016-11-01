@@ -44,23 +44,23 @@ namespace te
 
       \sa te::xml::ReaderFactory
     */
-    class TEXERCESEXPORT ReaderFactory : public te::xml::ReaderFactory
+    class  ReaderFactory : public te::xml::ReaderFactory
     {
       public:
 
         ~ReaderFactory();
-
-      protected:        
-
-        te::xml::Reader* build();
-
-        ReaderFactory();        
 
         /*! \brief It initializes the factory: it will be registered in the abstract factory ReaderFactory. */
         static void initialize();
 
         /*! \brief It finalizes the factory: it will be destroyed and will be unregistered from the abstract factory ReaderFactory. */
         static void finalize();
+
+      protected:        
+
+        te::xml::Reader* build();
+
+        ReaderFactory();
 
       private:
 

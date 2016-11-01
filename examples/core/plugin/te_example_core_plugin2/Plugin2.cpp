@@ -19,9 +19,9 @@
  */
 
 /*!
-  \file terralib/examples/core/plugin/Plugin1.cpp
+  \file terralib/examples/core/plugin/terralib_example_core_plugin2/Plugin2.cpp
 
-  \brief Examples for the Terralib Plugin Module
+  \brief Example of a C++ Library that will be loaded as a plugin.
 
   \author Matheus Cavassan Zaglia
 */

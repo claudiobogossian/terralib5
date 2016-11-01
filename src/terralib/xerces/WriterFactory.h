@@ -44,11 +44,17 @@ namespace te
 
       \sa te::xml::AbstractWriter, te::xml::AbstractWriterFactory
     */
-    class TEXERCESEXPORT WriterFactory : public te::xml::AbstractWriterFactory
+    class  WriterFactory : public te::xml::AbstractWriterFactory
     {
       public:
 
         ~WriterFactory();
+
+        /*! \brief It initializes the factory: it will be registered in the abstract factory WriterFactory. */
+        static void initialize();
+
+        /*! \brief It finalizes the factory: it will be destroyed and will be unregistered from the abstract factory WriterFactory. */
+        static void finalize();
 
       protected:        
 
@@ -56,11 +62,6 @@ namespace te
 
         WriterFactory();
 
-        /*! \brief It initializes the factory: it will be registered in the abstract factory WriterFactory. */
-        static void initialize();
-
-        /*! \brief It finalizes the factory: it will be destroyed and will be unregistered from the abstract factory WriterFactory. */
-        static void finalize();
 
       private:
 

@@ -27,8 +27,8 @@
 #include "../common/Exception.h"
 #include "../core/encoding/CharEncoding.h"
 #include "../core/translator/Translator.h"
+#include "../xml/Exception.h"
 #include "ErrorHandler.h"
-#include "Exception.h"
 #include "Reader.h"
 #include "ReaderHandler.h"
 #include "StrToXMLCh.h"
@@ -130,7 +130,7 @@ void te::xerces::Reader::read(const std::string& fileURI)
                   m += errH->getErrors();
                   m += ".";
 
-      throw Exception(m);
+      throw te::xml::Exception(m);
     }
 
     if(m_readerH->getNodeType() ==  te::xml::UNKNOWN)
@@ -143,11 +143,11 @@ void te::xerces::Reader::read(const std::string& fileURI)
     std::string m  = TE_TR("Error when reading the XML document. Exception messages is: ");
                 m += ToString(e.getMessage());
 
-    throw Exception(m);
+    throw te::xml::Exception(m);
   }
   catch(...)
   {
-    throw Exception(TE_TR("Unexpected error reading the XML document!"));
+    throw te::xml::Exception(TE_TR("Unexpected error reading the XML document!"));
   }
 }
 
@@ -175,7 +175,7 @@ bool te::xerces::Reader::next()
       if(m_parser->getErrorCount() != 0)
       {
         std::string errmsg = m_errH->getErrors();
-        throw Exception(errmsg);
+        throw te::xml::Exception(errmsg);
       }
 
       if(m_readerH->isInContractedForm())
@@ -195,7 +195,7 @@ bool te::xerces::Reader::next()
     std::string m  = TE_TR("Error parsing the XML document. Exception messages is: ");
                 m += ToString(e.getMessage());
 
-    throw Exception(m);
+    throw te::xml::Exception(m);
   }
   catch(const std::exception& /*e*/)
   {
@@ -203,7 +203,7 @@ bool te::xerces::Reader::next()
   }
   catch(...)
   {
-    throw Exception(TE_TR("Unexpected error in parse next!"));
+    throw te::xml::Exception(TE_TR("Unexpected error in parse next!"));
   }
 
   return false;
@@ -337,11 +337,11 @@ void te::xerces::Reader::reset()
     std::string m  = TE_TR("Error reseting the parser. Exception messages is: ");
                 m += ToString(e.getMessage());
 
-    throw Exception(m);
+    throw te::xml::Exception(m);
   }
   catch(...)
   {
-    throw Exception(TE_TR("Unexpected error reseting the parser!"));
+    throw te::xml::Exception(TE_TR("Unexpected error reseting the parser!"));
   }
 }
 

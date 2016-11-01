@@ -77,15 +77,46 @@ add_test(NAME terralib_unittest_core COMMAND terralib_unittest_core
 
 # Plugin for core/plugin
 
-file(GLOB TERRALIB_PLUGIN_CORE_PLUGIN_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/plugin/te_unittest_core_plugin/*.cpp)
+## plugin 1
+file(GLOB TERRALIB_UNITTEST_CORE_PLUGIN1_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/plugin/te_unittest_core_plugin1/*.cpp)
 
-add_library(terralib_unittest_core_plugin SHARED ${TERRALIB_PLUGIN_CORE_PLUGIN_SRC_FILES})
-target_link_libraries(terralib_unittest_core_plugin terralib_mod_core)
+add_library(terralib_unittest_core_plugin1 SHARED ${TERRALIB_UNITTEST_CORE_PLUGIN1_SRC_FILES})
+target_link_libraries(terralib_unittest_core_plugin1 terralib_mod_core)
 
-file(COPY ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/plugin/te_unittest_core_plugin/plugin.teplg.json
+file(COPY ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/plugin/te_unittest_core_plugin1/plugin1.teplg.json
     DESTINATION ${CMAKE_BINARY_DIR}/unittest/plugins)
 
-add_dependencies(terralib_unittest_core terralib_unittest_core_plugin)
+## plugin 2
+file(GLOB TERRALIB_UNITTEST_CORE_PLUGIN2_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/plugin/te_unittest_core_plugin2/*.cpp)
+
+add_library(terralib_unittest_core_plugin2 SHARED ${TERRALIB_UNITTEST_CORE_PLUGIN2_SRC_FILES})
+target_link_libraries(terralib_unittest_core_plugin2 terralib_mod_core)
+
+file(COPY ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/plugin/te_unittest_core_plugin2/plugin2.teplg.json
+    DESTINATION ${CMAKE_BINARY_DIR}/unittest/plugins)
+
+## plugin 3
+file(GLOB TERRALIB_UNITTEST_CORE_PLUGIN3_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/plugin/te_unittest_core_plugin3/*.cpp)
+
+add_library(terralib_unittest_core_plugin3 SHARED ${TERRALIB_UNITTEST_CORE_PLUGIN3_SRC_FILES})
+target_link_libraries(terralib_unittest_core_plugin3 terralib_mod_core)
+
+file(COPY ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/plugin/te_unittest_core_plugin3/plugin3.teplg.json
+    DESTINATION ${CMAKE_BINARY_DIR}/unittest/plugins)
+
+## plugin 4
+file(GLOB TERRALIB_UNITTEST_CORE_PLUGIN4_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/plugin/te_unittest_core_plugin4/*.cpp)
+
+add_library(terralib_unittest_core_plugin4 SHARED ${TERRALIB_UNITTEST_CORE_PLUGIN4_SRC_FILES})
+target_link_libraries(terralib_unittest_core_plugin4 terralib_mod_core)
+
+file(COPY ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/core/plugin/te_unittest_core_plugin4/plugin4.teplg.json
+    DESTINATION ${CMAKE_BINARY_DIR}/unittest/plugins)
+
+add_dependencies(terralib_unittest_core terralib_unittest_core_plugin1
+                                        terralib_unittest_core_plugin2
+                                        terralib_unittest_core_plugin3
+                                        terralib_unittest_core_plugin4)
 
 
 if(WIN32)

@@ -55,7 +55,7 @@ namespace te
 
       \brief A class that models a XML writer object built on top of Xerces-C++
     */
-    class TEXERCESEXPORT Writer : public te::xml::AbstractWriter
+    class  Writer : public te::xml::AbstractWriter
     {
       public:
 

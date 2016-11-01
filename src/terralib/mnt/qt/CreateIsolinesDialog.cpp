@@ -325,7 +325,7 @@ void te::mnt::CreateIsolinesDialog::onInputLayerToolButtonClicked()
 void te::mnt::CreateIsolinesDialog::onInputComboBoxChanged(int index)
 {
   try{
-    this->setCursor(Qt::WaitCursor);
+    QApplication::setOverrideCursor(Qt::WaitCursor);
     m_inputLayer = 0;
     std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
     std::string layerID = m_ui->m_layersComboBox->itemData(index, Qt::UserRole).toString().toUtf8().data();
@@ -368,10 +368,11 @@ void te::mnt::CreateIsolinesDialog::onInputComboBoxChanged(int index)
     m_ui->m_vminrasterlineEdit->setText(QString::number(m_min));
     m_ui->m_vmaxrasterlineEdit->setText(QString::number(m_max));
 
-    this->setCursor(Qt::ArrowCursor);
+    QApplication::restoreOverrideCursor();
   }
   catch (te::common::Exception& e)
   {
+    QApplication::restoreOverrideCursor();
     std::cerr << "CreateIsolines: " << e.what() << '\n';
     QMessageBox::information(this, "CreateIsolines", e.what());
   }

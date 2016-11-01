@@ -41,6 +41,8 @@ namespace te
 
         bool HasShapeFileSpatialIndex(const QString& path);
 
+        void CreateLayers(QStringList fileNames);
+
       } // end namespace ogr
     }   // end namespace plugins
   }     // end namespace qt

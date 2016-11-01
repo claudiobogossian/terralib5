@@ -30,24 +30,25 @@
 
 // TerraLib
 #include "Utils.h"
-#include "Finders.h"
+#include "../translator/Translator.h"
 #include "CppPluginEngine.h"
+#include "Exception.h"
+#include "Finders.h"
 #include "PluginEngineManager.h"
 #include "PluginManager.h"
-#include "Exception.h"
-#include "../translator/Translator.h"
 
 // Boost
 #include <boost/format.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/topological_sort.hpp>
 
+
 static bool g_plugin_module_initialized(false);
 
 void te::core::plugin::InitializePluginSystem()
 {
   if(g_plugin_module_initialized)
-      return;
+    return;
 
   std::unique_ptr<te::core::AbstractPluginEngine> cppengine(
       new te::core::CppPluginEngine());
@@ -60,7 +61,7 @@ void te::core::plugin::InitializePluginSystem()
 void te::core::plugin::FinalizePluginSystem()
 {
   if(!g_plugin_module_initialized)
-      return;
+    return;
 
   te::core::PluginEngineManager::instance().clear();
 
@@ -70,41 +71,51 @@ void te::core::plugin::FinalizePluginSystem()
 std::vector<te::core::PluginInfo> te::core::plugin::TopologicalSort(
     const std::vector<te::core::PluginInfo>& v_pInfo)
 {
+  std::map<std::string, std::size_t> plugins_map;
+
+  const std::size_t nplugins = v_pInfo.size();
+
+  for(std::size_t i = 0; i != nplugins; ++i)
+    plugins_map.insert(std::make_pair(v_pInfo[i].name, i));
+
+  std::map<std::string, std::size_t>::const_iterator it_end = plugins_map.end();
+
   typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS>
       Graph;
   typedef boost::graph_traits<Graph>::vertex_descriptor Vertex;
 
   Graph dgraph;  // The dependency graph must be a DAG
 
-  for (std::size_t i = 0; i < v_pInfo.size(); ++i)
+  for(std::size_t i = 0; i < nplugins; ++i)
     boost::add_vertex(dgraph);
 
-  for (std::size_t i = 0; i < v_pInfo.size(); ++i)
+  for(std::size_t i = 0; i != nplugins; ++i)
   {
-    for (std::size_t j = 0; j < v_pInfo[i].dependencies.size(); ++j)
-    {
-      const auto pInfo = v_pInfo[i];
-      const auto it = std::find_if(v_pInfo.begin(), v_pInfo.end(),
-                                   [&pInfo, &j](const te::core::PluginInfo& p)
-                                   {
-                                     return p.name == pInfo.dependencies[j];
-                                   });
+    const std::vector<std::string>& required_plugins = v_pInfo[i].dependencies;
 
-      // if plugin A (it - plugins.begin()) is required for plugin B (i) then
-      // there must be a directed edge from A to B (A must come first then B!)
-      if (it != v_pInfo.end())
-        boost::add_edge(it - v_pInfo.begin(), i, dgraph);
+    const std::size_t num_required_plugins = required_plugins.size();
+
+    for(std::size_t j = 0; j != num_required_plugins; ++j)
+    {
+      std::map<std::string, std::size_t>::const_iterator it =
+          plugins_map.find(required_plugins[j]);
+
+      if(it != it_end)
+      {
+        // if plugin A (it->second) is required for plugin B (i) then there must
+        // be a directed edge from A to B (A must come first then B!)
+        boost::add_edge(it->second, i, dgraph);
+      }
     }
   }
 
   std::vector<Vertex> toposortResult;
-  std::vector<te::core::PluginInfo> sortedPlugins;
 
   try
   {
     boost::topological_sort(dgraph, std::back_inserter(toposortResult));
   }
-  catch (const boost::not_a_dag& e)
+  catch(const boost::not_a_dag& e)
   {
     boost::format err_msg(
         TE_TR("The plugins cannot be sorted due to the following error: %1%"));
@@ -113,13 +124,15 @@ std::vector<te::core::PluginInfo> te::core::plugin::TopologicalSort(
         << ErrorDescription((err_msg % e.what()).str());
   }
 
-  for (auto it = toposortResult.rbegin(); it != toposortResult.rend(); ++it)
+  std::vector<te::core::PluginInfo> sortedPlugins;
+
+  for(auto it = toposortResult.rbegin(); it != toposortResult.rend(); ++it)
     sortedPlugins.push_back(v_pInfo[*it]);
 
   return sortedPlugins;
 }
 
-void te::core::plugin::loadAll(bool start)
+void te::core::plugin::LoadAll(bool start)
 {
   te::core::PluginManager::instance().clear();
 
@@ -129,17 +142,24 @@ void te::core::plugin::loadAll(bool start)
 
   for(const te::core::PluginInfo& pinfo : v_pInfo)
   {
-    te::core::PluginManager::instance().insert(pinfo);
-    te::core::PluginManager::instance().load(pinfo.name, start);
+    try
+    {
+     te::core::PluginManager::instance().insert(pinfo);
+     te::core::PluginManager::instance().load(pinfo.name, start);
+    }
+    catch(...)
+    {
+      // TODO
+    }
   }
 }
 
-void te::core::plugin::unloadAll()
+void te::core::plugin::UnloadAll()
 {
   std::vector<te::core::PluginInfo> pVec =
       te::core::PluginManager::instance().getLoadedPlugins();
 
-  for (auto plugin = pVec.rbegin(); plugin != pVec.rend(); ++plugin)
+  for(auto plugin = pVec.rbegin(); plugin != pVec.rend(); ++plugin)
   {
     te::core::PluginManager::instance().stop(plugin->name);
     te::core::PluginManager::instance().unload(plugin->name);
@@ -151,7 +171,7 @@ void te::core::plugin::UnloadPlugin(const std::string& plugin_name)
   const te::core::PluginInfo& pInfo =
       te::core::PluginManager::instance().getPluginInfo(plugin_name);
 
-  for(auto dependent: pInfo.dependencies)
+  for(auto dependent : pInfo.dependencies)
     UnloadPlugin(dependent);
 
   if(te::core::PluginManager::instance().isUnloaded(plugin_name))
@@ -160,4 +180,3 @@ void te::core::plugin::UnloadPlugin(const std::string& plugin_name)
   te::core::PluginManager::instance().stop(plugin_name);
   te::core::PluginManager::instance().unload(plugin_name);
 }
-
