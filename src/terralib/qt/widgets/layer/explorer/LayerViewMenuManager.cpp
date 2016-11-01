@@ -170,7 +170,7 @@ bool te::qt::widgets::LayerViewMenuManager::eventFilter(QObject* watched, QEvent
               {
                 GetMenu(&mnu, m_VL_actions.get(), m_AL_actions.get());
               }
-              else if (layer->getType() == "DATASETADAPTERLAYER") // tabular layer
+              else if (layer->getType() == "DATASETADAPTERLAYER" || layer->getType() == "DATASETLAYER") // tabular layer
               {
                 GetMenu(&mnu, m_TL_actions.get(), m_AL_actions.get());
               }
