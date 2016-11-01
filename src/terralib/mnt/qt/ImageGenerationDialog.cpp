@@ -485,10 +485,17 @@ void te::mnt::ImageGenerationDialog::drawPreview(std::unique_ptr<te::rst::Raster
 
   QApplication::setOverrideCursor(Qt::WaitCursor);
 
-  // Draw raster
-  te::map::DrawRaster(outrst, m_canvas, *envRst, m_mapDisplay->getSRID(), *envRst, m_outsrid, cs, m_mapDisplay->getScale());
+  try
+  {
+    // Draw raster
+    te::map::DrawRaster(outrst, m_canvas, *envRst, m_mapDisplay->getSRID(), *envRst, m_outsrid, cs, m_mapDisplay->getScale());
 
-  m_mapDisplay->repaint();
+    m_mapDisplay->repaint();
+  }
+  catch (te::common::Exception&)
+  {
+
+  }
 
   QApplication::restoreOverrideCursor();
   delete somb;
