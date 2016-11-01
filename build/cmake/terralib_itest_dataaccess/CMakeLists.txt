@@ -23,6 +23,15 @@
 #  Author: Carolina Galvão dos Santos
 #
 
+IF(MSVC)
+  set(CMAKE_CXX_FLAGS_RELEASE "/MT")
+  set(CMAKE_CXX_FLAGS_DEBUG "/MTd")
+ENDIF(MSVC)
+
+if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR (CMAKE_CXX_COMPILER MATCHES ".*clang") OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+endif()
+
 include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 include_directories(${GTEST_INCLUDE_DIRS} ${GMOCK_INCLUDE_DIRS})
 
@@ -39,9 +48,9 @@ target_link_libraries(terralib_itest_dataaccess terralib_mod_dataaccess
                                                 ${GTEST_BOTH_LIBRARIES}
                                                 ${GMOCK_BOTH_LIBRARIES})
 
-if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR (CMAKE_CXX_COMPILER MATCHES ".*clang") OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-endif()
+
+
+
 
 add_test(NAME terralib_itest_dataaccess
          COMMAND terralib_itest_dataaccess

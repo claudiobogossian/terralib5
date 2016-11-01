@@ -24,6 +24,15 @@
 #  Author: Emerson Moraes <emerson.moraes@funcate.org.br>
 #
 
+IF(MSVC)
+  set(CMAKE_CXX_FLAGS_RELEASE "/MT")
+  set(CMAKE_CXX_FLAGS_DEBUG "/MTd")
+ENDIF(MSVC)
+
+if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR (CMAKE_CXX_COMPILER MATCHES ".*clang") OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+endif()
+
 include_directories(${Boost_INCLUDE_DIR}
                     ${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
@@ -47,10 +56,6 @@ target_link_libraries(terralib_unittest_ws_ogc_wcs terralib_mod_ws_ogc_wcs_clien
 
 install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_UNITTEST}/ogc-wcs COMPONENT devel)
-
-if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR (CMAKE_CXX_COMPILER MATCHES ".*clang") OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-endif()
 
 add_test(NAME terralib_unittest_ws_ogc_wcs COMMAND terralib_unittest_ws_ogc_wcs
          WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
