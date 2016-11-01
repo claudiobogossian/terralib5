@@ -38,7 +38,6 @@
 #include "../../help/HelpManager.h"
 #include "../../utils/CentralizedCheckBoxDelegate.h"
 #include "../../utils/ResourceChooser.h"
-#include "PluginsModel.h"
 #include "ui_PluginManagerDialogForm.h"
 
 // Boost

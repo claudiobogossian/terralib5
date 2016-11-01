@@ -27,7 +27,7 @@
 #define __TERRALIB_WCS_INTERNAL_MODULE_H
 
 // TerraLib
-#include "../plugin/Plugin.h"
+#include "../core/plugin/CppPlugin.h"
 #include "Config.h"
 
 namespace te
@@ -39,7 +39,7 @@ namespace te
      
       brief The TerraLib WCS driver as a plugin.
     */
-    class Module : public te::plugin::Plugin
+    class Module : public te::core::CppPlugin
     {
     public:
       
@@ -48,7 +48,7 @@ namespace te
 
        \param pInfo Basic information provided to initialize this module through the plugin API.
       */
-      Module(const te::plugin::PluginInfo& pluginInfo);
+      Module(const te::core::PluginInfo& pluginInfo);
       
       /*! \brief Destructor. */
       ~Module();
@@ -79,7 +79,5 @@ namespace te
 
   } // end namespace wcs
 }   // end namespace te
-
-PLUGIN_CALL_BACK_DECLARATION(TEWCSEXPORT);
 
 #endif  // __TERRALIB_WCS_INTERNAL_MODULE_H

@@ -26,9 +26,8 @@
 #ifndef __TERRALIB_WS_OGC_WMS_QTPLUGIN_PLUGIN_H
 #define __TERRALIB_WS_OGC_WMS_QTPLUGIN_PLUGIN_H
 
-#include "../../../../plugin/Plugin.h"
+#include "../../../../core/plugin/CppPlugin.h"
 #include "../qt/WMSItemDelegate.h"
-
 #include "Config.h"
 
 // Qt
@@ -56,13 +55,13 @@ namespace te
       {
         namespace qtplugin
         {
-          class TEOGCWMSQTPLUGINEXPORT Plugin : public QObject, public te::plugin::Plugin
+          class TEOGCWMSQTPLUGINEXPORT Plugin : public QObject, public te::core::CppPlugin
           {
             Q_OBJECT
 
             public:
 
-              Plugin(const te::plugin::PluginInfo& pluginInfo);
+              Plugin(const te::core::PluginInfo& pluginInfo);
 
               ~Plugin();
 
@@ -85,7 +84,5 @@ namespace te
     }     // end namespace ogc
   }       // end namespace ws
 }         // end namespace te
-
-PLUGIN_CALL_BACK_DECLARATION(TEOGCWMSQTPLUGINEXPORT)
 
 #endif // __TERRALIB_WS_OGC_WMS_QTPLUGIN_PLUGIN_H

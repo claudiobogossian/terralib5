@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/xml/Module.cpp
-   
+
   \brief This singleton defines the TerraLib XML module entry.
  */
 

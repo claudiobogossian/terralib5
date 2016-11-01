@@ -50,8 +50,8 @@
 // STL
 #include <string>
 
-te::qt::plugins::vp::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo),
+te::qt::plugins::vp::Plugin::Plugin(const te::core::PluginInfo& pluginInfo)
+  : te::core::CppPlugin(pluginInfo),
     m_vpMenu(0),
     m_aggregation(0),
     m_buffer(0),
@@ -168,5 +168,5 @@ void  te::qt::plugins::vp::Plugin::unRegisterActions()
   
 }
 
-PLUGIN_CALL_BACK_IMPL(te::qt::plugins::vp::Plugin)
+TERRALIB_PLUGIN_CALL_BACK_IMPL(te::qt::plugins::vp::Plugin)
 

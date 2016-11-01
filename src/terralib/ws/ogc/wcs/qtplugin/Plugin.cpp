@@ -34,8 +34,8 @@
 #include "../qt/WCSType.h"
 
 
-te::ws::ogc::wcs::qtplugin::Plugin::Plugin(const te::plugin::PluginInfo &pluginInfo)
-  : te::plugin::Plugin(pluginInfo)
+te::ws::ogc::wcs::qtplugin::Plugin::Plugin(const te::core::PluginInfo &pluginInfo)
+  : te::core::CppPlugin(pluginInfo)
 {
 }
 
@@ -68,4 +68,4 @@ void te::ws::ogc::wcs::qtplugin::Plugin::shutdown()
   m_initialized = false;
 }
 
-PLUGIN_CALL_BACK_IMPL(te::ws::ogc::wcs::qtplugin::Plugin)
+TERRALIB_PLUGIN_CALL_BACK_IMPL(te::ws::ogc::wcs::qtplugin::Plugin)

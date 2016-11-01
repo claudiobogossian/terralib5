@@ -32,8 +32,8 @@
 #include "PostGISType.h"
 #include "Plugin.h"
 
-te::qt::plugins::pgis::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo)
+te::qt::plugins::pgis::Plugin::Plugin(const te::core::PluginInfo& pluginInfo)
+  : te::core::CppPlugin(pluginInfo)
 {
 }
 
@@ -66,4 +66,4 @@ void te::qt::plugins::pgis::Plugin::shutdown()
   m_initialized = false;
 }
 
-PLUGIN_CALL_BACK_IMPL(te::qt::plugins::pgis::Plugin)
+TERRALIB_PLUGIN_CALL_BACK_IMPL(te::qt::plugins::pgis::Plugin)
