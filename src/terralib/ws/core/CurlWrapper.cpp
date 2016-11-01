@@ -58,6 +58,10 @@ struct CurlProgress
 struct te::ws::core::CurlWrapper::Impl
 {
   std::shared_ptr<CURL>  m_curl;
+  std::mutex             m_bufferMutex;
+  std::string            m_taskMessage;
+  std::string            m_response;
+  long                   m_responseCode;
 };
 
 te::ws::core::CurlWrapper::CurlWrapper()
@@ -76,8 +80,8 @@ void te::ws::core::CurlWrapper::clean()
 {
   curl_easy_reset(m_pimpl->m_curl.get());
 
-  m_response = "";
-  m_responseCode = 0;
+  m_pimpl->m_response = "";
+  m_pimpl->m_responseCode = 0;
 }
 
 
@@ -167,7 +171,7 @@ void te::ws::core::CurlWrapper::downloadFile(const std::string &url, std::FILE* 
   te::common::TaskProgress* task = 0;
 
   if (!taskProgress)
-    task = new te::common::TaskProgress(m_taskMessage, te::common::TaskProgress::UNDEFINED, 100);
+    task = new te::common::TaskProgress(m_pimpl->m_taskMessage, te::common::TaskProgress::UNDEFINED, 100);
   else
     task = taskProgress;
 
@@ -175,7 +179,7 @@ void te::ws::core::CurlWrapper::downloadFile(const std::string &url, std::FILE* 
 
   progress.m_curl = m_pimpl->m_curl;
   progress.m_task = task;
-  progress.m_baseMessage = m_taskMessage;
+  progress.m_baseMessage = m_pimpl->m_taskMessage;
 
   curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_XFERINFOFUNCTION, DownloadProgress);
 
@@ -197,13 +201,13 @@ void te::ws::core::CurlWrapper::downloadFile(const std::string &url, std::FILE* 
 
 std::string te::ws::core::CurlWrapper::getTaskMessage() const
 {
-  return m_taskMessage;
+  return m_pimpl->m_taskMessage;
 }
 
 
 void te::ws::core::CurlWrapper::setTaskMessage(const std::string &taskMessage)
 {
-  m_taskMessage = taskMessage;
+  m_pimpl->m_taskMessage = taskMessage;
 }
 
 
@@ -228,7 +232,7 @@ void te::ws::core::CurlWrapper::post(const te::core::URI &uri,
 
   curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_WRITEFUNCTION, WriteResponse);
 
-  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_WRITEDATA, &m_response);
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_WRITEDATA, &m_pimpl->m_response);
 
   /* Perform the request, status will get the return code */
   CURLcode status = curl_easy_perform(m_pimpl->m_curl.get());
@@ -242,7 +246,7 @@ void te::ws::core::CurlWrapper::post(const te::core::URI &uri,
     throw te::common::Exception(msg);
   }
 
-  status = curl_easy_getinfo(m_pimpl->m_curl.get(), CURLINFO_RESPONSE_CODE, &m_responseCode);
+  status = curl_easy_getinfo(m_pimpl->m_curl.get(), CURLINFO_RESPONSE_CODE, &m_pimpl->m_responseCode);
 
   // Check for errors
   if(status != CURLE_OK)
@@ -289,7 +293,7 @@ void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const std::fst
 
   curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_WRITEFUNCTION, WriteResponse);
 
-  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_WRITEDATA, &m_response);
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_WRITEDATA, &m_pimpl->m_response);
 
   /* Perform the request, status will get the return code */
   CURLcode status = curl_easy_perform(m_pimpl->m_curl.get());
@@ -303,7 +307,7 @@ void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const std::fst
     throw te::common::Exception(msg);
   }
 
-  status = curl_easy_getinfo(m_pimpl->m_curl.get(), CURLINFO_RESPONSE_CODE, &m_responseCode);
+  status = curl_easy_getinfo(m_pimpl->m_curl.get(), CURLINFO_RESPONSE_CODE, &m_pimpl->m_responseCode);
 
   // Check for errors
   if(status != CURLE_OK)
@@ -338,7 +342,7 @@ void te::ws::core::CurlWrapper::customRequest(const te::core::URI &uri, const st
 
   curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_WRITEFUNCTION, WriteResponse);
 
-  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_WRITEDATA, &m_response);
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_WRITEDATA, &m_pimpl->m_response);
 
   /* Perform the request, status will get the return code */
   CURLcode status = curl_easy_perform(m_pimpl->m_curl.get());
@@ -351,7 +355,7 @@ void te::ws::core::CurlWrapper::customRequest(const te::core::URI &uri, const st
     throw te::common::Exception(msg);
   }
 
-  status = curl_easy_getinfo(m_pimpl->m_curl.get(), CURLINFO_RESPONSE_CODE, &m_responseCode);
+  status = curl_easy_getinfo(m_pimpl->m_curl.get(), CURLINFO_RESPONSE_CODE, &m_pimpl->m_responseCode);
 
   // Check for errors
   if(status != CURLE_OK)
@@ -367,6 +371,8 @@ void te::ws::core::CurlWrapper::get(const te::core::URI &uri, std::string &buffe
   buffer.clear();
 
   std::string url = uri.uri();
+
+  m_pimpl->m_bufferMutex.lock();
 
   curl_easy_reset(m_pimpl->m_curl.get());
 
@@ -384,7 +390,9 @@ void te::ws::core::CurlWrapper::get(const te::core::URI &uri, std::string &buffe
   /* Perform the request, status will get the return code */
   CURLcode status = curl_easy_perform(m_pimpl->m_curl.get());
 
-  m_response = buffer;
+  m_pimpl->m_bufferMutex.unlock();
+
+  m_pimpl->m_response = buffer;
 
   if(status != CURLE_OK)
   {
@@ -392,7 +400,7 @@ void te::ws::core::CurlWrapper::get(const te::core::URI &uri, std::string &buffe
     throw te::common::Exception(msg);
   }
 
-  status = curl_easy_getinfo(m_pimpl->m_curl.get(), CURLINFO_RESPONSE_CODE, &m_responseCode);
+  status = curl_easy_getinfo(m_pimpl->m_curl.get(), CURLINFO_RESPONSE_CODE, &m_pimpl->m_responseCode);
 
   // Check for errors
   if(status != CURLE_OK)
@@ -405,11 +413,11 @@ void te::ws::core::CurlWrapper::get(const te::core::URI &uri, std::string &buffe
 
 const long te::ws::core::CurlWrapper::responseCode() const
 {
-  return m_responseCode;
+  return m_pimpl->m_responseCode;
 }
 
 
 const std::string& te::ws::core::CurlWrapper::response() const
 {
-  return m_response;
+  return m_pimpl->m_response;
 }

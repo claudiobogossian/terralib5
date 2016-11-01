@@ -31,6 +31,7 @@
 
 //STL
 #include <memory>
+#include <mutex>
 
 #include "Config.h"
 #include "../../common/progress/TaskProgress.h"
@@ -148,9 +149,6 @@ namespace te
       struct Impl;
 
       std::unique_ptr<Impl>  m_pimpl;
-      std::string            m_taskMessage;
-      std::string            m_response;
-      long                   m_responseCode;
     };
 
     }
