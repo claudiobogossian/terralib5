@@ -37,6 +37,7 @@ namespace te
       */
       enum ImageType
       {
+        UNKNOWN = 0, /*!< Unknown Type                                     */
         PNG  = 1,    /*!< Portable Network Graphics (PNG) support.         */
         JPEG = 2,    /*!< Joint Photographic Experts Group (JPEG) support. */
         GIF  = 3,    /*!< Graphics Interchange Format (GIF) support.       */

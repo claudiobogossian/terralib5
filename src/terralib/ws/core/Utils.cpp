@@ -9,7 +9,7 @@
 
 te::map::ImageType te::ws::core::FormatToImageType(const std::string& format)
 {
-  te::map::ImageType imageType;
+  te::map::ImageType imageType = te::map::ImageType::UNKNOWN;
 
   std::vector<std::string> formatSplit = te::common::SplitString(format, '/');
 
