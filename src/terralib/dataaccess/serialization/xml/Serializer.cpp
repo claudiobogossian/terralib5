@@ -159,7 +159,7 @@ te::da::DataSourceInfo* te::serialize::xml::ReadDataSourceInfo(te::xml::Reader& 
   /* ConnectionInfo Element */
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "ConnectionInfo");
+  assert(reader.getElementLocalName() == "URI");
   reader.next();
 
   if (reader.getNodeType() == te::xml::VALUE)
@@ -230,13 +230,13 @@ void te::serialize::xml::Save(te::xml::AbstractWriter& writer)
     writer.writeValue(it->second->getDescription());
     writer.writeEndElement("te_da:Description");
 
-    writer.writeStartElement("te_da:ConnectionInfo");
+    writer.writeStartElement("te_da:URI");
 
     std::string connInfo = it->second->getConnInfoAsString();
     boost::replace_all(connInfo, "&", "%26");
 
     writer.writeValue(connInfo);
-    writer.writeEndElement("te_da:ConnectionInfo");
+    writer.writeEndElement("te_da:URI");
 
     writer.writeEndElement("te_da:DataSource");
   }
