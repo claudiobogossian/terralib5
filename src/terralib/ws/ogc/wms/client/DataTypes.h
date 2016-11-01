@@ -114,13 +114,14 @@ namespace te
        */
       struct TEOGCWMSEXPORT Dimension
       {
-        std::string m_name;
-        std::string m_units;
-        std::string m_unitSymbol;
-        std::string m_default;
-        bool        m_multipleValues;
-        bool        m_nearestValue;
-        bool        m_current;
+        std::string              m_name;
+        std::string              m_units;
+        std::string              m_unitSymbol;
+        std::string              m_default;
+        bool                     m_multipleValues;
+        bool                     m_nearestValue;
+        bool                     m_current;
+        std::vector<std::string> m_allowedValues;
 
         Dimension() :
           m_multipleValues(false),

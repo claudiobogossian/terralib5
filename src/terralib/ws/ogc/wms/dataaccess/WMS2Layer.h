@@ -18,19 +18,23 @@
  */
 
 /*!
-  \file terralib/ws/ogc/wms/qt/WMSType.h
+  \file terralib/ws/ogc/wms/dataaccess/WMS2Layer.h
 
-  \brief WMS data source type.
-
-  \author Emerson Moraes
+  \brief A functor that converts a dataset from WMS server to a TerraLib OGC WMSLayer.
 */
 
-#ifndef __TERRALIB_WS_OGC_WMS_QT_WMSTYPE_H
-#define __TERRALIB_WS_OGC_WMS_QT_WMSTYPE_H
+#ifndef __TERRALIB_WS_OGC_WMS2LAYER_H
+#define __TERRALIB_WS_OGC_WMS2LAYER_H
+
+
 
 #include "Config.h"
-#include "../../../../qt/widgets/datasource/core/DataSourceType.h"
 
+//TerraLib
+#include "WMSLayer.h"
+
+// STL
+#include <string>
 namespace te
 {
   namespace ws
@@ -39,40 +43,20 @@ namespace te
     {
       namespace wms
       {
-        namespace qt
+
+        struct TEOGCWMSDATAACCESSEXPORT WMS2Layer
         {
+          std::string m_dataSourceId;
 
-          class TEOGCWMSQTEXPORT WMSType : public te::qt::widgets::DataSourceType
-          {
-            public:
+          WMS2Layer(const std::string dataSourceId);
 
-              WMSType();
+          WMSLayerPtr operator()(const te::ws::ogc::wms::WMSGetMapRequest& request) const;
+        };
 
-              ~WMSType();
-
-              bool hasDatabaseSupport() const;
-
-              bool hasFileSupport() const;
-
-              bool hasRasterSupport() const;
-
-              bool hasVectorialSupport() const;
-
-              std::string getName() const;
-
-              std::string getTitle() const;
-
-              std::string getDescription() const;
-
-              QWidget* getWidget(int widgetType, QWidget* parent = 0, Qt::WindowFlags f = 0) const;
-
-              QIcon getIcon(int iconType) const;
-          };
-
-        }
       }
     }
   }
 }
 
-#endif // __TERRALIB_WS_OGC_WMS_QT_WMSTYPE_H
+
+#endif //__TERRALIB_WS_OGC_WMS2LAYER_H
