@@ -28,7 +28,7 @@ namespace te
 
       void setInput(te::da::DataSourcePtr inDsrc,
         std::string inDsetName,
-        std::auto_ptr<te::da::DataSetType>& inDsetType);
+        const te::da::DataSetTypePtr& inDsetType);
 
       void setOutput(std::map<std::string, std::string> &dsinfo, std::string outRstDSType);
 
@@ -54,8 +54,8 @@ namespace te
 
       te::da::DataSourcePtr m_inDsrc;
       std::string m_inDsetName;
-      std::auto_ptr<te::da::DataSetType> m_inDsetType;
-      std::auto_ptr<te::da::DataSet> inDset;
+      te::da::DataSetTypePtr m_inDsetType;
+      std::unique_ptr<te::da::DataSet> inDset;
 
       std::map<std::string, std::string> m_outDsinfo;
       std::string m_outRstDSType;

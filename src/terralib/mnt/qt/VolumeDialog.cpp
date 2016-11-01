@@ -287,6 +287,8 @@ void te::mnt::VolumeDialog::onOkPushButtonClicked()
     return;
   }
 
+  QApplication::restoreOverrideCursor();
+
   te::common::ProgressManager::getInstance().removeViewer(id);
   accept();
 

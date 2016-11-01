@@ -41,18 +41,15 @@ te::mnt::Shadow::~Shadow()
 {
   if (m_out)
     delete m_out;
-  inDset.release();
-  m_inDsetType.release();
 }
 
 void te::mnt::Shadow::setInput(te::da::DataSourcePtr inDsrc,
   std::string inDsetName,
-  std::auto_ptr<te::da::DataSetType>& inDsetType)
+  const te::da::DataSetTypePtr& inDsetType)
 {
   m_inDsrc = inDsrc;
   m_inDsetName = inDsetName;
   m_inDsetType = inDsetType;
-
 }
 
 void te::mnt::Shadow::setOutput(std::map<std::string, std::string> &dsinfo, std::string outRstDSType)
@@ -153,8 +150,8 @@ te::rst::Raster *te::mnt::Shadow::GenerateImage(te::rst::Raster *raster)
 {
   double resxi = raster->getResolutionX();
   double resyi = raster->getResolutionY();
-  int X1 = raster->getExtent()->getLowerLeftX();
-  int Y2 = raster->getExtent()->getUpperRightY();
+  int X1 = static_cast<int>(raster->getExtent()->getLowerLeftX());
+  int Y2 = static_cast<int>(raster->getExtent()->getUpperRightY());
   te::gm::Coord2D ulc(X1, Y2);
   te::rst::Grid* grid = new te::rst::Grid(m_outputWidth, m_outputHeight, m_resxo, m_resyo, &ulc, m_srid);
   std::vector<te::rst::BandProperty*> bands;
@@ -185,8 +182,10 @@ te::rst::Raster *te::mnt::Shadow::GenerateImage(te::rst::Raster *raster)
 
   // create raster
   te::rst::Raster *out = te::rst::RasterFactory::make(m_outRstDSType, grid, bands, m_outDsinfo);
-  for (int i = 0; i < out->getNumberOfRows(); i++)
-    for (int j = 0; j < out->getNumberOfColumns(); j++)
+  int nrows_out = static_cast<int>(out->getNumberOfRows());
+  int ncols_out = static_cast<int>(out->getNumberOfColumns());
+  for (int i = 0; i < nrows_out; i++)
+    for (int j = 0; j < ncols_out; j++)
       out->setValue(j,i, m_dummy);
 
   std::vector < std::complex<double> > val1(ncols);

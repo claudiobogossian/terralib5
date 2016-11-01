@@ -96,6 +96,8 @@ namespace te
       void onCancelPushButtonClicked();
       void onSrsToolButtonClicked();
 
+      void onMapDisplayExtentChanged();
+
     private:
 
       std::unique_ptr<Ui::ImageGenerationDialogForm> m_ui;
