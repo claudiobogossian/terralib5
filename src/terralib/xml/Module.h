@@ -18,27 +18,30 @@
  */
 
 /*!
-  \file terralib/plugin/Module.h
+  \file terralib/xml/Module.h
+   
+  \brief This singleton defines the TerraLib XML module entry.
+ */
 
-  \brief This singleton defines the TerraLib Plugin module entry.
-*/
-
-#ifndef __TERRALIB_PLUGIN_INTERNAL_MODULE_H
-#define __TERRALIB_PLUGIN_INTERNAL_MODULE_H
+#ifndef __TERRALIB_XML_INTERNAL_MODULE_H
+#define __TERRALIB_XML_INTERNAL_MODULE_H
 
 // TerraLib
+#include "Config.h"
 #include "../common/Singleton.h"
+
+#include <string>
 
 namespace te
 {
-  namespace plugin
+  namespace xml
   {
     /*!
       \class Module
 
-      \brief This singleton defines the TerraLib Plugin module entry.
-    */
-    class Module : public te::common::Singleton<Module>
+      \brief This singleton defines the TerraLib XML module entry.
+     */
+    class TEXMLEXPORT Module : public te::common::Singleton<Module>
     {
       friend class te::common::Singleton<Module>;
 
@@ -53,17 +56,17 @@ namespace te
       private:
 
         /*!
-          \brief This is the startup function for the TerraLib Plugin module.
+          \brief This is the initialize function for the TerraLib XML module.
 
           \note This method doesn't perform operations for this module.
-        */
+         */
         static void initialize();
 
         /*!
-          \brief This is the cleanup function for the TerraLib Plugin module.
+          \brief This is the cleanup function for the TerraLib XML module.
 
           \note This method doesn't perform operations for this module.
-        */
+         */
         static void finalize();
 
       private:
@@ -71,8 +74,22 @@ namespace te
         static const Module& sm_module; //!< Just to make a static initialization.
     };
 
-  } // end namespace plugin
+  } // end namespace xml
 }   // end namespace te
 
-#endif  // __TERRALIB_PLUGIN_INTERNAL_MODULE_H
+#endif  // __TERRALIB_XML_INTERNAL_MODULE_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

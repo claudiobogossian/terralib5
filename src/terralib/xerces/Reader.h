@@ -63,7 +63,7 @@ namespace te
       If you prefer to use the SAX or DOM parsers, please, look
       the Xerces-C++ documentation available at http://xerces.apache.org/xerces-c.
     */
-    class TEXERCESEXPORT Reader : public te::xml::Reader
+    class  Reader : public te::xml::Reader
     {
       public:
 

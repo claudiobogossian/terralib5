@@ -35,7 +35,7 @@ add_executable(terralib_example_srs ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
 target_link_libraries(terralib_example_srs terralib_mod_srs
                                            terralib_mod_geometry
-                                           terralib_mod_xerces
+                                           terralib_mod_xml
                                            ${BOOST_SYSTEM_LIBRARY})
 
 install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}

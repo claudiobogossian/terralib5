@@ -44,19 +44,6 @@ int main(int /*argc*/, char** /*argv*/)
 // Initializes Terralib support
   TerraLib::getInstance().initialize();
 
-
-  te::plugin::PluginInfo pinfo;
-  pinfo.m_name = "TERRALIB_XERCES";
-  pinfo.m_category = "XML";
-  pinfo.m_engine = TE_CPPPLUGINENGINE_CODE;
-  //pinfo.m_folder = "."; //the default search directories will be used
-  pinfo.m_resources.push_back(te::plugin::PluginInfo::Resource("SharedLibraryName", "terralib_mod_xerces"));
-
-  te::plugin::PluginManager::getInstance().load(pinfo, true);
-
-
-
-
   try
   {
     /* OGC Symbology Encoding */
