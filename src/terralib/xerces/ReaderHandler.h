@@ -49,7 +49,7 @@ namespace te
 
       \todo Trabalhar com o handler lexico p/ saber se estamos lidando com valores de um elemento ou com um CDATA. Hoje tudo esta como VALUE.
      */
-    class TEXERCESEXPORT ReaderHandler : public xercesc::ContentHandler
+    class  ReaderHandler : public xercesc::ContentHandler
     {
       public:
 

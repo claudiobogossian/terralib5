@@ -8,7 +8,7 @@
 	"license_description":"",
 	"license_URL":"",
 	"site":"www.example.com/plugin1",
-	"dependencies":[],
+	"dependencies":["plugin3"],
 	"linked_libraries":[],
 	"resources":{"shared_library_name":"terralib_example_core_plugin2"},
 	"parameters":[],

@@ -2503,6 +2503,9 @@ namespace te
       {
         ring.setPoint( ++ringIdx, lLX, lLY + ( ((double)( row ) ) * resY ) );
       }
+
+      // Ensuring correct closing
+      ring.setPoint( ringSize - 1, lLX, uRY );
       
       detailedExtent = ring;
       
@@ -2552,6 +2555,9 @@ namespace te
       {
         ring.setPoint( ++ringIdx, (-0.5), lLY - ((double)row) );
       }       
+
+      // Ensuring correct closing
+      ring.setPoint( ringSize - 1, -0.5, -0.5 ); 
       
       indexedDetailedExtent = ring;
       

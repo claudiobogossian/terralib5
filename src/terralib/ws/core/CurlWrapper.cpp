@@ -78,6 +78,10 @@ void te::ws::core::CurlWrapper::clean()
 
   m_response = "";
   m_responseCode = 0;
+
+#ifndef NDEBUG
+  curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_NOSIGNAL, 1);
+#endif
 }
 
 
@@ -136,7 +140,7 @@ int DownloadProgress(void *p,
   return 0;
 }
 
-void te::ws::core::CurlWrapper::downloadFile(const std::string& url, const std::string& filePath, te::common::TaskProgress* taskProgress) const
+void te::ws::core::CurlWrapper::downloadFile(const std::string& url, const std::string& filePath, te::common::TaskProgress* taskProgress)
 {
 
   std::FILE* file = std::fopen(te::core::CharEncoding::fromUTF8(filePath).c_str(), "wb");
@@ -152,9 +156,9 @@ void te::ws::core::CurlWrapper::downloadFile(const std::string& url, const std::
     std::fclose(file);
 }
 
-void te::ws::core::CurlWrapper::downloadFile(const std::string &url, std::FILE* file, te::common::TaskProgress* taskProgress) const
+void te::ws::core::CurlWrapper::downloadFile(const std::string &url, std::FILE* file, te::common::TaskProgress* taskProgress)
 {
-  curl_easy_reset(m_pimpl->m_curl.get());
+  clean();
 
   curl_easy_setopt(m_pimpl->m_curl.get(), CURLOPT_URL, url.c_str());
 
@@ -247,7 +251,7 @@ void te::ws::core::CurlWrapper::post(const te::core::URI &uri,
   // Check for errors
   if(status != CURLE_OK)
   {
-    std::string msg = curl_easy_strerror(status) + ':' + std::string(errbuf);
+    std::string msg = curl_easy_strerror(status) + (':' + std::string(errbuf));
     throw te::common::Exception(msg);
   }
 }
@@ -308,7 +312,7 @@ void te::ws::core::CurlWrapper::putFile(const te::core::URI &uri, const std::fst
   // Check for errors
   if(status != CURLE_OK)
   {
-    std::string msg = curl_easy_strerror(status) + ':' + std::string(errbuf);
+    std::string msg = curl_easy_strerror(status) + (':' + std::string(errbuf));
     throw te::common::Exception(msg);
   }
 }
@@ -356,7 +360,7 @@ void te::ws::core::CurlWrapper::customRequest(const te::core::URI &uri, const st
   // Check for errors
   if(status != CURLE_OK)
   {
-    std::string msg = curl_easy_strerror(status) + ':' + std::string(errbuf);
+    std::string msg = curl_easy_strerror(status) + (':' + std::string(errbuf));
     throw te::common::Exception(msg);
   }
 }
@@ -364,11 +368,11 @@ void te::ws::core::CurlWrapper::customRequest(const te::core::URI &uri, const st
 
 void te::ws::core::CurlWrapper::get(const te::core::URI &uri, std::string &buffer)
 {
+  clean();
+
   buffer.clear();
 
   std::string url = uri.uri();
-
-  curl_easy_reset(m_pimpl->m_curl.get());
 
   char errbuf [CURL_ERROR_SIZE];
 
@@ -397,7 +401,7 @@ void te::ws::core::CurlWrapper::get(const te::core::URI &uri, std::string &buffe
   // Check for errors
   if(status != CURLE_OK)
   {
-    std::string msg = curl_easy_strerror(status) + ':' + std::string(errbuf);
+    std::string msg = curl_easy_strerror(status) + (':' + std::string(errbuf));
     throw te::common::Exception(msg);
   }
 }

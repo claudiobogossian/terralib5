@@ -763,7 +763,7 @@ namespace te
 
         m_actualintersection = 0;
 
-        m_nintersections = (int)m_columns.size();
+        m_nintersections = static_cast<int>(m_columns.size());
       }
 
       m_startingcolumn = this->m_columns[m_actualintersection].first;

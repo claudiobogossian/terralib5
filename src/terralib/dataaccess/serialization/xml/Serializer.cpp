@@ -159,6 +159,7 @@ te::da::DataSourceInfo* te::serialize::xml::ReadDataSourceInfo(te::xml::Reader& 
   /* ConnectionInfo Element */
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  std::string tst = reader.getElementLocalName();
   assert(reader.getElementLocalName() == "URI");
   reader.next();
 

@@ -109,9 +109,9 @@ void SaveProject(const ProjectMetadata& proj, const std::list<te::map::AbstractL
     writer->writeValue(it->second->getDescription());
     writer->writeEndElement("te_da:Description");
 
-    writer->writeStartElement("te_da:ConnectionInfo");
+    writer->writeStartElement("te_da:URI");
     writer->writeValue(it->second->getConnInfoAsString());
-    writer->writeEndElement("te_da:ConnectionInfo");
+    writer->writeEndElement("te_da:URI");
 
     writer->writeEndElement("te_da:DataSource");
   }

@@ -297,6 +297,7 @@ bool te::qt::widgets::MixtureModelWizard::execute()
             m_rasterInfoPage->getWidget()->getInfo()));
         }
 
+        QApplication::restoreOverrideCursor();
 
         int addOutPutLayer = QMessageBox::question(this, tr("Mixture Model"), tr("Would you like to add layer on active project?"),
                                                    QMessageBox::Yes | QMessageBox::No);

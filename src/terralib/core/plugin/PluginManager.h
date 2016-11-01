@@ -79,6 +79,16 @@ namespace te
       /*! \brief Return the list of plugins that could not be loaded. */
       std::vector<PluginInfo> getBrokenPlugins() const;
 
+
+      /*!
+        \brief Return the list of plugins that depends of a given plugin.
+
+        \param plugin_name Name of the plugin to be search.
+
+        \exception OutOfRangeException if the plugin is not found.
+       */
+      std::vector<std::string> getDependents(const std::string plugin_name);
+
       /*! \brief Returns true if the plugin is in the broken list of plugins. */
       bool isBroken(const std::string& plugin_name) const;
 
@@ -171,15 +181,23 @@ namespace te
       /*!
         \brief Try to unload a given plugin.
 
-        This method will call plugin's shutdown method if needed.
-
         \param plugin_name The plugin to be unloaded.
 
-        \exception PluginShutdownException It will raise an exception if
-        plugin's code is not unloaded, if it fails to shutdown or if the
+        \exception PluginUnloadException It will raise an exception if
+        plugin's code is not unloaded, if it is started or if the
         plugin's is not managed by PluginManager.
        */
       void unload(const std::string& plugin_name);
+
+      /*!
+        \brief Try to unload a given plugin and its dependents recursively.
+
+        This method will call plugin's shutdown method if needed.
+
+        \param plugin_name The plugin to be unloaded.
+       */
+
+      void recursiveUnload(const std::string& plugin_name);
 
       /*! \brief  Stop and unload all plugins, then clear the internal list of
        * plugins. */
