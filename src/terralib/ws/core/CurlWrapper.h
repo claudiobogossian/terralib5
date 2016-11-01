@@ -61,7 +61,7 @@ namespace te
         \param url URL that the file will be downloaded.
         \param filePath file path where downloaded file will be saved.
       */
-      virtual void downloadFile(const std::string& url, const std::string& filePath, te::common::TaskProgress* taskProgress = 0) const;
+      virtual void downloadFile(const std::string& url, const std::string& filePath, te::common::TaskProgress* taskProgress = 0);
 
       /*!
         \brief Method to download a file retrieved from given URL and save into the specified File.
@@ -69,7 +69,7 @@ namespace te
         \param url URL that the file will be downloaded.
         \param file File where downloaded file will be write.
       */
-      virtual void downloadFile(const std::string& url, std::FILE* file, te::common::TaskProgress* taskProgress = 0) const;
+      virtual void downloadFile(const std::string& url, std::FILE* file, te::common::TaskProgress* taskProgress = 0);
 
 
       /*!
