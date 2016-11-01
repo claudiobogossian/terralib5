@@ -297,7 +297,6 @@ void te::qt::widgets::Config2DrawLayerSelection(te::map::Canvas* canvas, const Q
     case te::gm::MultiPolygonZMType:
     {
       QColor fillColor = selectionColor;
-      fillColor.setAlpha(128);
 
       Config2DrawPolygons(canvas, fillColor, Qt::black, 2);
     }
@@ -313,7 +312,6 @@ void te::qt::widgets::Config2DrawLayerSelection(te::map::Canvas* canvas, const Q
     case te::gm::MultiLineStringZMType:
     {
       QColor fillColor = selectionColor;
-      fillColor.setAlpha(128);
 
       Config2DrawLines(canvas, fillColor, 6);
     }
@@ -329,7 +327,6 @@ void te::qt::widgets::Config2DrawLayerSelection(te::map::Canvas* canvas, const Q
     case te::gm::MultiPointZMType:
     {
       QColor fillColor = selectionColor;
-      fillColor.setAlpha(70);
 
       QColor contourColor = selectionColor;
       contourColor.setAlpha(150);
