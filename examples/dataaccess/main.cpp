@@ -28,7 +28,6 @@
 #include <terralib/common/TerraLib.h>
 #include <terralib/core/encoding/CharEncoding.h>
 #include <terralib/core/uri/URI.h>
-#include <terralib/plugin.h>
 #include <terralib/dataaccess/dataset/CheckConstraint.h>
 #include <terralib/dataaccess/dataset/PrimaryKey.h>
 #include <terralib/dataaccess/dataset/Index.h>

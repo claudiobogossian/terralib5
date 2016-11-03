@@ -39,7 +39,7 @@ if(Qt5_FOUND)
   add_executable(terralib_example_graph ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
   target_link_libraries(terralib_example_graph terralib_mod_graph
-                                               terralib_mod_plugin
+                                               
                                                terralib_mod_qt_widgets
 											   terralib_mod_sa_core
                                                ${BOOST_SYSTEM_LIBRARY})
@@ -64,7 +64,7 @@ else()
   add_executable(terralib_example_graph ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_SRC_FILES})
 
   target_link_libraries(terralib_example_graph terralib_mod_graph
-                                               terralib_mod_plugin
+                                               
                                                terralib_mod_qt_widgets
 											   terralib_mod_sa_core
                                                ${BOOST_SYSTEM_LIBRARY}

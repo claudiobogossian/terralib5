@@ -43,7 +43,7 @@ if(Qt5_FOUND)
   add_library(terralib_mod_qt_plugins_mnt SHARED ${TERRALIB_FILES})
 
   target_link_libraries(terralib_mod_qt_plugins_mnt terralib_mod_mnt_qt
-                                                   terralib_mod_plugin
+                                                   
                                                    terralib_mod_qt_apf)
 
   qt5_use_modules(terralib_mod_qt_plugins_mnt Widgets)
@@ -64,7 +64,7 @@ else()
   add_library(terralib_mod_qt_plugins_mnt SHARED ${TERRALIB_FILES})
 
   target_link_libraries(terralib_mod_qt_plugins_mnt terralib_mod_mnt_qt
-                                                   terralib_mod_plugin
+                                                   
                                                    terralib_mod_qt_apf
                                                    ${QT_LIBRARIES})
 

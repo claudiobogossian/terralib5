@@ -61,7 +61,7 @@ if(TERRALIB_MOD_XML_ENABLED)
                                                            terralib_mod_dataaccess
                                                            terralib_mod_datatype
 														   terralib_mod_maptools
-                                                           terralib_mod_plugin
+                                                           
                                                            terralib_mod_ws_core
                                                            terralib_mod_ws_ogc_wms_client
                                                            terralib_mod_xml
@@ -71,7 +71,7 @@ else()
                                                            terralib_mod_dataaccess
                                                            terralib_mod_datatype
 														   terralib_mod_maptools
-                                                           terralib_mod_plugin
+                                                           
                                                            terralib_mod_ws_core
                                                            terralib_mod_ws_ogc_wms_client
                                                            ${GDAL_LIBRARY})

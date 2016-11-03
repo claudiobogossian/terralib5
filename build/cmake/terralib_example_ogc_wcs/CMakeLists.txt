@@ -32,7 +32,7 @@ add_executable(terralib_example_ws_ogc_wcs ${TERRALIB_EXAMPLE_OGC_WCS_SRC_FILES}
 
 target_link_libraries(terralib_example_ws_ogc_wcs terralib_mod_ws_ogc_wcs_client
                                                    terralib_mod_ws_ogc_wcs_dataaccess
-                                                   terralib_mod_plugin)
+                                                   )
 
 install(FILES ${TERRALIB_EXAMPLE_OGC_WCS_SRC_FILES} ${TERRALIB_EXAMPLE_OGC_WCS_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/ogc-wcs COMPONENT devel)

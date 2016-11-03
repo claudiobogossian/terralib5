@@ -34,12 +34,10 @@
 #include "../../common/UserApplicationSettings.h"
 #include "../../common/Version.h"
 #include "../../core/logger/Logger.h"
+#include "../../core/plugin.h"
 #include "../../core/translator/Translator.h"
 #include "../../core/utils/Platform.h"
 #include "../../dataaccess/serialization/xml/Serializer.h"
-#include "../../plugin/PluginManager.h"
-#include "../../plugin/PluginInfo.h"
-#include "../../plugin/Utils.h"
 #include "../../srs/Config.h"
 #include "../widgets/help/AssistantHelpManagerImpl.h"
 #include "../widgets/help/HelpManager.h"
@@ -70,11 +68,11 @@
 
 // Boost
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string/join.hpp>
+#include <boost/format.hpp>
 
 //STL
 #include <algorithm>
-
-//te::qt::af::ApplicationController* te::qt::af::ApplicationController::sm_instance(0);
 
 te::qt::af::ApplicationController::ApplicationController(/*QObject* parent*/)
   : QObject(/*parent*/),
@@ -82,7 +80,6 @@ te::qt::af::ApplicationController::ApplicationController(/*QObject* parent*/)
     m_defaultSRID(TE_UNKNOWN_SRS),
     m_selectionColor(QColor(0, 255, 0)),
     m_initialized(false),
-//    m_project(0),
     m_resetTerralib(true)
 {
 }
@@ -491,281 +488,145 @@ void te::qt::af::ApplicationController::initializePlugins()
 {
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
 
-  std::vector<std::string> plgFiles;
+  QSettings user_settings(QSettings::IniFormat, QSettings::UserScope,
+                          QApplication::instance()->organizationName(),
+                          QApplication::instance()->applicationName());
 
-  try
+  SplashScreenManager::getInstance().showMessage(
+      tr("Initializing plugin system..."));
+
+  te::core::plugin::InitializePluginSystem();
+
+  user_settings.beginGroup("plugins");
+
+  std::set<std::string> user_loaded_plugins;
+
+  int nLoaded = user_settings.beginReadArray("loaded");
+
+  for(int i = 0; i != nLoaded; ++i)
   {
-    SplashScreenManager::getInstance().showMessage(tr("Reading application plugins list..."));
+    user_settings.setArrayIndex(i);
 
-    std::vector<std::string> default_plg = GetDefaultPluginsNames(this);
-    plgFiles = GetPluginsFiles();
+    QString name = user_settings.value("name").toString();
 
-    //SplashScreenManager::getInstance().showMessage(tr("Plugins list read!"));
+    user_loaded_plugins.insert(name.toUtf8().data());
+  }
 
-    SplashScreenManager::getInstance().showMessage(tr("Checking enabled plugins..."));
-    
-    QSettings user_settings(QSettings::IniFormat,
-                            QSettings::UserScope,
-                            QApplication::instance()->organizationName(),
-                            QApplication::instance()->applicationName());
+  user_settings.endArray();
 
-    user_settings.beginGroup("plugins");
+  // get the unloaded plugins
+  std::set<std::string> user_unloaded_plugins;
+  int nUnloaded = user_settings.beginReadArray("unloaded");
 
-    std::set<std::string> user_enabled_plugins;
+  for(int i = 0; i != nUnloaded; ++i)
+  {
+    user_settings.setArrayIndex(i);
 
-    int nitems = user_settings.beginReadArray("enabled");
+    QString name = user_settings.value("name").toString();
 
-    for(int i = 0; i != nitems; ++i)
-    {
-      user_settings.setArrayIndex(i);
+    user_unloaded_plugins.insert(name.toUtf8().data());
+  }
 
-      QString name = user_settings.value("name").toString();
+  user_settings.endArray();
 
-      user_enabled_plugins.insert(name.toUtf8().data());
-    }
+  user_settings.endGroup();
 
-    user_settings.endArray();
-
-    // get the unloaded plugins
-    std::set<std::string> user_unloaded_plugins;
-    int n_itemsUnloaded = user_settings.beginReadArray("unloaded");
-
-    for (int i = 0; i != n_itemsUnloaded; ++i)
-    {
-      user_settings.setArrayIndex(i);
-
-      QString name = user_settings.value("name").toString();
-
-      user_unloaded_plugins.insert(name.toUtf8().data());
-    }
-
-    user_settings.endArray();
-
-    // get the broken plugins
-    std::set<std::string> user_broken_plugins;
-    int n_itemsBroken = user_settings.beginReadArray("broken");
-
-    for (int i = 0; i != n_itemsBroken; ++i)
-    {
-      user_settings.setArrayIndex(i);
-
-      QString name = user_settings.value("name").toString();
-
-      user_broken_plugins.insert(name.toUtf8().data());
-    }
-
-    user_settings.endArray();
-
-    user_settings.endGroup();
-
-    //SplashScreenManager::getInstance().showMessage(tr("Enabled plugin list read!"));
-
+  if(user_loaded_plugins.size() > 0 || user_unloaded_plugins.size() > 0)
+  {
     SplashScreenManager::getInstance().showMessage(tr("Loading plugins..."));
 
-// retrieve information for each plugin
-    boost::ptr_vector<te::plugin::PluginInfo> plugins;
-    boost::ptr_vector<te::plugin::PluginInfo> unloadedPlugins;
-    boost::ptr_vector<te::plugin::PluginInfo> brokenPlugins;
+    std::vector<te::core::PluginInfo> v_pInfo = te::core::DefaultPluginFinder();
+    v_pInfo = te::core::plugin::TopologicalSort(v_pInfo);
+    std::vector<std::string> failToLoad;
 
-    for(std::size_t i = 0; i != plgFiles.size(); ++i)
+    for(const te::core::PluginInfo& pinfo : v_pInfo)
     {
-      te::plugin::PluginInfo* pinfo = te::plugin::GetInstalledPlugin(plgFiles[i]);
-      
-      if (user_enabled_plugins.empty())                               // if there is no list of enabled plugins
+      try
       {
-        if (default_plg.size() > 0)
-        {
-          if (std::find(default_plg.begin(), default_plg.end(), pinfo->m_name) != default_plg.end())
-            plugins.push_back(pinfo);                                 // try to load all default plugins.
-        }
-        else
-        {
-          plugins.push_back(pinfo);                                   // try to load all plugins.
-        }
+        te::core::PluginManager::instance().insert(pinfo);
+        if(user_loaded_plugins.find(pinfo.name) != user_loaded_plugins.end())
+          te::core::PluginManager::instance().load(pinfo.name);
       }
-      else if (user_enabled_plugins.count(pinfo->m_name) != 0)        // else, if a list is available,
+      catch(...)
       {
-        plugins.push_back(pinfo);                                     // load all enabled plugins using .ini file as reference.
+        failToLoad.push_back(pinfo.name);
       }
-      else if (user_unloaded_plugins.count(pinfo->m_name) != 0)       // else, if a list is available,
+    }    
+    if(failToLoad.size() > 0)
+    {
+      te::qt::widgets::ScopedCursor acursor(Qt::ArrowCursor);
+
+      boost::format err_msg(
+          tr("Could not load the following plugins:\n\n%1%")
+              .toUtf8()
+              .data());
+
+      QMessageBox msg(
+          QMessageBox::Warning, m_appTitle,
+          (err_msg % boost::algorithm::join(failToLoad, "\n")).str().c_str());
+      msg.setWindowFlags(Qt::WindowStaysOnTopHint);
+      msg.exec();
+    }
+    else
+    {
+      SplashScreenManager::getInstance().showMessage(
+          tr("Plugins loaded successfully!"));
+    }
+  }
+  else
+  {
+    try
+    {
+      SplashScreenManager::getInstance().showMessage(tr("Loading plugins..."));
+
+      te::core::plugin::LoadAll();
+
+      SplashScreenManager::getInstance().showMessage(
+          tr("Plugins loaded successfully!"));
+    }
+    catch(const boost::exception& e)
+    {
+      te::qt::widgets::ScopedCursor acursor(Qt::ArrowCursor);
+
+      if(const std::string* d = boost::get_error_info<te::ErrorDescription>(e))
       {
-        unloadedPlugins.push_back(pinfo);                             // load only unloaded plugins
+        QMessageBox msg(
+            QMessageBox::Warning, m_appTitle, d->c_str());
+        msg.setWindowFlags(Qt::WindowStaysOnTopHint);
+        msg.exec();
       }
-      else if (user_broken_plugins.count(pinfo->m_name) != 0)         // else, if a list is available,
+      else
       {
-        brokenPlugins.push_back(pinfo);                               // load only broken plugins
+        QMessageBox msg(
+            QMessageBox::Warning, m_appTitle, "An unknown error has occurred");
+        msg.setWindowFlags(Qt::WindowStaysOnTopHint);
+        msg.exec();
       }
     }
-    
-// load and start each plugin
-    te::plugin::PluginManager::getInstance().load(plugins);
+    catch(const std::exception& e)
+    {
+      te::qt::widgets::ScopedCursor acursor(Qt::ArrowCursor);
 
-    if (user_unloaded_plugins.size() > 0)
-      te::plugin::PluginManager::getInstance().setUnloadedPlugins(unloadedPlugins);
+      QString msgErr(tr("Error reading application's plugin list: %1"));
 
-    if (user_broken_plugins.size() > 0)
-      te::plugin::PluginManager::getInstance().setBrokenPlugins(brokenPlugins);
-
-    SplashScreenManager::getInstance().showMessage(tr("Plugins loaded successfully!"));
-  }
-  catch(const std::exception& e)
-  {
-    SplashScreenManager::getInstance().hide();
-
-    te::qt::widgets::ScopedCursor acursor(Qt::ArrowCursor);
-
-    QString msgErr(tr("Error reading application's plugin list: %1"));
-
-    msgErr = msgErr.arg(e.what());
-
-    QMessageBox::warning(m_msgBoxParentWidget, m_appTitle, msgErr);
+      msgErr = msgErr.arg(e.what());
+      QMessageBox msg(
+          QMessageBox::Warning, m_appTitle,
+           msgErr);
+      msg.setWindowFlags(Qt::WindowStaysOnTopHint);
+      msg.exec();
+    }
   }
 }
-
-//void te::qt::af::ApplicationController::initializeProjectMenus()
-//{
-//  SplashScreenManager::getInstance().showMessage("Loading recent projects...");
-//
-//  try
-//  {
-//    QSettings user_settings(QSettings::IniFormat,
-//                            QSettings::UserScope,
-//                            QApplication::instance()->organizationName(),
-//                            QApplication::instance()->applicationName());
-//
-//    QVariant projPath = user_settings.value("projects/most_recent/path", "");
-//    QVariant projTitle = user_settings.value("projects/most_recent/title", "");
-//
-//    QMenu* mnu = getMenu("File.Recent Projects");
-//
-//    if(!projPath.toString().isEmpty())
-//    {
-//      QAction* act = mnu->addAction(projPath.toString());
-//      act->setData(projPath);
-//
-//      mnu->addSeparator();
-//
-//      m_recentProjs.append(projPath.toString());
-//      m_recentProjsTitles.append(projTitle.toString());
-//    }
-//    
-//    user_settings.beginGroup("projects");
-//    
-//    int nrc = user_settings.beginReadArray("recents");
-//    
-//    for(int i = 0; i != nrc; ++i)
-//    {
-//      user_settings.setArrayIndex(i);
-//      QString npath = user_settings.value("projects/path").toString();
-//      QString ntitle = user_settings.value("projects/title").toString();
-//      
-//      
-//      QAction* act = mnu->addAction(npath);
-//      act->setData(npath);
-//      m_recentProjs.append(npath);
-//      m_recentProjsTitles.append(ntitle);
-//    }
-//
-//    mnu->setEnabled(true);
-//
-//    SplashScreenManager::getInstance().showMessage("Recent projects loaded!");
-//  }
-//  catch(const std::exception& e)
-//  {
-//    te::qt::widgets::ScopedCursor acursor(Qt::ArrowCursor);
-//
-//    QString msgErr(tr("Error loading the registered projects: %1"));
-//
-//    msgErr = msgErr.arg(e.what());
-//
-//    QMessageBox::warning(m_msgBoxParentWidget, m_appTitle, msgErr);
-//  }
-//}
-//
-//void te::qt::af::ApplicationController::updateRecentProjects(const QString& prjFile, const QString& prjTitle)
-//{
-//  int pos = m_recentProjs.indexOf(prjFile);
-//
-//  QString author;
-//  int maxSaved;
-//
-//  GetProjectInformationsFromSettings(author, maxSaved);
-//
-//  if(pos != 0)
-//  {
-//    if(pos < 0)
-//    {
-//      if(m_recentProjs.size() > maxSaved) // TODO: Size of the list must be configurable.
-//      {
-//        m_recentProjs.removeLast();
-//        m_recentProjsTitles.removeLast();
-//      }
-//
-//      m_recentProjs.prepend(prjFile);
-//      m_recentProjsTitles.prepend(prjTitle);
-//    }
-//    else
-//    {
-//      m_recentProjs.move(pos, 0);
-//      m_recentProjsTitles.move(pos, 0);
-//    }
-//
-//    if(m_recentProjs.isEmpty())
-//      return;
-//
-//    QMenu* mnu = getMenu("File.Recent Projects");
-//
-//    mnu->clear();
-//
-//    mnu->setEnabled(true);
-//
-//    QString recPrj = m_recentProjs.at(0);
-//    QAction* act = mnu->addAction(recPrj);
-//    act->setData(recPrj);
-//
-//    mnu->addSeparator();
-//
-//    if(m_recentProjs.size() > 1)
-//      for(int i=1; i<m_recentProjs.size(); i++)
-//      {
-//        recPrj = m_recentProjs.at(i);
-//        act = mnu->addAction(recPrj);
-//        act->setData(recPrj);
-//      }
-//  }
-//
-//  QAction* act = findAction("File.Save Project As");
-//
-//  if(act != 0)
-//    act->setEnabled(true);
-//}
-
-//void te::qt::af::ApplicationController::set(te::qt::af::Project* prj)
-//{
-//  m_project = prj;
-//}
-
-//te::qt::af::Project* te::qt::af::ApplicationController::getProject()
-//{
-//  return m_project;
-//}
 
 void te::qt::af::ApplicationController::finalize()
 {
   if(!m_initialized)
     return;
 
-//  UpdateUserSettings(m_recentProjs, m_recentProjsTitles, m_appUserSettingsFile);
+  te::core::PluginManager::instance().clear();
+  te::core::plugin::FinalizePluginSystem();
 
-//  SaveDataSourcesFile();
-
-  te::plugin::PluginManager::getInstance().shutdownAll();
-
-  te::plugin::PluginManager::getInstance().unloadAll();
-
-  te::plugin::PluginManager::getInstance().clear();
-
-//  delete m_project;
 
   if(m_resetTerralib)
     TerraLib::getInstance().finalize();
@@ -800,14 +661,8 @@ void te::qt::af::ApplicationController::finalize()
 
   m_appTitle.clear();
 
-  //m_appProjectExtension.clear();
-
   m_tLibLogo.clear();
           
-  //m_recentProjs.clear();
-
-  //m_recentProjsTitles.clear();
-
   m_appUserSettingsFile.clear();
   
   m_appPluginsPath.clear();
@@ -818,8 +673,6 @@ void te::qt::af::ApplicationController::finalize()
   
   m_selectionColor = QColor();
 
-//  m_project = 0;
-
   m_initialized = false;
 }
 
@@ -827,14 +680,6 @@ QSettings& te::qt::af::ApplicationController::getSettings()
 {
   return m_appSettings;
 }
-
-//void  te::qt::af::ApplicationController::broadcast(te::qt::af::evt::Event* evt)
-//{
-//  // Need to check event send to prevent loops
-//  // -----------------------------------------
-
-//  emit triggered(evt);
-//}
 
 const QString& te::qt::af::ApplicationController::getAppName() const
 {
@@ -845,11 +690,6 @@ const QString& te::qt::af::ApplicationController::getAppTitle() const
 {
   return m_appTitle;
 }
-
-//const QString& te::qt::af::ApplicationController::getAppProjectExtension() const
-//{
-//  return m_appProjectExtension;
-//}
 
 const QString& te::qt::af::ApplicationController::getAppIconName() const
 {
@@ -870,11 +710,6 @@ const QString& te::qt::af::ApplicationController::getTlibLogo() const
 {
   return m_tLibLogo;
 }
-
-//QString te::qt::af::ApplicationController::getMostRecentProject() const
-//{
-//  return m_recentProjs.isEmpty() ? QString("") : m_recentProjs.front();
-//}
 
 int te::qt::af::ApplicationController::getDefaultSRID() const
 {

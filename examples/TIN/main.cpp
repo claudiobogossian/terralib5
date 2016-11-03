@@ -32,7 +32,7 @@
 
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
 
-#include <terralib/plugin.h>
+
 
 #include <terralib/mnt/core/Tin.h>
 #include <terralib/mnt/core/TINCreateIsolines.h>

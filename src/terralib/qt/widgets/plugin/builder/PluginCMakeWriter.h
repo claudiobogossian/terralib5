@@ -28,8 +28,7 @@
 
 // TerraLib
 #include "../../Config.h"
-#include "../../../../plugin/PluginInfo.h"
-#include "../../../../plugin/Provider.h"
+#include "../../../../core/plugin/PluginInfo.h"
 
 // STL Include
 #include <fstream>
@@ -62,10 +61,10 @@ namespace te
 
           /* Build Cmake File */
           void createCmakeFile(const std::string& buildPath, const std::string& sourcePath, const std::string& projName, 
-                               const std::string exportMacro, const std::string& cmakePath, const te::plugin::PluginInfo& pi);
+                               const std::string exportMacro, const std::string& cmakePath, const te::core::PluginInfo& pi);
 
           /* Build XML Plugin Information File */
-          void createPluginInfoFile(const std::string& buildPath, const te::plugin::PluginInfo& pi, const te::plugin::Provider& p);
+          void createPluginInfoFile(const std::string& buildPath, const te::core::PluginInfo& pi);
 
         protected:
 
@@ -73,7 +72,7 @@ namespace te
           
           void insertDefaultXMLHeader(std::ofstream& stream);
 
-          void findTerralib(std::ofstream& stream, const std::string& teCmakePath, const te::plugin::PluginInfo& pi);
+          void findTerralib(std::ofstream& stream, const std::string& teCmakePath, const te::core::PluginInfo& pi);
 
           void findBoost(std::ofstream& stream);
       };

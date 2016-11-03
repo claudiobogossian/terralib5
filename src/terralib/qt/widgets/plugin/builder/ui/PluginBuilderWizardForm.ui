@@ -35,83 +35,85 @@
    <property name="subTitle">
     <string>These information will be added to your plugin configuration file</string>
    </property>
-   <layout class="QGridLayout" name="gridLayout_12">
+   <layout class="QGridLayout" name="gridLayout_10">
     <item row="0" column="0">
-     <layout class="QGridLayout" name="gridLayout_11">
-      <item row="0" column="0">
-       <layout class="QGridLayout" name="gridLayout_10">
-        <item row="0" column="0">
-         <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="0">
-           <layout class="QVBoxLayout" name="verticalLayout_2">
-            <item>
-             <widget class="QLabel" name="label">
-              <property name="text">
-               <string>Plugin Name</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="m_pluginNameLineEdit">
-              <property name="minimumSize">
-               <size>
-                <width>200</width>
-                <height>0</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="1" column="0">
-           <layout class="QVBoxLayout" name="verticalLayout_3">
-            <item>
-             <widget class="QLabel" name="label_4">
-              <property name="text">
-               <string>Version</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="m_pluginVersionLineEdit"/>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </item>
-        <item row="0" column="1">
+     <layout class="QVBoxLayout" name="verticalLayout_7">
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
          <layout class="QGridLayout" name="gridLayout_9">
           <item row="0" column="0">
-           <layout class="QVBoxLayout" name="verticalLayout_7">
-            <item>
-             <widget class="QLabel" name="label_8">
-              <property name="text">
-               <string>Category</string>
-              </property>
-             </widget>
+           <layout class="QGridLayout" name="gridLayout">
+            <item row="0" column="0">
+             <layout class="QVBoxLayout" name="verticalLayout_2">
+              <item>
+               <widget class="QLabel" name="label">
+                <property name="text">
+                 <string>Plugin Name</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="m_pluginNameLineEdit">
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>0</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
-            <item>
-             <widget class="QComboBox" name="m_pluginCategoryComboBox">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>200</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="editable">
-               <bool>true</bool>
-              </property>
-             </widget>
+            <item row="1" column="0">
+             <layout class="QVBoxLayout" name="verticalLayout_3">
+              <item>
+               <widget class="QLabel" name="label_4">
+                <property name="text">
+                 <string>Version</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="m_pluginVersionLineEdit"/>
+              </item>
+             </layout>
             </item>
            </layout>
           </item>
-          <item row="1" column="0">
+          <item row="0" column="1">
+           <layout class="QGridLayout" name="gridLayout_3">
+            <item row="1" column="0">
+             <layout class="QVBoxLayout" name="verticalLayout_6">
+              <item>
+               <widget class="QLabel" name="label_7">
+                <property name="text">
+                 <string>TerraLib Version</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="m_terralibVersionLineEdit"/>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="0">
+             <layout class="QVBoxLayout" name="verticalLayout_8">
+              <item>
+               <widget class="QLabel" name="label_2">
+                <property name="text">
+                 <string>Display Text</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="m_pluginDisplayTextLineEdit"/>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="2">
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
              <widget class="QLabel" name="label_5">
@@ -127,59 +129,40 @@
               </property>
              </widget>
             </item>
-           </layout>
-          </item>
-         </layout>
-        </item>
-        <item row="0" column="2">
-         <layout class="QGridLayout" name="gridLayout_3">
-          <item row="0" column="0">
-           <layout class="QVBoxLayout" name="verticalLayout_8">
             <item>
-             <widget class="QLabel" name="label_2">
-              <property name="text">
-               <string>Display Text</string>
+             <spacer name="verticalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
               </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="m_pluginDisplayTextLineEdit"/>
-            </item>
-           </layout>
-          </item>
-          <item row="1" column="0">
-           <layout class="QVBoxLayout" name="verticalLayout_6">
-            <item>
-             <widget class="QLabel" name="label_7">
-              <property name="text">
-               <string>TerraLib Version</string>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
               </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="m_terralibVersionLineEdit"/>
+             </spacer>
             </item>
            </layout>
           </item>
          </layout>
         </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_14">
+          <item>
+           <widget class="QLabel" name="label_11">
+            <property name="text">
+             <string>Plugin Site</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="m_pluginSiteLineEdit"/>
+          </item>
+         </layout>
+        </item>
        </layout>
       </item>
-      <item row="1" column="0">
-       <layout class="QVBoxLayout" name="verticalLayout_14">
-        <item>
-         <widget class="QLabel" name="label_11">
-          <property name="text">
-           <string>Plugin Site</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="m_pluginSiteLineEdit"/>
-        </item>
-       </layout>
-      </item>
-      <item row="2" column="0">
+      <item>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QLabel" name="label_3">
@@ -196,7 +179,7 @@
         </item>
        </layout>
       </item>
-      <item row="3" column="0">
+      <item>
        <widget class="QLabel" name="label_15">
         <property name="text">
          <string>* All fields on this page are Mandatory.</string>
@@ -206,6 +189,7 @@
      </layout>
     </item>
    </layout>
+   <zorder></zorder>
   </widget>
   <widget class="QWizardPage" name="m_targuetLanguagePage">
    <property name="title">
@@ -720,7 +704,6 @@
  </widget>
  <tabstops>
   <tabstop>m_pluginNameLineEdit</tabstop>
-  <tabstop>m_pluginCategoryComboBox</tabstop>
   <tabstop>m_pluginDisplayTextLineEdit</tabstop>
   <tabstop>m_pluginVersionLineEdit</tabstop>
   <tabstop>m_pluginReleaseDateTime</tabstop>

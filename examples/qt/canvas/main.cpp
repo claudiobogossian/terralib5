@@ -25,7 +25,7 @@
 
 // TerraLib
 #include <terralib/common/TerraLib.h>
-#include <terralib/plugin.h>
+
 #include "CanvasExamples.h"
 
 // STL

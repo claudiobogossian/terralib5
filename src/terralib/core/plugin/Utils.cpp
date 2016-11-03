@@ -38,10 +38,10 @@
 #include "PluginManager.h"
 
 // Boost
+#include <boost/algorithm/string/join.hpp>
 #include <boost/format.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/topological_sort.hpp>
-
 
 static bool g_plugin_module_initialized(false);
 
@@ -129,6 +129,8 @@ std::vector<te::core::PluginInfo> te::core::plugin::TopologicalSort(
   for(auto it = toposortResult.rbegin(); it != toposortResult.rend(); ++it)
     sortedPlugins.push_back(v_pInfo[*it]);
 
+  assert(sortedPlugins.size() == v_pInfo.size());
+
   return sortedPlugins;
 }
 
@@ -140,17 +142,27 @@ void te::core::plugin::LoadAll(bool start)
 
   v_pInfo = te::core::plugin::TopologicalSort(v_pInfo);
 
+  std::vector<std::string> failToLoad;
+
   for(const te::core::PluginInfo& pinfo : v_pInfo)
   {
     try
     {
-     te::core::PluginManager::instance().insert(pinfo);
-     te::core::PluginManager::instance().load(pinfo.name, start);
+      te::core::PluginManager::instance().insert(pinfo);
+      te::core::PluginManager::instance().load(pinfo.name, start);
     }
     catch(...)
     {
-      // TODO
+      failToLoad.push_back(pinfo.name);
     }
+  }
+  if(failToLoad.size() > 0)
+  {
+    boost::format err_msg(
+        TE_TR("Could not load the following plugins:\n\n%1%"));
+
+    throw PluginLoadException() << ErrorDescription(
+        (err_msg % boost::algorithm::join(failToLoad, "\n")).str());
   }
 }
 

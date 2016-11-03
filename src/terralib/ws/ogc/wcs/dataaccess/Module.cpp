@@ -30,7 +30,6 @@
 #include "../../../../core/translator/Translator.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
-#include "../../../../plugin/PluginInfo.h"
 #include "Config.h"
 #include "DataSourceFactory.h"
 #include "Module.h"
@@ -42,8 +41,8 @@
 #include <boost/functional/factory.hpp>
 #include <boost/bind.hpp>
 
-te::ws::ogc::wcs::da::Module::Module(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo)
+te::ws::ogc::wcs::da::Module::Module(const te::core::PluginInfo& pluginInfo)
+  : te::core::CppPlugin(pluginInfo)
 {
 }
 
@@ -77,4 +76,4 @@ void te::ws::ogc::wcs::da::Module::shutdown()
   m_initialized = false;
 }
 
-PLUGIN_CALL_BACK_IMPL(te::ws::ogc::wcs::da::Module)
+TERRALIB_PLUGIN_CALL_BACK_IMPL(te::ws::ogc::wcs::da::Module)

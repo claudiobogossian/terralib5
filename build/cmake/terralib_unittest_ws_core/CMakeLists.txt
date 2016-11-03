@@ -36,7 +36,7 @@ add_executable(terralib_unittest_ws_core ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FI
 target_link_libraries(terralib_unittest_ws_core    terralib_mod_ws_core
                                                     terralib_mod_qt_apf
                                                     terralib_mod_qt_widgets
-                                                    terralib_mod_plugin
+                                                    
                                                     ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}

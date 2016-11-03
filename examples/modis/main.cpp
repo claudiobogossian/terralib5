@@ -5,7 +5,7 @@
 // TerraLib
 #include <terralib/common.h>
 #include <terralib/geometry.h>
-#include <terralib/plugin.h>
+
 #include <terralib/raster.h>
 
 // STL

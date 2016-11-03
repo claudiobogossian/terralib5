@@ -35,7 +35,7 @@ add_executable(terralib_example_TIN ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
 target_link_libraries(terralib_example_TIN terralib_mod_common terralib_mod_dataaccess
                                                                       terralib_mod_memory
-                                                                      terralib_mod_plugin
+                                                                      
 								      terralib_mod_mnt_core)
 
 install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}

@@ -41,8 +41,8 @@
 #include <QMenuBar>
 #include <qaction.h>
 
-te::qt::plugins::attributefill::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo),
+te::qt::plugins::attributefill::Plugin::Plugin(const te::core::PluginInfo& pluginInfo)
+  : te::core::CppPlugin(pluginInfo),
     m_attributefillMenu(0),
     m_popupAction(0),
     m_rasterToVector(0),
@@ -125,4 +125,4 @@ void te::qt::plugins::attributefill::Plugin::unRegisterActions()
   delete m_vectorToRaster;
 }
 
-PLUGIN_CALL_BACK_IMPL(te::qt::plugins::attributefill::Plugin)
+TERRALIB_PLUGIN_CALL_BACK_IMPL(te::qt::plugins::attributefill::Plugin)

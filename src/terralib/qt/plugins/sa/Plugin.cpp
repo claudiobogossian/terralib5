@@ -73,9 +73,9 @@
 #include <QMenu>
 #include <QMenuBar>
 
-te::qt::plugins::sa::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
+te::qt::plugins::sa::Plugin::Plugin(const te::core::PluginInfo& pluginInfo)
   : QObject(),
-  te::plugin::Plugin(pluginInfo), m_saMenu(0)
+  te::core::CppPlugin(pluginInfo), m_saMenu(0)
 {
 }
 
@@ -238,4 +238,4 @@ void  te::qt::plugins::sa::Plugin::unRegisterActions()
 
 }
 
-PLUGIN_CALL_BACK_IMPL(te::qt::plugins::sa::Plugin)
+TERRALIB_PLUGIN_CALL_BACK_IMPL(te::qt::plugins::sa::Plugin)

@@ -27,7 +27,7 @@
 #include <terralib/common.h>
 #include <terralib/dataaccess.h>
 #include <terralib/st.h>
-#include <terralib/plugin.h>
+
 
 // STL
 #include <cassert>

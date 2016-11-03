@@ -27,7 +27,7 @@
 #define __TE_QT_PLUGINS_DATASOURCE_PGIS_INTERNAL_PLUGIN_H
 
 // TerraLib
-#include "../../../../plugin/Plugin.h"
+#include "../../../../core/plugin/CppPlugin.h"
 #include "Config.h"
 
 namespace te
@@ -38,11 +38,11 @@ namespace te
     {
       namespace pgis
       {
-        class Plugin : public te::plugin::Plugin
+        class Plugin : public te::core::CppPlugin
         {
           public:
 
-            Plugin(const te::plugin::PluginInfo& pluginInfo);
+            Plugin(const te::core::PluginInfo& pluginInfo);
 
             ~Plugin();
 
@@ -55,7 +55,5 @@ namespace te
     }   // end namespace plugins
   }     // end namespace qt
 }       // end namespace te
-
-PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINPGISEXPORT);
 
 #endif //__TE_QT_PLUGINS_DATASOURCE_PGIS_INTERNAL_PLUGIN_H

@@ -29,7 +29,7 @@
 // TerraLib
 #include <terralib/common.h>
 #include <terralib/core.h>
-#include <terralib/plugin.h>
+
 
 // Qt
 #include <QApplication>
@@ -42,8 +42,8 @@ void LoadModule(std::string m)
 {
   std::string mod_name = "share/terralib/plugins/" + m + ".teplg";
   std::string plgManifest = te::core::FindInTerraLibPath(mod_name);
-  std::unique_ptr<te::plugin::PluginInfo> i(te::plugin::GetInstalledPlugin(plgManifest));
-  te::plugin::PluginManager::getInstance().load(*i.get());
+  te::core::PluginInfo i(te::core::JSONPluginInfoSerializer(plgManifest));
+  te::core::PluginManager::instance().load(i.name);
 }
 
 void Initialize()
@@ -59,8 +59,7 @@ void Initialize()
 
 void Finalize()
 {
-  te::plugin::PluginManager::getInstance().shutdownAll();
-  te::plugin::PluginManager::getInstance().unloadAll();
+  te::core::PluginManager::instance().clear();
 
   TerraLib::getInstance().finalize();
 }

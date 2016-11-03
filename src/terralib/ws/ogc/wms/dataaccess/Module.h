@@ -29,7 +29,7 @@
 #define __TERRALIB_OGC_WMS_INTERNAL_MODULE_H
 
 // TerraLib
-#include "../../../../plugin/Plugin.h"
+#include "../../../../core/plugin/CppPlugin.h"
 #include "Config.h"
 
 namespace te
@@ -47,7 +47,7 @@ namespace te
 
             \brief The TerraLib OGC WMS driver as a plugin.
           */
-          class TEOGCWMSDATAACCESSEXPORT Module : public te::plugin::Plugin
+          class TEOGCWMSDATAACCESSEXPORT Module : public te::core::CppPlugin
           {
           public:
 
@@ -56,7 +56,7 @@ namespace te
 
               \param pInfo Basic information provided to initialize this module through the plugin API.
             */
-            Module(const te::plugin::PluginInfo& pluginInfo);
+            Module(const te::core::PluginInfo& pluginInfo);
 
             /*! \brief Destructor. */
             ~Module();
@@ -89,7 +89,5 @@ namespace te
     }
   }
 }   // end namespace te
-
-PLUGIN_CALL_BACK_DECLARATION(TEOGCWMSDATAACCESSEXPORT)
 
 #endif  // __TERRALIB_OGC_WMS_INTERNAL_MODULE_H

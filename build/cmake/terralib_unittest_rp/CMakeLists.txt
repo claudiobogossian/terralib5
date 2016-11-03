@@ -92,7 +92,7 @@ add_executable(terralib_unittest_rp ${TERRALIB_UNITTEST_RP_SRC_FILES}
                                     ${TERRALIB_UNITTEST_RP_TIE_POINTS_LOCATOR_SRC_FILES})
 
 target_link_libraries(terralib_unittest_rp terralib_mod_geometry
-                                           terralib_mod_plugin
+                                           
                                            terralib_mod_raster
                                            terralib_mod_rp
                                            ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})

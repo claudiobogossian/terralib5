@@ -36,8 +36,8 @@
 #include <QMenu>
 #include <QMenuBar>
 
-te::qt::plugins::cellspace::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo),
+te::qt::plugins::cellspace::Plugin::Plugin(const te::core::PluginInfo& pluginInfo)
+  : te::core::CppPlugin(pluginInfo),
     m_cellSpaceMenu(0),
     m_popupAction(0),
     m_createCellLayer(0)
@@ -109,4 +109,4 @@ void te::qt::plugins::cellspace::Plugin::unRegisterActions()
   delete m_createCellLayer;
 }
 
-PLUGIN_CALL_BACK_IMPL(te::qt::plugins::cellspace::Plugin)
+TERRALIB_PLUGIN_CALL_BACK_IMPL(te::qt::plugins::cellspace::Plugin)

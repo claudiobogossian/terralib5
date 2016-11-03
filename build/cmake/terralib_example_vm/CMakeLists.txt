@@ -32,7 +32,7 @@ file(GLOB TERRALIB_EXAMPLE_VM_SRC_FILES ${TERRALIB_VM_DIR}/*.cpp)
 add_executable(terralib_example_vm ${TERRALIB_EXAMPLE_VM_SRC_FILES})
 
 target_link_libraries(terralib_example_vm terralib_mod_vm
-                                          terralib_mod_plugin
+                                          terralib_mod_common
                                           terralib_mod_core)
 
 add_dependencies(terralib_example_vm terralib_mod_vm_lua)

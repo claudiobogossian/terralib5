@@ -32,7 +32,6 @@
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../../maptools/serialization/xml/Layer.h"
 #include "serialization/xml/Layer.h"
-#include "../../../../plugin/PluginInfo.h"
 #include "Config.h"
 #include "DataSourceFactory.h"
 #include "Module.h"
@@ -48,8 +47,8 @@
 #include <boost/functional/factory.hpp>
 #include <boost/bind.hpp>
 
-te::ws::ogc::wms::da::Module::Module(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo)
+te::ws::ogc::wms::da::Module::Module(const te::core::PluginInfo& pluginInfo)
+  : te::core::CppPlugin(pluginInfo)
 {
 }
 
@@ -89,4 +88,4 @@ void te::ws::ogc::wms::da::Module::shutdown()
   m_initialized = false;
 }
 
-PLUGIN_CALL_BACK_IMPL(te::ws::ogc::wms::da::Module)
+TERRALIB_PLUGIN_CALL_BACK_IMPL(te::ws::ogc::wms::da::Module)

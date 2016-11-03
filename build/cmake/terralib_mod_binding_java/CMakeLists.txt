@@ -91,7 +91,7 @@ SWIG_LINK_LIBRARIES (terralib_mod_binding_java
   terralib_mod_raster
   terralib_mod_symbology
   terralib_mod_srs
-  terralib_mod_plugin
+  
   terralib_mod_qt_widgets
   ${Boost_FILESYSTEM_LIBRARY} 
   ${Boost_SYSTEM_LIBRARY}

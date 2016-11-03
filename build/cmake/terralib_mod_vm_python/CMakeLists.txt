@@ -35,7 +35,7 @@ source_group("Source Files\\python"            FILES ${TERRALIB_VM_SRC_FILES})
 add_library(terralib_mod_vm_python SHARED ${TERRALIB_VM_HDR_FILES} ${TERRALIB_VM_SRC_FILES})
 
 target_link_libraries(terralib_mod_vm_python terralib_mod_vm
-                                          terralib_mod_plugin
+                                          
                                           terralib_mod_core
                                           ${PYTHON_LIBRARIES})
 

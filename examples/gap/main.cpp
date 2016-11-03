@@ -28,7 +28,7 @@
 #include <terralib/common/TerraLib.h>
 #include <terralib/core/utils/Platform.h>
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
-#include <terralib/plugin.h>
+
 
 #include "GAP.h"
 

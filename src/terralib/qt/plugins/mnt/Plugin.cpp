@@ -51,8 +51,8 @@
 #include <string>
 
 
-te::qt::plugins::mnt::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
-: te::plugin::Plugin(pluginInfo),
+te::qt::plugins::mnt::Plugin::Plugin(const te::core::PluginInfo& pluginInfo)
+: te::core::CppPlugin(pluginInfo),
 m_mntMenu(0),
 m_ISOGeneration(0),
 m_ImageGeneration(0),
@@ -167,5 +167,5 @@ void  te::qt::plugins::mnt::Plugin::unRegisterActions()
   delete m_Profile;
 }
 
-PLUGIN_CALL_BACK_IMPL(te::qt::plugins::mnt::Plugin)
+TERRALIB_PLUGIN_CALL_BACK_IMPL(te::qt::plugins::mnt::Plugin)
 

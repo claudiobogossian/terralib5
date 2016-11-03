@@ -88,9 +88,9 @@ te::map::AbstractLayer* GetSelectedLayer(QTreeView* view)
   return ((te::qt::widgets::LayerItem*)item)->getLayer().get();
 }
 
-te::qt::plugins::edit::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
+te::qt::plugins::edit::Plugin::Plugin(const te::core::PluginInfo& pluginInfo)
   : QObject(),
-  te::plugin::Plugin(pluginInfo),
+  te::core::CppPlugin(pluginInfo),
     m_toolbar(0)
 {
 }
@@ -300,4 +300,4 @@ te::qt::widgets::LayerItemView*te::qt::plugins::edit::Plugin::getLayerExplorer()
 }
 
 
-PLUGIN_CALL_BACK_IMPL(te::qt::plugins::edit::Plugin)
+TERRALIB_PLUGIN_CALL_BACK_IMPL(te::qt::plugins::edit::Plugin)

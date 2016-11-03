@@ -33,7 +33,7 @@
 #include <terralib/dataaccess/dataset/DataSet.h>
 #include <terralib/dataaccess/datasource/DataSource.h>
 #include <terralib/dataaccess/query/Select.h>
-#include <terralib/plugin.h>
+
 #include <terralib/qt/widgets/table/DataSetTableView.h>
 #include <terralib/qt/widgets/query/QueryBuilderWizard.h>
 #include <terralib/qt/widgets/query/QueryLayerBuilderWizard.h>

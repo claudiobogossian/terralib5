@@ -7,7 +7,7 @@
 #include <terralib/qt/widgets/utils/FileChooser.h>
 #include <terralib/qt/widgets/dataview/TabularViewer.h>
 #include <terralib/Config.h>
-#include <terralib/plugin.h>
+
 #include <terralib/dataaccess/datasource/DataSource.h>
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
 #include <terralib/dataaccess/datasource/DataSourceCatalogLoader.h>

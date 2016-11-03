@@ -34,7 +34,7 @@ file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/xerces/*.h)
 add_executable(terralib_example_xerces ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
 target_link_libraries(terralib_example_xerces terralib_mod_common
-                                              terralib_mod_plugin
+                                              
                                               terralib_mod_xml)
 
 install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}

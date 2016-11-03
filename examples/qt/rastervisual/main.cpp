@@ -29,7 +29,7 @@
 // TerraLib
 #include <terralib/core/utils/Platform.h>
 #include <terralib/common.h>
-#include <terralib/plugin.h>
+
 
 // Qt
 #include <QApplication>

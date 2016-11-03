@@ -38,7 +38,6 @@
 #include "../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../maptools/Utils.h"
-#include "../../plugin/PluginManager.h"
 
 // Qt
 #include <QFileInfo>

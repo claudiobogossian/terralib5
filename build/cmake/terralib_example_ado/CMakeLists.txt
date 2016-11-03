@@ -34,7 +34,7 @@ file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/ado/*.h)
 add_executable(terralib_example_ado ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
 target_link_libraries(terralib_example_ado terralib_mod_dataaccess
-                                           terralib_mod_plugin)
+                                           )
 
 install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/ado COMPONENT devel)
