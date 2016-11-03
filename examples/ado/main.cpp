@@ -29,7 +29,7 @@
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
 #include <terralib/dataaccess/datasource/DataSourceTransactor.h>
 #include <terralib/memory/DataSet.h>
-#include <terralib/plugin.h>
+
 
 // Example
 #include "ADOExamples.h"

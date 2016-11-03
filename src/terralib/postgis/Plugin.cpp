@@ -20,11 +20,9 @@
  */
 
 /*!
-  \file terralib/examples/core/plugin/terralib_example_core_plugin1/Plugin1.cpp
+  \file terralib/postgis/Plugin.cpp
 
-  \brief Example of a C++ Library that will be loaded as a plugin.
-
-  \author Matheus Cavassan Zaglia
+  \brief Plugin interface for dynamic loading of Postgis Driver for TerraLib.
 */
 
 // TerraLib

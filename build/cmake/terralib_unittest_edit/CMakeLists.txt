@@ -37,7 +37,7 @@ add_executable(terralib_unittest_edit   ${TERRALIB_SRC_FILES}
                                         ${TERRALIB_HDR_FILES}
                                         ${TERRALIB_UNITTEST_EDIT_MOVEGEOMETRY_SRC_FILES})
 
-target_link_libraries(terralib_unittest_edit  terralib_mod_plugin 
+target_link_libraries(terralib_unittest_edit   
                       terralib_mod_edit_core
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 

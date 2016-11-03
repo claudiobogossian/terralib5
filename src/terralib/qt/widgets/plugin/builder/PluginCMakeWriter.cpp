@@ -43,7 +43,7 @@ te::qt::widgets::PluginCMakeWriter::~PluginCMakeWriter()
 }
 
 void te::qt::widgets::PluginCMakeWriter::createCmakeFile(const std::string& buildPath, const std::string& sourcePath, const std::string& projName, 
-                                                         const std::string exportMacro, const std::string& cmakePath, const te::plugin::PluginInfo& pi)
+                                                         const std::string exportMacro, const std::string& cmakePath, const te::core::PluginInfo& pi)
 {
   std::ofstream file;
 
@@ -128,90 +128,90 @@ void te::qt::widgets::PluginCMakeWriter::createCmakeFile(const std::string& buil
   file.close();
 }
 
-void te::qt::widgets::PluginCMakeWriter::createPluginInfoFile(const std::string& buildPath, const te::plugin::PluginInfo& pi, const te::plugin::Provider& p)
+void te::qt::widgets::PluginCMakeWriter::createPluginInfoFile(const std::string& buildPath, const te::core::PluginInfo& pi)
 {
-  std::ofstream file;
+//  std::ofstream file;
 
-  std::string fileName = buildPath;
-              fileName += "/";
-              fileName += PLUGIN_INFO_XML_FILE_NAME;
+//  std::string fileName = buildPath;
+//              fileName += "/";
+//              fileName += PLUGIN_INFO_XML_FILE_NAME;
 
-  file.open(fileName.c_str());
+//  file.open(fileName.c_str());
 
   //insert default header
   //insertDefaultXMLHeader(file);
 
   //insert plugin info
-  file << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n";
-  file << "<PluginInfo xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n";
-  file << "            xmlns:xsd=\"http://www.w3.org/2001/XMLSchema-instance\"\n";
-  file << "            xmlns=\"http://www.terralib.org/schemas/plugin\"\n";
-  file << "            xsd:schemaLocation=\"http://www.terralib.org/schemas/plugin ${TERRALIB_SCHEMA_LOCATION}/plugin/plugin_info.xsd\"\n";
-  file << "            version=\"" + pi.m_version + "\"\n";
-  file << "            release=\"" + pi.m_release + "\"\n";
-  file << "            engine=\"" + pi.m_engine + "\">\n";
-  file << "  <Name>" + pi.m_name + "</Name>\n";
-  file << "  <DisplayName>" + pi.m_displayName + "</DisplayName>\n";
-  file << "  <Description>" + pi.m_description + "</Description>\n";
-  file << "  <TerraLibVersion>" + pi.m_terralibVersion + "</TerraLibVersion>\n";
-  file << "  <License xlink:href=\"" + pi.m_licenseURL + "\">" + pi.m_licenseDescription + "</License>\n";
-  file << "  <Category>" + pi.m_category + "</Category>\n";
-  file << "  <Site xlink:href=\"" + pi.m_site + "\"/>\n";
-  file << "  <Provider>\n";
-  file << "    <Name>" + p.m_name + "</Name>\n";
-  file << "    <Site xlink:href=\"" + p.m_site + "\"/>\n";
-  file << "    <Email>" + p.m_email + "</Email>\n";
-  file << "  </Provider>\n";
+//  file << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n";
+//  file << "<PluginInfo xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n";
+//  file << "            xmlns:xsd=\"http://www.w3.org/2001/XMLSchema-instance\"\n";
+//  file << "            xmlns=\"http://www.terralib.org/schemas/plugin\"\n";
+//  file << "            xsd:schemaLocation=\"http://www.terralib.org/schemas/plugin ${TERRALIB_SCHEMA_LOCATION}/plugin/plugin_info.xsd\"\n";
+//  file << "            version=\"" + pi.m_version + "\"\n";
+//  file << "            release=\"" + pi.m_release + "\"\n";
+//  file << "            engine=\"" + pi.m_engine + "\">\n";
+//  file << "  <Name>" + pi.m_name + "</Name>\n";
+//  file << "  <DisplayName>" + pi.m_displayName + "</DisplayName>\n";
+//  file << "  <Description>" + pi.m_description + "</Description>\n";
+//  file << "  <TerraLibVersion>" + pi.m_terralibVersion + "</TerraLibVersion>\n";
+//  file << "  <License xlink:href=\"" + pi.m_licenseURL + "\">" + pi.m_licenseDescription + "</License>\n";
+//  file << "  <Category>" + pi.m_category + "</Category>\n";
+//  file << "  <Site xlink:href=\"" + pi.m_site + "\"/>\n";
+//  file << "  <Provider>\n";
+//  file << "    <Name>" + pi.provider.name + "</Name>\n";
+//  file << "    <Site xlink:href=\"" + pi.provider.site + "\"/>\n";
+//  file << "    <Email>" + p.m_email + "</Email>\n";
+//  file << "  </Provider>\n";
 
-  if(pi.m_requiredPlugins.empty() == false)
-  {
-    file << "  <RequiredPlugins>\n";
-    for(size_t t = 0; t < pi.m_requiredPlugins.size(); ++t)
-    {
-      file << "    <PluginId>" + pi.m_requiredPlugins[t] + "</PluginId>\n";
-    }
-    file << "  </RequiredPlugins>\n";
-  }
+//  if(pi.m_requiredPlugins.empty() == false)
+//  {
+//    file << "  <RequiredPlugins>\n";
+//    for(size_t t = 0; t < pi.m_requiredPlugins.size(); ++t)
+//    {
+//      file << "    <PluginId>" + pi.m_requiredPlugins[t] + "</PluginId>\n";
+//    }
+//    file << "  </RequiredPlugins>\n";
+//  }
 
-  if(pi.m_requiredModules.empty() == false)
-  {
-    file << "  <RequiredModules>\n";
-    for(size_t t = 0; t < pi.m_requiredModules.size(); ++t)
-    {
-      file << "    <ModuleId>" + pi.m_requiredModules[t] + "</ModuleId>\n";
-    }
-    file << "  </RequiredModules>\n";
-  }
+//  if(pi.m_requiredModules.empty() == false)
+//  {
+//    file << "  <RequiredModules>\n";
+//    for(size_t t = 0; t < pi.m_requiredModules.size(); ++t)
+//    {
+//      file << "    <ModuleId>" + pi.m_requiredModules[t] + "</ModuleId>\n";
+//    }
+//    file << "  </RequiredModules>\n";
+//  }
   
   
-  if(pi.m_resources.empty() == false)
-  {
-    file << "  <Resources>\n";
-    for(size_t t = 0; t < pi.m_resources.size(); ++t)
-    {
-      file << "    <Resource name=\"" + pi.m_resources[t].first + "\" xlink:href=\"" + pi.m_resources[t].second + "\"/>\n";
-    }
-    file << "  </Resources>\n";
-  }
+//  if(pi.m_resources.empty() == false)
+//  {
+//    file << "  <Resources>\n";
+//    for(size_t t = 0; t < pi.m_resources.size(); ++t)
+//    {
+//      file << "    <Resource name=\"" + pi.m_resources[t].first + "\" xlink:href=\"" + pi.m_resources[t].second + "\"/>\n";
+//    }
+//    file << "  </Resources>\n";
+//  }
   
   
-  if(pi.m_parameters.empty() == false)
-  {
-    file << "  <Parameters>\n";
-    for(size_t t = 0; t < pi.m_parameters.size(); ++t)
-    {
-      file << "    <Parameter>\n";
-      file << "      <Name>" + pi.m_parameters[t].first + "</Name>\n";
-      file << "      <Value>" + pi.m_parameters[t].second + "</Value>\n";
-      file << "    </Parameter>\n";
-    }
-    file << "  </Parameters>\n";
-  }
+//  if(pi.m_parameters.empty() == false)
+//  {
+//    file << "  <Parameters>\n";
+//    for(size_t t = 0; t < pi.m_parameters.size(); ++t)
+//    {
+//      file << "    <Parameter>\n";
+//      file << "      <Name>" + pi.m_parameters[t].first + "</Name>\n";
+//      file << "      <Value>" + pi.m_parameters[t].second + "</Value>\n";
+//      file << "    </Parameter>\n";
+//    }
+//    file << "  </Parameters>\n";
+//  }
   
   
-  file << "</PluginInfo>\n";
+//  file << "</PluginInfo>\n";
 
-  file.close();
+//  file.close();
 }
 
 void te::qt::widgets::PluginCMakeWriter::insertDefaultHeader(std::ofstream& stream)
@@ -255,15 +255,15 @@ void te::qt::widgets::PluginCMakeWriter::insertDefaultXMLHeader(std::ofstream& s
   stream << defaultHeader.c_str();
 }
 
-void te::qt::widgets::PluginCMakeWriter::findTerralib(std::ofstream& stream, const std::string& teCmakePath, const te::plugin::PluginInfo& pi)
+void te::qt::widgets::PluginCMakeWriter::findTerralib(std::ofstream& stream, const std::string& teCmakePath, const te::core::PluginInfo& pi)
 {
   std::string componentList = "";
 
-  for(size_t t = 0; t < pi.m_requiredModules.size(); ++t)
+  for(size_t t = 0; t < pi.linked_libraries.size(); ++t)
   {
-    int pos = pi.m_requiredModules[t].rfind(".");
+    int pos = pi.linked_libraries[t].rfind(".");
 
-    std::string componentName = pi.m_requiredModules[t].substr(pos + 1, pi.m_requiredModules[t].size() - 1);
+    std::string componentName = pi.linked_libraries[t].substr(pos + 1, pi.linked_libraries[t].size() - 1);
     componentList += componentName + " ";
   }
 

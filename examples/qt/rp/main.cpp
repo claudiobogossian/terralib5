@@ -33,7 +33,7 @@
 #include <terralib/gdal/Utils.h>
 #include <terralib/geometry.h>
 //#include <terralib/maptools/RasterLayerRenderer.h> // * Under revision *
-#include <terralib/plugin.h>
+
 #include <terralib/qt/widgets/rp/ClassifierDialog.h>
 #include <terralib/qt/widgets/rp/ContrastDialog.h>
 #include <terralib/qt/widgets/rp/MixtureModelDialog.h>

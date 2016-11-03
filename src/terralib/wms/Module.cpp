@@ -30,7 +30,6 @@
 #include "../dataaccess/datasource/DataSourceFactory.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../maptools/serialization/xml/Layer.h"
-#include "../plugin/PluginInfo.h"
 #include "Config.h"
 #include "DataSourceFactory.h"
 #include "Module.h"

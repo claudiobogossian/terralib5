@@ -36,7 +36,7 @@ file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/st/*.h)
 
 add_executable(terralib_example_st ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
-target_link_libraries(terralib_example_st terralib_mod_plugin
+target_link_libraries(terralib_example_st 
                                           terralib_mod_common
                                           terralib_mod_dataaccess
                                           terralib_mod_datatype

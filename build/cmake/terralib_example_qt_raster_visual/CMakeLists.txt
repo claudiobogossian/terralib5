@@ -39,7 +39,7 @@ if(Qt5_FOUND)
   add_executable(terralib_example_qt_raster_visual ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
   target_link_libraries(terralib_example_qt_raster_visual terralib_mod_maptools
-                                                          terralib_mod_plugin
+                                                          
                                                           terralib_mod_qt_widgets
                                                           terralib_mod_raster
                                                           terralib_mod_symbology)
@@ -65,7 +65,7 @@ else()
   add_executable(terralib_example_qt_raster_visual ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_SRC_FILES})
 
   target_link_libraries(terralib_example_qt_raster_visual terralib_mod_maptools
-                                                          terralib_mod_plugin
+                                                          
                                                           terralib_mod_qt_widgets
                                                           terralib_mod_raster
                                                           terralib_mod_symbology

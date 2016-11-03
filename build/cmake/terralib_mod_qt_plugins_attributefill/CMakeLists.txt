@@ -44,7 +44,7 @@ if(Qt5_FOUND)
   add_library(terralib_mod_qt_plugins_attributefill SHARED ${TERRALIB_FILES})
 
   target_link_libraries(terralib_mod_qt_plugins_attributefill  terralib_mod_attributefill_qt
-                                terralib_mod_plugin
+                                
                                 terralib_mod_qt_apf)
 
   qt5_use_modules(terralib_mod_qt_plugins_attributefill Widgets)
@@ -69,7 +69,7 @@ else()
   add_library(terralib_mod_qt_plugins_attributefill SHARED ${TERRALIB_FILES})
 
   target_link_libraries(terralib_mod_qt_plugins_attributefill  terralib_mod_attributefill_qt
-                                                               terralib_mod_plugin
+                                                               
                                                                terralib_mod_qt_apf
                                                                ${QT_LIBRARIES})
 

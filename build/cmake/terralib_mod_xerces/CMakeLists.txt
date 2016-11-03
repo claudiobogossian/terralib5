@@ -40,7 +40,7 @@ set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 add_library(terralib_mod_xerces SHARED ${TERRALIB_FILES})
 
 target_link_libraries(terralib_mod_xerces terralib_mod_xml
-                                          terralib_mod_plugin
+                                          
                                           terralib_mod_common
                                           ${XERCES_LIBRARY})
 

@@ -27,7 +27,7 @@
 #include "../Config.h"
 #include <terralib/cellspace/CellSpaceOperations.h>
 #include <terralib/common/TerraLib.h>
-#include <terralib/plugin.h>
+
 #include <terralib/dataaccess/dataset/CheckConstraint.h>
 #include <terralib/dataaccess/dataset/PrimaryKey.h>
 #include <terralib/dataaccess/dataset/Index.h>

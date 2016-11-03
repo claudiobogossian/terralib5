@@ -53,7 +53,7 @@ if(Qt5_FOUND)
 
   target_link_libraries(terralib_example_qt_se terralib_mod_dataaccess
                                                terralib_mod_symbology
-                                               terralib_mod_plugin
+                                               
                                                terralib_mod_qt_widgets)
 
   qt5_use_modules(terralib_example_qt_se Widgets)
@@ -62,7 +62,7 @@ else()
 
   target_link_libraries(terralib_example_qt_se terralib_mod_dataaccess
                                                terralib_mod_symbology
-                                               terralib_mod_plugin
+                                               
                                                terralib_mod_qt_widgets
                                                ${QT_LIBRARIES})
 

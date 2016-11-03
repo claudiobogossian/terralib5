@@ -42,7 +42,7 @@ target_link_libraries(terralib_mod_terralib4 terralib_mod_dataaccess
                                              terralib_mod_datatype
                                              terralib_mod_geometry
                                              terralib_mod_memory
-                                             terralib_mod_plugin
+                                             
                                              terralib_mod_raster
                                              ${TE_LIBRARIES})
 

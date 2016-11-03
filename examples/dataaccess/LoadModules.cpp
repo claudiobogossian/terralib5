@@ -1,7 +1,7 @@
 // TerraLib
 #include <terralib/core/utils/Platform.h>
 #include <terralib/common.h>
-#include <terralib/plugin.h>
+
 
 // STL
 #include <iostream>

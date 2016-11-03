@@ -36,7 +36,7 @@ file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/vp/*.h)
 
 add_executable(terralib_unittest_vp ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
-target_link_libraries(terralib_unittest_vp 	terralib_mod_plugin 
+target_link_libraries(terralib_unittest_vp 	 
 											terralib_mod_vp_core
 											${CPPUNIT_LIBRARY})
 

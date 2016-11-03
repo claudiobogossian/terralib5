@@ -44,7 +44,7 @@ source_group("Header Files" FILES ${TERRALIB_ITEST_DATAACCESS_HDR_FILES})
 add_executable(terralib_itest_dataaccess ${TERRALIB_ITEST_DATAACCESS_SRC_FILES} ${TERRALIB_ITEST_DATAACCESS_HDR_FILES})
 
 target_link_libraries(terralib_itest_dataaccess terralib_mod_dataaccess
-                                                terralib_mod_plugin
+                                                
                                                 ${GTEST_BOTH_LIBRARIES}
                                                 ${GMOCK_BOTH_LIBRARIES})
 

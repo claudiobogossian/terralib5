@@ -27,7 +27,7 @@
 
 // TerraLib
 #include <terralib/common.h>
-#include <terralib/plugin.h>
+
 #include <terralib/plugin/PluginInfo.h>
 #include <terralib/plugin/PluginManager.h>
 #include <terralib/se/Style.h>
