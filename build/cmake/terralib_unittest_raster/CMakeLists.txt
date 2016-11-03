@@ -76,7 +76,7 @@ add_executable(terralib_unittest_raster ${TERRALIB_SRC_FILES}
 target_link_libraries(terralib_unittest_raster terralib_mod_dataaccess
                                                terralib_mod_geometry
                                                terralib_mod_memory
-                                               terralib_mod_plugin 
+                                                
                                                terralib_mod_raster
                                                terralib_mod_rp
                                                ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})

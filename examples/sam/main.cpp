@@ -27,7 +27,7 @@
 #include <terralib/common.h>
 #include <terralib/geometry.h>
 #include <terralib/dataaccess.h>
-#include <terralib/plugin.h>
+
 
 // Examples
 #include "SAMExamples.h"

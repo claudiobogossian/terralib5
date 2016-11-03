@@ -49,7 +49,7 @@ add_executable(terralib_unittest_dataaccess ${TERRALIB_UNITTEST_DATAACCESS_HDR_F
 target_link_libraries(terralib_unittest_dataaccess terralib_mod_common
                                                    terralib_mod_dataaccess
                                                    terralib_mod_geometry
-                                                   terralib_mod_plugin
+                                                   
                                                    terralib_mod_raster
                                                    ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 

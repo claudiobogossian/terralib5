@@ -34,7 +34,7 @@ file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/vp/*.h)
 add_executable(terralib_example_vp ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
 target_link_libraries(terralib_example_vp terralib_mod_vp_core
-                                          terralib_mod_plugin
+                                          
                                           ${BOOST_SYSTEM_LIBRARY})
 
 install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}

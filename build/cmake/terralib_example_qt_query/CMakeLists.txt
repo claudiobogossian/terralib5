@@ -38,7 +38,7 @@ if(Qt5_FOUND)
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
   target_link_libraries(terralib_example_qt_query terralib_mod_dataaccess
-                                                  terralib_mod_plugin
+                                                  
                                                   terralib_mod_qt_widgets)
 
   qt5_use_modules(terralib_example_qt_query Widgets)
@@ -54,7 +54,7 @@ else()
   add_definitions(${QT_DEFINITIONS})
 
   target_link_libraries(terralib_example_qt_query terralib_mod_dataaccess
-                                                  terralib_mod_plugin
+                                                  
                                                   terralib_mod_qt_widgets
                                                   ${QT_LIBRARIES})
 

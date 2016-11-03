@@ -50,7 +50,7 @@ target_link_libraries(terralib_unittest_ws_ogc_wcs terralib_mod_ws_ogc_wcs_clien
                                                     terralib_mod_ws_ogc_wcs_dataaccess
                                                     terralib_mod_qt_apf
                                                     terralib_mod_qt_widgets
-                                                    terralib_mod_plugin
+                                                    
                                                     ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
                                                     ${GMOCK_BOTH_LIBRARIES})
 

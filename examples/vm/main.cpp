@@ -29,25 +29,25 @@
 // TerraLib
 #include <terralib/common.h>
 #include <terralib/core.h>
-#include <terralib/plugin.h>
+
 #include <terralib/vm.h>
 
 // STL
-#include <memory>
+#include <iostream>
 #include <string>
 
 int main(int argc, char *argv[])
 {
   TerraLib::getInstance().initialize();
-  
+
   try
   {
 // load Lua Virtual Machine
-    std::string lvm_lua_manifest = te::core::FindInTerraLibPath("share/terralib/plugins/te.vm.lua.teplg");
+    std::string lvm_lua_manifest = te::core::FindInTerraLibPath("share/terralib/plugins/te.vm.lua.teplg.json");
     
-    std::unique_ptr<te::plugin::PluginInfo> lvm_lua_info(te::plugin::GetInstalledPlugin(lvm_lua_manifest));
-
-    te::plugin::PluginManager::getInstance().load(*lvm_lua_info);
+    te::core::PluginInfo lvm_lua_info(te::core::JSONPluginInfoSerializer(lvm_lua_manifest));
+    te::core::PluginManager::instance().insert(lvm_lua_info);
+    te::core::PluginManager::instance().load(lvm_lua_info.name);
 
     std::string lua_script = te::core::FindInTerraLibPath("examples/vm/vm_example.lua");
 
@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 
     vm->execute();
 
-    te::plugin::PluginManager::getInstance().unloadAll();
+    te::core::PluginManager::instance().clear();
   }
   catch(const te::vm::core::Exception& e)
   {

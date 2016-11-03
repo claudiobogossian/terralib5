@@ -5,7 +5,7 @@
 #include <terralib/common/progress/ProgressManager.h>
 #include <terralib/common/progress/ConsoleProgressViewer.h>
 #include <terralib/common/TerraLib.h>
-#include <terralib/plugin.h>
+
 
 // STL
 #include <cstdlib>

@@ -3,7 +3,7 @@
 
 // TerraLib
 #include <terralib/common/TerraLib.h>
-#include <terralib/plugin.h>
+
 
 // STL
 #include <cstdlib>

@@ -20,11 +20,9 @@
  */
 
 /*!
-  \file terralib/examples/core/plugin/terralib_example_core_plugin1/Plugin1.cpp
+  \file terralib/gdal/Plugin.cpp
 
-  \brief Example of a C++ Library that will be loaded as a plugin.
-
-  \author Matheus Cavassan Zaglia
+  \brief Plugin interface for dynamic loading of GDAL Driver for TerraLib.
 */
 
 #include "../BuildConfig.h"
@@ -37,7 +35,6 @@
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceFactory.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
-#include "../plugin/PluginInfo.h"
 #include "Config.h"
 #include "DataSourceFactory.h"
 #include "RasterFactory.h"

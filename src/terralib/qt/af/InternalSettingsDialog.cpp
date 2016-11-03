@@ -27,10 +27,10 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "ui_InternalSettingsDialogForm.h"
 
 // terralib includes
+#include "../../core/plugin/PluginManager.h"
 #include "../../core/filesystem/FileSystem.h"
 #include "../../common/PlatformUtils.h"
 #include "../../common/TerraLib.h"
-#include "../../plugin/PluginManager.h"
 #include "../../BuildConfig.h"
 
 // Qt includes
@@ -123,7 +123,7 @@ void te::qt::af::InternalSettingsDialog::setPlugins()
 {
   m_ui->m_pluginsListWidget->clear();
 
-  std::vector<std::string> plugins = te::plugin::PluginManager::getInstance().getPlugins();
+  std::vector<std::string> plugins = te::core::PluginManager::instance().getPlugins();
 
   for (std::size_t t = 0; t < plugins.size(); ++t)
   {

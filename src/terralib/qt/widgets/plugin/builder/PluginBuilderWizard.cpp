@@ -26,9 +26,7 @@
 // TerraLib
 #include "../../../../common/StringUtils.h"
 #include "../../../../common/Version.h"
-#include "../../../../plugin/PluginManager.h"
-#include "../../../../plugin/PluginInfo.h"
-#include "../../../../plugin/Provider.h"
+#include "../../../../core/plugin/PluginManager.h"
 #include "../../utils/DoubleListWidget.h"
 #include "../../utils/ParameterTableWidget.h"
 #include "PluginBuilderWizard.h"
@@ -53,6 +51,7 @@ te::qt::widgets::PluginBuilderWizard::PluginBuilderWizard(QWidget* parent)
 
   //terralib modules
   std::vector<std::string> teModulesNeeded;
+  teModulesNeeded.push_back("te.core");               //MANDATORY
   teModulesNeeded.push_back("te.common");               //MANDATORY
   teModulesNeeded.push_back("te.plugin");               //MANDATORY
 
@@ -104,7 +103,6 @@ te::qt::widgets::PluginBuilderWizard::PluginBuilderWizard(QWidget* parent)
 
   //fill interface
   m_ui->m_terralibVersionLineEdit->setText(te::common::Version::asString().c_str());
-  m_ui->m_pluginCategoryComboBox->addItems(categList);
   m_ui->m_pluginLicenseComboBox->addItems(licenses);
 
   setButtonText(QWizard::CustomButton1, tr("&Settings"));
@@ -115,18 +113,8 @@ te::qt::widgets::PluginBuilderWizard::PluginBuilderWizard(QWidget* parent)
   m_pluginDependencies->getForm()->m_rightItemsLabel->setText(tr("Required Plugins"));
   m_ui->m_pluginDependenciesGridLayout->addWidget(m_pluginDependencies.get());
 
-  std::vector<std::string> plugins = te::plugin::PluginManager::getInstance().getPlugins();
+  std::vector<std::string> plugins = te::core::PluginManager::instance().getPlugins();
   m_pluginDependencies->setInputValues(plugins);
-
-// category dependencies
-  m_categoryDependencies.reset(new DoubleListWidget(m_ui->m_categoryDependenciesPage));
-  m_categoryDependencies->getForm()->m_leftItemsLabel->setText(tr("Available plugin categories"));
-  m_categoryDependencies->getForm()->m_rightItemsLabel->setText(tr("Required categories for your plugin"));
-  m_ui->m_categoryDependenciesGridLayout->addWidget(m_categoryDependencies.get());
-
-  std::vector<std::string> categories;
-  te::plugin::PluginManager::getInstance().getCategories(categories);
-  m_categoryDependencies->setInputValues(categories);
 
 // module dependencies
   m_moduleDependencies.reset(new DoubleListWidget(m_ui->m_moduleDependenciesPage));
@@ -330,31 +318,29 @@ bool te::qt::widgets::PluginBuilderWizard::dirPageCheck()
 
 void te::qt::widgets::PluginBuilderWizard::buildPlugin()
 {
-  te::plugin::PluginInfo pi;
-  pi.m_name = m_ui->m_pluginNameLineEdit->text().toUtf8().data();
-  pi.m_displayName = m_ui->m_pluginDisplayTextLineEdit->text().toUtf8().data();
-  pi.m_description = m_ui->m_pluginDescriptionTextEdit->document()->toPlainText().toUtf8().data();
-  pi.m_version = m_ui->m_pluginVersionLineEdit->text().toUtf8().data();
-  pi.m_release = m_ui->m_pluginReleaseDateTime->text().toUtf8().data();
-  pi.m_engine = m_ui->m_cPlusPlusLanguageRadioButton->text().toUtf8().data();       // SET TO C++  CHANGE THIS IN THE FUTURE
-  pi.m_terralibVersion = m_ui->m_terralibVersionLineEdit->text().toUtf8().data();
-  pi.m_licenseDescription = m_ui->m_pluginLicenseComboBox->currentText().toUtf8().data();
-  pi.m_licenseURL = m_ui->m_pluginLicenseSiteLineEdit->text().toUtf8().data();
-  pi.m_category = m_ui->m_pluginCategoryComboBox->currentText().toUtf8().data();
-  pi.m_site = m_ui->m_pluginSiteLineEdit->text().toUtf8().data();
+  te::core::PluginInfo pi;
+  pi.name = m_ui->m_pluginNameLineEdit->text().toUtf8().data();
+  pi.display_name = m_ui->m_pluginDisplayTextLineEdit->text().toUtf8().data();
+  pi.description = m_ui->m_pluginDescriptionTextEdit->document()->toPlainText().toUtf8().data();
+  pi.version = m_ui->m_pluginVersionLineEdit->text().toUtf8().data();
+  pi.release = m_ui->m_pluginReleaseDateTime->text().toUtf8().data();
+  pi.engine = m_ui->m_cPlusPlusLanguageRadioButton->text().toUtf8().data();       // SET TO C++  CHANGE THIS IN THE FUTURE
+  pi.host_application.version = m_ui->m_terralibVersionLineEdit->text().toUtf8().data();
+  pi.license_description = m_ui->m_pluginLicenseComboBox->currentText().toUtf8().data();
+  pi.license_URL= m_ui->m_pluginLicenseSiteLineEdit->text().toUtf8().data();
+  pi.site = m_ui->m_pluginSiteLineEdit->text().toUtf8().data();
   //pi.m_folder = m_ui->m_buildLocationLineEdit->text().toUtf8().data();
 
-  pi.m_requiredPlugins = m_pluginDependencies->getOutputValues();
-  pi.m_requiredPluginCategories = m_categoryDependencies->getOutputValues();
-  pi.m_requiredModules = m_moduleDependencies->getOutputValues();
+  pi.dependencies = m_pluginDependencies->getOutputValues();
+  pi.linked_libraries = m_moduleDependencies->getOutputValues();
 
   std::map<std::string, std::string> pluginResMap = m_pluginResources->getMap();
   std::map<std::string, std::string>::iterator it = pluginResMap.begin();
 
   while(it != pluginResMap.end())
   {
-    te::plugin::PluginInfo::Resource r(it->first, it->second);
-    pi.m_resources.push_back(r);
+    te::core::Resource r(it->first, it->second);
+    pi.resources.push_back(r);
     ++it;
   }
 
@@ -363,16 +349,14 @@ void te::qt::widgets::PluginBuilderWizard::buildPlugin()
 
   while(it != pluginParamsMap.end())
   {
-    te::plugin::PluginInfo::Parameter p(it->first, it->second);
-    pi.m_parameters.push_back(p);
+    te::core::Parameter p(it->first, it->second);
+    pi.parameters.push_back(p);
     ++it;
   }
 
-  //aquire provider info
-  te::plugin::Provider p;
-  p.m_name = m_ui->m_pluginProviderNameLineEdit->text().toUtf8().data();
-  p.m_site = m_ui->m_pluginProviderSiteLineEdit->text().toUtf8().data();
-  p.m_email = m_ui->m_pluginProviderEmailLineEdit->text().toUtf8().data();
+  pi.provider.name = m_ui->m_pluginProviderNameLineEdit->text().toUtf8().data();
+  pi.provider.site = m_ui->m_pluginProviderSiteLineEdit->text().toUtf8().data();
+  pi.provider.email = m_ui->m_pluginProviderEmailLineEdit->text().toUtf8().data();
 
   //acquire dir informations
   std::string teIncludeDir = m_ui->m_terralibIncludeDirLineEdit->text().replace(QRegExp("\\\\"), "/").toUtf8().data();
@@ -393,17 +377,17 @@ void te::qt::widgets::PluginBuilderWizard::buildPlugin()
 
   //create cmake files
   te::qt::widgets::PluginCMakeWriter cmakeWriter;
-  cmakeWriter.createCmakeFile(pluginBuildDir, pluginSrcDir, pi.m_name, macroExport, teCmakeDir, pi);
+  cmakeWriter.createCmakeFile(pluginBuildDir, pluginSrcDir, pi.name, macroExport, teCmakeDir, pi);
 
-  cmakeWriter.createPluginInfoFile(pluginBuildDir, pi, p);
+  cmakeWriter.createPluginInfoFile(pluginBuildDir, pi);
 
   //create source files
   te::qt::widgets::PluginSourceWriter sourceWriter;
   sourceWriter.createHeaderFile(pluginSrcDir, nameSpace);
 
-  sourceWriter.createCppFile(pluginSrcDir, nameSpace, pi.m_name);
+  sourceWriter.createCppFile(pluginSrcDir, nameSpace, pi.name);
 
-  sourceWriter.createConfigFile(pluginSrcDir, nameSpace, macroExport, pi.m_name);
+  sourceWriter.createConfigFile(pluginSrcDir, nameSpace, macroExport, pi.name);
 
   QMessageBox::information(this, tr("Plugin Builder"), tr("Plugin built successfully!"));
 }

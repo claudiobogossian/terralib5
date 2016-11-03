@@ -36,7 +36,7 @@ target_link_libraries(terralib_example_cellspace terralib_mod_cellspace
                                                  terralib_mod_dataaccess
 												 terralib_mod_geometry
 												 terralib_mod_maptools
-												 terralib_mod_plugin
+												 
 												 terralib_mod_srs)
 
 install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}

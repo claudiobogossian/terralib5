@@ -37,7 +37,7 @@ target_link_libraries(terralib_example_dataaccess terralib_mod_common
                                                   terralib_mod_core
                                                   terralib_mod_dataaccess
                                                   terralib_mod_memory
-                                                  terralib_mod_plugin)
+                                                  )
 
 install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/dataaccess COMPONENT devel)

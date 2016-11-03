@@ -56,7 +56,7 @@ if(Qt5_FOUND)
 
   add_library(terralib_mod_qt_plugins_st SHARED ${TERRALIB_FILES})
 
-  target_link_libraries(terralib_mod_qt_plugins_st terralib_mod_plugin
+  target_link_libraries(terralib_mod_qt_plugins_st 
                                                    terralib_mod_qt_widgets
                                                    terralib_mod_qt_apf)
 
@@ -77,7 +77,7 @@ else()
 
   add_library(terralib_mod_qt_plugins_st SHARED ${TERRALIB_FILES})
 
-  target_link_libraries(terralib_mod_qt_plugins_st terralib_mod_plugin
+  target_link_libraries(terralib_mod_qt_plugins_st 
                                                    terralib_mod_qt_widgets
                                                    terralib_mod_maptools
                                                    terralib_mod_qt_apf

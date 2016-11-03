@@ -42,7 +42,7 @@ add_library(terralib_mod_wcs SHARED ${TERRALIB_FILES})
 target_link_libraries(terralib_mod_wcs terralib_mod_dataaccess
                                        terralib_mod_datatype
                                        terralib_mod_gdal
-                                       terralib_mod_plugin)
+                                       )
 
 set_target_properties(terralib_mod_wcs
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}

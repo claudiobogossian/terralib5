@@ -32,7 +32,6 @@
 #include "../dataaccess/query/FunctionEncoder.h"
 #include "../dataaccess/query/SQLDialect.h"
 #include "../dataaccess/query/UnaryOpEncoder.h"
-#include "../plugin/PluginInfo.h"
 #include "Config.h"
 #include "DataSourceFactory.h"
 #include "Module.h"

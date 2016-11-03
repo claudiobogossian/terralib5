@@ -27,7 +27,7 @@
 
 #include <terralib/common.h>
 #include <terralib/core/utils/Platform.h>
-#include <terralib/plugin.h>
+
 #include <terralib/plugin/Utils.h>
 
 

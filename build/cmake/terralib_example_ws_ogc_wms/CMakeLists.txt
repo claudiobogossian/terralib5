@@ -37,7 +37,7 @@ target_link_libraries(terralib_example_ws_ogc_wms terralib_mod_ws_ogc_wms_client
                                                    terralib_mod_ws_ogc_wms_dataaccess
                                                    terralib_mod_qt_apf
                                                    terralib_mod_qt_widgets
-                                                   terralib_mod_plugin)
+                                                   )
 
 install(FILES ${TERRALIB_EXAMPLE_OGC_WMS_SRC_FILES} ${TERRALIB_EXAMPLE_OGC_WMS_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/ogc-wms COMPONENT devel)

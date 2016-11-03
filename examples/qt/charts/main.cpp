@@ -28,7 +28,7 @@
 #include <terralib/core/utils/Platform.h>
 #include <terralib/common.h>
 #include <terralib/dataaccess.h>
-#include <terralib/plugin.h>
+
 
 //Utils
 #include <terralib/qt/widgets/charts/Utils.h>

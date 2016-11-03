@@ -23,7 +23,7 @@
 #include <terralib/common/TerraLib.h>
 #include <terralib/common/Exception.h>
 #include <terralib/qt/widgets/dataview/HLDelegateDecorator.h>
-#include <terralib/plugin.h>
+
 //#include <terralib/qt/widgets/dataview/TabularViewer.h>
 
 //! Qt include files
