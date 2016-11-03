@@ -56,6 +56,7 @@ struct te::core::PluginManager::Impl
   std::map<std::string, std::vector<std::string> > dependency_map;
 
   void move_from_unload_to_broken_list(std::size_t plugin_pos);
+  void move_from_broken_to_unloaded_list(std::size_t plugin_pos);
 };
 
 std::vector<std::string> te::core::PluginManager::getPlugins() const
@@ -172,6 +173,33 @@ bool te::core::PluginManager::isLoaded(const std::string& plugin_name) const
                       [&plugin_name](const std::shared_ptr<AbstractPlugin>& p) {
                         return p->info().name == plugin_name;
                       }) != m_pimpl->plugins.end();
+}
+bool te::core::PluginManager::isFixed(const std::string& plugin_name)
+{
+  if(!isBroken(plugin_name))
+    return true;
+
+  std::size_t plugin_pos;
+  for(plugin_pos = 0; plugin_pos != m_pimpl->broken_plugins.size();
+      ++plugin_pos)
+  {
+    if(m_pimpl->broken_plugins[plugin_pos].name == plugin_name)
+      break;
+  }
+
+  te::core::PluginInfo pInfo = m_pimpl->broken_plugins[plugin_pos];
+
+  if(pInfo.dependencies.size() == 0)
+    return false;
+
+  for(auto it = pInfo.dependencies.begin(); it != pInfo.dependencies.end();
+      ++it)
+  {
+    if(!isLoaded(*it))
+      return false;
+  }
+  m_pimpl->move_from_broken_to_unloaded_list(plugin_pos);
+  return true;
 }
 
 bool te::core::PluginManager::exists(const std::string& plugin_name) const
@@ -559,4 +587,16 @@ void te::core::PluginManager::Impl::move_from_unload_to_broken_list(
   unloaded_plugins.erase(unloaded_plugins.begin() + plugin_pos);
 
   broken_plugins.push_back(pinfo);
+}
+
+void te::core::PluginManager::Impl::move_from_broken_to_unloaded_list(
+    std::size_t plugin_pos)
+{
+  assert(plugin_pos < broken_plugins.size());
+
+  PluginInfo pinfo = broken_plugins[plugin_pos];
+
+  broken_plugins.erase(broken_plugins.begin() + plugin_pos);
+
+  unloaded_plugins.push_back(pinfo);
 }

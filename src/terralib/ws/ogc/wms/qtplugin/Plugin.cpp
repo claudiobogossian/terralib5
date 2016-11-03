@@ -40,7 +40,6 @@
 #include "../../../../qt/widgets/layer/explorer/LayerItemView.h"
 #include "../qt/WMSType.h"
 
-
 void GetAllWMSLayers(te::qt::widgets::LayerItemView* view, const QModelIndex& parent,
                         QModelIndexList& layersIdx)
 {
@@ -78,9 +77,8 @@ std::list<te::map::AbstractLayerPtr> GetLayers(const QModelIndexList& lst)
   return res;
 }
 
-te::ws::ogc::wms::qtplugin::Plugin::Plugin(const te::plugin::PluginInfo &pluginInfo)
-  : QObject(),
-    plugin::Plugin(pluginInfo),
+te::ws::ogc::wms::qtplugin::Plugin::Plugin(const te::core::PluginInfo &pluginInfo)
+  : te::core::CppPlugin(pluginInfo),
     m_delegate(0)
 {
 }
@@ -168,4 +166,4 @@ void te::ws::ogc::wms::qtplugin::Plugin::updateDelegate(const bool &add)
   }
 }
 
-PLUGIN_CALL_BACK_IMPL(te::ws::ogc::wms::qtplugin::Plugin)
+TERRALIB_PLUGIN_CALL_BACK_IMPL(te::ws::ogc::wms::qtplugin::Plugin)

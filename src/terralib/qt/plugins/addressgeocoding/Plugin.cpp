@@ -40,9 +40,9 @@
 #include <QMenuBar>
 #include <QMessageBox>
 
-te::qt::plugins::addressgeocoding::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
+te::qt::plugins::addressgeocoding::Plugin::Plugin(const te::core::PluginInfo& pluginInfo)
   : QObject(),
-  te::plugin::Plugin(pluginInfo)
+  te::core::CppPlugin(pluginInfo)
 {
 }
 
@@ -138,4 +138,4 @@ void te::qt::plugins::addressgeocoding::Plugin::unRegisterActions()
   delete m_action;
 }
 
-PLUGIN_CALL_BACK_IMPL(te::qt::plugins::addressgeocoding::Plugin)
+TERRALIB_PLUGIN_CALL_BACK_IMPL(te::qt::plugins::addressgeocoding::Plugin)

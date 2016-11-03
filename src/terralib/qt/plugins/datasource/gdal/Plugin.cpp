@@ -65,9 +65,51 @@
 #include <QMessageBox>
 #include <QToolBar>
 
-te::qt::plugins::gdal::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo) :
+
+std::list<te::da::DataSetTypePtr> GetDataSetsInfo(const te::da::DataSourceInfoPtr& info)
+{
+  std::list<te::da::DataSetTypePtr> res;
+
+  te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().get(info->getId(), info->getType(), info->getConnInfo());
+
+  std::vector<std::string> dsets = ds->getDataSetNames();
+
+  std::vector<std::string>::iterator it;
+
+  for(it = dsets.begin(); it != dsets.end(); ++it)
+    res.push_back(te::da::DataSetTypePtr(ds->getDataSetType(*it).release()));
+
+  return res;
+}
+
+te::map::AbstractLayerPtr GetLayer(const te::da::DataSourceInfoPtr& info, std::string fileName)
+{
+  te::map::AbstractLayerPtr res;
+  te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().get(info->getId(), info->getType(), info->getConnInfo());
+
+  te::da::DataSetTypePtr dss = ds->getDataSetType(fileName);
+
+  if (dss.get())
+  {
+    te::qt::widgets::DataSet2Layer layer(info->getId());
+    res = layer(dss);
+  }
+
+  return res;
+}
+
+void GetLayers(const te::da::DataSourceInfoPtr& info, std::list<te::map::AbstractLayerPtr>& layers)
+{
+  std::list<te::map::AbstractLayerPtr> res;
+  std::list<te::da::DataSetTypePtr> dss = GetDataSetsInfo(info);
+
+  std::transform(dss.begin(), dss.end(), std::back_inserter(layers), te::qt::widgets::DataSet2Layer(info->getId()));
+}
+
+
+te::qt::plugins::gdal::Plugin::Plugin(const te::core::PluginInfo& pluginInfo) :
 QObject(),
- te::plugin::Plugin(pluginInfo),
+ te::core::CppPlugin(pluginInfo),
  m_openFile(0), m_openMultipleFiles(0)
 {
   te::qt::af::AppCtrlSingleton::getInstance().addListener(this, te::qt::af::SENDER);
@@ -221,5 +263,5 @@ void te::qt::plugins::gdal::Plugin::openMultipleFilesDialog()
   te::qt::plugins::gdal::CreateLayers(fileNames);
 }
 
-PLUGIN_CALL_BACK_IMPL(te::qt::plugins::gdal::Plugin)
+TERRALIB_PLUGIN_CALL_BACK_IMPL(te::qt::plugins::gdal::Plugin)
 

@@ -27,7 +27,7 @@
 #define __TE_QT_PLUGINS_MNT_INTERNAL_PLUGIN_H
 
 // TerraLib
-#include "../../../plugin/Plugin.h"
+#include "../../../core/plugin/CppPlugin.h"
 #include "Config.h"
 
 // Qt
@@ -59,13 +59,13 @@ namespace te
         class VolumeAction;
         class ProfileAction;
 
-        class Plugin : public QObject, public te::plugin::Plugin
+        class Plugin : public QObject, public te::core::CppPlugin
         {
           Q_OBJECT
 
         public:
 
-            Plugin(const te::plugin::PluginInfo& pluginInfo);
+            Plugin(const te::core::PluginInfo& pluginInfo);
 
             ~Plugin();
 
@@ -110,7 +110,5 @@ namespace te
     }   // end namespace plugins
   }     // end namespace qt
 }       // end namespace te
-
-PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINMNTEXPORT);
 
 #endif //__TE_QT_PLUGINS_MNT_INTERNAL_PLUGIN_H

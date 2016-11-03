@@ -58,8 +58,8 @@
 #include <QMenu>
 #include <QMenuBar>
 
-te::qt::plugins::terramobile::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo), m_menu(0)
+te::qt::plugins::terramobile::Plugin::Plugin(const te::core::PluginInfo& pluginInfo)
+  : te::core::CppPlugin(pluginInfo), m_menu(0)
 {
 }
 
@@ -188,4 +188,4 @@ void  te::qt::plugins::terramobile::Plugin::unRegisterActions()
 
 }
 
-PLUGIN_CALL_BACK_IMPL(te::qt::plugins::terramobile::Plugin)
+TERRALIB_PLUGIN_CALL_BACK_IMPL(te::qt::plugins::terramobile::Plugin)

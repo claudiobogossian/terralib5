@@ -40,8 +40,8 @@
 #include <boost/functional/factory.hpp>
 #include <boost/bind.hpp>
 
-te::wcs::Module::Module(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo)
+te::wcs::Module::Module(const te::core::PluginInfo& pluginInfo)
+  : te::core::CppPlugin(pluginInfo)
 {
 }
 
@@ -77,4 +77,4 @@ void te::wcs::Module::shutdown()
   m_initialized = false;
 }
 
-PLUGIN_CALL_BACK_IMPL(te::wcs::Module)
+TERRALIB_PLUGIN_CALL_BACK_IMPL(te::wcs::Module)

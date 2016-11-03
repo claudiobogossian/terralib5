@@ -35,8 +35,7 @@
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/serialization/xml/Serializer.h"
 #include "../../maptools/AbstractLayer.h"
-#include "../../plugin/PluginManager.h"
-#include "../../plugin/PluginInfo.h"
+#include "../../core/plugin/PluginManager.h"
 #include "../../maptools/serialization/xml/Layer.h"
 #include "../../xml/AbstractWriter.h"
 #include "../../xml/AbstractWriterFactory.h"
@@ -84,58 +83,50 @@ void te::qt::af::UpdateUserSettings()
   user_settings.remove("plugins/enabled");
   
   user_settings.beginGroup("plugins");
-  user_settings.remove("enabled");
+  user_settings.remove("loaded");
   user_settings.remove("unloaded");
-  user_settings.remove("broken");
-  
-  user_settings.beginWriteArray("enabled");
-  
-  std::vector<std::string> plugins = te::plugin::PluginManager::getInstance().getPlugins();
-  
+
+  user_settings.beginWriteArray("loaded");
+
   int aidx = 0;
-  
-  for(std::size_t i = 0; i != plugins.size(); ++i)
+  std::vector<te::core::PluginInfo> loaded =
+      te::core::PluginManager::instance().getLoadedPlugins();
+
+  for(std::size_t i = 0; i != loaded.size(); ++i)
   {
-    if(!te::plugin::PluginManager::getInstance().isLoaded(plugins[i]))
-      continue;
-    
     user_settings.setArrayIndex(aidx++);
-    
-    user_settings.setValue("name", plugins[i].c_str());
+
+    user_settings.setValue("name", loaded[i].name.c_str());
   }
 
   user_settings.endArray();
 
   // save unloaded plugins
+
+  std::vector<te::core::PluginInfo> unloaded =
+      te::core::PluginManager::instance().getUnloadedPlugins();
+
   user_settings.beginWriteArray("unloaded");
 
   int unloadedidx = 0;
 
-  for (std::size_t i = 0; i != plugins.size(); ++i)
+  for(std::size_t i = 0; i != unloaded.size(); ++i)
   {
-    if (!te::plugin::PluginManager::getInstance().isUnloadedPlugin(plugins[i]))
-      continue;
-
     user_settings.setArrayIndex(unloadedidx++);
-    user_settings.setValue("name", plugins[i].c_str());
+
+    user_settings.setValue("name", unloaded[i].name.c_str());
   }
 
-  user_settings.endArray();
+  std::vector<te::core::PluginInfo> broken =
+      te::core::PluginManager::instance().getBrokenPlugins();
 
-  // save broken plugins
-  user_settings.beginWriteArray("broken");
-
-  int brokenidx = 0;
-
-  for (std::size_t i = 0; i != plugins.size(); ++i)
+  for(std::size_t i = 0; i != broken.size(); ++i)
   {
-    if (!te::plugin::PluginManager::getInstance().isBrokenPlugin(plugins[i]))
-      continue;
+    user_settings.setArrayIndex(unloadedidx++);
 
-    user_settings.setArrayIndex(brokenidx++);
-    user_settings.setValue("name", plugins[i].c_str());
+    user_settings.setValue("name", broken[i].name.c_str());
   }
-  
+
   user_settings.endArray();
   
   user_settings.endGroup();

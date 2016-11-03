@@ -100,11 +100,9 @@ QString GetSupportedFiles()
   return res;
 }
 
-te::qt::plugins::ogr::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo) : 
-QObject(),
-te::plugin::Plugin(pluginInfo),
-m_showWindow(0),
-m_handler(0)
+te::qt::plugins::ogr::Plugin::Plugin(const te::core::PluginInfo& pluginInfo)
+    : QObject(), te::core::CppPlugin(pluginInfo), m_showWindow(0), m_handler(0)
+
 {
   te::qt::af::AppCtrlSingleton::getInstance().addListener(this, te::qt::af::SENDER);
 }
@@ -190,4 +188,4 @@ void te::qt::plugins::ogr::Plugin::showWindow()
   te::qt::plugins::ogr::CreateLayers(fileNames);
 }
 
-PLUGIN_CALL_BACK_IMPL(te::qt::plugins::ogr::Plugin)
+TERRALIB_PLUGIN_CALL_BACK_IMPL(te::qt::plugins::ogr::Plugin)

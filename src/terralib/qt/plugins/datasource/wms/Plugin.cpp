@@ -81,9 +81,9 @@ std::list<te::map::AbstractLayerPtr> GetLayers(const QModelIndexList& lst)
   return res;
 }
 
-te::qt::plugins::wms::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
+te::qt::plugins::wms::Plugin::Plugin(const te::core::PluginInfo& pluginInfo)
   : QObject(),
-    te::plugin::Plugin(pluginInfo),
+    te::core::CppPlugin(pluginInfo),
     m_delegate(0)
 {
 }
@@ -172,4 +172,4 @@ void te::qt::plugins::wms::Plugin::updateDelegate(const bool& add)
 }
 
 
-PLUGIN_CALL_BACK_IMPL(te::qt::plugins::wms::Plugin)
+TERRALIB_PLUGIN_CALL_BACK_IMPL(te::qt::plugins::wms::Plugin)
