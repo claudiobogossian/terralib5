@@ -84,7 +84,7 @@ void te::qt::af::GeneralConfigWidget::saveChanges()
   QSettings settings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
   settings.setValue("srs/default_srid", m_defaultSRID);
-  settings.setValue("color/selection_color", m_colorPicker->getColor().name());
+  settings.setValue("color/selection_color", m_colorPicker->getColor().name(QColor::HexArgb));
   settings.setValue("toolbars/icon_size", m_ui->m_toolBarIconSizeSpinBox->value());
   settings.setValue("icon_theme/selected_theme", m_ui->m_iconThemeComboBox->currentText());
 
