@@ -25,6 +25,7 @@
 
 // TerraLib
 #include <terralib/common/TerraLib.h>
+#include <terralib/core/plugin.h>
 #include <terralib/dataaccess/datasource/DataSource.h>
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
 #include <terralib/dataaccess/datasource/DataSourceTransactor.h>
@@ -46,7 +47,7 @@ int main(int /*argc*/, char** /*argv*/)
   {
     // Initialize Terralib support
     TerraLib::getInstance().initialize();
-
+    te::core::plugin::InitializePluginSystem();
     LoadModules();
 
     //CopyFromShapeFile();
@@ -93,8 +94,8 @@ int main(int /*argc*/, char** /*argv*/)
     return EXIT_FAILURE;
   }
   
-  te::plugin::PluginManager::getInstance().unloadAll();
-  
+  te::core::PluginManager::instance().clear();
+  te::core::plugin::FinalizePluginSystem();
   TerraLib::getInstance().finalize();
 
   return EXIT_SUCCESS;

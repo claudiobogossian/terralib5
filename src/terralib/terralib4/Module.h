@@ -27,7 +27,7 @@
 #define __TERRALIB_TERRALIB4_INTERNAL_MODULE_H
 
 // TerraLib
-#include "../plugin/Plugin.h"
+#include "../core/plugin/CppPlugin.h"
 #include "Config.h"
 
 namespace terralib4
@@ -39,7 +39,7 @@ namespace terralib4
 
     \sa te::plugin::Plugin
     */
-  class Module : public te::plugin::Plugin
+  class Module : public te::core::CppPlugin
   {
     public:
 
@@ -49,7 +49,7 @@ namespace terralib4
       //@{
 
       /*! \brief It creates a new C++ module. */
-      Module(const te::plugin::PluginInfo& pluginInfo);
+      Module(const te::core::PluginInfo& pluginInfo);
 
       /*! \brief Destructor. */
       ~Module();
@@ -78,8 +78,6 @@ namespace terralib4
 
   };
 } // end namespace terralib4
-
-PLUGIN_CALL_BACK_DECLARATION(TETERRALIB4EXPORT);
 
 #endif  // __TERRALIB_TERRALIB4_INTERNAL_MODULE_H
 

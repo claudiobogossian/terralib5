@@ -27,6 +27,7 @@
 #include <terralib/common.h>
 #include <terralib/common/TerraLib.h>
 #include <terralib/core/utils/Platform.h>
+#include <terralib/core/plugin.h>
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
 
 
@@ -34,36 +35,39 @@
 
 void LoadModules()
 {
-  te::plugin::PluginInfo* info;
+  te::core::PluginInfo info;
 
   std::string plugins_path = te::core::FindInTerraLibPath("share/terralib/plugins");
 
 #ifdef TERRALIB_MOD_POSTGIS_ENABLED
-  info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.pgis.teplg");
-  te::plugin::PluginManager::getInstance().add(info);
+  info = te::core::JSONPluginInfoSerializer(plugins_path + "/te.da.pgis.teplg");
+  te::core::PluginManager::instance().insert(info);
+  te::core::PluginManager::instance().load(info.name);
 #endif
 
 #ifdef TERRALIB_MOD_GDAL_ENABLED
-  info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.gdal.teplg");
-  te::plugin::PluginManager::getInstance().add(info);
+  info = te::core::JSONPluginInfoSerializer(plugins_path + "/te.da.gdal.teplg");
+  te::core::PluginManager::instance().insert(info);
+  te::core::PluginManager::instance().load(info.name);
 #endif
 
 #ifdef TERRALIB_MOD_OGR_ENABLED
-  info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.ogr.teplg");
-  te::plugin::PluginManager::getInstance().add(info);
+  info = te::core::JSONPluginInfoSerializer(plugins_path + "/te.da.ogr.teplg");
+  te::core::PluginManager::instance().insert(info);
+  te::core::PluginManager::instance().load(info.name);
 #endif
 
 #ifdef TERRALIB_MOD_MYSQL_ENABLED
-  info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.mysql.teplg");
-  te::plugin::PluginManager::getInstance().add(info);
+  info = te::core::JSONPluginInfoSerializer(plugins_path + "/te.da.mysql.teplg");
+  te::core::PluginManager::instance().insert(info);
+  te::core::PluginManager::instance().load(info.name);
 #endif
 
 #ifdef TERRALIB_MOD_SQLITE_ENABLED
-  info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.sqlite.teplg");
-  te::plugin::PluginManager::getInstance().add(info);
+  info = te::core::JSONPluginInfoSerializer(plugins_path + "/te.da.sqlite.teplg");
+  te::core::PluginManager::instance().insert(info);
+  te::core::PluginManager::instance().load(info.name);
 #endif
-
-  te::plugin::PluginManager::getInstance().loadAll();
 }
 
 int main(int argc, char** argv)
@@ -73,7 +77,7 @@ int main(int argc, char** argv)
   try
   {
     TerraLib::getInstance().initialize();
-
+    te::core::plugin::InitializePluginSystem();
     LoadModules();
 
     //Aggregation examples
@@ -84,8 +88,8 @@ int main(int argc, char** argv)
     g.run();
  
 
-    te::plugin::PluginManager::getInstance().unloadAll();
-
+    te::core::PluginManager::instance().clear();
+    te::core::plugin::FinalizePluginSystem();
     TerraLib::getInstance().finalize();
   }
   catch(const std::exception& e)
