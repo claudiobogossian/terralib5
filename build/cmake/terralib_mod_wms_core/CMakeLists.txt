@@ -84,6 +84,6 @@ if(TERRALIB_MOD_XML_ENABLED)
           DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/wms/serialization/xml COMPONENT devel)
 endif()
 
-install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.da.wms.teplg
+install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.da.wms.teplg.json
         DESTINATION ${TERRALIB_DESTINATION_PLUGINS} COMPONENT runtime)
 

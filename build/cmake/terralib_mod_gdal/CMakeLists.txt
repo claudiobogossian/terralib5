@@ -64,6 +64,6 @@ install(TARGETS terralib_mod_gdal
 install(FILES ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/gdal COMPONENT devel)
 
-install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.da.gdal.teplg
+install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.da.gdal.teplg.json
         DESTINATION ${TERRALIB_DESTINATION_PLUGINS} COMPONENT runtime)
 

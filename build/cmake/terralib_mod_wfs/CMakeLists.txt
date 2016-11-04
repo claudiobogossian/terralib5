@@ -57,6 +57,6 @@ install(TARGETS terralib_mod_wfs
 install(FILES ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/wfs COMPONENT devel)
 
-install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.da.wfs.teplg
+install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.da.wfs.teplg.json
         DESTINATION ${TERRALIB_DESTINATION_PLUGINS} COMPONENT runtime)
 
