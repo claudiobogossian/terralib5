@@ -87,6 +87,6 @@ install(TARGETS terralib_mod_qt_plugins_edit
 install(FILES ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/plugins/edit COMPONENT devel)
 
-install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.qt.edit.teplg
+install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.qt.edit.teplg.json
         DESTINATION ${TERRALIB_DESTINATION_PLUGINS} COMPONENT runtime)
 

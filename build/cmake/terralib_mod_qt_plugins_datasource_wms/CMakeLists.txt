@@ -91,6 +91,6 @@ install(TARGETS terralib_mod_qt_plugins_datasource_wms
 install(FILES ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/plugins/datasource/wms COMPONENT devel)
 
-install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.qt.datasource.wms.teplg
+install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.qt.datasource.wms.teplg.json
         DESTINATION ${TERRALIB_DESTINATION_PLUGINS} COMPONENT runtime)
 

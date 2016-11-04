@@ -90,6 +90,6 @@ install(TARGETS terralib_mod_qt_plugins_datasource_gdal
 install(FILES ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/plugins/datasource/gdal COMPONENT devel)
 
-install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.qt.datasource.gdal.teplg
+install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.qt.datasource.gdal.teplg.json
         DESTINATION ${TERRALIB_DESTINATION_PLUGINS} COMPONENT runtime)
 

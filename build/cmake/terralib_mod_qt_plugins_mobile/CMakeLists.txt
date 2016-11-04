@@ -115,6 +115,6 @@ install(TARGETS terralib_mod_qt_plugins_mobile
 install(FILES ${TERRALIB_HDR_FILES} ${TERRALIB_CORE_HDR_FILES} ${TERRALIB_QT_HDR_FILES} ${TERRALIB_GEN_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/plugins/mobile COMPONENT devel)
 
-install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.qt.mobile.teplg
+install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.qt.mobile.teplg.json
         DESTINATION ${TERRALIB_DESTINATION_PLUGINS} COMPONENT runtime)
 

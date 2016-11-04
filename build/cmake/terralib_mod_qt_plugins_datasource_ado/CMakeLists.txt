@@ -90,6 +90,6 @@ install(TARGETS terralib_mod_qt_plugins_datasource_ado
 install(FILES ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/plugins/datasource/ado COMPONENT devel)
 
-install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.qt.datasource.ado.teplg
+install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.qt.datasource.ado.teplg.json
         DESTINATION ${TERRALIB_DESTINATION_PLUGINS} COMPONENT runtime)
 

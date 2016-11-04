@@ -95,5 +95,5 @@ if(TERRALIB_MOD_XML_ENABLED)
           DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/ws/ogc/wms/da/serialization/xml COMPONENT devel)
 endif()
 
-install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.ogc.wms.teplg
+install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.ogc.wms.teplg.json
         DESTINATION ${TERRALIB_DESTINATION_PLUGINS} COMPONENT runtime)

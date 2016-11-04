@@ -55,6 +55,6 @@ install(TARGETS terralib_mod_ado
 install(FILES ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/ado COMPONENT devel)
 
-install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.da.ado.teplg
+install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.da.ado.teplg.json
               ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/ado-capabilities.xml
         DESTINATION ${TERRALIB_DESTINATION_PLUGINS} COMPONENT runtime)

@@ -100,6 +100,6 @@ install(TARGETS terralib_mod_qt_plugins_datasource_terralib4
 install(FILES ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/plugins/datasource/terralib4 COMPONENT devel)
 
-install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.qt.datasource.terralib4.teplg
+install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.qt.datasource.terralib4.teplg.json
         DESTINATION ${TERRALIB_DESTINATION_PLUGINS} COMPONENT runtime)
 
