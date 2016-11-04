@@ -18,7 +18,7 @@
  */
 
 #include <terralib/common/Module.h>
-#include <terralib/plugin.h>
+#include <terralib/core/plugin.h>
 
 // cppUnit
 #include <cppunit/BriefTestProgressListener.h>
@@ -44,7 +44,7 @@ int main(int /*argc*/, char** /*argv*/)
 {
   // initialize Terralib platform
   TerraLib::getInstance().initialize();
-    
+  te::core::plugin::InitializePluginSystem();
   LoadModules();
   
   // it creates the event manager and test controller
@@ -99,12 +99,10 @@ int main(int /*argc*/, char** /*argv*/)
 
   bool resultStatus = result.wasSuccessful();
 
-  te::plugin::PluginManager::getInstance().shutdownAll();
 
-  te::plugin::PluginManager::getInstance().unloadAll();
 
-  te::plugin::PluginManager::getInstance().clear();
-  
+  te::core::PluginManager::instance().clear();
+  te::core::plugin::FinalizePluginSystem();
   // finalize TerraLib Plataform
   TerraLib::getInstance().finalize();  
 

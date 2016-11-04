@@ -42,7 +42,7 @@ namespace te
         namespace qt
         {
 
-          class WMSType : public te::qt::widgets::DataSourceType
+          class TEOGCWMSQTEXPORT WMSType : public te::qt::widgets::DataSourceType
           {
             public:
 

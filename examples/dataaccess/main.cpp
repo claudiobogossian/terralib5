@@ -26,6 +26,7 @@
 
 // TerraLib
 #include <terralib/common/TerraLib.h>
+#include <terralib/core/plugin.h>
 #include <terralib/core/encoding/CharEncoding.h>
 #include <terralib/core/uri/URI.h>
 #include <terralib/dataaccess/dataset/CheckConstraint.h>
@@ -56,7 +57,7 @@ int main(int /*argc*/, char** /*argv*/)
   {
     // Initialize the Terralib support
     TerraLib::getInstance().initialize();
-
+    te::core::plugin::InitializePluginSystem();
     LoadModules();
 
     MemoryExample();
@@ -69,8 +70,8 @@ int main(int /*argc*/, char** /*argv*/)
     QueryInsertExample();
     CopyingData();
 
-    te::plugin::PluginManager::getInstance().unloadAll();
-
+    te::core::PluginManager::instance().clear();
+    te::core::plugin::FinalizePluginSystem();
     TerraLib::getInstance().finalize();
   }
   catch(const std::exception& e)
@@ -151,11 +152,4 @@ void PrintDataSetConstraints(te::da::DataSource* ds, const std::string& datasetN
   std::size_t numPkProperties = pkProperties.size();
   for(std::size_t i = 0; i < numPkProperties; ++i)
     std::cout << pkProperties[i]->getName() << std::endl;
-}
-
-void UnloadModules()
-{
-  te::plugin::PluginManager::getInstance().unloadAll();
-
-  TerraLib::getInstance().finalize();
 }

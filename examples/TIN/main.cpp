@@ -26,6 +26,7 @@
 
 // TerraLib
 #include <terralib/core/filesystem/FileSystem.h>
+#include <terralib/core/plugin.h>
 #include <terralib/common/TerraLib.h>
 #include <terralib/core/uri/URI.h>
 #include <terralib/core/utils/URI.h>
@@ -477,7 +478,7 @@ int main(int /*argc*/, char** /*argv*/)
   {
     // Initialize the Terralib support
     TerraLib::getInstance().initialize();
-
+    te::core::plugin::InitializePluginSystem();
     LoadModules();
 
     TesteGEOS();
@@ -488,7 +489,8 @@ int main(int /*argc*/, char** /*argv*/)
 
     CalculateGrid();
 
-    te::plugin::PluginManager::getInstance().unloadAll();
+    te::core::PluginManager::instance().clear();
+    te::core::plugin::FinalizePluginSystem();
 
     TerraLib::getInstance().finalize();
   }
@@ -504,11 +506,4 @@ int main(int /*argc*/, char** /*argv*/)
   }
 
   return EXIT_SUCCESS;
-}
-
-void UnloadModules()
-{
-  te::plugin::PluginManager::getInstance().unloadAll();
-
-  TerraLib::getInstance().finalize();
 }

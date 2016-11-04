@@ -37,8 +37,8 @@
 // Boost
 #include <boost/filesystem.hpp>
 
-terralib4::Module::Module(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo)
+terralib4::Module::Module(const te::core::PluginInfo& pluginInfo)
+  : te::core::CppPlugin(pluginInfo)
 {
 }
 
@@ -76,4 +76,4 @@ void terralib4::Module::shutdown()
   m_initialized = false;
 }
 
-PLUGIN_CALL_BACK_IMPL(terralib4::Module)
+TERRALIB_PLUGIN_CALL_BACK_IMPL(terralib4::Module)

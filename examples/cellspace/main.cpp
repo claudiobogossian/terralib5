@@ -27,6 +27,7 @@
 #include "../Config.h"
 #include <terralib/cellspace/CellSpaceOperations.h>
 #include <terralib/common/TerraLib.h>
+#include <terralib/core/plugin.h>
 
 #include <terralib/dataaccess/dataset/CheckConstraint.h>
 #include <terralib/dataaccess/dataset/PrimaryKey.h>
@@ -64,7 +65,7 @@ int main(int /*argc*/, char** /*argv*/)
   {
     // Initialize the Terralib support
     TerraLib::getInstance().initialize();
-
+    te::core::plugin::InitializePluginSystem();
     LoadModules();
 
     /*
@@ -88,8 +89,8 @@ int main(int /*argc*/, char** /*argv*/)
       std::cout << "Unexpected error" << std::endl;
     }
 
-    te::plugin::PluginManager::getInstance().unloadAll();
-
+    te::core::PluginManager::instance().clear();
+    te::core::plugin::FinalizePluginSystem();
     TerraLib::getInstance().finalize();
   }
   catch(const std::exception& e)

@@ -27,6 +27,7 @@
 
 // TerraLib
 #include <terralib/common.h>
+#include <terralib/core/plugin.h>
 #include <terralib/geometry.h>
 #include <terralib/dataaccess.h>
 
@@ -77,8 +78,8 @@ int main(int /*argc*/, char** /*argv*/)
     return EXIT_FAILURE;
   }
   
-  te::plugin::PluginManager::getInstance().unloadAll();
-  
+  te::core::PluginManager::instance().clear();
+  te::core::plugin::FinalizePluginSystem();
   TerraLib::getInstance().finalize();
 
   return EXIT_SUCCESS;

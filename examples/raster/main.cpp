@@ -3,17 +3,22 @@
 
 // TerraLib
 #include <terralib/common/TerraLib.h>
-
+#include <terralib/core/utils/Platform.h>
+#include <terralib/core/plugin/PluginManager.h>
+#include <terralib/core/plugin/Serializers.h>
+#include <terralib/core/plugin/Utils.h>
 
 // STL
 #include <cstdlib>
 #include <iostream>
+
 
 int main()
 {
   try
   {
     TerraLib::getInstance().initialize();
+    te::core::plugin::InitializePluginSystem();
 
     LoadModules();
 
@@ -32,7 +37,8 @@ int main()
     Raster1Bit();
     VectorizeRaster();
 
-    te::plugin::PluginManager::getInstance().unloadAll();
+    te::core::PluginManager::instance().clear();
+    te::core::plugin::FinalizePluginSystem();
 
     TerraLib::getInstance().finalize();
   }
