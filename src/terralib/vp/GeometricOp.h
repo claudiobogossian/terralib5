@@ -30,21 +30,14 @@
 
 //Terralib
 
-#include "../dataaccess/dataset/DataSet.h"
+#include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../dataaccess/datasource/DataSource.h"
-
-#include "../datatype/Property.h"
-
-#include "../memory/DataSet.h"
-#include "../statistics/core/Enums.h"
 
 #include "Config.h"
 #include "Enums.h"
 
 // STL
-#include <map>
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -66,15 +59,15 @@ namespace te
       
       void setInput(te::da::DataSourcePtr inDsrc,
                     std::string inDsetName,
-                    std::auto_ptr<te::da::DataSetTypeConverter> converter);
+                    std::unique_ptr<te::da::DataSetTypeConverter> converter);
       
       void setParams(std::vector<std::string> selectedProps, 
                     std::vector<te::vp::GeometricOperation> operations,
                     te::vp::GeometricOpObjStrategy objStrategy,
-                    std::string attribute,
-                    bool outputLayer);
-      
-      void setOutput(std::auto_ptr<te::da::DataSource> outDsrc, std::string dsname);
+                    std::string attribute);
+
+      void setOutput(std::unique_ptr<da::DataSource> outDsrc,
+                     std::string dsname);
 
       std::vector<std::string> GetOutputDSetNames();
       
@@ -86,15 +79,14 @@ namespace te
 
       te::da::DataSourcePtr m_inDsrc;
       std::string m_inDsetName;
-      std::auto_ptr<te::da::DataSetTypeConverter> m_converter;
+      std::unique_ptr<te::da::DataSetTypeConverter> m_converter;
 
       std::vector<std::string> m_selectedProps;
       std::vector<te::vp::GeometricOperation> m_operations;
       te::vp::GeometricOpObjStrategy m_objStrategy;
       std::string m_attribute;
-      bool m_outputLayer;
       
-      std::auto_ptr<te::da::DataSource> m_outDsrc;
+      std::unique_ptr<te::da::DataSource> m_outDsrc;
       std::string m_outDsetName;
       std::vector<std::string> m_outDsetNameVec;
     };

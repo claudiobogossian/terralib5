@@ -20,7 +20,8 @@
 /*!
   \file terralib/vp/qt/GeometricOpWizard.h
 
-  \brief A Qt dialog that allows users to run the basic geometric operations defined by VP module.
+  \brief A Qt dialog that allows users to run the basic geometric operations
+  defined by VP module.
 */
 
 #ifndef __TERRALIB_VP_INTERNAL_GEOMETRICOPWIZARD_H
@@ -51,7 +52,8 @@ namespace te
     /*!
       \class GeometricOpWizard
 
-      \brief This class is GUI used to define the wizard for the VP geometric operation.
+      \brief This class is GUI used to define the wizard for the VP geometric
+      operation.
     */
     class TEVPEXPORT GeometricOpWizard : public QWizard
     {
@@ -88,7 +90,7 @@ namespace te
         std::auto_ptr<te::qt::widgets::LayerSearchWizardPage> m_layerSearchPage;
 
         te::map::AbstractLayerPtr m_inLayer;
-        te::da::DataSourceInfoPtr m_outputDatasource;                 //!< DataSource information.
+        te::da::DataSourceInfoPtr m_outputDatasource;
         std::vector<te::map::AbstractLayerPtr> m_outLayer;
         std::vector<te::vp::GeometricOperation> m_ops;
         std::string m_attribute;
