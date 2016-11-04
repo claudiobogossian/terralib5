@@ -5,6 +5,7 @@
 #include <terralib/common/progress/ProgressManager.h>
 #include <terralib/common/progress/ConsoleProgressViewer.h>
 #include <terralib/common/TerraLib.h>
+#include <terralib/core/plugin.h>
 
 
 // STL
@@ -21,6 +22,7 @@ int main()
   {
     //startup terralib
     TerraLib::getInstance().initialize();
+    te::core::plugin::InitializePluginSystem();
 
     //create a progress bar
     std::auto_ptr<te::common::ConsoleProgressViewer> cpv(new te::common::ConsoleProgressViewer());
@@ -41,8 +43,8 @@ int main()
     te::common::ProgressManager::getInstance().removeViewer(idViewer);
 
     //unload modules
-    te::plugin::PluginManager::getInstance().unloadAll();
-
+    te::core::PluginManager::instance().clear();
+    te::core::plugin::FinalizePluginSystem();
     //finalize terralib
     TerraLib::getInstance().finalize();
   }

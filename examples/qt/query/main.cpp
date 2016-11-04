@@ -29,6 +29,7 @@
 #include "LoadModules.h"
 #include "QueryExamples.h"
 #include <terralib/common.h>
+#include <terralib/core/plugin.h>
 #include <terralib/core/utils/Platform.h>
 #include <terralib/dataaccess/dataset/DataSet.h>
 #include <terralib/dataaccess/datasource/DataSource.h>
@@ -57,6 +58,7 @@ int main(int argc, char** argv)
   {
     // initialize Terralib support
     TerraLib::getInstance().initialize();
+    te::core::plugin::InitializePluginSystem();
     LoadModules();
 
     // Adjusting icons theme
@@ -121,8 +123,8 @@ int main(int argc, char** argv)
     return EXIT_FAILURE;
   }
 
-  te::plugin::PluginManager::getInstance().unloadAll();
-
+  te::core::PluginManager::instance().clear();
+  te::core::plugin::FinalizePluginSystem();
 // finalize Terralib support
   TerraLib::getInstance().finalize();
 

@@ -27,7 +27,7 @@
 #define __TERRALIB_ADO_INTERNAL_MODULE_H
 
 // TerraLib
-#include "../plugin/Plugin.h"
+#include "../core/plugin/CppPlugin.h"
 #include "Config.h"
 
 namespace te
@@ -41,7 +41,7 @@ namespace te
 
       \sa te::plugin::Plugin
      */
-    class Module : public te::plugin::Plugin
+    class Module : public te::core::CppPlugin
     {
       public:
 
@@ -51,7 +51,7 @@ namespace te
         //@{
 
         /*! \brief It creates a new C++ module. */
-        Module(const te::plugin::PluginInfo& pluginInfo);
+        Module(const te::core::PluginInfo& pluginInfo);
 
         /*! \brief Destructor. */
         ~Module();
@@ -114,8 +114,6 @@ namespace te
     };
   } // end namespace ado
 }   // end namespace te
-
-PLUGIN_CALL_BACK_DECLARATION(TEADOEXPORT);
-
+                                            
 #endif  // __TERRALIB_ADO_INTERNAL_MODULE_H
 

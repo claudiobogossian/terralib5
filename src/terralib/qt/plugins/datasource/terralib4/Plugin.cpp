@@ -39,8 +39,8 @@
 #include <QMenu>
 #include <QMenuBar>
 
-te::qt::plugins::terralib4::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
-  : QObject(), te::plugin::Plugin(pluginInfo),
+te::qt::plugins::terralib4::Plugin::Plugin(const te::core::PluginInfo& pluginInfo)
+  : QObject(), te::core::CppPlugin(pluginInfo),
   m_showWindow(0)
 {
 }
@@ -114,4 +114,4 @@ void te::qt::plugins::terralib4::Plugin::showWindow()
     return;
 }
 
-PLUGIN_CALL_BACK_IMPL(te::qt::plugins::terralib4::Plugin)
+TERRALIB_PLUGIN_CALL_BACK_IMPL(te::qt::plugins::terralib4::Plugin)

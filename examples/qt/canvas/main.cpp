@@ -25,6 +25,7 @@
 
 // TerraLib
 #include <terralib/common/TerraLib.h>
+#include <terralib/core/plugin.h>
 
 #include "CanvasExamples.h"
 
@@ -37,7 +38,7 @@ int main(int /*argc*/, char** /*argv*/)
 {
 // initialize Terralib support
   TerraLib::getInstance().initialize();
-
+  te::core::plugin::InitializePluginSystem();
 // It initializes all the data source drivers (see LoadModule.cpp)
   try
   {
@@ -59,7 +60,8 @@ int main(int /*argc*/, char** /*argv*/)
     return EXIT_FAILURE;
   }
   
-  te::plugin::PluginManager::getInstance().unloadAll();
+  te::core::PluginManager::instance().clear();
+  te::core::plugin::FinalizePluginSystem();
 // shutdown Terralib support
   TerraLib::getInstance().finalize();
 

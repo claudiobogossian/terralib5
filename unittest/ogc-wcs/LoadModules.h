@@ -30,7 +30,7 @@
 
 #include <terralib/core/utils/Platform.h>
 #include <terralib/common.h>
-#include <terralib/plugin.h>
+#include <terralib/core/plugin.h>
 #include "Config.h"
 
 /*!
@@ -45,22 +45,22 @@ void LoadModules()
 
     std::string plugins_path = te::core::FindInTerraLibPath("share/terralib/plugins");
 
-    info = te::plugin::GetInstalledPlugin(plugins_path + "/te.ogc.wcs.teplg");
-    te::plugin::PluginManager::getInstance().add(info);
+    info = te::core::JSONPluginInfoSerializer(plugins_path + "/te.ogc.wcs.teplg");
+    te::core::PluginManager::instance().insert(info);
 
 #ifdef TERRALIB_MOD_OGR_ENABLED
-    info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.ogr.teplg");
-    te::plugin::PluginManager::getInstance().add(info);
+    info = te::core::JSONPluginInfoSerializer(plugins_path + "/te.da.ogr.teplg");
+    te::core::PluginManager::instance().insert(info);
 #endif
 
 #ifdef TERRALIB_MOD_GDAL_ENABLED
-    info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.gdal.teplg");
-    te::plugin::PluginManager::getInstance().add(info);
+    info = te::core::JSONPluginInfoSerializer(plugins_path + "/te.da.gdal.teplg");
+    te::core::PluginManager::instance().insert(info);
 #endif
 
 #ifdef TERRALIB_MOD_POSTGIS_ENABLED
-    info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.pgis.teplg");
-    te::plugin::PluginManager::getInstance().add(info);
+    info = te::core::JSONPluginInfoSerializer(plugins_path + "/te.da.pgis.teplg");
+    te::core::PluginManager::instance().insert(info);
 #endif
 
   te::plugin::PluginManager::getInstance().loadAll();
