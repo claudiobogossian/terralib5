@@ -34,25 +34,6 @@
 // STL
 #include <iostream>
 
-void LoadXerces()
-{
-  try
-  {
-    te::plugin::PluginInfo pinfo;
-    pinfo.m_name = "TERRALIB_XERCES";
-    pinfo.m_category = "XML";
-    pinfo.m_engine = TE_CPPPLUGINENGINE_CODE;
-    //pinfo.m_folder = TE_PLUGINS_PATH;
-    pinfo.m_resources.push_back(te::plugin::PluginInfo::Resource("SharedLibraryName", "terralib_xerces"));
-
-    te::plugin::PluginManager::getInstance().load(pinfo, true);
-  }
-  catch(...)
-  {
-    std::cout << std::endl << "Failed to load XERCES plugin: unknown exception!" << std::endl;
-  }
-}
-
 int main(int /*argc*/, char** /*argv*/)
 {
   try

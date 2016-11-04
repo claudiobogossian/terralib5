@@ -29,7 +29,7 @@
 #include <terralib/core/utils/Platform.h>
 #include <terralib/common.h>
 #include <terralib/dataaccess.h>
-#include <terralib/plugin.h>
+#include <terralib/core/plugin.h>
 
 // STL
 #include <memory>
@@ -193,11 +193,11 @@ class MockDataSource : public te::da::DataSource
 void CreateDataSource(te::da::DataSource* datasource)
 {
   /* Load OGR plugin */
-  te::plugin::PluginInfo* info;
+  te::core::PluginInfo info;
   std::string plugins_path = te::core::FindInTerraLibPath("share/terralib/plugins");
-  info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.ogr.teplg");
-  te::plugin::PluginManager::getInstance().add(info);
-  te::plugin::PluginManager::getInstance().loadAll();
+  info = te::core::JSONPluginInfoSerializer(plugins_path + "/te.da.ogr.teplg");
+  te::core::PluginManager::instance().insert(info);
+  te::core::PluginManager::instance().load(info.name);
 
   /* Create DataSource */
   std::unique_ptr <te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
@@ -267,7 +267,11 @@ TEST(DataSourceTest, CanCreateDataSource) {
 
   TerraLib::getInstance().initialize();
 
+  te::core::plugin::InitializePluginSystem();
+
   CreateDataSource(mockDS.release());
+
+  te::core::plugin::FinalizePluginSystem();
 
   TerraLib::getInstance().finalize();
 }

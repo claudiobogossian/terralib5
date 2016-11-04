@@ -1,6 +1,7 @@
 #include "RPExamples.h"
 
 #include <terralib/core/utils/Platform.h>
+#include <terralib/core/plugin.h>
 #include <terralib/common.h>
 
 
@@ -9,24 +10,25 @@
 
 void LoadModules()
 {
-  te::plugin::PluginInfo* info;
+  te::core::PluginInfo info;
 
   std::string plugins_path = te::core::FindInTerraLibPath("share/terralib/plugins");
  
 #ifdef TERRALIB_MOD_OGR_ENABLED
-  info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.ogr.teplg");
-  te::plugin::PluginManager::getInstance().add(info); 
+  info = te::core::JSONPluginInfoSerializer(plugins_path + "/te.da.ogr.teplg");
+  te::core::PluginManager::instance().insert(info);
+  te::core::PluginManager::instance().load(info.name);
 #endif
   
 #ifdef TERRALIB_MOD_GDAL_ENABLED
-  info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.gdal.teplg");
-  te::plugin::PluginManager::getInstance().add(info);
+  info = te::core::JSONPluginInfoSerializer(plugins_path + "/te.da.gdal.teplg");
+  te::core::PluginManager::instance().insert(info);
+  te::core::PluginManager::instance().load(info.name);
 #endif
   
 #ifdef TERRALIB_MOD_GRIB_ENABLED     
-  info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/plugin_grib_info.xml"));
-  te::plugin::PluginManager::getInstance().add(info);
+  info = te::core::JSONPluginInfoSerializer(TE_PLUGINS_PATH + std::string("/plugin_grib_info.xml"));
+  te::core::PluginManager::instance().insert(info);
+  te::core::PluginManager::instance().load(info.name);
 #endif    
-  
-te::plugin::PluginManager::getInstance().loadAll(); 
 }

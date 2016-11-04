@@ -26,6 +26,7 @@
 // TerraLib
 #include <terralib/core/utils/Platform.h>
 #include <terralib/common.h>
+#include <terralib/core/plugin.h>
 
 #include "SymbologyWidgets.h"
 
@@ -49,15 +50,15 @@ void LoadGDALModule()
     //info.m_resources.push_back(rsc);
     //
     //te::plugin::PluginManager::getInstance().load(info);
-    //te::plugin::PluginInfo* info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.gdal.teplg"));
+    //te::plugin::PluginInfo* info = te::core::JSONPluginInfoSerializer(TE_PLUGINS_PATH + std::string("/te.da.gdal.teplg"));
     
     std::string plugins_path = te::core::FindInTerraLibPath("share/terralib/plugins");
 
 #ifdef TERRALIB_MOD_GDAL_ENABLED
-    te::plugin::PluginInfo* info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.gdal.teplg");
+    te::core::PluginInfo info = te::core::JSONPluginInfoSerializer(plugins_path + "/te.da.gdal.teplg");
+    te::core::PluginManager::instance().insert(info);    
+    te::core::PluginManager::instance().load(info.name);
 #endif
-
-    te::plugin::PluginManager::getInstance().add(info);
   }
   catch(...)
   {
@@ -69,7 +70,7 @@ int main(int /*argc*/, char** /*argv*/)
 {
 // initialize Terralib support
   TerraLib::getInstance().initialize();
-
+  te::core::plugin::InitializePluginSystem();
   try
   {
     LoadGDALModule();
@@ -92,7 +93,10 @@ int main(int /*argc*/, char** /*argv*/)
   }
 
 // finalize Terralib support
+  te::core::PluginManager::instance().clear();
+  te::core::plugin::FinalizePluginSystem();
   TerraLib::getInstance().finalize();
+
 
   return EXIT_SUCCESS;
 }

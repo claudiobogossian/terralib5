@@ -28,6 +28,7 @@
 
 // TerraLib
 #include <terralib/core/utils/Platform.h>
+#include <terralib/core/plugin.h>
 #include <terralib/common.h>
 
 
@@ -48,11 +49,11 @@ void LoadGDALModule()
     std::string plugins_path = te::core::FindInTerraLibPath("share/terralib/plugins");
 
 #ifdef TERRALIB_MOD_GDAL_ENABLED
-    te::plugin::PluginInfo* info;
-    info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.gdal.teplg");
+    te::core::PluginInfo info;
+    info = te::core::JSONPluginInfoSerializer(plugins_path + "/te.da.gdal.teplg");
+    te::core::PluginManager::instance().insert(info);
+    te::core::PluginManager::instance().load(info.name);
 #endif
-
-    te::plugin::PluginManager::getInstance().loadAll();
   }
   catch(...)
   {
@@ -66,8 +67,8 @@ int main(int argc, char** argv)
 
 // initialize Terralib support
   TerraLib::getInstance().initialize();
+  te::core::plugin::InitializePluginSystem();
   LoadGDALModule();
-
   try
   {   
     QApplication app(argc, argv);
@@ -92,7 +93,8 @@ int main(int argc, char** argv)
   }
 
 // finalize Terralib support
-  te::plugin::PluginManager::getInstance().unloadAll();
+  te::core::PluginManager::instance().clear();
+  te::core::plugin::FinalizePluginSystem();
   TerraLib::getInstance().finalize();
 
   return EXIT_SUCCESS;

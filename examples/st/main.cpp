@@ -25,6 +25,7 @@
 
 // TerraLib
 #include <terralib/common.h>
+#include <terralib/core/plugin.h>
 #include <terralib/dataaccess.h>
 #include <terralib/st.h>
 
@@ -42,7 +43,7 @@ int main(int /*argc*/, char** /*argv*/)
   try
   {
     TerraLib::getInstance().initialize();
-
+    te::core::plugin::InitializePluginSystem();
     //Load Modules and Plugins
     LoadModules();   
 
@@ -61,8 +62,8 @@ int main(int /*argc*/, char** /*argv*/)
     //Finalize STDataLoader support
     te::st::STDataLoader::finalize();
 
-    te::plugin::PluginManager::getInstance().unloadAll();
-
+    te::core::PluginManager::instance().clear();
+    te::core::plugin::FinalizePluginSystem();
     TerraLib::getInstance().finalize();
   }
   catch(const std::exception& e)

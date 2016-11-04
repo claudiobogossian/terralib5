@@ -3,7 +3,7 @@
 
 // TerraLib
 #include <terralib/common.h>
-
+#include <terralib/core/plugin.h>
 
 // STL
 #include <cstdlib>
@@ -14,6 +14,7 @@ int main()
   try
   {
     TerraLib::getInstance().initialize();
+    te::core::plugin::InitializePluginSystem();
 
     LoadModules();
 
@@ -28,7 +29,8 @@ int main()
     ArithmeticOperations();
     Texture();
 
-    te::plugin::PluginManager::getInstance().unloadAll();
+    te::core::PluginManager::instance().clear();
+    te::core::plugin::FinalizePluginSystem();
 
     TerraLib::getInstance().finalize();
   }
