@@ -26,6 +26,7 @@
 // TerraLib
 #include "../../Config.h"
 #include <terralib/core/utils/Platform.h>
+#include <terralib/core/plugin.h>
 #include <terralib/common.h>
 #include <terralib/dataaccess.h>
 
@@ -53,16 +54,16 @@ void LoadOGRModule()
 {
   try
   {
-    te::plugin::PluginInfo* info;
+    te::core::PluginInfo info;
   
     std::string plugin_path = te::core::FindInTerraLibPath("share/terralib/plugins");
 
 #ifdef TERRALIB_MOD_OGR_ENABLED
-    info = te::plugin::GetInstalledPlugin(plugin_path + "/te.da.ogr.teplg");
-    te::plugin::PluginManager::getInstance().add(info);
-#endif
+    info = te::core::JSONPluginInfoSerializer(plugin_path + "/te.da.ogr.teplg");
+    te::core::PluginManager::instance().insert(info);
+    te::core::PluginManager::instance().load(info.name);
 
-    te::plugin::PluginManager::getInstance().loadAll();
+#endif
   }
   catch(...)
   {
@@ -138,7 +139,7 @@ int main(int /*argc*/, char** /*argv*/)
 {
 // initialize Terralib support
   TerraLib::getInstance().initialize();
-
+  te::core::plugin::InitializePluginSystem();
   try
   {
     LoadOGRModule();
@@ -186,7 +187,8 @@ int main(int /*argc*/, char** /*argv*/)
   }
 
 // finalize Terralib support
-  te::plugin::PluginManager::getInstance().unloadAll();
+  te::core::PluginManager::instance().clear();
+  te::core::plugin::FinalizePluginSystem();
   TerraLib::getInstance().finalize();
 
   return EXIT_SUCCESS;

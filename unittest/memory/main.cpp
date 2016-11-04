@@ -23,7 +23,7 @@
 #include <terralib/common/Module.h>
 //#include <terralib/dataaccess/Module.h>
 //#include <terralib/geometry/Module.h>
-#include <terralib/plugin.h>
+#include <terralib/core/plugin.h>
 
 // cppUnit
 #include <cppunit/BriefTestProgressListener.h>
@@ -39,7 +39,7 @@
 
 //#include <terralib/common/TerraLib.h>
 //#include <terralib/common.h>
-//#include <terralib/plugin.h>
+//#include <terralib/core/plugin.h>
 
 // Unit-Test TerraLib includes by platform
 #include "Config.h"

@@ -28,7 +28,7 @@
 
 #include <terralib/core/utils/Platform.h>
 #include <terralib/common.h>
-#include <terralib/plugin.h>
+#include <terralib/core/plugin.h>
 #include <terralib/BuildConfig.h>
 
 /*!
@@ -39,14 +39,13 @@ void LoadModules()
 {
   std::string plugins_path = te::core::FindInTerraLibPath("share/terralib/plugins");
 
-  te::plugin::PluginInfo* info;
-  
-#ifdef TERRALIB_MOD_OGR_ENABLED
-  info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.ogr.teplg");
-  te::plugin::PluginManager::getInstance().add(info); 
-#endif
+  te::core::PluginInfo info;
 
-  te::plugin::PluginManager::getInstance().loadAll();  
-};
+#ifdef TERRALIB_MOD_OGR_ENABLED
+  info = te::core::JSONPluginInfoSerializer(plugins_path + "/te.da.ogr.teplg");
+  te::core::PluginManager::instance().insert(info);
+  te::core::PluginManager::instance().load(info.name);
+#endif
+}
 
 #endif  // __TERRALIB_UNITTEST_FIXGEOMETRIES_LOADMODULES_H

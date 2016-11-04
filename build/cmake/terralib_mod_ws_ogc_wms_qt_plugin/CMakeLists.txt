@@ -66,6 +66,7 @@ else()
   target_link_libraries(terralib_mod_ws_ogc_wms_qt_plugin  terralib_mod_ws_ogc_wms_qt
                                                            terralib_mod_qt_widgets
                                                            terralib_mod_qt_apf
+														   terralib_mod_core
                                                            ${QT_LIBRARIES})
 endif()
 

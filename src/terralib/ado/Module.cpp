@@ -39,8 +39,8 @@
 // Boost
 #include <boost/filesystem.hpp>
 
-te::ado::Module::Module(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo)
+te::ado::Module::Module(const te::core::PluginInfo& pluginInfo)
+  : te::core::CppPlugin(pluginInfo)
 {
 }
 
@@ -85,4 +85,4 @@ void te::ado::Module::shutdown()
   m_initialized = false;
 }
 
-PLUGIN_CALL_BACK_IMPL(te::ado::Module)
+TERRALIB_PLUGIN_CALL_BACK_IMPL(te::ado::Module)
