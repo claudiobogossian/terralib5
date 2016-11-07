@@ -99,9 +99,7 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::onApplyPushButtonPressed()
       const te::core::URI aux(connInfo);
 
       std::map<std::string, std::string> kvp = te::core::expand(aux.query());
-      std::map<std::string, std::string>::const_iterator it = kvp.begin();
-      std::map<std::string, std::string>::const_iterator itend = kvp.end();
-
+      
       std::string strURI = "pgsql://";
       strURI += aux.user() + ":";
       strURI += aux.password() + "@";
