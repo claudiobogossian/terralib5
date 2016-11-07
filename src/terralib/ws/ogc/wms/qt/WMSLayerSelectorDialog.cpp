@@ -76,7 +76,7 @@ void te::ws::ogc::wms::qt::WMSLayerSelectorDialog::set(const te::da::DataSourceI
   m_ui->m_serviceTitleLabel->setText(title);
 
   const te::core::URI& connInfo = m_datasourceInfo->getConnInfo();
-  std::map<std::string, std::string> kvp = te::core::expand(connInfo.query());
+  std::map<std::string, std::string> kvp = te::core::Expand(connInfo.query());
 
   m_client.reset(new te::ws::ogc::WMSClient(kvp["USERDATADIR"], connInfo.uri(), kvp["VERSION"]));
   m_client->updateCapabilities();
