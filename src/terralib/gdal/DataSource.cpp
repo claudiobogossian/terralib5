@@ -206,6 +206,7 @@ bool te::gdal::DataSource::exists(const std::string& connInfo)
         GDALClose(gds);
         return true;
       }
+      else return false;
     }
     else
       return false; // it is an invalid file

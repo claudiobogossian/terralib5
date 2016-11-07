@@ -351,20 +351,20 @@ bool te::mnt::Profile::runIsolinesProfile(std::vector<te::gm::LineString*> visad
 
   te::gm::MultiPoint mpt(0, te::gm::MultiPointZType, m_srid);
   te::gm::MultiLineString isolines(0, te::gm::MultiLineStringZType, m_srid);
+  
   std::string geostype;
   te::gm::Envelope env;
-
-  size_t nsamples = ReadSamples(m_inName, m_inDsrc, m_attrZ, 0, 0, None, mpt, isolines, geostype, env, m_srid);
+  
+  if (ReadSamples(m_inName, m_inDsrc, m_attrZ, 0, 0, None, mpt, isolines, geostype, env, m_srid) == 0)
+    return true;
 
   te::sam::rtree::Index<te::gm::Geometry*> linetree;
-  std::vector<te::gm::Geometry*> reportline;
-
-  for (size_t i = 0; i < isolines.getNumGeometries(); i++)
+  for (size_t i = 0; i < isolines.getNumGeometries(); ++i)
   {
     linetree.insert(*isolines.getGeometryN(i)->getMBR(), dynamic_cast<te::gm::Geometry*>(isolines.getGeometryN(i)));
   }
 
-
+  std::vector<te::gm::Geometry*> reportline;
   for (std::size_t v = 0; v < visadas.size(); ++v)
   {
     reportline.clear();
@@ -397,7 +397,6 @@ bool te::mnt::Profile::runTINProfile(std::vector<te::gm::LineString*> visadas, s
   std::auto_ptr<te::da::DataSet> inDset = m_inDsrc->getDataSet(m_inName);
   std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
   std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
-  te::gm::GeomType gmType = geomProp->getGeometryType();
 
   inDset->moveBeforeFirst();
 

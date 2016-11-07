@@ -476,7 +476,6 @@ void te::mnt::ImageGenerationDialog::drawPreview(std::unique_ptr<te::rst::Raster
 
   te::rst::Raster *outrst = somb->GenerateImage(raster.get());
   
-  const te::gm::Envelope& envRaster = *outrst->getExtent();
   const te::gm::Envelope& env = m_mapDisplay->getExtent();
   const te::gm::Envelope* envRst = &env;
   te::se::Style* style = te::se::CreateCoverageStyle(outrst->getNumberOfBands());

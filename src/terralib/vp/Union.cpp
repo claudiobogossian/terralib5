@@ -496,32 +496,32 @@ te::gm::GeomType te::vp::Union::setGeomResultType(const te::gm::GeomType& geomTy
 
 te::gm::Geometry* te::vp::Union::setGeomAsMulti(te::gm::Geometry* geom)
 {
-
+  // note that this has effect only in Points, Lines and Polygons
   switch (geom->getGeomTypeId())
   {
-  case te::gm::PointType:
-  {
-    te::gm::MultiPoint* geomColl = new te::gm::MultiPoint(0, te::gm::MultiPointType, geom->getSRID());
-    geomColl->add(geom);
-
-    return geomColl;
+    case te::gm::PointType:
+    {
+      te::gm::MultiPoint* geomColl = new te::gm::MultiPoint(0, te::gm::MultiPointType, geom->getSRID());
+      geomColl->add(geom);
+      
+      return geomColl;
+    }
+    case te::gm::LineStringType:
+    {
+      te::gm::MultiLineString* geomColl = new te::gm::MultiLineString(0, te::gm::MultiLineStringType, geom->getSRID());
+      geomColl->add(geom);
+      
+      return geomColl;
+    }
+    case te::gm::PolygonType:
+    {
+      te::gm::MultiPolygon* geomColl = new te::gm::MultiPolygon(0, te::gm::MultiPolygonType, geom->getSRID());
+      geomColl->add(geom);
+      
+      return geomColl;
+    }
+    default:
+       return geom;
   }
-  case te::gm::LineStringType:
-  {
-    te::gm::MultiLineString* geomColl = new te::gm::MultiLineString(0, te::gm::MultiLineStringType, geom->getSRID());
-    geomColl->add(geom);
-
-    return geomColl;
-  }
-  case te::gm::PolygonType:
-  {
-    te::gm::MultiPolygon* geomColl = new te::gm::MultiPolygon(0, te::gm::MultiPolygonType, geom->getSRID());
-    geomColl->add(geom);
-
-    return geomColl;
-  }
-  }
-
-  return geom;
 }
 

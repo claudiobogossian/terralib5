@@ -312,6 +312,7 @@ void te::edit::MoveGeometry(te::gm::Geometry* geom, const double& deltax, const 
     case te::gm::MultiPolygonType:
     case te::gm::LineStringType:
     case te::gm::MultiLineStringType:
+    {
 
       std::vector<te::gm::LineString*> lines;
       GetLines(geom, lines);
@@ -324,6 +325,10 @@ void te::edit::MoveGeometry(te::gm::Geometry* geom, const double& deltax, const 
         for (std::size_t j = 0; j < l->getNPoints(); ++j)
           l->setPoint(j, l->getX(j) + deltax, l->getY(j) + deltay);
       }
+    }
+      break;
+    default:
+      return;
   }
 
 }
@@ -524,6 +529,11 @@ te::gm::Geometry* te::edit::ConvertGeomType(const te::map::AbstractLayerPtr& lay
     }
   }
   break;
+      
+  default:
+      newGeom = 0;
+      break;
+      
   }
 
   if (newGeom == 0)

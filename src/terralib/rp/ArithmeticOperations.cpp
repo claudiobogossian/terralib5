@@ -1000,7 +1000,6 @@ namespace te
       const double outNoData = outBand.getProperty()->m_noDataValue;
       unsigned int row = 0;
       unsigned int col = 0;
-      double value1 = 0;
       double outValue = 0;
 
       if (realNumberIsRigthtTerm)
