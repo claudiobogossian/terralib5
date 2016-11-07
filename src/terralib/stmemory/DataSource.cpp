@@ -113,7 +113,7 @@ void te::stmem::DataSource::open()
 
   m_transactor.reset(new Transactor(this));
 
-  std::map<std::string, std::string> kvp = te::core::expand(m_uri.query());
+  std::map<std::string, std::string> kvp = te::core::Expand(m_uri.query());
   std::map<std::string, std::string>::const_iterator it = kvp.begin();
   std::map<std::string, std::string>::const_iterator itend = kvp.end();
 

@@ -75,7 +75,7 @@ void terralib4::DataSource::open()
   if (!m_uri.isValid())
     throw te::da::Exception(TE_TR("There is no valid information about the data source"));
 
-  std::map<std::string, std::string> kvp = te::core::expand(m_uri.query());
+  std::map<std::string, std::string> kvp = te::core::Expand(m_uri.query());
   std::map<std::string, std::string>::const_iterator it = kvp.begin();
   std::map<std::string, std::string>::const_iterator itend = kvp.end();
   std::string dbInfo, auxDbName;
@@ -169,7 +169,7 @@ void terralib4::DataSource::drop(const std::string& dsInfo)
 bool terralib4::DataSource::exists(const std::string& dsInfo)
 {
   std::vector<string> dbnames = getDataSourceNames(dsInfo);
-  std::map<std::string, std::string> kvp = te::core::expand(m_uri.query());
+  std::map<std::string, std::string> kvp = te::core::Expand(m_uri.query());
 
   return std::find(dbnames.begin(), dbnames.end(), kvp["T4_DB_NAME"]) != dbnames.end();
 }

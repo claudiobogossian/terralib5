@@ -55,7 +55,7 @@ QString GetTooltip(te::map::AbstractLayerPtr l)
   if(!connInfo.path().empty())
     toolTip += QObject::tr("Path: ") + (connInfo.path() + "\n").c_str();
 
-  std::map<std::string, std::string> kvp = te::core::expand(connInfo.query());
+  std::map<std::string, std::string> kvp = te::core::Expand(connInfo.query());
   std::map<std::string, std::string>::iterator itBegin = kvp.begin();
   std::map<std::string, std::string>::iterator itEnd = kvp.end();
 

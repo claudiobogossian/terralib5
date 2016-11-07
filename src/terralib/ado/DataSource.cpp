@@ -151,7 +151,7 @@ bool te::ado::DataSource::isGeometryColumn(const std::string& datasetName,
 void te::ado::DataSource::create(const std::string& connInfo)
 {
   te::core::URI auxURI(connInfo);
-  std::map<std::string, std::string> kvp = te::core::expand(auxURI.query());
+  std::map<std::string, std::string> kvp = te::core::Expand(auxURI.query());
   std::string connSTR = te::ado::MakeConnectionStr(auxURI);
 
   // Create the new database

@@ -77,7 +77,7 @@ void te::ado::Blob2Variant(const char* blob, int size, _variant_t & var)
 std::string te::ado::MakeConnectionStr(const te::core::URI& connInfo)
 {
   std::string connSTR;
-  std::map<std::string, std::string> kvp = te::core::expand(connInfo.query());
+  std::map<std::string, std::string> kvp = te::core::Expand(connInfo.query());
 
   std::string provider = kvp["PROVIDER"];
   std::string dbName = connInfo.host() + connInfo.path();
