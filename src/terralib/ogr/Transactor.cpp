@@ -20,6 +20,8 @@
 // TerraLib
 #include "../common/StringUtils.h"
 #include "../core/translator/Translator.h"
+#include "../core/uri/URI.h"
+#include "../core/utils/URI.h"
 #include "../dataaccess/dataset/ObjectId.h"
 #include "../dataaccess/dataset/ObjectIdSet.h"
 #include "../dataaccess/query/DataSetName.h"
@@ -529,7 +531,7 @@ std::auto_ptr<te::dt::Property> te::ogr::Transactor::getProperty(const std::stri
   if(l != 0)
   {
     OGRFeatureDefn* def = l->GetLayerDefn();
-    OGRFieldDefn* fdef = def->GetFieldDefn(propertyPos);
+    OGRFieldDefn* fdef = def->GetFieldDefn((int)propertyPos);
 
     if(fdef != 0)
       res.reset(Convert2TerraLib(fdef));
@@ -979,14 +981,11 @@ void te::ogr::Transactor::createDataSet(te::da::DataSetType* dt, const std::map<
   }
   
   char** papszOptions = 0;
-  std::map<std::string, std::string>::const_iterator it = m_ogrDs->getConnectionInfo().begin();
-  while(it != m_ogrDs->getConnectionInfo().end())
+
+  std::map<std::string, std::string> kvp = te::core::expand(m_ogrDs->getConnectionInfo().query());
+  std::map<std::string, std::string>::const_iterator it = kvp.begin();
+  while(it != kvp.end())
   {
-    if(it->first == "URI" || it->first == "SOURCE" || it->first == "DRIVER")
-    {
-      ++it;
-      continue;
-    }
     papszOptions = CSLSetNameValue(papszOptions, it->first.c_str(), it->second.c_str());
     ++it;
   }
@@ -1105,39 +1104,39 @@ void te::ogr::Transactor::add(const std::string& datasetName,
         switch(d->getPropertyDataType(i))
         {
           case te::dt::INT16_TYPE:
-            feat->SetField(currfield, d->getInt16(i));
+            feat->SetField((int)currfield, d->getInt16(i));
             ++currfield;
           break;
 
           case te::dt::INT32_TYPE:
-            feat->SetField(currfield, d->getInt32(i));
+            feat->SetField((int)currfield, d->getInt32(i));
             ++currfield;
           break;
 
           case te::dt::INT64_TYPE:
-            feat->SetField(currfield, (GIntBig)d->getInt64(i));
+            feat->SetField((int)currfield, (GIntBig)d->getInt64(i));
             ++currfield;
             break;
 
           case te::dt::STRING_TYPE:
-            feat->SetField(currfield, d->getAsString(i).c_str());
+            feat->SetField((int)currfield, d->getAsString(i).c_str());
             ++currfield;
           break;
 
           case te::dt::DOUBLE_TYPE:
-            feat->SetField(currfield, d->getDouble(i));
+            feat->SetField((int)currfield, d->getDouble(i));
             ++currfield;
            break;
 
           case te::dt::NUMERIC_TYPE:
-            feat->SetField(currfield, atof(d->getNumeric(i).c_str()));
+            feat->SetField((int)currfield, atof(d->getNumeric(i).c_str()));
             ++currfield;
           break;
 
           case te::dt::BYTE_ARRAY_TYPE:
             {
               std::auto_ptr<te::dt::ByteArray> ba(d->getByteArray(i));
-              feat->SetField(currfield, ba->bytesUsed(), reinterpret_cast<unsigned char*>(ba->getData()));
+              feat->SetField((int)currfield, ba->bytesUsed(), reinterpret_cast<unsigned char*>(ba->getData()));
               ++currfield;
             }
           break;
@@ -1150,7 +1149,7 @@ void te::ogr::Transactor::add(const std::string& datasetName,
 
               if(dtime)
               {
-                feat->SetField(currfield,
+                feat->SetField((int)currfield,
                                static_cast<int>(dtime->getYear()),
                                static_cast<int>(dtime->getMonth()),
                                static_cast<int>(dtime->getDay()));
@@ -1162,7 +1161,7 @@ void te::ogr::Transactor::add(const std::string& datasetName,
 
               if(tduration)
               {
-                feat->SetField(currfield, 0, 0, 0,
+                feat->SetField((int)currfield, 0, 0, 0,
                                static_cast<int>(tduration->getHours()),
                                static_cast<int>(tduration->getMinutes()),
                                static_cast<int>(tduration->getSeconds()));
@@ -1174,7 +1173,7 @@ void te::ogr::Transactor::add(const std::string& datasetName,
 
               if(tinst)
               {
-                feat->SetField(currfield,
+                feat->SetField((int)currfield,
                                static_cast<int>(tinst->getDate().getYear()),
                                static_cast<int>(tinst->getDate().getMonth()),
                                static_cast<int>(tinst->getDate().getDay()),

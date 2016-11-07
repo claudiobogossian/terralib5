@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../core/translator/Translator.h"
+#include "../../core/uri/URI.h"
 #include "DataSource.h"
 #include "DataSourceFactory.h"
 
@@ -34,16 +35,33 @@
 std::map<std::string, te::da::DataSourceFactory::FactoryFnctType>
 te::da::DataSourceFactory::sm_factories;
 
-std::auto_ptr<te::da::DataSource> te::da::DataSourceFactory::make(const std::string& dsType)
+std::unique_ptr<te::da::DataSource> te::da::DataSourceFactory::make(const std::string& driver, const te::core::URI& connInfo)
 {
-  std::map<std::string, FactoryFnctType>::const_iterator it = sm_factories.find(dsType);
+  std::unique_ptr<DataSource> ds;
+  if (connInfo.isValid())
+  {
+    std::map<std::string, FactoryFnctType>::const_iterator it = sm_factories.find(driver);
 
-  if(it == sm_factories.end())
-    throw Exception((boost::format(TE_TR("Could not find a data source factory named: %1!")) % dsType).str());
+    if (it == sm_factories.end())
+      throw Exception((boost::format(TE_TR("Could not find a data source factory named: %1!")) % connInfo.path()).str());
 
-  std::auto_ptr<DataSource> ds(sm_factories[dsType]());
+    ds.reset(sm_factories[driver](connInfo));
+  }
 
-  return ds;
+  return std::move(ds);
+}
+
+std::unique_ptr<te::da::DataSource> te::da::DataSourceFactory::make(const std::string& driver, const std::string& connInfo)
+{
+  const te::core::URI dsURI(connInfo);
+  std::unique_ptr<DataSource> ds;
+
+  if(dsURI.isValid())
+  {
+    ds = make(driver, dsURI);
+  }
+  
+  return std::move(ds);
 }
 
 bool te::da::DataSourceFactory::find(const std::string& dsType)

@@ -69,7 +69,7 @@ te::graph::DirectedGraphFactory::DirectedGraphFactory()
 {
 }
 
-te::graph::AbstractGraph* te::graph::DirectedGraphFactory::iOpen(const std::map<std::string, std::string>& dsInfo, const std::map<std::string, std::string>& gInfo)
+te::graph::AbstractGraph* te::graph::DirectedGraphFactory::iOpen(const std::string& dsInfo, const std::map<std::string, std::string>& gInfo)
 {
   //create graph metadata
   te::graph::GraphMetadata* gMetadata = getMetadata(dsInfo, gInfo);
@@ -78,7 +78,7 @@ te::graph::AbstractGraph* te::graph::DirectedGraphFactory::iOpen(const std::map<
     return 0;
 
   //get graph id
-  int id = getId(dsInfo, gInfo);
+  int id = getId(gInfo);
 
   try
   {
@@ -104,7 +104,7 @@ te::graph::AbstractGraph* te::graph::DirectedGraphFactory::iOpen(const std::map<
   return g;
 }
 
-te::graph::AbstractGraph* te::graph::DirectedGraphFactory::create(const std::map<std::string, std::string>& dsInfo, const std::map<std::string, std::string>& gInfo)
+te::graph::AbstractGraph* te::graph::DirectedGraphFactory::create(const std::string& dsInfo, const std::map<std::string, std::string>& gInfo)
 {
   //create graph metadata
   te::graph::GraphMetadata* gMetadata = getMetadata(dsInfo, gInfo);

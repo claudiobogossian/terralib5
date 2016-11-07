@@ -19,6 +19,8 @@
 
 // TerraLib 5
 #include "../core/translator/Translator.h"
+#include "../core/uri/URI.h"
+#include "../core/utils/URI.h"
 #include "Config.h"
 #include "DataSource.h"
 #include "Exception.h"
@@ -38,10 +40,18 @@
 te::da::DataSourceCapabilities terralib4::DataSource::sm_capabilities;
 te::da::SQLDialect* terralib4::DataSource::sm_dialect(0);
 
-terralib4::DataSource::DataSource()
-  : m_db(0)
+terralib4::DataSource::DataSource(const std::string& connInfo)
+  : te::da::DataSource(connInfo), 
+  m_db(0)
 {
 }
+
+terralib4::DataSource::DataSource(const te::core::URI& uri)
+  : te::da::DataSource(uri),
+  m_db(0)
+{
+}
+
 
 terralib4::DataSource::~DataSource()
 {
@@ -50,16 +60,6 @@ terralib4::DataSource::~DataSource()
 std::string terralib4::DataSource::getType() const
 {
   return TERRALIB4_DRIVER_IDENTIFIER;
-}
-
-const std::map<std::string, std::string>& terralib4::DataSource::getConnectionInfo() const
-{
-  return m_dbInfo;
-}
-
-void terralib4::DataSource::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
-{
-  m_dbInfo = connInfo;
 }
 
 std::auto_ptr<te::da::DataSourceTransactor> terralib4::DataSource::getTransactor()
@@ -72,8 +72,28 @@ void terralib4::DataSource::open()
 {
   close();
 
-  std::string dbInfo = terralib4::Convert2Latin1(m_dbInfo.at("T4_DRIVER"));
-  std::string auxDbName = terralib4::Convert2Latin1(m_dbInfo.at("T4_DB_NAME"));
+  if (!m_uri.isValid())
+    throw te::da::Exception(TE_TR("There is no valid information about the data source"));
+
+  std::map<std::string, std::string> kvp = te::core::expand(m_uri.query());
+  std::map<std::string, std::string>::const_iterator it = kvp.begin();
+  std::map<std::string, std::string>::const_iterator itend = kvp.end();
+  std::string dbInfo, auxDbName;
+
+  it = kvp.find("T4_DRIVER");
+  if (it != itend && !it->second.empty())
+    dbInfo = terralib4::Convert2Latin1(it->second);
+  else
+    throw te::da::Exception(TE_TR("The connection information is invalid. Missing T4_DRIVER parameter!"));
+  
+  if(dbInfo == "Ado")
+    auxDbName = m_uri.host() + m_uri.path();
+  else 
+    auxDbName = m_uri.path();
+
+  if (auxDbName.empty())
+    throw te::da::Exception(TE_TR("The connection information is invalid. Missing the database name!"));
+
   std::string hostName = "";
   std::string userName = "";
   std::string password = "";
@@ -136,24 +156,25 @@ const te::da::SQLDialect* terralib4::DataSource::getDialect() const
   return sm_dialect;
 }
 
-void terralib4::DataSource::create(const std::map<std::string, std::string>&)
+void terralib4::DataSource::create(const std::string& dsInfo)
 {
   throw Exception(TE_TR("This driver is read-only!"));
 }
 
-void terralib4::DataSource::drop(const std::map<std::string, std::string>&)
+void terralib4::DataSource::drop(const std::string& dsInfo)
 {
   throw Exception(TE_TR("This driver is read-only!"));
 }
 
-bool terralib4::DataSource::exists(const std::map<std::string, std::string>& dsInfo)
+bool terralib4::DataSource::exists(const std::string& dsInfo)
 {
   std::vector<string> dbnames = getDataSourceNames(dsInfo);
+  std::map<std::string, std::string> kvp = te::core::expand(m_uri.query());
 
-  return std::find(dbnames.begin(), dbnames.end(), dsInfo.at("T4_DB_NAME")) != dbnames.end();
+  return std::find(dbnames.begin(), dbnames.end(), kvp["T4_DB_NAME"]) != dbnames.end();
 }
 
-std::vector<std::string> terralib4::DataSource::getDataSourceNames(const std::map<std::string, std::string>& dsInfo)
+std::vector<std::string> terralib4::DataSource::getDataSourceNames(const std::string& dsInfo)
 {
   std::auto_ptr<TeDatabaseFactoryParams> params(terralib4::Convert2T4DatabaseParams(dsInfo));
 

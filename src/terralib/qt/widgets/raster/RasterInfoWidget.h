@@ -79,7 +79,7 @@ namespace te
 
           std::map<std::string, std::string> getInfo(int count) const;
 
-          std::auto_ptr<te::da::DataSource> getDataSource() const;
+          std::unique_ptr<te::da::DataSource> getDataSource() const;
 
           /*!
             \brief Returns the raster name.

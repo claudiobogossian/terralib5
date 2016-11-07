@@ -28,6 +28,8 @@
 #include <terralib/core/filesystem/FileSystem.h>
 #include <terralib/core/plugin.h>
 #include <terralib/common/TerraLib.h>
+#include <terralib/core/uri/URI.h>
+#include <terralib/core/utils/URI.h>
 
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
 
@@ -136,15 +138,11 @@ void SaveTIN_shp(std::string dir, std::string out, std::auto_ptr<geos::geom::Geo
 
   std::auto_ptr<te::da::DataSet> dataset(create_ds_memory(out, dt.get(), results));
 
-  std::map<std::string, std::string> connInfo;
   std::string filename(dir);
   filename.append(out);
   filename.append(".shp");
-  connInfo["URI"] = filename;
-  connInfo["DRIVER"] = "ESRI Shapefile";
 
-  std::auto_ptr< te::da::DataSource > datasource = te::da::DataSourceFactory::make("OGR");
-  datasource->setConnectionInfo(connInfo);
+  std::unique_ptr< te::da::DataSource > datasource = te::da::DataSourceFactory::make("OGR", ("file://" + filename) );
   datasource->open();
 
   dataset->moveBeforeFirst();
@@ -152,7 +150,6 @@ void SaveTIN_shp(std::string dir, std::string out, std::auto_ptr<geos::geom::Geo
   te::da::Create(datasource.get(), dt.get(), dataset.get());
 
   datasource->close();
-  connInfo.clear();
   dt.release();
 
 }
@@ -162,19 +159,12 @@ void LoadIsolines(const std::string &filename,
   te::gm::MultiLineString &isolines,
   std::string &geostype, std::string atributo)
 {
-
-
-  int SRID = 4291;
+    int SRID = 4291;
   double tol = 0.00018000000;// 20.;//Pegar da interface (double)SGinfo->Scale()*0.4 / 1000.*multfactor;
   double maxdist = 20.*tol;
   double minedge = tol / 5.;
 
-  std::map<std::string, std::string> connInfo;
-  connInfo["URI"] = filename;
-  // connInfo["DRIVER"] = "ESRI Shapefile";
-
-  std::auto_ptr<te::da::DataSource> datasource = te::da::DataSourceFactory::make("OGR");
-  datasource->setConnectionInfo(connInfo);
+  std::unique_ptr<te::da::DataSource> datasource = te::da::DataSourceFactory::make("OGR", ("file://" + filename));
   datasource->open();
 
   te::da::DataSourceTransactor* transactor = (datasource->getTransactor()).release();
@@ -315,12 +305,7 @@ void GenerateTIN()
   std::string atributoz_iso("Avg_Z");
   std::string atributoz_sample("Avg_Z");
 
-  std::map<std::string, std::string> srcInfo;
-  srcInfo["URI"] = filename_iso;
-  srcInfo["DRIVER"] = "ESRI Shapefile";
-
-  te::da::DataSourcePtr srcDsiso(te::da::DataSourceFactory::make("OGR").release());
-  srcDsiso->setConnectionInfo(srcInfo);
+  te::da::DataSourcePtr srcDsiso(te::da::DataSourceFactory::make("OGR", ("file://" + filename_iso)).release());
   srcDsiso->open();
 
   std::string inDsetNameiso = "Isolinhas";
@@ -333,9 +318,7 @@ void GenerateTIN()
   std::auto_ptr<te::da::DataSet> inDsetiso = srcDsiso->getDataSet(inDsetNameiso);
   std::auto_ptr<te::da::DataSetType> inDsetTypeiso(srcDsiso->getDataSetType(inDsetNameiso));
 
-  srcInfo["URI"] = filename_pts;
-  te::da::DataSourcePtr srcDspts(te::da::DataSourceFactory::make("OGR").release());
-  srcDspts->setConnectionInfo(srcInfo);
+  te::da::DataSourcePtr srcDspts(te::da::DataSourceFactory::make("OGR", ("file://" + filename_pts)).release());
   srcDspts->open();
 
   std::string inDsetNamepts = "Pontos_cotados";
@@ -350,12 +333,7 @@ void GenerateTIN()
 
   std::string file_result = TERRALIB_DATA_DIR "/mnt/TIN.shp";
 
-  std::map<std::string, std::string> tgrInfo;
-  tgrInfo["URI"] = file_result;
-  tgrInfo["DRIVER"] = "ESRI Shapefile";
-
-  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR").release());
-  trgDs->setConnectionInfo(tgrInfo);
+  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR",("file://" + file_result)).release());
   trgDs->open();
 
   std::string outDS = "TIN";
@@ -396,12 +374,7 @@ void GenerateIso()
   for (double n = 1010; n <= 1180; n += 10)
     val.push_back(n);
 
-  std::map<std::string, std::string> srcInfo;
-  srcInfo["URI"] = filename;
-  srcInfo["DRIVER"] = "ESRI Shapefile";
-
-  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR").release());
-  srcDs->setConnectionInfo(srcInfo);
+  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR", ("file://" + filename)).release());
   srcDs->open();
 
   std::string inDsetName = "TIN";
@@ -416,12 +389,7 @@ void GenerateIso()
 
   std::string file_result = TERRALIB_DATA_DIR "/mnt/TIN_iso.shp";
 
-  std::map<std::string, std::string> tgrInfo;
-  tgrInfo["URI"] = file_result;
-  tgrInfo["DRIVER"] = "ESRI Shapefile";
-
-  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR").release());
-  trgDs->setConnectionInfo(tgrInfo);
+    te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR", ("file://" + file_result)).release());
   trgDs->open();
 
   std::string outDS = "TIN_iso";
@@ -455,12 +423,7 @@ void CalculateGrid()
   double tol = 2;// 20.;//Pegar da interface (double)SGinfo->Scale()*0.4 / 1000.*multfactor;
   double resx = 30, resy = 30;
 
-  std::map<std::string, std::string> srcInfo;
-  srcInfo["URI"] = filename;
-  srcInfo["DRIVER"] = "ESRI Shapefile";
-
-  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR").release());
-  srcDs->setConnectionInfo(srcInfo);
+  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR", ("file://" + filename)).release());
   srcDs->open();
 
   std::string inDsetName = "TIN";
@@ -482,11 +445,9 @@ void CalculateGrid()
     throw;
   }
 
-  std::map<std::string, std::string> dsinfo;
-  dsinfo["URI"] = uri.string();
 
-  te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
-  dsOGR->setConnectionInfo(dsinfo);
+  te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR", ("file://" + uri.string())).release());
+
   dsOGR->open();
   if (dsOGR->dataSetExists(dsName))
   {
@@ -495,9 +456,10 @@ void CalculateGrid()
   }
 
   te::mnt::TINCalculateGrid *Tin = new te::mnt::TINCalculateGrid();
+  std::map<std::string, std::string> options = te::core::expand(dsOGR->getConnectionInfo().query());
 
   Tin->setInput(srcDs, inDsetName, inDsetType);
-  Tin->setOutput(dsinfo);
+  Tin->setOutput(options);
   Tin->setSRID(SRID);
   Tin->setParams(resx, resy, te::mnt::Quintico);
 

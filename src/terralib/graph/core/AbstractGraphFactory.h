@@ -83,7 +83,7 @@ namespace te
           \note The caller will take the ownership of the returned pointer.
 
         */
-        static AbstractGraph* make(const std::map<std::string, std::string>& dsInfo, const std::map<std::string, std::string>& gInfo);
+        static AbstractGraph* make(const std::string& dsInfo, const std::map<std::string, std::string>& gInfo);
 
         /*!
           \brief It creates a graph with the given parameters using the default graph type.
@@ -97,7 +97,7 @@ namespace te
           \note The caller will take the ownership of the returned pointer.
 
         */
-        static AbstractGraph* make(const std::string& gType, const std::map<std::string, std::string>& dsInfo, const std::map<std::string, std::string>& gInfo);
+        static AbstractGraph* make(const std::string& gType, const std::string& dsInfo, const std::map<std::string, std::string>& gInfo);
 
         /*!
           \brief It opens a graph with the given parameters and default graph type.
@@ -109,7 +109,7 @@ namespace te
 
           \note The caller will take the ownership of the returned pointer.
         */
-        static AbstractGraph* open(const std::map<std::string, std::string>& dsInfo, const std::map<std::string, std::string>& gInfo);
+        static AbstractGraph* open(const std::string& dsInfo, const std::map<std::string, std::string>& gInfo);
 
         /*!
           \brief It creates a graph with the given parameters.
@@ -122,7 +122,7 @@ namespace te
 
           \note The caller will take the ownership of the returned pointer.
         */
-        static AbstractGraph* open(const std::string& gType, const std::map<std::string, std::string>& dsInfo, const std::map<std::string, std::string>& gInfo);
+        static AbstractGraph* open(const std::string& gType, const std::string& dsInfo, const std::map<std::string, std::string>& gInfo);
 
 
         /*! \brief Destructor. */
@@ -153,7 +153,7 @@ namespace te
 
           \note The caller will take the ownership of the returned pointer.
         */
-        virtual AbstractGraph* iOpen(const std::map<std::string, std::string>& dsInfo, const std::map<std::string, std::string>& gInfo) = 0;
+        virtual AbstractGraph* iOpen(const std::string& dsInfo, const std::map<std::string, std::string>& gInfo) = 0;
 
         /*!
           \brief This method must be implemented by subclasses (graph types).
@@ -165,7 +165,7 @@ namespace te
 
           \note The caller will take the ownership of the returned pointer.
         */
-        virtual AbstractGraph* create(const std::map<std::string, std::string>& dsInfo, const std::map<std::string, std::string>& gInfo) = 0;
+        virtual AbstractGraph* create(const std::string& dsInfo, const std::map<std::string, std::string>& gInfo) = 0;
 
         /*!
           \brief This method is a auxiliar function used to get the metadata pointer
@@ -177,7 +177,7 @@ namespace te
 
           \note The caller will take the ownership of the returned pointer.
         */
-        static te::graph::GraphMetadata* getMetadata(const std::map<std::string, std::string>& dsInfo, const std::map<std::string, std::string>& gInfo);
+        static te::graph::GraphMetadata* getMetadata(const std::string& dsInfo, const std::map<std::string, std::string>& gInfo);
 
         /*!
           \brief This method is a auxiliar function used to get the graph id
@@ -187,7 +187,7 @@ namespace te
           \return The graph id.
 
         */
-        static int getId(const std::map<std::string, std::string>& dsInfo, const std::map<std::string, std::string>& gInfo);
+        static int getId(const std::map<std::string, std::string>& gInfo);
 
         /*!
           \brief This method is a auxiliar function used to get the cache policy pointer

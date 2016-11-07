@@ -27,6 +27,8 @@
 #include "../dataaccess/datasource/DataSourceTransactor.h"
 #include "../common/StringUtils.h"
 #include "../core/translator/Translator.h"
+#include "../core/uri/URI.h"
+#include "../core/utils/URI.h"
 #include "DataSource.h"
 #include "Exception.h"
 #include "Transactor.h"
@@ -37,10 +39,18 @@
 
 te::da::DataSourceCapabilities te::wcs::DataSource::sm_capabilities;
 
-te::wcs::DataSource::DataSource()
-  : m_isOpened(false)
+te::wcs::DataSource::DataSource(const std::string& connInfo)
+  : te::da::DataSource(connInfo), 
+  m_isOpened(false)
 {
 }
+
+te::wcs::DataSource::DataSource(const te::core::URI& uri)
+  : te::da::DataSource(uri),
+  m_isOpened(false)
+{
+}
+
 
 te::wcs::DataSource::~DataSource()
 {}
@@ -50,22 +60,16 @@ std::string te::wcs::DataSource::getType() const
   return TE_WCS_DRIVER_IDENTIFIER;
 }
 
-const std::map<std::string, std::string>& te::wcs::DataSource::getConnectionInfo() const
-{
-  return m_connectionInfo;
-}
-
-void te::wcs::DataSource::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
-{
-  m_connectionInfo = connInfo;
-}
-
 std::auto_ptr<te::da::DataSourceTransactor> te::wcs::DataSource::getTransactor()
 {
   if(!m_isOpened)
     throw Exception(TE_TR("The data source is not opened!"));
 
-  return std::auto_ptr<te::da::DataSourceTransactor>(new Transactor(m_connectionInfo.find("URI")->second, m_connectionInfo.find("COVERAGE_NAME")->second));
+  std::map<std::string, std::string> kvp = te::core::expand(m_uri.query());
+  std::map<std::string, std::string>::const_iterator it = kvp.begin();
+  std::map<std::string, std::string>::const_iterator itend = kvp.end();
+
+  return std::auto_ptr<te::da::DataSourceTransactor>(new Transactor(m_uri.uri(), kvp["COVERAGE_NAME"]));
 }
 
 void te::wcs::DataSource::open()
@@ -75,7 +79,11 @@ void te::wcs::DataSource::open()
 
   verifyConnectionInfo();
 
-  std::string request = BuildRequest(m_connectionInfo.find("URI")->second, m_connectionInfo.find("COVERAGE_NAME")->second);
+  std::map<std::string, std::string> kvp = te::core::expand(m_uri.query());
+  std::map<std::string, std::string>::const_iterator it = kvp.begin();
+  std::map<std::string, std::string>::const_iterator itend = kvp.end();
+
+  std::string request = BuildRequest(m_uri.uri(), kvp["COVERAGE_NAME"]);
 
   GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(request.c_str(), GA_ReadOnly));
   if(gds == 0)
@@ -98,15 +106,13 @@ bool te::wcs::DataSource::isOpened() const
 
 bool te::wcs::DataSource::isValid() const
 {
-  if(m_connectionInfo.empty())
-    return false;
+  if (m_isOpened)
+    return true;
 
-  std::map<std::string, std::string>::const_iterator it = m_connectionInfo.find("URI");
-  if(it == m_connectionInfo.end())
-    return false;
+  verifyConnectionInfo();
 
-  GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(it->second.c_str(), GA_ReadOnly));
-  if(gds == 0)
+  GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(m_uri.uri().c_str(), GA_ReadOnly));
+  if (gds == 0)
     return false;
 
   GDALClose(gds);
@@ -129,26 +135,30 @@ const te::da::SQLDialect* te::wcs::DataSource::getDialect() const
   return 0;
 }
 
-void te::wcs::DataSource::create(const std::map<std::string, std::string>& /*dsInfo*/)
+void te::wcs::DataSource::create(const std::string& /*connInfo*/)
 {
   throw Exception(TE_TR("The create() method is not supported by the WCS driver!"));
 }
 
-void te::wcs::DataSource::drop(const std::map<std::string, std::string>& /*dsInfo*/)
+void te::wcs::DataSource::drop(const std::string& /*connInfo*/ )
 {
   throw Exception(TE_TR("The drop() method is not supported by the WCS driver!"));
 }
 
-bool te::wcs::DataSource::exists(const std::map<std::string, std::string>& dsInfo)
+bool te::wcs::DataSource::exists(const std::string& connInfo)
 {
-  if(dsInfo.empty())
+  if(connInfo.empty())
     return false;
 
-  std::map<std::string, std::string>::const_iterator it = dsInfo.find("URI");
-  if(it == dsInfo.end())
+  const te::core::URI aux(connInfo);
+  if(!aux.isValid())
     return false;
 
-  GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(it->second.c_str(), GA_ReadOnly));
+  std::string path = aux.path();
+  if(path.empty())
+    return false;
+
+  GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.c_str(), GA_ReadOnly));
   if(gds == 0)
     return false;
 
@@ -157,26 +167,29 @@ bool te::wcs::DataSource::exists(const std::map<std::string, std::string>& dsInf
   return true;
 }
 
-std::vector<std::string> te::wcs::DataSource::getDataSourceNames(const std::map<std::string, std::string>& /*dsInfo*/)
+std::vector<std::string> te::wcs::DataSource::getDataSourceNames(const std::string& /*connInfo*/)
 {
   return std::vector<std::string>();
 }
 
-std::vector<te::core::EncodingType> te::wcs::DataSource::getEncodings(const std::map<std::string, std::string>& /*dsInfo*/)
+std::vector<te::core::EncodingType> te::wcs::DataSource::getEncodings(const std::string& /*connInfo*/)
 {
   return std::vector<te::core::EncodingType>();
 }
 
 void te::wcs::DataSource::verifyConnectionInfo() const
 {
-  if(m_connectionInfo.empty())
-    throw Exception(TE_TR("The connection information is empty!"));
+  if (!m_uri.isValid())
+    throw Exception(TE_TR("The connection information is invalid!"));
 
-  std::map<std::string, std::string>::const_iterator it = m_connectionInfo.find("URI");
-  if(it == m_connectionInfo.end())
-    throw Exception(TE_TR("The connection information is invalid. Missing URI parameter!"));
+  std::map<std::string, std::string> kvp = te::core::expand(m_uri.query());
+  std::map<std::string, std::string>::const_iterator it = kvp.begin();
+  std::map<std::string, std::string>::const_iterator itend = kvp.end();
 
-  it = m_connectionInfo.find("COVERAGE_NAME");
-  if(it == m_connectionInfo.end())
+  if (m_uri.path().empty())
+    throw Exception(TE_TR("The connection information is invalid. Missing the path parameter!"));
+
+  it = kvp.find("COVERAGE_NAME");
+  if (it == itend || it->second.empty())
     throw Exception(TE_TR("The connection information is invalid. Missing COVERAGE_NAME parameter!"));
 }

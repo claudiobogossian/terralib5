@@ -68,9 +68,9 @@ void te::vp::GeometricOp::setParams(std::vector<std::string> selectedProps,
   m_outputLayer = outputLayer;
 }
 
-void te::vp::GeometricOp::setOutput(std::auto_ptr<te::da::DataSource> outDsrc, std::string dsname)
+void te::vp::GeometricOp::setOutput(std::unique_ptr<te::da::DataSource> outDsrc, std::string dsname)
 {
-  m_outDsrc = outDsrc;
+  m_outDsrc = std::move(outDsrc);
   m_outDsetName = dsname;
 }
 

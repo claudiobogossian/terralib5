@@ -65,8 +65,7 @@ te::da::DataSourcePtr te::sa::CreateOGRDataSource(std::string repository)
   //create new data source
   boost::filesystem::path uri(repository);
 
-  std::map<std::string, std::string> dsInfo;
-  dsInfo["URI"] = uri.string();
+  std::string dsInfo("file://" + uri.string());
 
   boost::uuids::basic_random_generator<boost::mt19937> gen;
   boost::uuids::uuid u = gen();
@@ -99,8 +98,7 @@ te::da::DataSourcePtr te::sa::CreateGDALDataSource(std::string path, std::string
   //create new data source
   boost::filesystem::path uri(name);
 
-  std::map<std::string, std::string> dsInfo;
-  dsInfo["URI"] = uri.string();
+  std::string dsInfo("file://" + uri.string());
 
   boost::uuids::basic_random_generator<boost::mt19937> gen;
   boost::uuids::uuid u = gen();

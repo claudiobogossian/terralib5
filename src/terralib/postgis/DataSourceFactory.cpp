@@ -24,4 +24,11 @@
 */
 
 // TerraLib
+#include "../core/uri/URI.h"
 #include "DataSourceFactory.h"
+
+te::da::DataSource* te::pgis::Build(const te::core::URI& uri)
+{
+  te::da::DataSource* ds = new DataSource(uri);
+  return ds;
+}

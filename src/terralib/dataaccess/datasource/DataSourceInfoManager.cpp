@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../common/STLUtils.h"
+#include "../../core/uri/URI.h"
 #include "../../core/translator/Translator.h"
 #include "../Exception.h"
 #include "DataSourceInfo.h"
@@ -106,7 +107,7 @@ void te::da::DataSourceInfoManager::getByType(const std::string& dsTypeName, std
   }
 }
 
-te::da::DataSourceInfoPtr te::da::DataSourceInfoManager::getByConnInfo(std::string connInfo)
+te::da::DataSourceInfoPtr te::da::DataSourceInfoManager::getByConnInfo(const std::string& connInfo)
 {
   std::map<std::string, DataSourceInfoPtr>::const_iterator dsInfoIt = m_datasources.begin();
   while (dsInfoIt != m_datasources.end())

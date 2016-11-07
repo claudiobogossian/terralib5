@@ -396,5 +396,22 @@ BOOST_AUTO_TEST_CASE( test_file_uri_2 )
   BOOST_CHECK(uri.fragment() == "");
 }
 
+BOOST_AUTO_TEST_CASE(test_file_uri_3)
+{
+  std::string address("file://C:/data/vector/mapa_distritos_sp.shp");
+
+  te::core::URI uri(address);
+
+  BOOST_CHECK(uri.isValid());
+
+  BOOST_CHECK(uri.scheme() == "file");
+  BOOST_CHECK(uri.user() == "");
+  BOOST_CHECK(uri.password() == "");
+  BOOST_CHECK(uri.host() == "C");
+  BOOST_CHECK(uri.port() == "");
+  BOOST_CHECK(uri.path() == ":/data/vector/mapa_distritos_sp.shp");
+  BOOST_CHECK(uri.query() == "");
+  BOOST_CHECK(uri.fragment() == "");
+}
 
 BOOST_AUTO_TEST_SUITE_END()

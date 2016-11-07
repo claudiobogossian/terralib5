@@ -45,8 +45,8 @@
 namespace te
 {
 // Forward declaration
+  namespace core { class URI; }
   namespace dt { class Property; }
-
   namespace gm
   {
     class Envelope;

@@ -183,18 +183,39 @@ void te::qt::plugins::terralib4::TL4ConnectorWizardPage::onDatabaseTypeComboBoxA
   //}
 }
 
-std::map<std::string, std::string> te::qt::plugins::terralib4::TL4ConnectorWizardPage::getConnInfo()
+const std::string te::qt::plugins::terralib4::TL4ConnectorWizardPage::getConnInfo()
 {
-  std::map<std::string, std::string> connInfo;
+  std::string strURI = "converter://"; // The base of the URI
 
-  connInfo["T4_DRIVER"] = getDriverName(m_ui->m_databaseTypeComboBox->currentText().toUtf8().data());
-  connInfo["T4_DB_NAME"] = m_ui->m_dbComboBox->currentText().toUtf8().data();
-  connInfo["T4_HOST"] = m_ui->m_hostLineEdit->text().toUtf8().data();
-  connInfo["T4_PORT"] = m_ui->m_portLineEdit->text().toUtf8().data();
-  connInfo["T4_USER"] = m_ui->m_userLineEdit->text().toUtf8().data();
-  connInfo["T4_PASSWORD"] = m_ui->m_passwordLineEdit->text().toUtf8().data();
+  if (!m_ui->m_userLineEdit->text().isEmpty() && !m_ui->m_passwordLineEdit->text().isEmpty())
+  {
+    strURI += m_ui->m_userLineEdit->text().toUtf8().data();
+    strURI += ":";
+    strURI += m_ui->m_passwordLineEdit->text().toUtf8().data();
+    strURI += "@";
+  }
 
-  return connInfo;
+  if (!m_ui->m_hostLineEdit->text().isEmpty() && !m_ui->m_portLineEdit->text().isEmpty())
+  {
+    strURI += m_ui->m_hostLineEdit->text().toUtf8().data();
+    strURI += ":";
+    strURI += m_ui->m_portLineEdit->text().toUtf8().data();
+    strURI += "/";
+  }
+
+  if (!m_ui->m_dbComboBox->currentText().isEmpty())
+  {
+    strURI += m_ui->m_dbComboBox->currentText().toUtf8().data();
+    strURI += "?";
+  }
+
+  if (!m_ui->m_databaseTypeComboBox->currentText().isEmpty())
+  {
+    strURI += "T4_DRIVER=";
+    strURI += getDriverName(m_ui->m_databaseTypeComboBox->currentText().toUtf8().data());
+  }
+
+  return strURI;
 }
 
 std::string te::qt::plugins::terralib4::TL4ConnectorWizardPage::getDriverName(const std::string& displayName)

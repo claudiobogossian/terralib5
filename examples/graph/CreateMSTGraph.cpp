@@ -37,7 +37,7 @@ void CreateMSTGraph(bool draw)
 
   //load data set
   std::string data_dir = TERRALIB_DATA_DIR;
-  std::auto_ptr<te::da::DataSource> ds = OpenOGRDataSource(data_dir + "/graph/up_pol_rec_pol.shp");
+  std::unique_ptr<te::da::DataSource> ds = OpenOGRDataSource(data_dir + "/graph/up_pol_rec_pol.shp");
 
   std::string dataSetName = "up_pol_rec_pol";
   std::auto_ptr<te::da::DataSet> dataSet = ds->getDataSet(dataSetName);

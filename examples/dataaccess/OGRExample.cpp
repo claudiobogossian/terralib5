@@ -14,19 +14,19 @@ void OGRExampleRead()
 {
   try
   {
-    std::map<std::string, std::string> connInfo;
+    // let's take the input dataset from a shape file
+    std::string connInfo("file://");
     std::string data_dir = TERRALIB_DATA_DIR;
     
     std::string aux("");
-    std::cout << "Inform the location of your data source (ENTER to accept default \'" << (data_dir + "/shp") << "\'): ";
+    std::cout << "Inform the location of your data source (ENTER to accept default \'" << (data_dir + "/shape/poligono_unico.shp") << "\'): ";
     std::getline (std::cin, aux);
     if (!aux.empty())
-      connInfo["URI"] = aux;
+      connInfo += aux;
     else
-      connInfo["URI"] = data_dir + "/shp";
+      connInfo += data_dir + "/shape/poligono_unico.shp";
   
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
-    ds->setConnectionInfo(connInfo);
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", connInfo);
     ds->open();
     
     // check point: the datasource exists and is opened to be used
@@ -81,26 +81,27 @@ void ORGExampleWrite()
     dSet->moveBeforeFirst();
   
     // create a datasource using OGR
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
-  
-    std::map<std::string, std::string> connInfo;
+    std::string connInfo("file://");
     std::string data_dir = TERRALIB_DATA_DIR;
     aux.clear();
-    std::cout << "Inform a location to write your shapefile (ENTER to accept default \'" << (data_dir + "/shp") << "\'): ";
-    std::getline (std::cin, aux);
+    std::cout << "Inform a location to write your shapefile (ENTER to accept default \'" << (data_dir + "/shape") << "\'): ";
+    std::getline(std::cin, aux);
+
     if (!aux.empty())
-      connInfo["URI"] = aux;
+      connInfo += aux;
     else
-      connInfo["URI"] = data_dir + "/shp";
-    ds->setConnectionInfo(connInfo);
+      connInfo += data_dir + "/shape";
+
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", connInfo);
     ds->open();
 
     // check point: the datasource exists and is opened to be used
     std::cout << "Datasource is opened? " << std::boolalpha << ds->isOpened() << '\n' << '\n';
     
     // persist the dataset from memory to OGR
-    ds->createDataSet(dType, std::map<std::string, std::string>());
-    ds->add(dsName,dSet, std::map<std::string, std::string>());
+    std::map<std::string, std::string> options;  //No specific options
+    ds->createDataSet(dType, options);
+    ds->add(dsName,dSet, options);
     ds->close();
     
     // check point: reopening the data source

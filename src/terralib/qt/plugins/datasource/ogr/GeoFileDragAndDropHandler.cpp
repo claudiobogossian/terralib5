@@ -38,11 +38,9 @@ TerraLib Team at <terralib-team@terralib.org>.
 
 bool IsSupported(const std::string& fileName)
 {
-  std::map<std::string, std::string> connInfo;
-  connInfo["URI"] = fileName;
+  std::string connInfo ("file://" + fileName);
 
-  std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("OGR"));
-  ds->setConnectionInfo(connInfo);
+  std::unique_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("OGR", connInfo));
 
   try
   {

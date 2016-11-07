@@ -50,17 +50,14 @@ namespace te
     {
       public:
 
-        /*! \brief Default constructor that can be called by subclasses. */
-        DataSource();
+        DataSource(const std::string& connInfo);
+
+        DataSource(const te::core::URI& uri);
 
         /*! \brief Virtual destructor. */
         ~DataSource();
 
         std::string getType() const;
-
-        const std::map<std::string, std::string>& getConnectionInfo() const;
-
-        void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
 
         std::auto_ptr<te::da::DataSourceTransactor> getTransactor();
 
@@ -80,7 +77,6 @@ namespace te
 
         static void setDialect(te::da::SQLDialect* dialect);
 
-        //OGRDataSource* getOGRDataSource();
         GDALDataset* getOGRDataSource();
 
         void createOGRDataSource();
@@ -92,18 +88,16 @@ namespace te
 
       protected:
 
-        void create(const std::map<std::string, std::string>& dsInfo);
+        void create(const std::string& connInfo);
 
-        void drop(const std::map<std::string, std::string>& dsInfo);
+        void drop(const std::string& connInfo);
 
-        bool exists(const std::map<std::string, std::string>& dsInfo);
+        bool exists(const std::string& connInfo);
 
-        std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& dsInfo);
+        std::vector<std::string> getDataSourceNames(const std::string& connInfo);
 
       protected:
 
-        std::map<std::string, std::string> m_connectionInfo;        //!< Connection information.
-        //OGRDataSource* m_ogrDS;                                   //!< A pointer to OGR Data Source.
         GDALDataset* m_ogrDS;                                       //!< A pointer to OGR Data Source.
         bool m_isValid;                                             //!< True if this is a valid datasource.
         te::da::DataSourceCapabilities m_capabilities;              //!< OGR capabilities.
@@ -112,7 +106,7 @@ namespace te
         te::core::EncodingType m_encoding;                          //!< The data source encoding type.
     };
 
-    DataSource* Build();
+    te::da::DataSource* Build(const te::core::URI& uri);
   }    // end namespace da
 }      // end namespace te
 

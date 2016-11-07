@@ -31,10 +31,7 @@
 
 namespace terralib4
 {
-  inline te::da::DataSource* Build()
-  {
-    return new DataSource;
-  }
+  te::da::DataSource* Build(const te::core::URI& uri);
 }   // end namespace terralib4
 
 #endif  // __TERRALIB_TERRALIB4_INTERNAL_DATASOURCEFACTORY_H

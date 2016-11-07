@@ -19,6 +19,7 @@
 
 
 #include "DataSetTableHorizontalHeader.h"
+#include "../../../core/uri/URI.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../dataaccess/datasource/DataSourceTransactor.h"
@@ -140,7 +141,7 @@ void te::qt::widgets::DataSetTableHorizontalHeader::mousePressEvent(QMouseEvent 
         mimeData->setData("DataSourceId", sid.c_str());
         std::string stype(ds->getType());
         mimeData->setData("DataSourceType", stype.c_str());
-        m_connInfo = ds->getConnectionInfo();
+        m_connInfo = ds->getConnectionInfo().uri();
         QString connInfo;
         connInfo.setNum((unsigned long long)&m_connInfo);
         mimeData->setData("DataSourceConnInfo", connInfo.toUtf8().data());
@@ -229,7 +230,7 @@ void te::qt::widgets::DataSetTableHorizontalHeader::dropEvent(QDropEvent *e)
       te::da::DataSourcePtr sds = GetDataSource(m_layer);
       m_secondLinkInfo.m_dataSourceId = sds->getId();
       m_secondLinkInfo.m_dataSourceType = sds->getType();
-      m_secondLinkInfo.m_connInfo = sds->getConnectionInfo();
+      m_secondLinkInfo.m_connInfo = sds->getConnectionInfo().uri();
       m_secondLinkInfo.m_layerId = m_layer->getId();
       m_secondLinkInfo.m_layerName = m_layer->getSchema()->getName();
       m_secondLinkInfo.m_layerTitle = m_layer->getTitle();
@@ -240,7 +241,7 @@ void te::qt::widgets::DataSetTableHorizontalHeader::dropEvent(QDropEvent *e)
         m_firstLinkInfo.m_dataSourceId = mdata->data("DataSourceId").data();
         m_firstLinkInfo.m_dataSourceType = mdata->data("DataSourceType").data();
         QString connInfo(mdata->data("DataSourceConnInfo").data());
-        m_firstLinkInfo.m_connInfo = *(std::map<std::string, std::string>*)connInfo.toULongLong();
+        m_firstLinkInfo.m_connInfo = connInfo.toStdString();
         m_firstLinkInfo.m_layerName = mdata->data("LayerName").data();
         m_firstLinkInfo.m_layerTitle = mdata->data("LayerTitle").data();
         m_firstLinkInfo.m_layerId = mdata->data("LayerId").data();

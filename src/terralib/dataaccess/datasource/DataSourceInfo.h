@@ -27,6 +27,7 @@
 #define __TERRALIB_DATAACCESS_INTERNAL_DATASOURCEINFO_H
 
 // TerraLib
+#include "../../core/uri/URI.h"
 #include "../Config.h"
 
 // STL
@@ -39,6 +40,7 @@
 
 namespace te
 {
+  namespace core { class URI; }
   namespace da
   {
       /*!
@@ -82,26 +84,24 @@ namespace te
 
           void setDescription(const std::string& d);
 
-          const std::map<std::string, std::string>& getConnInfo() const;
+          const te::core::URI& getConnInfo() const;
 
-          std::map<std::string, std::string>& getConnInfo();
+          const std::string getConnInfoAsString() const;
 
-          std::string getConnInfoAsString();
+          void setConnInfo(const te::core::URI& conninfo);
 
-          void setConnInfo(const std::map<std::string, std::string>& connInfo);
-
-          void setConnInfoFromString(const std::string& conninfo);
+          void setConnInfo(const std::string& conninfo);
 
           bool operator<(const DataSourceInfo& rhs) const;
 
         private:
 
-          std::string m_id;
-          std::string m_dsType;
-          std::string m_accessDriver;
-          std::string m_title;
-          std::string m_description;
-          std::map<std::string, std::string> m_conninfo;
+          std::string    m_id;
+          std::string    m_dsType;
+          std::string    m_accessDriver;
+          std::string    m_title;
+          std::string    m_description;
+          te::core::URI  m_connInfo;
       }; 
 
       typedef boost::shared_ptr<DataSourceInfo> DataSourceInfoPtr;

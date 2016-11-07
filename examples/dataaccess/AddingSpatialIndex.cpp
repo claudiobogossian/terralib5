@@ -10,7 +10,7 @@ te::da::Index* AddSpatialIndex(const std::string& datasetname,
   //spidx->add(sp.get());
 
   spidx->add((transactor->getProperty(datasetname,"spatial_data")).release());
-  std::map<std::string,std::string> opt;
+  std::map<std::string, std::string> opt;
 
   transactor->addIndex(datasetname,spidx,opt);
 

@@ -7,7 +7,7 @@
 #include <iostream>
 #include <exception>
 
-std::auto_ptr<te::da::DataSource> GetPostGISConnection();
+std::unique_ptr<te::da::DataSource> GetPostGISConnection();
 
 void QueryInsertExample()
 {
@@ -33,7 +33,7 @@ void QueryInsertExample()
  
   try
   {
-    std::auto_ptr<te::da::DataSource> ds = GetPostGISConnection();
+    std::unique_ptr<te::da::DataSource> ds = GetPostGISConnection();
     if (!ds.get())
       return;
     

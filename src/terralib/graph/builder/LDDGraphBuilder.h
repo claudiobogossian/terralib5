@@ -100,7 +100,7 @@ namespace te
           \return True if the graph was correctly generated and false in other case.
 
         */
-         bool build(te::rst::Raster* raster, const std::map<std::string, std::string>& dsInfo, const std::string& graphType, const std::map<std::string, std::string>& gInfo);
+         bool build(te::rst::Raster* raster, const std::string& dsInfo, const std::string& graphType, const std::map<std::string, std::string>& gInfo);
 
         //@}
 

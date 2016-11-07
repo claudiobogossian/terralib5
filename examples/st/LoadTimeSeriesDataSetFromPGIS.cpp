@@ -22,14 +22,7 @@ void LoadTimeSeriesDataSetFromPGIS(boost::ptr_vector<te::st::TimeSeries>& output
     std::vector<te::st::TimeSeries*> series;
 
     // let's give the minimal server connection information needed to connect to the database server
-    std::map<std::string, std::string> connInfo;
-    connInfo["PG_CLIENT_ENCODING"] = "CP1252";
-    connInfo["PG_CONNECT_TIMEOUT"] = "5";
-    connInfo["PG_DB_NAME"] = "timeseries";
-    connInfo["PG_HOST"] = "localhost" ;
-    connInfo["PG_PORT"] = "5432" ;
-    connInfo["PG_USER"] = "postgres";
-    connInfo["PG_PASSWORD"] = "postgres";
+    std::string connInfo("pgsql://postgres:postgres@localhost:5432/timeseries");
 
     //Indicates the data source
     te::da::DataSourceInfo dsInfo;

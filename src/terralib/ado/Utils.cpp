@@ -26,6 +26,8 @@
 // TerraLib
 #include "../common/Exception.h"
 #include "../core/translator/Translator.h"
+#include "../core/uri/URI.h"
+#include "../core/utils/URI.h"
 #include "../datatype.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/dataset/ForeignKey.h"
@@ -72,31 +74,29 @@ void te::ado::Blob2Variant(const char* blob, int size, _variant_t & var)
   var.parray = psa;
 }
 
-std::string te::ado::MakeConnectionStr(const std::map<std::string, std::string>& dsInfo)
+std::string te::ado::MakeConnectionStr(const te::core::URI& connInfo)
 {
-  std::map<std::string, std::string>::const_iterator it = dsInfo.find("PROVIDER");
-  std::map<std::string, std::string>::const_iterator it_end = dsInfo.end();
-  std::string connInfo;
+  std::string connSTR;
+  std::map<std::string, std::string> kvp = te::core::expand(connInfo.query());
 
-  if(it != it_end)
-    connInfo += "Provider=" + it->second;
-  
-  it = dsInfo.find("DB_NAME");
+  std::string provider = kvp["PROVIDER"];
+  std::string dbName = connInfo.host() + connInfo.path();
+  std::string user = connInfo.user();
+  std::string password = connInfo.password();
 
-  if(it != it_end)
-    connInfo += ";Data Source=" + it->second;
+  if(!provider.empty())
+    connSTR += "Provider=" + provider;
 
-  it = dsInfo.find("USER_NAME");
+  if(!dbName.empty())
+    connSTR += ";Data Source=" + dbName;
 
-  if(it != it_end)
-    connInfo += ";User Id=" + it->second;
+  if(!user.empty())
+    connSTR += ";User Id=" + user;
 
-  it = dsInfo.find("PASSWORD");
+  if(!password.empty())
+    connSTR += ";Jet OLEDB:Database Password=" + password + ";";
 
-  if(it != it_end)
-    connInfo += ";Jet OLEDB:Database Password=" + it->second + ";";
-
-  return connInfo;
+  return connSTR;
 }
 
 void te::ado::Variant2Blob(const _variant_t var, int size, char* & blob)

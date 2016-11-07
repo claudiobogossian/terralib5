@@ -20,6 +20,7 @@
 
 #include "XMLFormatter.h"
 
+#include "../../core/uri/URI.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../maptools/DataSetLayer.h"
@@ -52,16 +53,11 @@ void te::qt::af::XMLFormatter::format(te::da::DataSourceInfo *d, const bool &enc
   d->setTitle(format(d->getTitle(), encode));
   d->setDescription(format(d->getDescription(), encode));
 
-  std::map<std::string, std::string>& i = d->getConnInfo();
-  std::map<std::string, std::string>::iterator it = i.find("SOURCE");
+  const te::core::URI& i = d->getConnInfo();
+  std::string path = i.host() + i.path();
 
-  if(it != i.end())
-    it->second = format(it->second, encode);
-
-  it = i.find("URI");
-
-  if(it != i.end())
-    it->second = format(it->second, encode);
+  if (!path.empty())
+    path = format(path, encode);
 }
 
 void te::qt::af::XMLFormatter::formatDataSourceInfos(const bool &encode)

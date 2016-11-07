@@ -21,12 +21,11 @@ void DrawingRasterObject()
   // set input raster name
   std::string data_dir = TERRALIB_DATA_DIR;
   
-  std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = data_dir + "/rasters/cbers2b_rgb342_crop.tif";
+  std::string rinfo("file://");
+  rinfo += data_dir + "/geotiff/cbers2b_rgb342_crop.tif";
 
   // open input raster
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
-  ds->setConnectionInfo(rinfo);
+  std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", rinfo);
   ds->open();
 
   std::auto_ptr<te::da::DataSourceTransactor> tr = ds->getTransactor();

@@ -568,7 +568,7 @@ void te::mnt::CreateIsolinesDialog::onOkPushButtonClicked()
       throw te::common::Exception(TE_TR("Define a name for the resulting layer."));
 
     std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
-    std::map<std::string, std::string> outdsinfo;
+    std::string outdsinfo("file://");
     boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
     bool result = false;
@@ -582,7 +582,7 @@ void te::mnt::CreateIsolinesDialog::onOkPushButtonClicked()
       if (idx != std::string::npos)
         outputdataset = outputdataset.substr(0, idx);
 
-      outdsinfo["URI"] = uri.string();
+      outdsinfo += uri.string();
     }
 
     std::vector<double> val;
@@ -613,8 +613,7 @@ void te::mnt::CreateIsolinesDialog::onOkPushButtonClicked()
       ci->setInput(inDataSource, inDsetName, inDsetType);
       if (m_toFile)
       {
-        te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
-        dsOGR->setConnectionInfo(outdsinfo);
+        te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR", outdsinfo).release());
         dsOGR->open();
 
         if (dsOGR->dataSetExists(outputdataset))
@@ -654,8 +653,7 @@ void te::mnt::CreateIsolinesDialog::onOkPushButtonClicked()
 
       if (m_toFile)
       {
-        te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
-        dsOGR->setConnectionInfo(outdsinfo);
+        te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR", outdsinfo).release());
         dsOGR->open();
 
         if (dsOGR->dataSetExists(outputdataset))

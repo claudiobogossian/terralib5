@@ -17,10 +17,9 @@ void RasterizePolygonSet()
   {
     std::cout << "This is a test to open a shapefile and save some polygons in a raster file." << std::endl << std::endl;
 
-    std::map<std::string, std::string> ogrInfo;
-    ogrInfo["SOURCE"] = TERRALIB_DATA_DIR"/shape/munic_2001.shp";
-    std::auto_ptr<te::da::DataSource> ds_pols = te::da::DataSourceFactory::make("OGR");
-    ds_pols->setConnectionInfo(ogrInfo);
+    std::string ogrInfo("file://");
+    ogrInfo += TERRALIB_DATA_DIR"/shape/munic_2001.shp";
+    std::unique_ptr<te::da::DataSource> ds_pols = te::da::DataSourceFactory::make("OGR", ogrInfo);
     ds_pols->open();
 
 // get a transactor to interact to the data source

@@ -186,11 +186,10 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToFile()
     std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
 
     //create data source
-    std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = m_ui->m_dataSetLineEdit->text().toUtf8().data();
+    const std::string connInfo("file://" + std::string(m_ui->m_dataSetLineEdit->text().toUtf8().data()));
 
-    std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make(m_outputDataSourceType);
-    dsOGR->setConnectionInfo(connInfo);
+    std::unique_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make(m_outputDataSourceType, connInfo);
+
     dsOGR->open();
 
     te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(dsType.get(), dsOGR->getCapabilities(), dsOGR->getEncoding());
@@ -279,7 +278,7 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToFile()
     std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(dataset.get(), converter));
 
     if(dataset->moveBeforeFirst())
-      dsOGR->add(dsTypeResult->getName(), dsAdapter.get(), dsOGR->getConnectionInfo());
+      dsOGR->add(dsTypeResult->getName(), dsAdapter.get(), nopt);
 
     dsOGR->close();
 
@@ -543,7 +542,7 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
     std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(dataset.get(), converter));
 
     if(dataset->moveBeforeFirst())
-       transactor->add(dsTypeResult->getName(), dsAdapter.get(), targetDSPtr->getConnectionInfo());
+       transactor->add(dsTypeResult->getName(), dsAdapter.get(), nopt);
 
     if (isLinked)
     {
