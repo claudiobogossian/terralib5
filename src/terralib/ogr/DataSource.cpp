@@ -137,7 +137,7 @@ void te::ogr::DataSource::open()
     throw Exception(TE_TR("There is no valid information about the data source"));
 
   std::string path = m_uri.host() + m_uri.path();
-  std::map<std::string, std::string> kvp = te::core::expand(m_uri.query());
+  std::map<std::string, std::string> kvp = te::core::Expand(m_uri.query());
   std::map<std::string, std::string>::const_iterator it;
   
   if (path.empty())
@@ -222,7 +222,7 @@ void te::ogr::DataSource::createOGRDataSource()
       throw Exception(TE_TR("There is no valid information about the data source"));
 
     std::string path = m_uri.host() + m_uri.path();
-    std::map<std::string, std::string> kvp = te::core::expand(m_uri.query());
+    std::map<std::string, std::string> kvp = te::core::Expand(m_uri.query());
     std::map<std::string, std::string>::const_iterator it;
 
     if (path.empty())

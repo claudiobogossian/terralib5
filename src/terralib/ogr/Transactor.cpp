@@ -982,7 +982,7 @@ void te::ogr::Transactor::createDataSet(te::da::DataSetType* dt, const std::map<
   
   char** papszOptions = 0;
 
-  std::map<std::string, std::string> kvp = te::core::expand(m_ogrDs->getConnectionInfo().query());
+  std::map<std::string, std::string> kvp = te::core::Expand(m_ogrDs->getConnectionInfo().query());
   std::map<std::string, std::string>::const_iterator it = kvp.begin();
   while(it != kvp.end())
   {

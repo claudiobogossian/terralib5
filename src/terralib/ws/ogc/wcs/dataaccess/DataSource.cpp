@@ -76,7 +76,7 @@ void te::ws::ogc::wcs::da::DataSource::open()
 
   try
   {
-    std::map<std::string, std::string> kvp = te::core::expand(m_uri.query());
+    std::map<std::string, std::string> kvp = te::core::Expand(m_uri.query());
 
     m_wcs = std::shared_ptr<te::ws::ogc::WCSClient>(new te::ws::ogc::WCSClient(kvp["USERDATADIR"], m_uri.uri(), kvp["VERSION"]));
 
@@ -113,7 +113,7 @@ bool te::ws::ogc::wcs::da::DataSource::isValid() const
   {
     verifyConnectionInfo();
 
-    std::map<std::string, std::string> kvp = te::core::expand(m_uri.query());
+    std::map<std::string, std::string> kvp = te::core::Expand(m_uri.query());
 
     te::ws::ogc::WCSClient wcs(kvp["USERDATADIR"], m_uri.uri(), kvp["VERSION"]);
 
@@ -165,7 +165,7 @@ bool te::ws::ogc::wcs::da::DataSource::exists(const std::string& connInfo)
   if (uri.empty())
     return false;
 
-  std::map<std::string, std::string> kvp = te::core::expand(m_uri.query());
+  std::map<std::string, std::string> kvp = te::core::Expand(m_uri.query());
   std::map<std::string, std::string>::const_iterator it = kvp.begin();
   std::map<std::string, std::string>::const_iterator itend = kvp.end();
   std::string usrDataDir, version;
@@ -213,7 +213,7 @@ void te::ws::ogc::wcs::da::DataSource::verifyConnectionInfo() const
   if(!m_uri.isValid())
     throw Exception(TE_TR("The connection information is invalid!"));
 
-  std::map<std::string, std::string> kvp = te::core::expand(m_uri.query());
+  std::map<std::string, std::string> kvp = te::core::Expand(m_uri.query());
   std::map<std::string, std::string>::const_iterator it = kvp.begin();
   std::map<std::string, std::string>::const_iterator itend = kvp.end();
 

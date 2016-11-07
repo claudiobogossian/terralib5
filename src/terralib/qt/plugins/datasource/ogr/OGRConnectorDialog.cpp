@@ -283,7 +283,7 @@ void te::qt::plugins::ogr::OGRConnectorDialog::setConnectionInfo(const std::stri
   const te::core::URI uri(connInfo);
 
   std::string path = uri.host() + uri.path();
-  std::map<std::string, std::string> kvp = te::core::expand(uri.query());
+  std::map<std::string, std::string> kvp = te::core::Expand(uri.query());
   std::map<std::string, std::string>::const_iterator it;
 
   if(!path.empty())

@@ -275,7 +275,7 @@ const std::string te::qt::plugins::pgis::PostGISConnectorDialog::getConnectionIn
 void te::qt::plugins::pgis::PostGISConnectorDialog::setConnectionInfo(const std::string& connInfo)
 {
   te::core::URI uri(connInfo);
-  std::map<std::string, std::string> kvp = te::core::expand(uri.query());
+  std::map<std::string, std::string> kvp = te::core::Expand(uri.query());
   std::map<std::string, std::string>::const_iterator it = kvp.begin();
   std::map<std::string, std::string>::const_iterator itend = kvp.end();
 

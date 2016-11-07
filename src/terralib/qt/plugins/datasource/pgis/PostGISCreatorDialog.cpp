@@ -98,7 +98,7 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::onApplyPushButtonPressed()
       // Connect
       const te::core::URI aux(connInfo);
 
-      std::map<std::string, std::string> kvp = te::core::expand(aux.query());
+      std::map<std::string, std::string> kvp = te::core::Expand(aux.query());
       std::map<std::string, std::string>::const_iterator it = kvp.begin();
       std::map<std::string, std::string>::const_iterator itend = kvp.end();
 
