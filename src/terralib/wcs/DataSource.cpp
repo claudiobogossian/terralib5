@@ -65,7 +65,7 @@ std::auto_ptr<te::da::DataSourceTransactor> te::wcs::DataSource::getTransactor()
   if(!m_isOpened)
     throw Exception(TE_TR("The data source is not opened!"));
 
-  std::map<std::string, std::string> kvp = te::core::expand(m_uri.query());
+  std::map<std::string, std::string> kvp = te::core::Expand(m_uri.query());
   std::map<std::string, std::string>::const_iterator it = kvp.begin();
   std::map<std::string, std::string>::const_iterator itend = kvp.end();
 
@@ -79,7 +79,7 @@ void te::wcs::DataSource::open()
 
   verifyConnectionInfo();
 
-  std::map<std::string, std::string> kvp = te::core::expand(m_uri.query());
+  std::map<std::string, std::string> kvp = te::core::Expand(m_uri.query());
   std::map<std::string, std::string>::const_iterator it = kvp.begin();
   std::map<std::string, std::string>::const_iterator itend = kvp.end();
 
@@ -182,7 +182,7 @@ void te::wcs::DataSource::verifyConnectionInfo() const
   if (!m_uri.isValid())
     throw Exception(TE_TR("The connection information is invalid!"));
 
-  std::map<std::string, std::string> kvp = te::core::expand(m_uri.query());
+  std::map<std::string, std::string> kvp = te::core::Expand(m_uri.query());
   std::map<std::string, std::string>::const_iterator it = kvp.begin();
   std::map<std::string, std::string>::const_iterator itend = kvp.end();
 

@@ -23,7 +23,7 @@
 
   \brief  This file contains utility functions used to manipulate data from a URI.
 
-  \author André Gomes de Oliveira
+  \author Andre Gomes de Oliveira
   \author Gilberto Ribeiro de Queiroz
 */
 
@@ -50,7 +50,7 @@ namespace te
           
       \return A container with the key-value pairs extracted from the query string.
     */
-    TECOREEXPORT std::map<std::string, std::string> expand(const std::string& query_str);
+    TECOREEXPORT std::map<std::string, std::string> Expand(const std::string& query_str);
   }
 }  
 #endif //__TERRALIB_CORE_UTILS_URI_H__

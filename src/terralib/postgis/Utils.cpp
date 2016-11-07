@@ -357,7 +357,7 @@ void te::pgis::Convert2TerraLib(PGresult* result,
 std::string te::pgis::MakeConnectionStr(const te::core::URI& connInfo)
 {
   std::string connStr, aux;
-  std::map<std::string, std::string> kvp = te::core::expand(connInfo.query());
+  std::map<std::string, std::string> kvp = te::core::Expand(connInfo.query());
   std::map<std::string, std::string>::const_iterator it = kvp.begin();
   std::map<std::string, std::string>::const_iterator itend = kvp.end();
 

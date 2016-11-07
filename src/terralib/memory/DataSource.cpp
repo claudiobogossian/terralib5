@@ -103,7 +103,7 @@ void te::mem::DataSource::open()
   if (!m_uri.isValid())
     throw Exception(TE_TR("There is no valid information about the data source"));
 
-  std::map<std::string, std::string> kvp = te::core::expand(m_uri.query());
+  std::map<std::string, std::string> kvp = te::core::Expand(m_uri.query());
   std::map<std::string, std::string>::const_iterator it;
 
   // Check if it is required a different dataset limit

@@ -137,7 +137,7 @@ std::auto_ptr<TeDatabaseFactoryParams> terralib4::Convert2T4DatabaseParams(const
 {
   te::core::URI uri(dsInfo);
 
-  std::map<std::string, std::string> kvp = te::core::expand(uri.query());
+  std::map<std::string, std::string> kvp = te::core::Expand(uri.query());
   std::map<std::string, std::string>::const_iterator it = kvp.begin();
   std::map<std::string, std::string>::const_iterator itend = kvp.end();
 

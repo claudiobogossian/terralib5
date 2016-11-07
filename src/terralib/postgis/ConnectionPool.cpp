@@ -89,7 +89,7 @@ void te::pgis::ConnectionPool::initialize()
 
 // check for pool parameters...
   const te::core::URI& connInfo = m_pImpl->m_ds->getConnectionInfo();
-  std::map<std::string, std::string> kvp = te::core::expand(connInfo.query());
+  std::map<std::string, std::string> kvp = te::core::Expand(connInfo.query());
   std::map<std::string, std::string>::const_iterator it = kvp.begin();
   std::map<std::string, std::string>::const_iterator itend = kvp.end();
 
