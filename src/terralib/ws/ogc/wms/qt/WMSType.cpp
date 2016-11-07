@@ -28,6 +28,8 @@
 #include "WMSType.h"
 
 #include "../../../../core/translator/Translator.h"
+#include "WMSConnector.h"
+#include "WMSLayerSelector.h"
 
 te::ws::ogc::wms::qt::WMSType::WMSType()
 {
@@ -76,11 +78,11 @@ QWidget* te::ws::ogc::wms::qt::WMSType::getWidget(int widgetType, QWidget* paren
 {
   switch(widgetType)
   {
-    //TODO Create a WMS DataSource connection interface
-    //case te::qt::widgets::DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
+    case te::qt::widgets::DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
+      return new te::ws::ogc::wms::qt::WMSConnector(parent, f);
 
-    //TODO Create a WMS layer selection interface
-    //case DataSourceType::WIDGET_LAYER_SELECTOR:
+    case DataSourceType::WIDGET_LAYER_SELECTOR:
+      return new te::ws::ogc::wms::qt::WMSLayerSelector(parent, f);
 
     default:
       return 0;
