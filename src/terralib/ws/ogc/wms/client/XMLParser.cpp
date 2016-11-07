@@ -24,6 +24,9 @@
 //BOOST
 #include <boost/algorithm/string.hpp>
 
+#include "../../../../common/StringUtils.h"
+#include "../../../core/Utils.h"
+
 te::ws::ogc::wms::XMLParser::XMLParser()
 {
 
@@ -229,18 +232,23 @@ te::ws::ogc::wms::BoundingBox te::ws::ogc::wms::XMLParser::parseBoundingBox(cons
 {
   BoundingBox box;
 
-  for (unsigned int i = 0; i < reader->getNumberOfAttrs(); i++)
+  box.m_crs = reader->getAttr("CRS");
+
+  bool isInverted = te::ws::core::IsInvertedEPSG(box.m_crs);
+
+  if(isInverted)
   {
-    if(boost::iequals(reader->getAttrLocalName(i), "CRS"))
-      box.m_crs = reader->getAttr("CRS");
-    else if (boost::iequals(reader->getAttrLocalName(i), "minx"))
-      box.m_minX = reader->getAttrAsDouble("minx");
-    else if (boost::iequals(reader->getAttrLocalName(i), "miny"))
-      box.m_minY = reader->getAttrAsDouble("miny");
-    else if (boost::iequals(reader->getAttrLocalName(i), "maxx"))
-      box.m_maxX = reader->getAttrAsDouble("maxx");
-    else if (boost::iequals(reader->getAttrLocalName(i), "maxy"))
-      box.m_maxY = reader->getAttrAsDouble("maxy");
+    box.m_minX = reader->getAttrAsDouble("miny");
+    box.m_minY = reader->getAttrAsDouble("minx");
+    box.m_maxX = reader->getAttrAsDouble("maxy");
+    box.m_maxY = reader->getAttrAsDouble("maxx");
+  }
+  else
+  {
+    box.m_minX = reader->getAttrAsDouble("minx");
+    box.m_minY = reader->getAttrAsDouble("miny");
+    box.m_maxX = reader->getAttrAsDouble("maxx");
+    box.m_maxY = reader->getAttrAsDouble("maxy");
   }
 
   return box;
@@ -266,6 +274,21 @@ te::ws::ogc::wms::Dimension te::ws::ogc::wms::XMLParser::parseDimension(const st
       dimension.m_nearestValue = reader->getAttrAsInt32("nearestValue");
     else if (boost::iequals(reader->getAttrLocalName(i), "current"))
       dimension.m_current = reader->getAttrAsInt32("current");
+  }
+
+  if(boost::iequals(dimension.m_name, "time"))
+  {
+    while (reader->next() && !(reader->getNodeType() == te::xml::END_ELEMENT && boost::iequals(reader->getElementLocalName(), "Dimension")))
+    {
+      if(reader->getNodeType() == te::xml::VALUE)
+      {
+        std::string allowedValuesStr = reader->getElementValue();
+
+        std::vector<std::string> allowedValues = te::common::SplitString(allowedValuesStr, ',');
+
+        dimension.m_allowedValues = allowedValues;
+      }
+    }
   }
 
   return dimension;

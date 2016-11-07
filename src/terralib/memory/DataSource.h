@@ -53,7 +53,9 @@ namespace te
     {
       public:
 
-        DataSource();
+        DataSource(const std::string& connInfo);
+
+        DataSource(const te::core::URI& uri);
 
         ~DataSource();
 
@@ -72,10 +74,6 @@ namespace te
         const std::map<std::string, te::da::DataSetTypePtr> getSchemas() const;
 
         std::string getType() const;
-
-        const std::map<std::string, std::string>& getConnectionInfo() const;
-
-        void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
 
         std::auto_ptr<te::da::DataSourceTransactor> getTransactor();
 
@@ -159,17 +157,16 @@ namespace te
 
       protected:
 
-        void create(const std::map<std::string, std::string>& dsInfo);
+        void create(const std::string& connInfo);
 
-        void drop(const std::map<std::string, std::string>& dsInfo);
+        void drop(const std::string& connInfo);
 
-        bool exists(const std::map<std::string, std::string>& dsInfo);
+        bool exists(const std::string& connInfo);
 
-        std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& dsInfo);
+        std::vector<std::string> getDataSourceNames(const std::string& connInfo);
 
       private:
 
-        std::map<std::string, std::string> m_connInfo;              //!< DataSource information.
         std::map<std::string, te::da::DataSetPtr> m_datasets;       //!< The set of datasets stored in memory.
         std::map<std::string, te::da::DataSetTypePtr> m_schemas;    //!< The set of dataset schemas.
         mutable boost::recursive_mutex m_mtx;                       //!< The internal mutex.

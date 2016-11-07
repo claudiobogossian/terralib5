@@ -285,13 +285,11 @@ bool te::vp::GeometricOpWizard::execute()
 
       if (idx != std::string::npos)
         outputdataset=outputdataset.substr(0,idx);
-      
-      std::map<std::string, std::string> dsinfo;
-      dsinfo["URI"] = uri.string();
-      dsinfo["DRIVER"] = "ESRI Shapefile";
 
-      std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR");
-      dsOGR->setConnectionInfo(dsinfo);
+      std::string dsinfo("file://");
+      dsinfo += uri.string();
+
+      std::unique_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR", dsinfo);
       dsOGR->open();
       if (dsOGR->dataSetExists(outputdataset))
       {
@@ -320,7 +318,7 @@ bool te::vp::GeometricOpWizard::execute()
       }
 
       geomOp->setInput(inDataSource, dsLayer->getDataSetName(), converter);
-      geomOp->setOutput(dsOGR, outputdataset);
+      geomOp->setOutput(std::move(dsOGR), outputdataset);
       geomOp->setParams(geoProps, 
                         m_ops, 
                         m_geomOpOutputPage->getObjectStrategy(), 
@@ -364,8 +362,7 @@ bool te::vp::GeometricOpWizard::execute()
     else
     {
       m_outputDatasource = m_geomOpOutputPage->getDsInfoPtr();
-      std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make(m_outputDatasource->getType());
-      trgDs->setConnectionInfo(m_outputDatasource->getConnInfo());
+      std::unique_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make(m_outputDatasource->getType(), m_outputDatasource->getConnInfo());
       trgDs->open();
 
       if (!trgDs.get())
@@ -400,7 +397,7 @@ bool te::vp::GeometricOpWizard::execute()
       }
 
       geomOp->setInput(inDataSource, dsLayer->getDataSetName(), converter);
-      geomOp->setOutput(trgDs, outputdataset);
+      geomOp->setOutput(std::move(trgDs), outputdataset);
       geomOp->setParams(geoProps,
                         m_ops,
                         m_geomOpOutputPage->getObjectStrategy(),

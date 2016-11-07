@@ -461,11 +461,9 @@ BOOST_AUTO_TEST_CASE(sequenceMosaic_test)
   
   te::rp::SequenceMosaic::OutputParameters algoOutputParams;
   
-  std::map<std::string, std::string> connInfoRaster;
-  connInfoRaster["SOURCE"] = ".";
-  std::auto_ptr< te::da::DataSource > dsPtr( te::da::DataSourceFactory::make("GDAL") );
+  std::string connInfoRaster(".");
+  std::unique_ptr< te::da::DataSource > dsPtr( te::da::DataSourceFactory::make("GDAL", connInfoRaster) );
   BOOST_CHECK( dsPtr.get() );
-  dsPtr->setConnectionInfo( connInfoRaster );
   dsPtr->open();
   BOOST_CHECK( dsPtr->isOpened() );
   algoOutputParams.m_outputDSPtr = dsPtr.get();

@@ -79,7 +79,7 @@ namespace te
 
           private:
 
-            void getConnectionInfo(std::map<std::string, std::string>& connInfo) const;
+            const std::string getConnectionInfo() const;
 
           private:
 

@@ -599,6 +599,10 @@ te::map::AbstractLayer* DataSetAdapterLayerReader(te::xml::Reader& reader)
   std::string visible = te::map::serialize::ReadLayerVisibility(reader);
   reader.next();
 
+  /* Encoding Element */
+  std::string encoding = te::map::serialize::ReadLayerEncoding(reader);
+  reader.next();
+
   /* DataSetName Element */
   std::string dataSetName = te::map::serialize::ReadDataSetName(reader);
   reader.next();

@@ -38,15 +38,15 @@
 #include <cassert>
 #include <memory>
 
-te::da::DataSourcePtr te::da::DataSourceManager::make(const std::string& id, const std::string& dsType)
+te::da::DataSourcePtr te::da::DataSourceManager::make(const std::string& id, const std::string& dsType, const std::string& connInfo)
 {
-  if(find(id))
+  if (find(id))
     return find(id);
 
-// we are optimistic: do the hard job and then see if another thread or the data source already had been inserted in the manager
-  DataSourcePtr ds(DataSourceFactory::make(dsType));
+  // we are optimistic: do the hard job and then see if another thread or the data source already had been inserted in the manager
+  DataSourcePtr ds(DataSourceFactory::make(dsType, connInfo));
 
-  if(ds.get() == 0)
+  if (ds.get() == 0)
     throw Exception(TE_TR("Could not create the required data source instance!"));
 
   ds->setId(id);
@@ -56,16 +56,16 @@ te::da::DataSourcePtr te::da::DataSourceManager::make(const std::string& id, con
   return ds;
 }
 
-te::da::DataSourcePtr te::da::DataSourceManager::open(const std::string& id, const std::string& dsType, const std::map<std::string, std::string>& connInfo)
+te::da::DataSourcePtr te::da::DataSourceManager::make(const std::string& id, const std::string& dsType, const te::core::URI& connInfo)
 {
-// we are optimistic: do the hard job and then see if another thread or the data source already had been inserted in the manager
-  DataSourcePtr ds(DataSourceFactory::make(dsType));
+  if (find(id))
+    return find(id);
 
-  if(ds.get() == 0)
+  // we are optimistic: do the hard job and then see if another thread or the data source already had been inserted in the manager
+  DataSourcePtr ds(DataSourceFactory::make(dsType, connInfo));
+
+  if (ds.get() == 0)
     throw Exception(TE_TR("Could not create the required data source instance!"));
-
-  ds->setConnectionInfo(connInfo);
-  ds->open();
 
   ds->setId(id);
 
@@ -76,14 +76,39 @@ te::da::DataSourcePtr te::da::DataSourceManager::open(const std::string& id, con
 
 te::da::DataSourcePtr te::da::DataSourceManager::open(const std::string& id, const std::string& dsType, const std::string& connInfo)
 {
-  std::map<std::string, std::string> connInfoMap;
+// we are optimistic: do the hard job and then see if another thread or the data source already had been inserted in the manager
+  DataSourcePtr ds(DataSourceFactory::make(dsType, connInfo));
 
-  te::common::ExtractKVP(connInfo, connInfoMap, "&", "=", false);
+  if(ds.get() == 0)
+    throw Exception(TE_TR("Could not create the required data source instance!"));
 
-  return open(id, dsType, connInfoMap);
+  ds->open();
+
+  ds->setId(id);
+
+  insert(ds);
+
+  return ds;
 }
 
-te::da::DataSourcePtr te::da::DataSourceManager::get(const std::string& id, const std::string& dsType, const std::map<std::string, std::string>& connInfo)
+te::da::DataSourcePtr te::da::DataSourceManager::open(const std::string& id, const std::string& dsType, const te::core::URI& connInfo)
+{
+  // we are optimistic: do the hard job and then see if another thread or the data source already had been inserted in the manager
+  DataSourcePtr ds(DataSourceFactory::make(dsType, connInfo));
+
+  if (ds.get() == 0)
+    throw Exception(TE_TR("Could not create the required data source instance!"));
+
+  ds->open();
+
+  ds->setId(id);
+
+  insert(ds);
+
+  return ds;
+}
+
+te::da::DataSourcePtr te::da::DataSourceManager::get(const std::string& id, const std::string& dsType, const std::string& connInfo)
 {
   LockRead l(this);
 
@@ -92,9 +117,7 @@ te::da::DataSourcePtr te::da::DataSourceManager::get(const std::string& id, cons
   if(it != m_dss.end())
     return it->second;
 
-  DataSourcePtr newds(DataSourceFactory::make(dsType).release());
-
-  newds->setConnectionInfo(connInfo);
+  DataSourcePtr newds(DataSourceFactory::make(dsType, connInfo).release());
 
   newds->open();
 
@@ -105,6 +128,25 @@ te::da::DataSourcePtr te::da::DataSourceManager::get(const std::string& id, cons
   return newds;
 }
 
+te::da::DataSourcePtr te::da::DataSourceManager::get(const std::string& id, const std::string& dsType, const te::core::URI& connInfo)
+{
+  LockRead l(this);
+
+  const_iterator it = m_dss.find(id);
+
+  if (it != m_dss.end())
+    return it->second;
+
+  DataSourcePtr newds(DataSourceFactory::make(dsType, connInfo).release());
+
+  newds->open();
+
+  newds->setId(id);
+
+  insert(newds);
+
+  return newds;
+}
 te::da::DataSourcePtr te::da::DataSourceManager::find(const std::string& id) const
 {
   LockRead l(this);

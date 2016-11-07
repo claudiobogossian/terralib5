@@ -157,17 +157,16 @@ std::map<std::string, std::string> te::qt::widgets::RasterInfoWidget::getInfo(in
   return rinfo;
 }
 
-std::auto_ptr<te::da::DataSource> te::qt::widgets::RasterInfoWidget::getDataSource() const
+std::unique_ptr<te::da::DataSource> te::qt::widgets::RasterInfoWidget::getDataSource() const
 {
-  boost::filesystem::path path( m_ui->m_fileNameLineEdit->text().toUtf8().data() );
-  std::map<std::string, std::string> connInfoRaster;
-  connInfoRaster["SOURCE"] = path.parent_path().string();
+  boost::filesystem::path path(m_ui->m_fileNameLineEdit->text().toUtf8().data());
 
-  std::auto_ptr< te::da::DataSource > dsPtr( te::da::DataSourceFactory::make("GDAL") );
-  dsPtr->setConnectionInfo( connInfoRaster );
+  const std::string connInfoRaster("file://" + path.parent_path().string());
+
+  std::unique_ptr< te::da::DataSource > dsPtr(te::da::DataSourceFactory::make("GDAL", connInfoRaster));
   dsPtr->open();
 
-  return dsPtr;
+  return std::move(dsPtr);
 }
 
 std::string te::qt::widgets::RasterInfoWidget::getName() const

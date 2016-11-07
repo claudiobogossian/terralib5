@@ -25,3 +25,9 @@
 
 // TerraLib
 #include "DataSourceFactory.h"
+
+te::da::DataSource* te::gdal::Build(const te::core::URI& uri)
+{
+  te::da::DataSource* ds = new DataSource(uri);
+  return ds;
+}

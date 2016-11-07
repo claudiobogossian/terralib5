@@ -1,3 +1,4 @@
+
 // Examples
 #include "DataAccessExamples.h"
 
@@ -9,95 +10,78 @@
 #include <iostream>
 #include <exception>
 
-
-std::auto_ptr<te::da::DataSource> GetPostGISConnection()
+std::unique_ptr<te::da::DataSource> GetPostGISConnection()
 {
   // let's give the minimal server connection information needed to connect to the database server
-  std::string aux;
-  std::map<std::string, std::string> connInfo;
+  std::string aux, user, password, host, port, path, query;
+  std::string strURI = "pgsql://"; // The base of the URI
+
   std::cout << "Inform the Host for your postGIS server (ENTER to accept default \'atlas.dpi.inpe.br\'): ";
   std::getline (std::cin, aux);
-  if (!aux.empty())
-    connInfo["PG_HOST"] = aux;
-  else
-    connInfo["PG_HOST"] = "atlas.dpi.inpe.br";
+  host = aux.empty() ? "atlas.dpi.inpe.br" : aux;
   
   std::cout << "Inform the Port number to access your postGIS server (ENTER to accept default \'5433\'): ";
   std::getline (std::cin, aux);
-  if (!aux.empty())
-    connInfo["PG_PORT"] = aux;
-  else
-    connInfo["PG_PORT"] = "5433" ;
-  
+  port = aux.empty() ? "5433" : aux;
+
   std::cout << "Inform the User to access your postGIS server (ENTER to accept default \'postgres\'): ";
   std::getline (std::cin, aux);
-  if (!aux.empty())
-    connInfo["PG_USER"] = aux;
-  else
-    connInfo["PG_USER"] = "postgres";
-  
+  user = aux.empty() ? "postgres" : aux;
+
   std::cout << "Inform the Password to access your postGIS server (ENTER to accept default \'postgres\'): ";
   std::getline (std::cin, aux);
-  if (!aux.empty())
-    connInfo["PG_PASSWORD"] = aux;
-  else
-    connInfo["PG_PASSWORD"] = "postgres";
-  
+  password = aux.empty() ? "postgres" : aux;
+
   std::cout << "Inform the Database name to connect to your postGIS server (ENTER to accept default \'terralib4\'): ";
   std::getline (std::cin, aux);
-  if (!aux.empty())
-    connInfo["PG_DB_NAME"] = aux;
-  else
-    connInfo["PG_DB_NAME"] = "terralib4";
-  
+  path = aux.empty() ? "terralib4" : aux;
+
+  std::cout << "Inform the Client enconding to connect to your postGIS server (ENTER to accept default \'UTF-8\'): ";
+  std::getline(std::cin, aux);
+  query = aux.empty() ?  "&PG_CLIENT_ENCODING=" + te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8) : aux;
+
   std::cout << "Inform the Connection Time Out to connect to your postGIS server (ENTER to accept default \'4\'): ";
   std::getline (std::cin, aux);
-  if (!aux.empty())
-    connInfo["PG_CONNECT_TIMEOUT"] = aux;
-  else
-    connInfo["PG_CONNECT_TIMEOUT"] = "4";
-  
-  std::cout << "Inform the Client enconding to connect to your postGIS server (ENTER to accept default \'CP1252\'): ";
-  std::getline (std::cin, aux);
-  if (!aux.empty())
-    connInfo["PG_CLIENT_ENCODING"] = aux;
-  else
-    connInfo["PG_CLIENT_ENCODING"] = "CP1252";     // "LATIN1"; //"WIN1252"
-  
+  query += aux.empty() ? "&PG_CONNECT_TIMEOUT=4" : "&PG_CONNECT_TIMEOUT=" + aux;
+
+  strURI += user + ":";
+  strURI += password + "@";
+  strURI += host + ":";
+  strURI += port + "/";
+  strURI += path + "?";
+  strURI += query;
+
   // create a data source using the data source factory
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
-  
-  // as we are going to use the data source, lets set the connection info
-  ds->setConnectionInfo(connInfo);
-  
-  try {
+  std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS", strURI);
+
+  try
+  {
       ds->open();
   }
   catch(const std::exception& e)
   {
-    std::cout << "Datasource " << connInfo["PG_HOST"] << "/" <<  connInfo["PG_DB_NAME"] << " can not be used!\nMake sure to have the correct connection parameters\n";
+    std::cout << "Datasource " << host << "/" <<  path << " can not be used!\nMake sure to have the correct connection parameters\n";
     std::cout << "Error: " << e.what() << std::endl;
     ds.reset();
-    return ds;
+    return std::move(ds);
   }
   catch(...)
   {
-    std::cout << "Datasource " << connInfo["PG_HOST"] << "/" <<  connInfo["PG_DB_NAME"] << " can not be used!\nMake sure to have the correct connection parameters\n";
+    std::cout << "Datasource " << host << "/" << path << " can not be used!\nMake sure to have the correct connection parameters\n";
     ds.reset();
-    return ds;
+    return std::move(ds);
   }
   
-  std::cout << "Using datasource " << connInfo["PG_HOST"] << "/" <<  connInfo["PG_DB_NAME"] << std::endl;
+  std::cout << "Using datasource " << host << "/" <<  path << std::endl;
   ds->close();
-  return ds;
+  return std::move(ds);
 }
-
 
 void PostGISExample()
 {
   try
   {
-    std::auto_ptr<te::da::DataSource> ds = GetPostGISConnection();
+    std::unique_ptr<te::da::DataSource> ds = GetPostGISConnection();
     if (!ds.get())
       return;
     

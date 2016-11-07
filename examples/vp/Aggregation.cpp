@@ -18,19 +18,12 @@
 bool AggregOGRToOGR()
 {
   std::string data_dir = TERRALIB_DATA_DIR;
-  
-  //std::string filename(data_dir + '/shp/SP_cities.shp");
-  
+
   std::string filename(data_dir + "/Nulos/nulos2.shp");
   
-  std::map<std::string, std::string> srcInfo;
-  srcInfo["URI"] = filename;
-  srcInfo["DRIVER"] = "ESRI Shapefile";
+  std::string srcInfo ("file://" + filename);
   
-  //std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("OGR");
-  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR"));
-  
-  srcDs->setConnectionInfo(srcInfo);
+  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR", srcInfo));
   srcDs->open();
   
   std::string inDsetName = "nulos2";
@@ -60,13 +53,9 @@ bool AggregOGRToOGR()
   stats.insert(std::make_pair(prop1.release(), stat1));
   
   std::string filename2(data_dir + "/Nulos/result.shp");
-  std::map<std::string, std::string> tgrInfo;
-  tgrInfo["URI"] = filename2;
-  tgrInfo["DRIVER"] = "ESRI Shapefile";
+  std::string tgrInfo ("file://" + filename2);
 
-  //std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("OGR");
-  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR"));
-  trgDs->setConnectionInfo(tgrInfo);
+  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR", tgrInfo));
   trgDs->open();
   
   std::string outDS = "result";
@@ -101,17 +90,11 @@ bool AggregOGRToPGIS()
 {
   std::string data_dir = TERRALIB_DATA_DIR;
   
-  //std::string filename(data_dir + "/shp/SP_cities.shp");
-  
   std::string filename(data_dir + "/Nulos/nulos2.shp");
   
-  std::map<std::string, std::string> srcInfo;
-  srcInfo["URI"] = filename;
-  srcInfo["DRIVER"] = "ESRI Shapefile";
-  
-  //std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("OGR");
-  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR"));
-  srcDs->setConnectionInfo(srcInfo);
+  std::string srcInfo("file://" + filename);
+
+  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR", srcInfo));
   srcDs->open();
   
   std::string inDsetName = "nulos2";
@@ -140,17 +123,9 @@ bool AggregOGRToPGIS()
   stat1.push_back(te::stat::MODE);
   stats.insert(std::make_pair(prop1.release(), stat1));
 
-  std::map<std::string, std::string> connInfo;
-  connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ; 
-  connInfo["PG_PORT"] = "5433" ;
-  connInfo["PG_USER"] = "postgres";
-  connInfo["PG_PASSWORD"] = "postgres";
-  connInfo["PG_DB_NAME"] = "testPostGIS";
-  connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-  connInfo["PG_CLIENT_ENCODING"] = "CP1252";
-  
-  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("POSTGIS"));
-  trgDs->setConnectionInfo(connInfo);
+  std::string connInfo("ppgsql://postgres:postgres@atlas.dpi.inpe.br:5433/testPostGIS");
+
+  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("POSTGIS", connInfo));
   trgDs->open();
   
   std::string outDS = "result";
@@ -183,18 +158,9 @@ bool AggregOGRToPGIS()
 //Postgis to Postgis
 bool AggregPGISToPGIS()
 {
-  std::map<std::string, std::string> connInfo;
-  connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ; 
-  connInfo["PG_PORT"] = "5433" ;
-  connInfo["PG_USER"] = "postgres";
-  connInfo["PG_PASSWORD"] = "postgres";
-  connInfo["PG_DB_NAME"] = "testPostGIS";
-  connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-  connInfo["PG_CLIENT_ENCODING"] = "CP1252"; 
+  std::string connInfo("ppgsql://postgres:postgres@atlas.dpi.inpe.br:5433/testPostGIS");
 
-  //std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("POSTGIS");
-  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("POSTGIS"));
-  srcDs->setConnectionInfo(connInfo);
+  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("POSTGIS", connInfo));
   srcDs->open();
   
   std::string inDsetName = "sp_cities";
@@ -224,9 +190,7 @@ bool AggregPGISToPGIS()
   
   std::string outDSet = "result";
 
-  //std::auto_ptr<te::da::DataSource> outDsource = te::da::DataSourceFactory::make("POSTGIS");
-  te::da::DataSourcePtr outDsource(te::da::DataSourceFactory::make("POSTGIS"));
-  outDsource->setConnectionInfo(connInfo);
+  te::da::DataSourcePtr outDsource(te::da::DataSourceFactory::make("POSTGIS", connInfo));
   outDsource->open();
 
   if (outDsource->dataSetExists(outDSet))
@@ -257,18 +221,9 @@ bool AggregPGISToPGIS()
 //Postgis to OGR
 bool AggregPGISToOGR()
 {
-  std::map<std::string, std::string> connInfo;
-  connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ; 
-  connInfo["PG_PORT"] = "5433" ;
-  connInfo["PG_USER"] = "postgres";
-  connInfo["PG_PASSWORD"] = "postgres";
-  connInfo["PG_DB_NAME"] = "testPostGIS";
-  connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
-  connInfo["PG_CLIENT_ENCODING"] = "CP1252"; 
+  std::string connInfo("ppgsql://postgres:postgres@atlas.dpi.inpe.br:5433/testPostGIS");
 
-  //std::auto_ptr<te::da::DataSource> srcDs = te::da::DataSourceFactory::make("POSTGIS");
-  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("POSTGIS"));
-  srcDs->setConnectionInfo(connInfo);
+  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("POSTGIS", connInfo));
   srcDs->open();
   
   std::string inDsetName = "sp_cities";
@@ -300,13 +255,9 @@ bool AggregPGISToOGR()
   
   std::string uriResult(data_dir + "/Nulos/result.shp");
   
-  std::map<std::string, std::string> tgrInfo;
-  tgrInfo["URI"] = uriResult;
-  tgrInfo["DRIVER"] = "ESRI Shapefile";
+  std::string tgrInfo("file://" + uriResult);
 
-  //std::auto_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make("OGR");
-  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR"));
-  trgDs->setConnectionInfo(tgrInfo);
+  te::da::DataSourcePtr trgDs(te::da::DataSourceFactory::make("OGR", tgrInfo));
   trgDs->open();
 
   std::string outDSet = "result";

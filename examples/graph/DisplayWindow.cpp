@@ -201,11 +201,9 @@ void DisplayWindow::addRasterLayer(std::string path, std::string name)
 void DisplayWindow::addVectorialLayer(std::string path, int srid)
 {
   // Creates and connects data source
-  std::map<std::string, std::string> connInfo;
-  connInfo["URI"] = path;
+  std::string connInfo ("file://" + path);
 
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
-  ds->setConnectionInfo(connInfo);
+  std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", connInfo);
   ds->open();
 
   // let's include the new datasource in the managers

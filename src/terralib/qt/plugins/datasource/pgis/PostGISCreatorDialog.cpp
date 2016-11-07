@@ -26,6 +26,8 @@
 // TerraLib
 #include "PostGISCreatorDialog.h"
 #include "../../../../core/translator/Translator.h"
+#include "../../../../core/uri/URI.h"
+#include "../../../../core/utils/URI.h"
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
@@ -87,31 +89,30 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::onApplyPushButtonPressed()
     }
 
 // get data source connection info based on form data
-    std::map<std::string, std::string> dsInfo = getConnectionInfo(true);
+    std::string connInfo = getConnectionInfo(true);
 
 // create database
-    te::da::DataSource::create("POSTGIS", dsInfo);
+    te::da::DataSource::create("POSTGIS", connInfo);
 
     {
       // Connect
-      std::map<std::string, std::string> connInfo;
-      if(!dsInfo["PG_HOST"].empty())
-        connInfo["PG_HOST"] = dsInfo["PG_HOST"];
+      const te::core::URI aux(connInfo);
 
-      if(!dsInfo["PG_PORT"].empty())
-        connInfo["PG_PORT"] = dsInfo["PG_PORT"];
+      std::map<std::string, std::string> kvp = te::core::expand(aux.query());
+      std::map<std::string, std::string>::const_iterator it = kvp.begin();
+      std::map<std::string, std::string>::const_iterator itend = kvp.end();
 
-      connInfo["PG_USER"] = dsInfo["PG_USER"];
-      connInfo["PG_PASSWORD"] = dsInfo["PG_PASSWORD"];
-      connInfo["PG_DB_NAME"] = dsInfo["PG_NEWDB_NAME"];
-      connInfo["PG_MIN_POOL_SIZE"] = "1";
-      connInfo["PG_MAX_POOL_SIZE"] = "4";
-      connInfo["PG_CONNECT_TIMEOUT"] = "5";
-      if(!dsInfo["PG_NEWDB_ENCODING"].empty())
-        connInfo["PG_CLIENT_ENCODING"] = dsInfo["PG_NEWDB_ENCODING"];
+      std::string strURI = "pgsql://";
+      strURI += aux.user() + ":";
+      strURI += aux.password() + "@";
+      strURI += aux.host() + ":";
+      strURI += aux.port() + "/";
+      strURI += kvp["PG_NEWDB_NAME"] + "?";
 
-      std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
-      ds->setConnectionInfo(connInfo);
+      strURI += "PG_CLIENT_ENCODING=";
+      strURI += te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8);
+
+      std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS", strURI);
       ds->open();
 
       m_driver.reset(ds.release());
@@ -125,31 +126,12 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::onApplyPushButtonPressed()
     
     QString title = m_ui->m_hostNameLineEdit->text().trimmed() + QString::fromUtf8("@") + m_ui->m_newDatabaseNameLineEdit->text().trimmed() + QString::fromUtf8("@") + m_ui->m_userNameLineEdit->text().trimmed();
 
-    std::map<std::string, std::string> connInfo;
-    if(!dsInfo["PG_HOST"].empty())
-      connInfo["PG_HOST"] = dsInfo["PG_HOST"];
-
-    if(!dsInfo["PG_PORT"].empty())
-      connInfo["PG_PORT"] = dsInfo["PG_PORT"];
-
-    connInfo["PG_USER"] = dsInfo["PG_USER"];
-
-    if(m_ui->m_savePasswordCheckBox)
-      connInfo["PG_PASSWORD"] = dsInfo["PG_PASSWORD"];
-
-    connInfo["PG_DB_NAME"] = dsInfo["PG_NEWDB_NAME"];
-    connInfo["PG_MIN_POOL_SIZE"] = "1";
-    connInfo["PG_MAX_POOL_SIZE"] = "4";
-    connInfo["PG_CONNECT_TIMEOUT"] = "5";
-    if(!dsInfo["PG_NEWDB_ENCODING"].empty())
-    connInfo["PG_CLIENT_ENCODING"] = dsInfo["PG_NEWDB_ENCODING"];
-
     if(m_datasource.get() == 0)
     {
 // create a new data source based on form data
       m_datasource.reset(new te::da::DataSourceInfo);
 
-      m_datasource->setConnInfo(connInfo);
+      m_datasource->setConnInfo(m_driver->getConnectionInfo());
 
       boost::uuids::basic_random_generator<boost::mt19937> gen;
       boost::uuids::uuid u = gen();
@@ -165,11 +147,10 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::onApplyPushButtonPressed()
     else
     {
       m_driver->setId(m_datasource->getId());
-      m_datasource->setConnInfo(connInfo);
+      m_datasource->setConnInfo(m_driver->getConnectionInfo());
       m_datasource->setTitle(title.toUtf8().data());
       m_datasource->setDescription("");
     }
-
   }
   catch(const std::exception& e)
   {
@@ -202,79 +183,105 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::onAdvancedCreationOptionsCheck
   m_ui->m_advancedOptionsGroupBox->setVisible(t);
 }
 
-std::map<std::string, std::string> te::qt::plugins::pgis::PostGISCreatorDialog::getConnectionInfo(bool getPrivateKeys) const
+const std::string te::qt::plugins::pgis::PostGISCreatorDialog::getConnectionInfo(bool getPrivateKeys) const
 {
-  std::map<std::string, std::string> connInfo;
+  QString qstr; // Auxiliary string used to hold temporary data
 
-// get host
-  QString qstr = m_ui->m_hostNameLineEdit->text().trimmed();
-  
-  if(!qstr.isEmpty())
-    connInfo["PG_HOST"] = qstr.toUtf8().data();
+  std::string strURI = "pgsql://"; // THe base of the URI
 
-// get port
-  qstr = m_ui->m_portLineEdit->text().trimmed();
-  
-  if(!qstr.isEmpty())
-    connInfo["PG_PORT"] = qstr.toUtf8().data();
-
-// get user
+  // get user
   qstr = m_ui->m_userNameLineEdit->text().trimmed();
-  
-  if(!qstr.isEmpty())
-    connInfo["PG_USER"] = qstr.toUtf8().data();
+  strURI += qstr.toUtf8().data();
+  strURI += ":";
 
-// get password
-  if(getPrivateKeys)
+  //get password
+  if (getPrivateKeys)
   {
     qstr = m_ui->m_passwordLineEdit->text().trimmed();
-  
-    if(!qstr.isEmpty())
-      connInfo["PG_PASSWORD"] = qstr.toUtf8().data();
+    strURI += qstr.toUtf8().data();
+    strURI += "@";
   }
 
-// get dbname
-  qstr = m_ui->m_newDatabaseNameLineEdit->text().trimmed();
-  
-  if(!qstr.isEmpty())
-    connInfo["PG_NEWDB_NAME"] = qstr.toUtf8().data();
+  //get host
+  qstr = m_ui->m_hostNameLineEdit->text().trimmed();
+  strURI += qstr.isEmpty() ? "localhost" : qstr.toUtf8().data();
+  strURI += ":";
 
-// get Template
+  //get port
+  qstr = m_ui->m_portLineEdit->text().trimmed();
+  strURI += qstr.isEmpty() ? "5432" : qstr.toUtf8().data();
+  strURI += "/";
+
+  //query section
+  strURI += "?";
+
+  qstr = m_ui->m_newDatabaseNameLineEdit->text().trimmed();
+  if (!qstr.isEmpty())
+  {
+    strURI += "PG_NEWDB_NAME=";
+    strURI += qstr.toUtf8().data();
+    strURI += "&";
+  }
+
+  // get Template
   qstr = m_ui->m_templateComboBox->currentText().trimmed();
-  
-  if(!qstr.isEmpty())
-    connInfo["PG_NEWDB_TEMPLATE"] = qstr.toUtf8().data();
+  if (!qstr.isEmpty())
+  {
+    strURI += "PG_NEWDB_TEMPLATE=";
+    strURI += qstr.toUtf8().data();
+    strURI += "&";
+  }
 
 // get Owner
   qstr = m_ui->m_ownerComboBox->currentText().trimmed();
-  
-  if(!qstr.isEmpty())
-    connInfo["PG_NEWDB_OWNER"] = qstr.toUtf8().data();
-
-// get Encoding
- connInfo["PG_NEWDB_ENCODING"] = te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8);
+  if (!qstr.isEmpty())
+  {
+    strURI += "PG_NEWDB_OWNER=";
+    strURI += qstr.toUtf8().data();
+    strURI += "&";
+  }
 
 // get Tablespace
   qstr = m_ui->m_tablespaceLineEdit->text().trimmed();
-  
-  if(!qstr.isEmpty())
-    connInfo["PG_NEWDB_TABLESPACE"] = qstr.toUtf8().data();
+  if (!qstr.isEmpty())
+  {
+    strURI += "PG_NEWDB_TABLESPACE=";
+    strURI += qstr.toUtf8().data();
+    strURI += "&";
+  }
 
 // get Connections limit
   if(!m_ui->m_noLimitConnectionsGroupBox->isChecked())
   {
+
+    strURI += "PG_NEWDB_CONN_LIMIT=";
     qstr = m_ui->m_connectionsLimitSpinBox->text().trimmed();
 
     if(!qstr.isEmpty())
     {
       if(boost::lexical_cast<int>(qstr.toUtf8().data()) >= 1)
-        connInfo["PG_NEWDB_CONN_LIMIT"] = qstr.toUtf8().data();
+        strURI += qstr.toUtf8().data();
       else
-        connInfo["PG_NEWDB_CONN_LIMIT"] = "-1";
+        strURI += "-1";
     }
   }
 
-  return connInfo;
+  strURI += "&PG_CONNECT_TIMEOUT=";
+  strURI += "4";
+
+  // get MaxPoolSize
+  strURI += "&PG_MAX_POOL_SIZE=";
+  strURI += "4";
+
+  // get MinPoolSize
+  strURI += "&PG_MIN_POOL_SIZE=";
+  strURI += "2";
+
+  // get Encoding
+  strURI += "&PG_NEWDB_ENCODING=";
+  strURI += te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8);
+
+  return strURI;
 }
 
 const te::da::DataSourceInfoPtr& te::qt::plugins::pgis::PostGISCreatorDialog::getDataSource() const
@@ -293,10 +300,10 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::onLineEditEditingFinished()
   {
     if(m_ui->m_userNameLineEdit->text() != "" && m_ui->m_passwordLineEdit->text() != "")
     {
-      std::map<std::string, std::string> dsInfo = getConnectionInfo(true);
+      std::string connInfo = getConnectionInfo(true);
 
       // Get Templates/Databases
-      std::vector<std::string> templates = te::da::DataSource::getDataSourceNames("POSTGIS", dsInfo);
+      std::vector<std::string> templates = te::da::DataSource::getDataSourceNames("POSTGIS", connInfo);
       if (!templates.empty())
       {
         m_ui->m_templateComboBox->clear();
@@ -309,15 +316,8 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::onLineEditEditingFinished()
 
       // Try to go the owners
       m_ui->m_ownerComboBox->clear();
-      std::map<std::string, std::string> info;
-      std::map<std::string, std::string> aux = getConnectionInfo(true);
-      info["PG_HOST"] = aux["PG_HOST"].empty()?"localhost":aux["PG_HOST"];
-      info["PG_PORT"] = aux["PG_PORT"].empty()?"5432":aux["PG_PORT"];
-      info["PG_USER"] = aux["PG_USER"];
-      info["PG_PASSWORD"] = aux["PG_PASSWORD"];
 
-      std::auto_ptr<te::da::DataSource> auxDs = te::da::DataSourceFactory::make("POSTGIS");
-      auxDs->setConnectionInfo(info);
+      std::unique_ptr<te::da::DataSource> auxDs = te::da::DataSourceFactory::make("POSTGIS", getConnectionInfo(true));
       auxDs->open();
 
       std::auto_ptr<te::da::DataSet> dsRoles = auxDs->query("select * from pg_roles");

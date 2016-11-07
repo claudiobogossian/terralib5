@@ -204,11 +204,8 @@ void te::qt::plugins::gdal::Plugin::openFileDialog()
     te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
 
     ds->setAccessDriver("GDAL");
-
-    std::map<std::string, std::string> dsinfo;
-    dsinfo["URI"] = it->toUtf8().data();
-
-    ds->setConnInfo(dsinfo);
+    std::string fpath = it->toUtf8().data();
+    ds->setConnInfo("file://" + fpath);
 
     ds->setDescription("A single raster file");
 

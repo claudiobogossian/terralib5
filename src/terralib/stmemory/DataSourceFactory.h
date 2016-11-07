@@ -32,13 +32,11 @@
 
 namespace te
 {
+  namespace core { class URI; }
+
   namespace stmem
   {
-    inline te::da::DataSource* Build()
-    {
-      return new DataSource;
-    }
-
+    te::da::DataSource* Build(const te::core::URI& uri);
   } // end namespace stmem
 }   // end namespace te
 

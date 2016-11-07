@@ -264,8 +264,7 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
 
     //Getting the connection info
     std::string ogrInfo("connection_string=" + std::string(fileName.toUtf8().data()));
-    std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = fileName.toUtf8().data();
+    const std::string connInfo("file://" + std::string(fileName.toUtf8().data()));
 
     boost::filesystem::path uri(fileName.toUtf8().data());
     std::string file = uri.stem().string();
@@ -282,8 +281,7 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
     dsInfo->setAccessDriver("OGR");
     dsInfo->setType("OGR");
 
-    m_dataSource = te::da::DataSourceFactory::make(dsInfo->getAccessDriver());
-    m_dataSource->setConnectionInfo(dsInfo->getConnInfo());
+    m_dataSource = te::da::DataSourceFactory::make(dsInfo->getAccessDriver(), connInfo);
 
     if(te::da::DataSourceInfoManager::getInstance().add(dsInfo))
     {

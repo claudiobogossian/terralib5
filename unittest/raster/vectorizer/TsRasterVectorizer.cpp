@@ -93,13 +93,9 @@ BOOST_AUTO_TEST_CASE (rasterVectorizer_test)
     remove( "RasterVectorizerTestPolygons.prj" );
     remove( "RasterVectorizerTestPolygons.shp" );
     remove( "RasterVectorizerTestPolygons.shx" );
-    
-    std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = "RasterVectorizerTestPolygons.shp";
-//    connInfo["DRIVER"] = "ESRI Shapefile";
-    
-    std::auto_ptr<te::da::DataSource> dsOGR( te::da::DataSourceFactory::make("OGR") );
-    dsOGR->setConnectionInfo(connInfo);
+
+    std::string connInfo("file://RasterVectorizerTestPolygons.shp");
+    std::unique_ptr<te::da::DataSource> dsOGR( te::da::DataSourceFactory::make("OGR", connInfo) );
     dsOGR->open();
     
     memDataSetPtr->moveBeforeFirst();

@@ -26,6 +26,8 @@
 // TerraLib
 #include "../common/StringUtils.h"
 #include "../core/translator/Translator.h"
+#include "../core/uri/URI.h"
+#include "../core/utils/URI.h"
 #include "../dataaccess/dataset/CheckConstraint.h"
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/ForeignKey.h"
@@ -59,20 +61,28 @@
 
 // STL
 #include <cassert>
-//#include <cstring>
 #include <memory>
 
 // Boost
-//#include <boost/algorithm/string/case_conv.hpp>
 #include <boost/format.hpp>
-//#include <boost/lexical_cast.hpp>
-//#include <boost/thread.hpp>
+#include <boost/lexical_cast.hpp>
 
 // libpq
 #include <libpq-fe.h>
 
-te::pgis::DataSource::DataSource()
-  : m_pool(0),
+te::pgis::DataSource::DataSource(const std::string& connInfo)
+  : te::da::DataSource(connInfo),
+  m_pool(0),
+  m_geomTypeOid(0),
+  m_rasterTypeOid(0),
+  m_timeIsInteger(true)
+{
+  m_pool = new ConnectionPool(this);
+}
+
+te::pgis::DataSource::DataSource(const te::core::URI& uri)
+  : te::da::DataSource(uri),
+    m_pool(0),
     m_geomTypeOid(0),
     m_rasterTypeOid(0),
     m_timeIsInteger(true)
@@ -88,16 +98,6 @@ te::pgis::DataSource::~DataSource()
 std::string te::pgis::DataSource::getType() const
 {
   return PGIS_DRIVER_IDENTIFIER;
-}
-
-const std::map<std::string, std::string>& te::pgis::DataSource::getConnectionInfo() const
-{
-  return m_connInfo;
-}
-
-void te::pgis::DataSource::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
-{
-  m_connInfo = connInfo;
 }
 
 std::auto_ptr<te::da::DataSourceTransactor> te::pgis::DataSource::getTransactor()
@@ -190,195 +190,46 @@ te::pgis::ConnectionPool* te::pgis::DataSource::getConnPool() const
   return m_pool;
 }
 
-void te::pgis::DataSource::create(const std::map<std::string, std::string>& dsInfo)
+void te::pgis::DataSource::create(const std::string& connInfo)
 {
-// get an auxiliary data source to create the new database
-  {
-    std::auto_ptr<DataSource> ds(new DataSource());
-
-    ds->setConnectionInfo(dsInfo);
-
-    ds->open();
-
-// create a database based on the connection information
-    std::string sql = "CREATE DATABASE ";
-
-    std::map<std::string, std::string>::const_iterator it = dsInfo.find("PG_NEWDB_NAME");
-    std::map<std::string, std::string>::const_iterator it_end = dsInfo.end();
-
-    if(it != it_end)
-      sql += "\"" + it->second + "\"";
-    else
-      throw Exception(TE_TR("The database could not be created due the missing parameter: PG_NEWDB_NAME!"));
-
-    it = dsInfo.find("PG_NEWDB_TEMPLATE");
-
-    if(it != it_end)
-      sql += " TEMPLATE = " + it->second;
-
-    it = dsInfo.find("PG_NEWDB_OWNER");
-
-    if(it != it_end)
-      sql += " OWNER = " + it->second;
-
-    it = dsInfo.find("PG_NEWDB_ENCODING");
-
-    if(it != it_end)
-      sql += " ENCODING = '" + it->second + "'";
-
-    it = dsInfo.find("PG_NEWDB_TABLESPACE");
-
-    if(it != it_end)
-      sql += " TABLESPACE = " + it->second;
-
-    it = dsInfo.find("PG_NEWDB_CONN_LIMIT");
-
-    if(it != it_end)
-      sql += " CONNECTION LIMIT = " + it->second;
-
-    ds->execute(sql);
-
-    ds->close();
-  }
-
-// copy the database connection parameters to this new data source object.
-  {
-    assert(m_connInfo.empty());
-
-    std::map<std::string, std::string>::const_iterator it = dsInfo.find("PG_NEWDB_HOST");
-    std::map<std::string, std::string>::const_iterator it_end = dsInfo.end();
-
-    if(it == it_end)
-      it = dsInfo.find("PG_HOST");
-
-    if(it != it_end)
-      m_connInfo["PG_HOST"] = it->second;
-
-    it = dsInfo.find("PG_NEWDB_HOSTADDR");
-
-    if(it == it_end)
-      it = dsInfo.find("PG_HOST_ADDR");
-
-    if(it != it_end)
-      m_connInfo["PG_HOST_ADDR"] = it->second;
-
-    it = dsInfo.find("PG_NEWDB_PORT");
-
-    if(it == it_end)
-      it = dsInfo.find("PG_PORT");
-
-    if(it != it_end)
-      m_connInfo["PG_PORT"] = it->second;
-
-    it = dsInfo.find("PG_NEWDB_NAME");
-
-    if(it != it_end)
-      m_connInfo["PG_DB_NAME"] = it->second;
-
-    it = dsInfo.find("PG_NEWDB_USER");
-
-    if(it == it_end)
-      it = dsInfo.find("PG_USER");
-
-    if(it != it_end)
-      m_connInfo["PG_USER"] = it->second;
-
-    it = dsInfo.find("PG_NEWDB_PASSWORD");
-
-    if(it == it_end)
-      it = dsInfo.find("PG_PASSWORD");
-
-    if(it != it_end)
-      m_connInfo["PG_PASSWORD"] = it->second;
-
-    it = dsInfo.find("PG_NEWDB_CONNECT_TIMEOUT");
-
-    if(it == it_end)
-      it = dsInfo.find("PG_CONNECT_TIMEOUT");
-
-    if(it != it_end)
-      m_connInfo["PG_CONNECT_TIMEOUT"] = it->second;
-
-    it = dsInfo.find("PG_NEWDB_OPTIONS");
-
-    if(it == it_end)
-      it = dsInfo.find("PG_OPTIONS");
-
-    if(it != it_end)
-      m_connInfo["PG_OPTIONS"] = it->second;
-
-    it = dsInfo.find("PG_NEWDB_SSL_MODE");
-
-    if(it == it_end)
-      it = dsInfo.find("PG_SSL_MODE");
-
-    if(it != it_end)
-      m_connInfo["PG_SSL_MODE"] = it->second;
-
-    it = dsInfo.find("PG_NEWDB_KRBSRVNAME");
-
-    if(it == it_end)
-      it = dsInfo.find("PG_KRBSRVNAME");
-
-    if(it != it_end)
-      m_connInfo["PG_KRBSRVNAME"] = it->second;
-
-    it = dsInfo.find("PG_NEWDB_GSSLIB");
-
-    if(it == it_end)
-      it = dsInfo.find("PG_GSSLIB");
-
-    if(it != it_end)
-      m_connInfo["PG_GSSLIB"] = it->second;
-
-    it = dsInfo.find("PG_NEWDB_INITIAL_POOL_SIZE");
-
-    if(it == it_end)
-      it = dsInfo.find("PG_INITIAL_POOL_SIZE");
-
-    if(it != it_end)
-      m_connInfo["PG_INITIAL_POOL_SIZE"] = it->second;
-
-    it = dsInfo.find("PG_NEWDB_MIN_POOL_SIZE");
-
-    if(it == it_end)
-      it = dsInfo.find("PG_MIN_POOL_SIZE");
-
-    if(it != it_end)
-      m_connInfo["PG_MIN_POOL_SIZE"] = it->second;
-
-    it = dsInfo.find("PG_NEW_DB_MAX_POOL_SIZE");
-
-    if(it == it_end)
-      it = dsInfo.find("PG_MAX_POOL_SIZE");
-
-    if(it != it_end)
-      m_connInfo["PG_MAX_POOL_SIZE"] = it->second;
-
-    it = dsInfo.find("PG_NEWDB_MAX_IDLE_TIME");
-
-    if(it == it_end)
-      it = dsInfo.find("PG_MAX_IDLE_TIME");
-
-    if(it != it_end)
-      m_connInfo["PG_MAX_IDLE_TIME"] = it->second;
-
-    it = dsInfo.find("PG_NEWDB_CLIENT_ENCODING");
-
-    if(it == it_end)
-      it = dsInfo.find("PG_CLIENT_ENCODING");
-
-    if(it != it_end)
-      m_connInfo["PG_CLIENT_ENCODING"] = it->second;
-  }
-
-  // check if new database has postgis extension enabled
-  std::auto_ptr<DataSource> dsPGIS(new DataSource());
-
-  dsPGIS->setConnectionInfo(m_connInfo);
-
+  // get an auxiliary data source to create the new database
+  std::auto_ptr<DataSource> dsPGIS(new DataSource(connInfo));
   dsPGIS->open();
 
+  std::map<std::string, std::string> kvp = te::core::expand(dsPGIS->getConnectionInfo().query());
+  std::map<std::string, std::string>::const_iterator it = kvp.begin();
+  std::map<std::string, std::string>::const_iterator itend = kvp.end();
+
+// create a database based on the connection information
+  std::string sql = "CREATE DATABASE ";
+
+  it = kvp.find("PG_NEWDB_NAME");
+  if (it != itend && !it->second.empty())
+    sql += "\"" + it->second + "\"";
+  else
+    throw Exception(TE_TR("The database could not be created due the missing parameter: PG_NEWDB_NAME!"));
+
+  it = kvp.find("PG_NEWDB_TEMPLATE");
+  if(it != itend && !it->second.empty())
+    sql += " TEMPLATE = " + it->second;
+
+  it = kvp.find("PG_NEWDB_OWNER");
+  if (it != itend && !it->second.empty())
+    sql += " OWNER = " + it->second;
+
+  sql += " ENCODING = '" + te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8) + "'";
+
+  it = kvp.find("PG_NEWDB_TABLESPACE");
+  if (it != itend && !it->second.empty())
+    sql += " TABLESPACE = " + it->second;
+
+  it = kvp.find("PG_NEWDB_CONN_LIMIT");
+  if (it != itend && !it->second.empty())
+    sql += " CONNECTION LIMIT = " + it->second;
+
+  dsPGIS->execute(sql);
+  
+  // check if new database has postgis extension enabled
   std::auto_ptr<te::da::DataSet> result(dsPGIS->query("SELECT extname, extversion FROM pg_extension WHERE extname = 'postgis'"));
 
   if (!result->moveNext())
@@ -390,21 +241,21 @@ void te::pgis::DataSource::create(const std::map<std::string, std::string>& dsIn
   dsPGIS->close();
 }
 
-void te::pgis::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
+void te::pgis::DataSource::drop(const std::string& connInfo)
 {
   // Get an auxiliary data source
-  std::auto_ptr<DataSource> ds(new DataSource());
-
-  ds->setConnectionInfo(dsInfo);
+  std::auto_ptr<DataSource> ds(new DataSource(connInfo));
 
   ds->open();
 
   // Drop the database
   std::string sql = "DROP DATABASE ";
-
-  std::map<std::string, std::string>::const_iterator it = dsInfo.find("PG_DB_TO_DROP");
-
-  if(it == dsInfo.end())
+  std::map<std::string, std::string> kvp = te::core::expand(ds->getConnectionInfo().query());
+  std::map<std::string, std::string>::const_iterator it = kvp.begin();
+  std::map<std::string, std::string>::const_iterator itend = kvp.end();
+  
+  it = kvp.find("PG_DB_TO_DROP");
+  if (it == itend || it->second.empty())
     throw Exception(TE_TR("Could not drop the database due the missing parameter: PG_DB_TO_DROP!"));
 
   if((it->second == "postgres") || (it->second == "template_postgis"))
@@ -417,22 +268,23 @@ void te::pgis::DataSource::drop(const std::map<std::string, std::string>& dsInfo
   ds->close();
 }
 
-bool te::pgis::DataSource::exists(const std::map<std::string, std::string>& dsInfo)
+bool te::pgis::DataSource::exists(const std::string& connInfo)
 {
-  if(dsInfo.count("PG_CHECK_DB_EXISTENCE") == 0)
-    throw Exception(TE_TR("Could not check the PostgreSQL database existence due the missing parameter: PG_CHECK_DB_EXISTENCE!"));
-
-  const std::string& dbName = dsInfo.find("PG_CHECK_DB_EXISTENCE")->second;
-
   // Get an auxiliary data source
-  std::auto_ptr<DataSource> ds(new DataSource());
-
-  ds->setConnectionInfo(dsInfo);
-
+  std::auto_ptr<DataSource> ds(new DataSource(connInfo));
   ds->open();
 
+  std::map<std::string, std::string> kvp = te::core::expand(ds->getConnectionInfo().query());
+  std::map<std::string, std::string>::const_iterator it = kvp.begin();
+  std::map<std::string, std::string>::const_iterator itend = kvp.end();
+
+  it = kvp.find("PG_CHECK_DB_EXISTENCE");
+
+  if (it == itend || it->second.empty())
+    throw Exception(TE_TR("Could not check the PostgreSQL database existence due the missing parameter : PG_CHECK_DB_EXISTENCE!"));
+
   std::string sql("SELECT * FROM pg_database WHERE datname = '");
-  sql += dbName;
+  sql += it->second;
   sql += "'";
 
   std::auto_ptr<te::da::DataSet> database(ds->query(sql));
@@ -442,13 +294,10 @@ bool te::pgis::DataSource::exists(const std::map<std::string, std::string>& dsIn
   return database->moveNext();
 }
 
-std::vector<std::string> te::pgis::DataSource::getDataSourceNames(const std::map<std::string, std::string>& dsInfo)
+std::vector<std::string> te::pgis::DataSource::getDataSourceNames(const std::string& connInfo)
 {
   // Get an auxiliary data source
-  std::auto_ptr<DataSource> ds(new DataSource());
-
-  ds->setConnectionInfo(dsInfo);
-
+  std::auto_ptr<DataSource> ds(new DataSource(connInfo));
   ds->open();
 
   std::string sql("SELECT datname FROM pg_database");

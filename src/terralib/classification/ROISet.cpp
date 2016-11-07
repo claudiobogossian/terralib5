@@ -87,11 +87,9 @@ void te::cl::ROISet::exportToFile(std::string fileName, int srid)
   std::auto_ptr<te::da::DataSetType> dsType = getDataSetType(srid);
 
   //create data source
-  std::map<std::string, std::string> connInfo;
-  connInfo["URI"] = fileName;
+  std::string connInfo("file://" + fileName);
+  std::unique_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR", connInfo);
 
-  std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR");
-  dsOGR->setConnectionInfo(connInfo);
   dsOGR->open();
 
   boost::filesystem::path uri(fileName);
@@ -109,7 +107,7 @@ void te::cl::ROISet::exportToFile(std::string fileName, int srid)
   dsOGR->createDataSet(dsType.get(), nopt);
 
   if(dataset->moveBeforeFirst())
-    dsOGR->add(dsType->getName(), dataset.get(), dsOGR->getConnectionInfo());
+    dsOGR->add(dsType->getName(), dataset.get(), nopt);
 
   dsOGR->close();
 }

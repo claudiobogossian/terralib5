@@ -4,6 +4,7 @@
 #include "../../../../core/filesystem/FileSystem.h"
 #include "../../../../core/translator/Translator.h"
 #include "../../../core/CurlWrapper.h"
+#include "../../../core/Utils.h"
 #include "WMSClient.h"
 
 // Boost
@@ -125,14 +126,32 @@ const te::ws::ogc::wms::WMSGetMapResponse te::ws::ogc::WMSClient::getMap(const t
       url += "&CRS=" + request.m_srs;
     }
 
-    url += "&BBOX=";
-    url += boost::lexical_cast<std::string>(request.m_boundingBox.m_minX);
-    url += ",";
-    url += boost::lexical_cast<std::string>(request.m_boundingBox.m_minY);
-    url += ",";
-    url += boost::lexical_cast<std::string>(request.m_boundingBox.m_maxX);
-    url += ",";
-    url += boost::lexical_cast<std::string>(request.m_boundingBox.m_maxY);
+    bool isInverted = te::ws::core::IsInvertedEPSG(request.m_srs);
+
+    if(isInverted)
+    {
+      url += "&BBOX=";
+      url += boost::lexical_cast<std::string>(request.m_boundingBox.m_minY);
+      url += ",";
+      url += boost::lexical_cast<std::string>(request.m_boundingBox.m_minX);
+      url += ",";
+      url += boost::lexical_cast<std::string>(request.m_boundingBox.m_maxY);
+      url += ",";
+      url += boost::lexical_cast<std::string>(request.m_boundingBox.m_maxX);
+    }
+    else
+    {
+      url += "&BBOX=";
+      url += boost::lexical_cast<std::string>(request.m_boundingBox.m_minX);
+      url += ",";
+      url += boost::lexical_cast<std::string>(request.m_boundingBox.m_minY);
+      url += ",";
+      url += boost::lexical_cast<std::string>(request.m_boundingBox.m_maxX);
+      url += ",";
+      url += boost::lexical_cast<std::string>(request.m_boundingBox.m_maxY);
+    }
+
+
 
     url += "&WIDTH=" + boost::lexical_cast<std::string>(request.m_width);
     url += "&HEIGHT=" + boost::lexical_cast<std::string>(request.m_height);

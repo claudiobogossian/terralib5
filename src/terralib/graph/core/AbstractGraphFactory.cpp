@@ -51,12 +51,12 @@ te::graph::AbstractGraph* te::graph::AbstractGraphFactory::make(const std::strin
   return te::common::AbstractFactory<AbstractGraph, std::string>::make(ucase);
 }
 
-te::graph::AbstractGraph* te::graph::AbstractGraphFactory::make(const std::map<std::string, std::string>& dsInfo, const std::map<std::string, std::string>& gInfo)
+te::graph::AbstractGraph* te::graph::AbstractGraphFactory::make(const std::string& dsInfo, const std::map<std::string, std::string>& gInfo)
 {
   return make(TE_DEFAULT_GRAPH_TYPE, dsInfo, gInfo);
 }
 
-te::graph::AbstractGraph* te::graph::AbstractGraphFactory::make(const std::string& gType, const std::map<std::string, std::string>& dsInfo, const std::map<std::string, std::string>& gInfo)
+te::graph::AbstractGraph* te::graph::AbstractGraphFactory::make(const std::string& gType, const std::string& dsInfo, const std::map<std::string, std::string>& gInfo)
 {
   std::string ucase = te::common::Convert2UCase(gType);
 
@@ -74,12 +74,12 @@ te::graph::AbstractGraph* te::graph::AbstractGraphFactory::make(const std::strin
   return g;
 }
 
-te::graph::AbstractGraph* te::graph::AbstractGraphFactory::open(const std::map<std::string, std::string>& dsInfo, const std::map<std::string, std::string>& gInfo)
+te::graph::AbstractGraph* te::graph::AbstractGraphFactory::open(const std::string& dsInfo, const std::map<std::string, std::string>& gInfo)
 {
   return open(TE_DEFAULT_GRAPH_TYPE, dsInfo, gInfo);
 }
 
-te::graph::AbstractGraph* te::graph::AbstractGraphFactory::open(const std::string& gType, const std::map<std::string, std::string>& dsInfo, const std::map<std::string, std::string>& gInfo)
+te::graph::AbstractGraph* te::graph::AbstractGraphFactory::open(const std::string& gType, const std::string& dsInfo, const std::map<std::string, std::string>& gInfo)
 {
   std::string ucase = te::common::Convert2UCase(gType);
 
@@ -102,7 +102,7 @@ te::graph::AbstractGraphFactory::AbstractGraphFactory(const std::string& factory
 {
 }
 
-te::graph::GraphMetadata* te::graph::AbstractGraphFactory::getMetadata(const std::map<std::string, std::string>& dsInfo, const std::map<std::string, std::string>& gInfo)
+te::graph::GraphMetadata* te::graph::AbstractGraphFactory::getMetadata(const std::string& dsInfo, const std::map<std::string, std::string>& gInfo)
 {
   te::graph::GraphMetadata* metadata = 0;
 
@@ -112,7 +112,7 @@ te::graph::GraphMetadata* te::graph::AbstractGraphFactory::getMetadata(const std
   //create data source
   it = gInfo.find("GRAPH_DATA_SOURCE_TYPE");
 
-  std::auto_ptr<te::da::DataSource> dsPtr;
+  std::unique_ptr<te::da::DataSource> dsPtr;
 
   if(it != itend)
   {
@@ -124,8 +124,7 @@ te::graph::GraphMetadata* te::graph::AbstractGraphFactory::getMetadata(const std
     }
     else
     {
-      dsPtr = te::da::DataSourceFactory::make(it->second); //example: dsType = POSTGIS
-      dsPtr->setConnectionInfo(dsInfo);
+      dsPtr = te::da::DataSourceFactory::make(it->second, dsInfo); //example: dsType = POSTGIS
       dsPtr->open();
 
       te::da::DataSource* ds = dsPtr.release();
@@ -140,7 +139,7 @@ te::graph::GraphMetadata* te::graph::AbstractGraphFactory::getMetadata(const std
   return metadata;
 }
 
-int te::graph::AbstractGraphFactory::getId(const std::map<std::string, std::string>& dsInfo, const std::map<std::string, std::string>& gInfo)
+int te::graph::AbstractGraphFactory::getId(const std::map<std::string, std::string>& gInfo)
 {
   std::map<std::string, std::string>::const_iterator it;
   std::map<std::string, std::string>::const_iterator itend = gInfo.end();

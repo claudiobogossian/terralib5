@@ -65,7 +65,7 @@ namespace te
 
           void getByType(const std::string& dsTypeName, std::vector<DataSourceInfoPtr>& datasources) const;
 
-          DataSourceInfoPtr getByConnInfo(std::string connInfo);
+          DataSourceInfoPtr getByConnInfo(const std::string& connInfo);
 
           std::size_t size() const;
 

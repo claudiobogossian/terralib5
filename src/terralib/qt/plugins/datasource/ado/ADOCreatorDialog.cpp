@@ -86,26 +86,19 @@ void te::qt::plugins::ado::ADOCreatorDialog::applyPushButtonPressed()
 {
   try
   {
-// check if driver is loaded
+   // check if driver is loaded
     if(te::da::DataSourceFactory::find("ADO") == 0)
       throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for ADO data sources!"));
 
     // get data source connection info based on form data
-    std::map<std::string, std::string> dsInfo = getConnectionInfo(true);
+    const std::string connInfo = getConnectionInfo(true);
 
     {
       // create database
-      te::da::DataSource::create("ADO", dsInfo);
+      te::da::DataSource::create("ADO", connInfo);
 
       // Connect
-      std::map<std::string, std::string> connInfo;
-      connInfo["DB_NAME"] = dsInfo["DB_NAME"];
-      connInfo["PROVIDER"] = dsInfo["PROVIDER"];
-      if(!dsInfo["PASSWORD"].empty())
-        connInfo["PASSWORD"] = dsInfo["PASSWORD"];
-
-      std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("ADO");
-      ds->setConnectionInfo(connInfo);
+      std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("ADO", connInfo);
       ds->open();
 
       m_driver.reset(ds.release());
@@ -116,16 +109,10 @@ void te::qt::plugins::ado::ADOCreatorDialog::applyPushButtonPressed()
     
     QString title = m_ui->m_fileLineEdit->text().trimmed();
 
-      // Connect
-      std::map<std::string, std::string> connInfo;
-      connInfo["DB_NAME"] = dsInfo["DB_NAME"];
-      connInfo["PROVIDER"] = dsInfo["PROVIDER"];
-      if(!dsInfo["PASSWORD"].empty() && m_ui->m_savePasswordCheckBox->isChecked())
-        connInfo["PASSWORD"] = dsInfo["PASSWORD"];
-
+    // Connect
     if(m_datasource.get() == 0)
     {
-// create a new data source based on form data
+    // create a new data source based on form data
       m_datasource.reset(new te::da::DataSourceInfo);
 
       m_datasource->setConnInfo(connInfo);
@@ -188,30 +175,34 @@ void te::qt::plugins::ado::ADOCreatorDialog::searchDatabaseToolButtonPressed()
   te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "vector");
 }
 
-std::map<std::string, std::string> te::qt::plugins::ado::ADOCreatorDialog::getConnectionInfo(bool getPrivateKeys) const
+const std::string te::qt::plugins::ado::ADOCreatorDialog::getConnectionInfo(bool getPrivateKeys) const
 {
-  std::map<std::string, std::string> connInfo;
+  std::string strURI = "file://"; // The base of the URI
+  QString qstr;  // Auxiliary string used to hold temporary data
 
-  QString qstr = m_ui->m_fileLineEdit->text().trimmed();
+  qstr = m_ui->m_fileLineEdit->text().trimmed();
 
-  if(!qstr.isEmpty())
-    connInfo["DB_NAME"] = qstr.toUtf8().data();
-
-  if(getPrivateKeys)
+  if (getPrivateKeys)
   {
+    // The password
     qstr = m_ui->m_passwordLineEdit->text().trimmed();
-
-    if(!qstr.isEmpty())
-      connInfo["PASSWORD"] = qstr.toUtf8().data();
+    strURI += qstr.isEmpty() ? "" : "user:" + std::string(qstr.toUtf8().data()) + "@";
   }
+
+  // Path to the database
+  qstr = m_ui->m_fileLineEdit->text().trimmed();
+  strURI += qstr.isEmpty() ? "" : qstr.toUtf8().data();
 
   qstr = m_ui->m_providerComboBox->currentText().trimmed();
 
-  if(!qstr.isEmpty())
-    connInfo["PROVIDER"] = qstr.toUtf8().data();
+  // The provider
+  qstr = m_ui->m_providerComboBox->currentText().trimmed();
+  if (!qstr.isEmpty())
+    strURI += "?PROVIDER=" + std::string(qstr.toUtf8().data());
 
-  if(m_ui->m_createOGCTablesCheckBox->isChecked())
-    connInfo["CREATE_OGC_METADATA_TABLES"] = "TRUE";
+  // Create Metadata Tables?
+  if (m_ui->m_createOGCTablesCheckBox->isChecked())
+    strURI += "&CREATE_OGC_METADATA_TABLES=TRUE";
 
-  return connInfo;
+  return strURI;
 }

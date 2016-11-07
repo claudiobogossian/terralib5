@@ -63,7 +63,7 @@ namespace te
 
             ~TL4ConnectorWizardPage();
 
-            std::map<std::string, std::string> getConnInfo();
+            const std::string getConnInfo();
 
           private:
 

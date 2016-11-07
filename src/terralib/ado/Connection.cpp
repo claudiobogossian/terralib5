@@ -96,10 +96,7 @@ _RecordsetPtr te::ado::Connection::query(const std::string& query, bool)
   
   try
   {
-    //if(connected)
-      //recordset->Open(query.c_str(), _variant_t((IDispatch *)m_conn), adOpenDynamic, adLockReadOnly, adCmdText);
-    //else
-      recordset->Open(query.c_str(), _variant_t((IDispatch *)m_conn), adOpenStatic, adLockReadOnly, adCmdText);
+    recordset->Open(query.c_str(), _variant_t((IDispatch *)m_conn), adOpenStatic, adLockReadOnly, adCmdText);
   }
   catch(_com_error& e)
   {

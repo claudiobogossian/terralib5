@@ -134,16 +134,14 @@ void te::qt::plugins::ogr::CreateLayers(QStringList fileNames)
     ds->setAccessDriver("OGR");
 
     std::string fpath = it->toUtf8().data();
-    std::map<std::string, std::string> dsinfo;
-    dsinfo["URI"] = fpath;
 
-    ds->setConnInfo(dsinfo);
+    ds->setConnInfo("file://" + fpath);
 
     std::string desc("A single vector file: ");
     desc += fpath;
     ds->setDescription(desc);
 
-    boost::filesystem::path mpath(dsinfo["URI"]);
+    boost::filesystem::path mpath(fpath);
 
     std::string fileBaseName = mpath.leaf().string();
 

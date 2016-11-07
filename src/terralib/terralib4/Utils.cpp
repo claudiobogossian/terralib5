@@ -28,6 +28,8 @@
 #include "../common/StringUtils.h"
 #include "../core/encoding/CharEncoding.h"
 #include "../core/translator/Translator.h"
+#include "../core/uri/URI.h"
+#include "../core/utils/URI.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../datatype/NumericProperty.h"
 #include "../datatype/Property.h"
@@ -131,15 +133,24 @@ std::auto_ptr<te::dt::Property> terralib4::Convert2T5(const TeAttributeRep& attR
   }
 }
 
-std::auto_ptr<TeDatabaseFactoryParams> terralib4::Convert2T4DatabaseParams(const std::map<std::string, std::string>& dsInfo)
+std::auto_ptr<TeDatabaseFactoryParams> terralib4::Convert2T4DatabaseParams(const std::string& dsInfo)
 {
+  te::core::URI uri(dsInfo);
+
+  std::map<std::string, std::string> kvp = te::core::expand(uri.query());
+  std::map<std::string, std::string>::const_iterator it = kvp.begin();
+  std::map<std::string, std::string>::const_iterator itend = kvp.end();
+
   std::auto_ptr<TeDatabaseFactoryParams> fparams(new TeDatabaseFactoryParams());
 
-  fparams->dbms_name_ = Convert2Latin1(dsInfo.at("T4_DRIVER"));
-  fparams->database_  = Convert2Latin1(dsInfo.at("T4_DB_NAME"));
-  fparams->host_      = Convert2Latin1(dsInfo.at("T4_HOST"));
-  fparams->user_      = Convert2Latin1(dsInfo.at("T4_USER"));
-  fparams->password_  = Convert2Latin1(dsInfo.at("T4_PASSWORD"));
+  if(uri.isValid())
+  {
+    fparams->dbms_name_ = Convert2Latin1(kvp["T4_DRIVER"]);
+    fparams->database_ = Convert2Latin1(uri.path());
+    fparams->host_ = Convert2Latin1(uri.host());
+    fparams->user_ = Convert2Latin1(uri.user());
+    fparams->password_ = Convert2Latin1(uri.password());
+  }
 
   return fparams;
 }

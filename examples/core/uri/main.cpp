@@ -28,6 +28,7 @@
 // TerraLib
 #include <terralib/Exception.h>
 #include <terralib/core/uri/URI.h>
+#include <terralib/core/utils/URI.h>
 
 // STL
 #include <cassert>

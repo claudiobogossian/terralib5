@@ -27,6 +27,7 @@
 #include "../common/Exception.h"
 #include "../core/filesystem/FileSystem.h"
 #include "../core/translator/Translator.h"
+#include "../core/utils/URI.h"
 #include "../dataaccess/datasource/DataSourceTransactor.h"
 #include "../dataaccess/query/SQLDialect.h"
 #include "../datatype/StringProperty.h"
@@ -53,30 +54,25 @@ inline void TESTHR(HRESULT hr)
     _com_issue_error(hr);
 }
 
-te::ado::DataSource::DataSource()
-  : m_isOpened(false)
+te::ado::DataSource::DataSource(const std::string& connInfo)
+  : te::da::DataSource(connInfo),
+    m_isOpened(false)
 {
-  //::CoInitialize(0);
+}
+
+te::ado::DataSource::DataSource(const te::core::URI& uri)
+  : te::da::DataSource(uri),
+    m_isOpened(false)
+{
 }
 
 te::ado::DataSource::~DataSource()
 {
-  //::CoUninitialize();
 }
 
 std::string te::ado::DataSource::getType() const
 {
   return ADO_DRIVER_IDENTIFIER;
-}
-
-const std::map<std::string, std::string>& te::ado::DataSource::getConnectionInfo() const
-{
-  return m_connInfo;
-}
-
-void te::ado::DataSource::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
-{
-  m_connInfo = connInfo;
 }
 
 std::auto_ptr<te::da::DataSourceTransactor> te::ado::DataSource::getTransactor()
@@ -89,7 +85,7 @@ void te::ado::DataSource::open()
 // assure we are in a closed state
   close();
 
-  std::string connInfo = MakeConnectionStr(m_connInfo);
+  std::string connInfo = MakeConnectionStr(m_uri);
 
   std::auto_ptr<Connection> conn(new te::ado::Connection(connInfo));
 
@@ -152,11 +148,11 @@ bool te::ado::DataSource::isGeometryColumn(const std::string& datasetName,
   return false;
 }
 
-void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInfo)
+void te::ado::DataSource::create(const std::string& connInfo)
 {
-  m_connInfo = dsInfo;
-
-  std::string connInfo = te::ado::MakeConnectionStr(dsInfo);
+  te::core::URI auxURI(connInfo);
+  std::map<std::string, std::string> kvp = te::core::expand(auxURI.query());
+  std::string connSTR = te::ado::MakeConnectionStr(auxURI);
 
   // Create the new database
   ADOX::_CatalogPtr pCatalog = 0;
@@ -165,17 +161,15 @@ void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInf
 
   try
   {
-    pCatalog->Create(connInfo.c_str());
+    pCatalog->Create(connSTR.c_str());
   }
   catch(_com_error& e)
   {
     throw te::common::Exception((LPCSTR)e.ErrorMessage());
   }
-  
-  std::map<std::string, std::string>::const_iterator it = dsInfo.find("CREATE_OGC_METADATA_TABLES");
-  std::map<std::string, std::string>::const_iterator it_end = dsInfo.end();
+  std::string createMetaTables = kvp["CREATE_OGC_METADATA_TABLES"];
 
-  if(it != it_end && it->second == "TRUE")
+  if(!createMetaTables.empty() && createMetaTables == "TRUE")
   {
     // Create the geometry_columns dataset
     te::da::DataSetType* geomColsDt = new te::da::DataSetType("geometry_columns");
@@ -196,31 +190,46 @@ void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInf
   close();
 }
 
-void te::ado::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
+void te::ado::DataSource::drop(const std::string& connInfo)
 {
-  if(!exists(dsInfo))
+  if(!exists(connInfo))
     throw te::common::Exception(TE_TR("The data source doesn't exist!"));
 
-  std::map<std::string, std::string> info = dsInfo;
+  te::core::URI auxURI(connInfo);
 
-  boost::filesystem::path path(info["DB_NAME"]);
+  std::string auxPath = auxURI.host() + auxURI.path();
+
+  boost::filesystem::path path(auxPath);
 
   if(te::core::FileSystem::remove(path.string()) == false)
     throw te::common::Exception(TE_TR("The data source could not be dropped!"));
 }
 
-bool te::ado::DataSource::exists(const std::map<std::string, std::string>& dsInfo)
+bool te::ado::DataSource::exists(const std::string& connInfo)
 {
-  std::map<std::string, std::string> info = dsInfo;
+  te::core::URI auxURI(connInfo);
 
-  boost::filesystem::path path(info["DB_NAME"]);
+  std::string auxPath = auxURI.host() + auxURI.path();
+
+  boost::filesystem::path path(auxPath);
 
   return te::core::FileSystem::exists(path.string());
 }
 
-std::vector<std::string> te::ado::DataSource::getDataSourceNames(const std::map<std::string, std::string>&)
+std::vector<std::string> te::ado::DataSource::getDataSourceNames(const std::string& connInfo)
 {
-  return std::vector<std::string>(); // The DataSource is a File.
+  te::core::URI auxURI(connInfo);
+
+  std::string path = auxURI.host() + auxURI.path();
+
+  std::vector<std::string> names;
+
+  if (!path.empty())
+  {
+    names.push_back(path);
+  }
+
+  return names;
 }
 
 void te::ado::DataSource::loadGeometryColumnsCache(_ConnectionPtr& adoConn)

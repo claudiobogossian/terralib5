@@ -25,6 +25,8 @@
 
 // TerraLib
 #include "../core/translator/Translator.h"
+#include "../core/uri/URI.h"
+#include "../core/utils/URI.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/datasource/DataSourceCatalog.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
@@ -49,11 +51,21 @@ te::da::DataSourceCapabilities te::mem::DataSource::sm_capabilities;
 
 const te::da::SQLDialect te::mem::DataSource::sm_dialect;
 
-te::mem::DataSource::DataSource()
-  : m_numDatasets(0),
+te::mem::DataSource::DataSource(const std::string& connInfo)
+  : te::da::DataSource(connInfo), 
+    m_numDatasets(0),
     m_maxNumDatasets(TE_MEMORY_MAX_DATASETS),
     m_isOpened(false),
     m_deepCopy(false)
+{
+}
+
+te::mem::DataSource::DataSource(const te::core::URI& uri)
+  : te::da::DataSource(uri), 
+  m_numDatasets(0),
+  m_maxNumDatasets(TE_MEMORY_MAX_DATASETS),
+  m_isOpened(false),
+  m_deepCopy(false)
 {
 }
 
@@ -77,16 +89,6 @@ std::string te::mem::DataSource::getType() const
   return TE_MEMORY_DRIVER_IDENTIFIER;
 }
 
-const std::map<std::string, std::string>& te::mem::DataSource::getConnectionInfo() const
-{
-  return m_connInfo;
-}
-
-void te::mem::DataSource::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
-{
-  m_connInfo = connInfo;
-}
-
 std::auto_ptr<te::da::DataSourceTransactor> te::mem::DataSource::getTransactor()
 {
   //return std::auto_ptr<te::da::DataSourceTransactor>(new te::mem::DataSourceTransactor(this));
@@ -98,16 +100,22 @@ void te::mem::DataSource::open()
   // Assure we are in a closed state
   close();
 
-  // Check if it is required a different dataset limit
-  std::map<std::string, std::string>::const_iterator it = m_connInfo.find("MAX_DATASETS");
+  if (!m_uri.isValid())
+    throw Exception(TE_TR("There is no valid information about the data source"));
 
-  if(it != m_connInfo.end())
+  std::map<std::string, std::string> kvp = te::core::expand(m_uri.query());
+  std::map<std::string, std::string>::const_iterator it;
+
+  // Check if it is required a different dataset limit
+   it = kvp.find("MAX_DATASETS");
+
+  if(it != kvp.end())
     m_maxNumDatasets = boost::lexical_cast<std::size_t>(it->second);
 
   // Check operation mode
-  it = m_connInfo.find("OPERATION_MODE");
+  it = kvp.find("OPERATION_MODE");
 
-  if((it != m_connInfo.end()) && (boost::to_upper_copy(it->second) == "NON-SHARED"))
+  if((it != kvp.end()) && (boost::to_upper_copy(it->second) == "NON-SHARED"))
     m_deepCopy = true;
 
   m_isOpened = true;
@@ -511,20 +519,20 @@ void te::mem::DataSource::setCapabilities(const te::da::DataSourceCapabilities& 
 }
 
 
-void te::mem::DataSource::create(const std::map<std::string, std::string>& /*dsInfo*/)
+void te::mem::DataSource::create(const std::string& /*connInfo*/)
 {
 }
 
-void te::mem::DataSource::drop(const std::map<std::string, std::string>& /*dsInfo*/)
+void te::mem::DataSource::drop(const std::string& /*connInfo*/)
 {
 }
 
-bool te::mem::DataSource::exists(const std::map<std::string, std::string>& /*dsInfo*/)
+bool te::mem::DataSource::exists(const std::string& /*connInfo*/)
 {
   return false;
 }
 
-std::vector<std::string> te::mem::DataSource::getDataSourceNames(const std::map<std::string, std::string>& /*dsInfo*/)
+std::vector<std::string> te::mem::DataSource::getDataSourceNames(const std::string& /*connInfo*/)
 {
   return std::vector<std::string>();
 }

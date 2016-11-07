@@ -21,13 +21,10 @@ void CoverageSeriesExamples()
     //Print coverage series info
     PrintCoverageSeriesInfo(cvs.get());
 
-    //Extract time series from coverage series 
-    
+    //Extract time series from coverage series     
     //Load the centroide of the Angra city -> from a shapefile with the Angra city
-    std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = TERRALIB_DATA_DIR "/st/coverage/angra_city.shp" ;
-    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("OGR"));
-    ds->setConnectionInfo(connInfo); 
+    const std::string connInfo("file://" TERRALIB_DATA_DIR "/st/coverage/angra_city.shp");
+    std::unique_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("OGR", connInfo));
     ds->open();
     
     std::auto_ptr<te::da::DataSet> dSet = ds->getDataSet("angra_city"); 

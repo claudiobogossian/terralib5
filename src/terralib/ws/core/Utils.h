@@ -48,6 +48,18 @@ namespace te
      */
       TEWSCOREEXPORT te::map::ImageType FormatToImageType(const std::string& format);
 
+
+      /*!
+       * \brief This function gets true for EPSGs that has inverted axis-order. Otherwise false.
+       * This implementation is using the MapServer's rule to define if the EPSG has inverted axis-order
+       * or not. If the EPSG code number is between 4000 and 5000, the axis-order of such EPSG is inverted.
+       *
+       * \param epsg An EPSG in the following format EPSG:XXXX (e.g.: EPSG:4326)
+       *
+       * \return true if the EPSG axis-order is inverted. Otherwise false.
+       */
+      TEWSCOREEXPORT bool IsInvertedEPSG(const std::string& epsg);
+
     }
   }
 }
