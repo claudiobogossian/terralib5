@@ -456,7 +456,7 @@ void CalculateGrid()
   }
 
   te::mnt::TINCalculateGrid *Tin = new te::mnt::TINCalculateGrid();
-  std::map<std::string, std::string> options = te::core::expand(dsOGR->getConnectionInfo().query());
+  std::map<std::string, std::string> options = te::core::Expand(dsOGR->getConnectionInfo().query());
 
   Tin->setInput(srcDs, inDsetName, inDsetType);
   Tin->setOutput(options);

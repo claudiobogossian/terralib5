@@ -523,8 +523,11 @@ void te::map::DrawRaster(te::rst::Raster* raster, Canvas* canvas, const te::gm::
   std::auto_ptr<te::rst::Grid> gridCanvas(new te::rst::Grid(static_cast<unsigned int>(canvas->getWidth()), static_cast<unsigned int>(canvas->getHeight()), gmbr, srid));
 
 // compute the best level
-  double resx = visibleArea.getWidth() / static_cast<double>(canvas->getWidth());
-  double resy = visibleArea.getHeight() / static_cast<double>(canvas->getHeight());
+  te::gm::Envelope* visibleAreaRasterProj = new te::gm::Envelope(visibleArea);
+  visibleAreaRasterProj->transform(srid, bboxSRID);
+
+  double resx = visibleAreaRasterProj->getWidth() / static_cast<double>(canvas->getWidth());
+  double resy = visibleAreaRasterProj->getHeight() / static_cast<double>(canvas->getHeight());
 
   double rx = resx / raster->getResolutionX();
   double ry = resy / raster->getResolutionY();

@@ -196,7 +196,7 @@ void te::pgis::DataSource::create(const std::string& connInfo)
   std::auto_ptr<DataSource> dsPGIS(new DataSource(connInfo));
   dsPGIS->open();
 
-  std::map<std::string, std::string> kvp = te::core::expand(dsPGIS->getConnectionInfo().query());
+  std::map<std::string, std::string> kvp = te::core::Expand(dsPGIS->getConnectionInfo().query());
   std::map<std::string, std::string>::const_iterator it = kvp.begin();
   std::map<std::string, std::string>::const_iterator itend = kvp.end();
 
@@ -250,7 +250,7 @@ void te::pgis::DataSource::drop(const std::string& connInfo)
 
   // Drop the database
   std::string sql = "DROP DATABASE ";
-  std::map<std::string, std::string> kvp = te::core::expand(ds->getConnectionInfo().query());
+  std::map<std::string, std::string> kvp = te::core::Expand(ds->getConnectionInfo().query());
   std::map<std::string, std::string>::const_iterator it = kvp.begin();
   std::map<std::string, std::string>::const_iterator itend = kvp.end();
   
@@ -274,7 +274,7 @@ bool te::pgis::DataSource::exists(const std::string& connInfo)
   std::auto_ptr<DataSource> ds(new DataSource(connInfo));
   ds->open();
 
-  std::map<std::string, std::string> kvp = te::core::expand(ds->getConnectionInfo().query());
+  std::map<std::string, std::string> kvp = te::core::Expand(ds->getConnectionInfo().query());
   std::map<std::string, std::string>::const_iterator it = kvp.begin();
   std::map<std::string, std::string>::const_iterator itend = kvp.end();
 

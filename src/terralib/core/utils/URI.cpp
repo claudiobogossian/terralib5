@@ -23,7 +23,7 @@
 
   \brief  This file contains utility functions used to manipulate data from a URI.
 
-  \author André Gomes de Oliveira
+  \author Andre Gomes de Oliveira
   \author Gilberto Ribeiro de Queiroz
 */
 
@@ -39,7 +39,8 @@
 #include <boost/format.hpp>
 #include <boost/tokenizer.hpp>
 
-std::map<std::string, std::string> te::core::expand(const std::string& query_str)
+std::map<std::string, std::string>
+te::core::Expand(const std::string& query_str)
 {
   std::map<std::string, std::string> result;
 
