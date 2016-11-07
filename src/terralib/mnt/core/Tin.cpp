@@ -1542,7 +1542,6 @@ bool te::mnt::Tin::LoadTinQGIS(te::da::DataSourcePtr &inDsrc, std::string &inDse
   std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
   std::auto_ptr<te::da::DataSetType> dsType = inDsrc.get()->getDataSetType(inDsetName);
   std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
-  te::gm::GeomType gmType = geomProp->getGeometryType();
 
   try
   {

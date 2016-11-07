@@ -798,7 +798,6 @@ void te::qt::widgets::MixtureModelWizardPage::updateComponents()
     m_ui->m_componentTreeWidget->addTopLevelItem(compItem);
     m_ui->m_componentTreeWidget->setCurrentItem(compItem);
 
-    std::size_t count = 0;
     for (int i = 0; i < nBands; ++i)
     {
       QCheckBox* checkBox = (QCheckBox*)m_ui->m_bandTableWidget->cellWidget(i, 0);
