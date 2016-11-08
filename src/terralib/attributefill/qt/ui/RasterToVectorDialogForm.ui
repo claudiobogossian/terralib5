@@ -191,25 +191,21 @@
            <property name="title">
             <string>Statistics</string>
            </property>
-           <widget class="QListWidget" name="m_statisticsListWidget">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>23</y>
-              <width>256</width>
-              <height>192</height>
-             </rect>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="selectionMode">
-             <enum>QAbstractItemView::MultiSelection</enum>
-            </property>
-           </widget>
+           <layout class="QGridLayout" name="gridLayout_19">
+            <item row="0" column="0">
+             <widget class="QListWidget" name="m_statisticsListWidget">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="selectionMode">
+               <enum>QAbstractItemView::MultiSelection</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
          <item row="1" column="0">

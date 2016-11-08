@@ -300,7 +300,9 @@ bool te::attributefill::RasterToVector::run()
     {
       for (std::size_t band = 0; band < valuesFromRaster.size(); ++band)
       {
-        te::stat::NumericStatisticalSummary summary = rasterAtt->getStatistics(valuesFromRaster[band]);
+        te::stat::NumericStatisticalSummary summary;
+
+        te::stat::GetNumericStatisticalSummary(valuesFromRaster[band], summary);
 
         if (mode)
           te::stat::Mode(valuesFromRaster[band], summary);
