@@ -51,11 +51,10 @@ void te::ws::ogc::wms::qt::WMSConnectorDialog::set(const te::da::DataSourceInfoP
 
   if(m_datasource.get() != 0)
   {
-    const std::map<std::string, std::string>& connInfo = m_datasource->getConnInfo();
+    const te::core::URI& connInfo = m_datasource->getConnInfo();
 
-    std::map<std::string, std::string>::const_iterator it = connInfo.find("URI");
-    if(it != connInfo.end())
-      m_ui->m_serverLineEdit->setText(QString::fromUtf8(it->second.c_str()));
+    if (!connInfo.uri().empty())
+      m_ui->m_serverLineEdit->setText(QString::fromUtf8(connInfo.uri().c_str()));
 
     m_ui->m_datasourceTitleLineEdit->setText(QString::fromUtf8(m_datasource->getTitle().c_str()));
 
@@ -72,12 +71,11 @@ void te::ws::ogc::wms::qt::WMSConnectorDialog::openPushButtonPressed()
       throw te::ws::core::Exception() << te::ErrorDescription(TE_TR("Sorry! No data access driver loaded for WMS data sources!"));
 
     // Get the data source connection info based on form data
-    std::map<std::string, std::string> dsInfo;
-    getConnectionInfo(dsInfo);
+    std::string dsInfo = getConnectionInfo();
 
     // Perform connection
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("WMS2");
-    ds->setConnectionInfo(dsInfo);
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("WMS2", dsInfo);
+
     ds->open();
     m_driver.reset(ds.release());
 
@@ -142,16 +140,14 @@ void te::ws::ogc::wms::qt::WMSConnectorDialog::testPushButtonPressed()
       throw te::ws::core::Exception() << te::ErrorDescription(TE_TR("Sorry! No data access driver loaded for WMS data sources!"));
 
     // Get the data source connection info based on form data
-    std::map<std::string, std::string> dsInfo;
-    getConnectionInfo(dsInfo);
+    std::string dsInfo = getConnectionInfo();
 
     // Perform connection
-    std::unique_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("WMS2"));
+    std::unique_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("WMS2", dsInfo));
 
     if(ds.get() == 0)
       throw te::ws::core::Exception() << te::ErrorDescription(TE_TR("Could not open WMS server!"));
 
-    ds->setConnectionInfo(dsInfo);
     ds->open();
 
     QMessageBox::information(this,
@@ -181,18 +177,16 @@ void te::ws::ogc::wms::qt::WMSConnectorDialog::helpPushButtonPressed()
                        tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
-void te::ws::ogc::wms::qt::WMSConnectorDialog::getConnectionInfo(std::map<std::string, std::string> &connInfo) const
+const std::string te::ws::ogc::wms::qt::WMSConnectorDialog::getConnectionInfo() const
 {
-  connInfo.clear();
+  QString qstr; // Auxiliary string used to hold temporary data
 
-  // Get the server URL
-  QString url = m_ui->m_serverLineEdit->text().trimmed();
-  if(url.isEmpty())
+                // Get the server URL
+  qstr = m_ui->m_serverLineEdit->text().trimmed();
+  if (qstr.isEmpty())
     throw te::ws::core::Exception() << te::ErrorDescription(TE_TR("Please define the server address first!"));
 
   std::string usrDataDir = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toUtf8().data();
-
-  connInfo["URI"] = url.toUtf8().data();
-  connInfo["VERSION"] = "1.3.0";
-  connInfo["USERDATADIR"] = usrDataDir;
+  std::string strURI(std::string(qstr.toUtf8().data()) + "?VERSION=1.3.0" + "&USERDATADIR=" + usrDataDir);
+  return strURI;
 }

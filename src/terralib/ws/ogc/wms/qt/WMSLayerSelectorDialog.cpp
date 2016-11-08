@@ -22,8 +22,10 @@
 //TerraLib
 #include "ui_WMSLayerSelectorDialogForm.h"
 #include "../../../../core/translator/Translator.h"
-#include "../dataaccess/Transactor.h"
+#include "../../../../core/uri/URI.h"
+#include "../../../../core/utils/URI.h"
 #include "../../../../dataaccess/datasource/DataSource.h"
+#include "../dataaccess/Transactor.h"
 
 //QT
 #include <QHeaderView>
@@ -73,29 +75,10 @@ void te::ws::ogc::wms::qt::WMSLayerSelectorDialog::set(const te::da::DataSourceI
 
   m_ui->m_serviceTitleLabel->setText(title);
 
-  std::string usrDataDir = "";
-  std::string version = "";
-  std::string serviceUrl = "";
+  const te::core::URI& connInfo = m_datasourceInfo->getConnInfo();
+  std::map<std::string, std::string> kvp = te::core::Expand(connInfo.query());
 
-  std::map<std::string, std::string> connInfo = m_datasourceInfo->getConnInfo();
-
-  if(connInfo.find("USERDATADIR") != connInfo.end())
-  {
-    usrDataDir = connInfo["USERDATADIR"];
-  }
-
-  if(connInfo.find("VERSION") != connInfo.end())
-  {
-    version = connInfo["VERSION"];
-  }
-
-  if(connInfo.find("URI") != connInfo.end())
-  {
-    serviceUrl = connInfo["URI"];
-  }
-
-  m_client.reset(new te::ws::ogc::WMSClient(usrDataDir, serviceUrl, version));
-
+  m_client.reset(new te::ws::ogc::WMSClient(kvp["USERDATADIR"], connInfo.uri(), kvp["VERSION"]));
   m_client->updateCapabilities();
 
   m_rootLayer = m_client->getCapabilities().m_capability.m_layer;

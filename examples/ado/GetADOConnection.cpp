@@ -67,7 +67,7 @@ std::unique_ptr<te::da::DataSource> GetADOConnection()
   {
     //Open the data source using the connection information given above
     ds->open();
-    return std::move(ds);
+    return ds;
   }
   catch (const std::exception& e)
   {

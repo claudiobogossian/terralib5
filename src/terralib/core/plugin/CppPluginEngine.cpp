@@ -29,6 +29,7 @@
 
 // TerraLib
 #include "CppPluginEngine.h"
+#include "../../BuildConfig.h"
 #include "../lib/Library.h"
 #include "../translator/Translator.h"
 #include "CppPlugin.h"
@@ -100,17 +101,61 @@ te::core::CppPluginEngine::load(const PluginInfo& pinfo)
 
   std::shared_ptr<Library> slib(new Library(plugin_file.string(), true));
 
+  std::string err_msg;
+  
   try
   {
     slib->load();
   }
   catch(const te::core::Exception& e)
   {
-    if(const std::string* d = boost::get_error_info<te::ErrorDescription>(e))
+    err_msg += plugin_file.string();
+  }
+  
+#if (TE_PLATFORM == TE_PLATFORMCODE_APPLE) && defined(TERRALIB_BUILD_AS_BUNDLE)
+  if(!slib->isLoaded())
+  {
+    
+    try
     {
-      throw PluginEngineLoadException() << ErrorDescription(*d);
+      plugin_file = "./";
+      plugin_file /= slib_name;
+      slib.reset(new te::core::Library(plugin_file.string(), true));
+      slib->load();
+      err_msg.clear();
+    }
+    catch(te::core::Exception& e)
+    {
+      err_msg += '\n';
+      err_msg += plugin_file.string();
+    }
+    
+    if(!slib->isLoaded())
+    {
+      try
+      {
+        plugin_file = "./";
+        plugin_file /= "lib";
+        plugin_file /= slib_name;
+        slib.reset(new te::core::Library(plugin_file.string(), true));
+        slib->load();
+        err_msg.clear();
+      }
+      catch(te::core::Exception& exc)
+      {
+        err_msg += '\n';
+        err_msg += plugin_file.string();
+      }
     }
   }
+#endif
+  if(!slib->isLoaded())
+  {
+    boost::format err(TE_TR("Could not find shared library as:\n%1%"));
+    
+    throw PluginLoadException() << ErrorDescription((err % err_msg).str());
+  }
+
 
 // now we need to get the plugin constructor function address
   void* fptr = slib->getAddress("te_cpp_plugin_get_instance");
