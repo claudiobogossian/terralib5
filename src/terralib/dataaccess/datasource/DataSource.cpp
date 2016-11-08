@@ -533,7 +533,7 @@ std::unique_ptr<te::da::DataSource> te::da::DataSource::create(const std::string
 
   ds->create(connInfo);
 
-  return std::move(ds);
+  return ds;
 }
 
 void te::da::DataSource::drop(const std::string& dsType, const std::string& connInfo)
