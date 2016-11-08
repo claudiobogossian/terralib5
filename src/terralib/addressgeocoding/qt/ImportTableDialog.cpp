@@ -122,8 +122,8 @@ void te::addressgeocoding::ImportTableDialog::onInputDataToolButtonTriggered()
 
     //Getting the connection info
     std::string ogrInfo("connection_string=" + std::string(fileName.toUtf8().data()));
-    std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = fileName.toUtf8().data();
+    std::string connInfo("file://");
+    connInfo += fileName.toUtf8().data();
 
     boost::filesystem::path uri(fileName.toUtf8().data());
     std::string file = uri.stem().string();
@@ -142,8 +142,7 @@ void te::addressgeocoding::ImportTableDialog::onInputDataToolButtonTriggered()
 
     te::da::DataSourceInfoManager::getInstance().add(dsInfo);
 
-    m_dataSource = te::da::DataSourceFactory::make(dsInfo->getAccessDriver());
-    m_dataSource->setConnectionInfo(dsInfo->getConnInfo());
+    m_dataSource = te::da::DataSourceFactory::make(dsInfo->getAccessDriver(), connInfo);
 
     m_dataSource->setId(boost::uuids::to_string(u));
     m_dataSource->open();

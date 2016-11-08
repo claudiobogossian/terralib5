@@ -37,13 +37,13 @@ std::unique_ptr<te::da::DataSource> OpenDataSource(std::string connInfo, std::st
   std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make(dsType, connInfo);
   ds->open();
 
-  return std::move(ds);
+  return ds;
 }
 
 std::unique_ptr<te::da::DataSource> OpenOGRDataSource(const std::string& pathName)
 {
   std::string connInfo("file://" + pathName);
-  return std::move(OpenDataSource(connInfo, "OGR"));
+  return OpenDataSource(connInfo, "OGR");
 }
 
 std::auto_ptr<te::gm::Envelope> getDataSetExtent(te::da::DataSource* ds, std::string dataSetName)

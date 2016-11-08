@@ -26,6 +26,7 @@
 // TerraLib
 #include "../../core/logger/Logger.h"
 #include "../../common/progress/ProgressManager.h"
+#include "../../core/uri/URI.h"
 #include "../../core/translator/Translator.h"
 #include "../../common/STLUtils.h"
 #include "../../dataaccess/dataset/DataSetType.h"
@@ -199,14 +200,13 @@ void te::addressgeocoding::ConfigInputAddressDialog::onHelpPushButtonClicked()
 
 void te::addressgeocoding::ConfigInputAddressDialog::onOkPushButtonClicked()
 {
-  std::map<std::string, std::string> connInfo = m_dataSource->getConnectionInfo();
-  std::map<std::string, std::string>::iterator it = connInfo.begin();
+  const te::core::URI& connInfo = m_dataSource->getConnectionInfo();
 
   std::vector<std::string>dsNames = m_dataSource->getDataSetNames();
 
   std::map<std::string, std::string> addressConfig;
   addressConfig.insert(std::pair<std::string,std::string>("fileName", dsNames[0]));
-  addressConfig.insert(std::pair<std::string,std::string>("filePath", it->second));
+  addressConfig.insert(std::pair<std::string,std::string>("filePath", connInfo.host() + connInfo.path()));
   addressConfig.insert(std::pair<std::string,std::string>("streetType", m_ui->m_sTypeComboBox->currentText().toUtf8().data()));
   addressConfig.insert(std::pair<std::string,std::string>("streetTitle", m_ui->m_sTitleComboBox->currentText().toUtf8().data()));
   addressConfig.insert(std::pair<std::string,std::string>("streetName", m_ui->m_sNameComboBox->currentText().toUtf8().data()));

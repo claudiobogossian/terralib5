@@ -484,11 +484,9 @@ void te::addressgeocoding::MainWindowDialog::onOkPushButtonClicked()
       if (idx != std::string::npos)
         outputdataset=outputdataset.substr(0,idx);
 
-      std::map<std::string, std::string> dsinfo;
-      dsinfo["URI"] = uri.string();
-      
-      outputDataSource.reset(te::da::DataSourceFactory::make("OGR").release());
-      outputDataSource->setConnectionInfo(dsinfo);
+      std::string dsinfo("file://" + uri.string());
+
+      outputDataSource.reset(te::da::DataSourceFactory::make("OGR", dsinfo).release());
       outputDataSource->open();
       if (outputDataSource->dataSetExists(outputdataset))
       {
@@ -646,8 +644,7 @@ void te::addressgeocoding::MainWindowDialog::GetAddressDataSource(std::string fi
 
   //Getting the connection info
   std::string ogrInfo("connection_string=" + filePath);
-  std::map<std::string, std::string> connInfo;
-  connInfo["URI"] = filePath;
+  std::string connInfo("file://" + filePath);
 
   boost::filesystem::path uri(filePath);
   std::string file = uri.stem().string();
@@ -666,8 +663,7 @@ void te::addressgeocoding::MainWindowDialog::GetAddressDataSource(std::string fi
 
   te::da::DataSourceInfoManager::getInstance().add(dsInfo);
 
-  m_addressDataSource = te::da::DataSourceFactory::make(dsInfo->getAccessDriver());
-  m_addressDataSource->setConnectionInfo(dsInfo->getConnInfo());
+  m_addressDataSource = te::da::DataSourceFactory::make(dsInfo->getAccessDriver(), connInfo);
 
   m_addressDataSource->setId(boost::uuids::to_string(u));
   m_addressDataSource->open();
