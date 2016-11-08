@@ -93,8 +93,6 @@ void SaveProject(const ProjectMetadata& proj, const std::list<te::map::AbstractL
     if (std::find(dsIdVec.begin(), dsIdVec.end(), it->second->getId()) == dsIdVec.end())
       continue;
 
-    bool ogrDsrc = it->second->getAccessDriver() == "OGR";
-
     writer->writeStartElement("te_da:DataSource");
 
     writer->writeAttribute("id", it->second->getId());

@@ -595,23 +595,12 @@ namespace te
       const te::rst::Band& srcBand = *srcRaster.getBand( srcBandIdx );
       te::rst::Band& dstBand = *dstRaster.getBand( dstBandIdx );
 
-      const double srcNoDataValue = srcBand.getProperty()->m_noDataValue;
-      const double dstNoDataValue = dstBand.getProperty()->m_noDataValue;
-
       double dstBandAllowedMin = 0;
       double dstBandAllowedMax = 0;
       te::rp::GetDataTypeRange( dstBand.getProperty()->getType(), dstBandAllowedMin,
         dstBandAllowedMax );
 
       unsigned int col = 0;
-      double value1 = 0;
-      double value2 = 0;
-      double value3 = 0;
-      double value4 = 0;
-      double value5 = 0;
-      double value6 = 0;
-      double value7 = 0;
-      double value8 = 0;
       double gY = 0;
       double gX = 0;
       double outValue = 0;
@@ -1236,7 +1225,6 @@ namespace te
         (int)m_convBufferColumns),
         "Buffer columns number not equal to raster columns");
 
-      double dummyValue = inRaster.getProperty()->m_noDataValue;
 
       /* Buffer roll up */
 

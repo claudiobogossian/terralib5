@@ -986,8 +986,6 @@ void te::qt::widgets::TiePointLocatorWidget::onSaveTiePointsToolButtonClicked()
     tiePointsFile << std::endl << "ADJDSNAME " << m_adjLayer->getDataSetName();
     tiePointsFile << std::endl << "TPID;ACKTYPE;REFCOL;REFROW;REFX;REFY;ADJCOL;AJDROW;ADJX;ADJY";
     
-    const std::size_t tiePointsSize = m_tiePoints.size();
-    
     const te::rst::Grid& refGrid = *refRasterPtr->getGrid();
     const te::rst::Grid& adjGrid = *adjRasterPtr->getGrid();
     

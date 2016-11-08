@@ -208,7 +208,6 @@ void te::mnt::CreateIsolinesDialog::getMinMax(te::map::AbstractLayerPtr inputLay
   std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType.get()));
   try
   {
-    te::gm::GeomType gmType = geomProp->getGeometryType();
     std::size_t geo_pos = te::da::GetFirstPropertyPos(inDset.get(), te::dt::GEOMETRY_TYPE);
     inDset->moveBeforeFirst();
     while (inDset->moveNext())

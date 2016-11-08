@@ -148,8 +148,6 @@ void te::mnt::Shadow::getRasterElementLine(te::rst::Raster* inputRaster, int lin
 
 te::rst::Raster *te::mnt::Shadow::GenerateImage(te::rst::Raster *raster)
 {
-  double resxi = raster->getResolutionX();
-  double resyi = raster->getResolutionY();
   int X1 = static_cast<int>(raster->getExtent()->getLowerLeftX());
   int Y2 = static_cast<int>(raster->getExtent()->getUpperRightY());
   te::gm::Coord2D ulc(X1, Y2);

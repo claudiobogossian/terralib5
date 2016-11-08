@@ -162,12 +162,6 @@ void te::qt::widgets::ROIManagerWidget::setList(std::list<te::map::AbstractLayer
 
     if(dsType->hasGeom())
     {
-      te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(dsType.get());
-      
-      //if(gp && gp->getGeometryType() == te::gm::MultiPolygonType)
-        //m_ui->m_vectorLayerComboBox->addItem(it->get()->getTitle().c_str(), QVariant::fromValue(l));
-
-
       if(dsType->getProperties().size() == 5 &&
          dsType->getProperty(1)->getName() == TE_CL_ROI_GEOM_ID_NAME &&
          dsType->getProperty(2)->getName() == TE_CL_ROI_LABEL_NAME &&
