@@ -676,10 +676,7 @@ void te::qt::widgets::ContrastDialogForm::applyPreview()
         te::rst::Raster* rst = static_cast<te::rst::Raster*>(abs);
         
         m_previewRaster = rst;
-
-        double min = m_previewRaster->getBand(0)->getMinValue(true).real();
-        double max = m_previewRaster->getBand(0)->getMaxValue(true).real();
-
+        
         m_histogramWidget->setOutputRaster(algoOutputParams.m_createdOutRasterPtr.release());
 
         if (m_ui->m_previewCheckBox->isChecked())
@@ -909,8 +906,6 @@ void te::qt::widgets::ContrastDialogForm::drawPreview(te::rst::Raster* raster)
 
   const te::gm::Envelope& envRaster = *raster->getExtent();
   const te::gm::Envelope& env = m_mapDisplay->getExtent();
-
-  te::se::ChannelSelection* channel = getChannelSelection();
 
   te::se::Style* style = te::se::CreateCoverageStyle(raster->getNumberOfBands());
 
@@ -1181,7 +1176,6 @@ void te::qt::widgets::ContrastDialogForm::onGreenComboBoxCurrentIndexChanged(int
 
 void te::qt::widgets::ContrastDialogForm::onMinValueSelected(int value, int band)
 {
-  double value1;
   int row = m_ui->m_bandTableWidget->currentRow();
 
   int index = m_ui->m_contrastTypeComboBox->currentIndex();
@@ -1220,7 +1214,6 @@ void te::qt::widgets::ContrastDialogForm::onMinValueSelected(int value, int band
 
 void te::qt::widgets::ContrastDialogForm::onMinValueSelected(double value, int band)
 {
-  double value1;
   int row = m_ui->m_bandTableWidget->currentRow();
 
   int index = m_ui->m_contrastTypeComboBox->currentIndex();

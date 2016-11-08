@@ -26,7 +26,7 @@ te::da::DataSetType* CreateDataSetType(const std::string& datasetname,te::da::Da
 */
 
 // ... and then call persistence API
-  std::map<std::string, std::string> options; //API exije esse param
+  std::map<std::string, std::string> options; //API requires this parameter
   transactor->createDataSet(dt,options);
 
   return dt;

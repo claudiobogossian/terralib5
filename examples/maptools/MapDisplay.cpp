@@ -25,8 +25,8 @@ void MapDisplay()
 
   try
   {
-    std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = TERRALIB_DATA_DIR "/shp/munic_2001.shp";
+    std::string connInfo ("file://");
+    connInfo += TERRALIB_DATA_DIR "/shape/munic_2001.shp";
 
     // Creates and connects data source
     te::da::DataSourcePtr datasource = te::da::DataSourceManager::getInstance().open(te::common::Convert2String(G_ID++), "OGR", connInfo);

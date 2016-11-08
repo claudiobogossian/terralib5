@@ -685,15 +685,14 @@ void te::qt::widgets::QueryDataSourceDialog::onCreateLayerToolButtonClicked()
     //create new data source
     boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
-    std::map<std::string, std::string> dsInfo;
-    dsInfo["URI"] = uri.string();
+    const std::string connInfo("file://" + uri.string());
 
     boost::uuids::basic_random_generator<boost::mt19937> gen;
     boost::uuids::uuid u = gen();
     std::string id_ds = boost::uuids::to_string(u);
 
     te::da::DataSourceInfoPtr dsInfoPtr(new te::da::DataSourceInfo);
-    dsInfoPtr->setConnInfo(dsInfo);
+    dsInfoPtr->setConnInfo(connInfo);
     dsInfoPtr->setTitle(uri.stem().string());
     dsInfoPtr->setAccessDriver("OGR");
     dsInfoPtr->setType("OGR");

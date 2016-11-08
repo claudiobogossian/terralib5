@@ -127,8 +127,8 @@ namespace te
     {
       // Creating a new datasource
 
-      std::auto_ptr< te::da::DataSource > dataSourcePtr(
-        te::da::DataSourceFactory::make( dataSourceType ) );
+      std::unique_ptr< te::da::DataSource > dataSourcePtr(
+        te::da::DataSourceFactory::make( dataSourceType, ("file://" + outDataSetName)));
       if( dataSourcePtr.get() == 0 ) return false;      
       
       RasterHandler internalRasterHandler;
@@ -476,7 +476,7 @@ namespace te
         case te::dt::CHAR_TYPE :
         {
           char* vPtr = (char*)outputVector;
-          for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
+          for(unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
             vPtr[ idx ] = (char)inputVector[ idx ];
           break;
         }
@@ -484,14 +484,14 @@ namespace te
         case te::dt::UCHAR_TYPE :
         {
           unsigned char* vPtr = (unsigned char*)outputVector;
-          for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
+          for(unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
             vPtr[ idx ] = (unsigned char)inputVector[ idx ];
           break;
         }
         case te::dt::INT16_TYPE :
         {
           short int* vPtr = (short int*)outputVector;
-          for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
+          for(unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
             vPtr[ idx ] = (short int)inputVector[ idx ];
           break;
         }
@@ -499,21 +499,21 @@ namespace te
         {
           std::complex< short int >* vPtr = (std::complex< short int >*)
             outputVector;
-          for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
+          for(unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
             vPtr[ idx ]= ( (short int)inputVector[ idx ] );
           break;
         }
         case te::dt::UINT16_TYPE :
         {
           unsigned short int* vPtr = (unsigned short int*)outputVector;
-          for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
+          for(unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
             vPtr[ idx ] = (unsigned short int)inputVector[ idx ];
           break;
         }
         case te::dt::INT32_TYPE :
         {
           int* vPtr = (int*)outputVector;
-          for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
+          for(unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
             vPtr[ idx ] = (int)inputVector[ idx ];
           break;
         }
@@ -521,35 +521,35 @@ namespace te
         {
           std::complex< int >* vPtr = (std::complex< int >*)
             outputVector;
-          for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
+          for(unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
             vPtr[ idx ] = ( (int)inputVector[ idx ] );
           break;
         }
         case te::dt::UINT32_TYPE :
         {
           unsigned int* vPtr = (unsigned int*)outputVector;
-          for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
+          for(unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
             vPtr[ idx ] = (unsigned int)inputVector[ idx ];
           break;
         }
         case te::dt::INT64_TYPE :
         {
           long int* vPtr = (long int*)outputVector;
-          for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
+          for(unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
             vPtr[ idx ] = (long int)inputVector[ idx ];
           break;
         }
         case te::dt::UINT64_TYPE :
         {
           unsigned long int* vPtr = (unsigned long int*)outputVector;
-          for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
+          for(unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
             vPtr[ idx ] = (unsigned long int)inputVector[ idx ];
           break;
         }
         case te::dt::FLOAT_TYPE :
         {
           float* vPtr = (float*)outputVector;
-          for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
+          for(unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
             vPtr[ idx ] = (float)inputVector[ idx ];
           break;
         }
@@ -557,7 +557,7 @@ namespace te
         {
           std::complex< float >* vPtr = (std::complex< float >*)
             outputVector;
-          for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
+          for(unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
             vPtr[ idx ] = ( (float)inputVector[ idx ] );
           break;
         }
@@ -570,7 +570,7 @@ namespace te
         {
           std::complex< double >* vPtr = (std::complex< double >*)
             outputVector;
-          for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
+          for( unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
             vPtr[ idx ] = ( (double)inputVector[ idx ] );
           break;
         }

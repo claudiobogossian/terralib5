@@ -145,7 +145,8 @@ bool te::attributefill::VectorToRaster::run()
   }
 
 // create raster info
-  std::map<std::string, std::string> conInfo = m_outDsrc->getConnectionInfo();
+  std::map<std::string, std::string> conInfo;
+  conInfo["URI"] = m_outDsrc->getConnectionInfo().host() + m_outDsrc->getConnectionInfo().path();
 
 // create raster
   std::auto_ptr<te::rst::Raster> rst(te::rst::RasterFactory::make("GDAL", grid, vecBandProp, conInfo));

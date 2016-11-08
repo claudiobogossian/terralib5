@@ -24,8 +24,9 @@
 */
 
 // TerraLib
-#include "../../core/translator/Translator.h"
 #include "../../common/StringUtils.h"
+#include "../../core/translator/Translator.h"
+#include "../../core/uri/URI.h"
 #include "../../geometry/Envelope.h"
 #include "../../geometry/GeometryProperty.h"
 #include "../../raster/RasterProperty.h"
@@ -275,9 +276,7 @@ te::da::DataSourcePtr te::da::GetDataSource(const std::string& datasourceId, con
     if(dsinfo.get() == 0)
       throw Exception(TE_TR("Could not find data source!"));
 
-    datasource = te::da::DataSourceManager::getInstance().make(datasourceId, dsinfo->getAccessDriver());
-
-    datasource->setConnectionInfo(dsinfo->getConnInfo());
+    datasource = te::da::DataSourceManager::getInstance().make(datasourceId, dsinfo->getAccessDriver(), dsinfo->getConnInfo());
   }
 
   if(opened && !datasource->isOpened())
@@ -967,7 +966,7 @@ int te::da::GetPropertyIndex(te::da::DataSet* dataSet, const std::string propNam
   {
     if(propName == dataSet->getPropertyName(i))
     {
-      index = i;
+      index = (int)i;
       return index;
     }
   }
@@ -992,168 +991,168 @@ bool te::da::IsValidName(const std::string& name, std::string& invalidChar)
     return false;
   }
 
-  int ff = name.find(" ");
+  int ff = (int)name.find(" ");
   if(ff >= 0)
   {
     invalidChar += "invalid character: blank space\n";
     return false;
   }
 
-  ff = name.find(".");
+  ff = (int)name.find(".");
   if(ff >= 0)
   {
     invalidChar += "invalid character: dot '.'\n";
     return false;
   }
 
-  ff = name.find("*");
+  ff = (int)name.find("*");
   if(ff >= 0)
   {
     invalidChar += "invalid character: mathematical symbol '*'\n";
     return false;
   }
 
-  ff = name.find("/");
+  ff = (int)name.find("/");
   if(ff >= 0)
   {
     invalidChar += "invalid character: mathematical symbol '/'\n";
     return false;
   }
 
-  ff = name.find("(");
+  ff = (int)name.find("(");
   if(ff >= 0)
   {
     invalidChar += "invalid character: parentheses '('\n";
     return false;
   }
 
-  ff = name.find(")");
+  ff = (int)name.find(")");
   if(ff >= 0)
   {
     invalidChar += "invalid character: parentheses ')'\n";
     return false;
   }
 
-  ff = name.find("-");
+  ff = (int)name.find("-");
   if(ff >= 0)
   {
     invalidChar += "invalid character: mathematical symbol '-'\n";
     return false;
   }
 
-  ff = name.find("+");
+  ff = (int)name.find("+");
   if(ff >= 0)
   {
     invalidChar += "invalid character: mathematical symbol '+'\n";
     return false;
   }
 
-  ff = name.find("%");
+  ff = (int)name.find("%");
   if(ff >= 0)
   {
     invalidChar += "invalid character: mathematical symbol '%'\n";
     return false;
   }
 
-  ff = name.find(">");
+  ff = (int)name.find(">");
   if(ff >= 0)
   {
     invalidChar += "invalid character: mathematical symbol '>'\n";
     return false;
   }
 
-  ff = name.find("<");
+  ff = (int)name.find("<");
   if(ff >= 0)
   {
     invalidChar += "invalid character: mathematical symbol '<'\n";
     return false;
   }
 
-  ff = name.find("&");
+  ff = (int)name.find("&");
   if(ff >= 0)
   {
     invalidChar += "invalid character: mathematical symbol '&'\n";
     return false;
   }
 
-  ff = name.find("$");
+  ff = (int)name.find("$");
   if(ff >= 0)
   {
     invalidChar += "invalid symbol: '$'\n";
     return false;
   }
 
-  ff = name.find(";");
+  ff = (int)name.find(";");
   if(ff >= 0)
   {
     invalidChar += "invalid symbol: ';'\n";
     return false;
   }
 
-  ff = name.find("=");
+  ff = (int)name.find("=");
   if(ff >= 0)
   {
     invalidChar += "invalid symbol: '='\n";
     return false;
   }
 
-  ff = name.find("!");
+  ff = (int)name.find("!");
   if(ff >= 0)
   {
     invalidChar += "invalid symbol: '!'\n";
     return false;
   }
 
-  ff = name.find("?");
+  ff = (int)name.find("?");
   if(ff >= 0)
   {
     invalidChar += "invalid symbol: '?'\n";
     return false;
   }
 
-  ff = name.find("#");
+  ff = (int)name.find("#");
   if(ff >= 0)
   {
     invalidChar += "invalid symbol: '#'\n";
     return false;
   }
 
-  ff = name.find("¨");
+  ff = (int)name.find("¨");
   if(ff >= 0)
   {
     invalidChar += "invalid symbol: '¨'\n";
     return false;
   }
 
-  ff = name.find(",");
+  ff = (int)name.find(",");
   if(ff >= 0)
   {
     invalidChar += "invalid symbol: ','\n";
     return false;
   }
 
-  ff = name.find("/");
+  ff = (int)name.find("/");
   if(ff >= 0)
   {
     invalidChar += "invalid symbol: '/'\n";
     return false;
   }
 
-  ff = name.find("@");
+  ff = (int)name.find("@");
   if(ff >= 0)
   {
     invalidChar += "invalid symbol: '@'\n";
     return false;
   }
 
-  ff = name.find("{");
+  ff = (int)name.find("{");
   if(ff >= 0)
   {
     invalidChar += "invalid symbol: '{'\n";
     return false;
   }
 
-  ff = name.find("}");
+  ff = (int)name.find("}");
   if(ff >= 0)
   {
     invalidChar += "invalid symbol: '}'\n";
@@ -1171,7 +1170,7 @@ bool te::da::IsValidName(const std::string& name, std::string& invalidChar)
   {
     std::string invalidItem = vecInvalidChars[i];
 
-    ff = name.find(invalidItem);
+    ff = (int)name.find(invalidItem);
     if(ff >= 0)
     {
       invalidChar += "invalid symbol: '" + invalidItem + "'\n";
@@ -1261,7 +1260,7 @@ std::auto_ptr<te::da::DataSet> te::da::HideColumns(te::da::DataSet* ds, te::da::
 
 double te::da::GetSummarizedValue(std::vector<double>& values, const std::string& sumary)
 {
-  double size = values.size();
+  double size = (double)values.size();
   if(size == 0)
     return 0;
 
@@ -1359,7 +1358,7 @@ double te::da::GetSummarizedValue(std::vector<double>& values, const std::string
 
 std::string te::da::GetSummarizedValue(const std::vector<std::string>& values, const std::string& sumary)
 {
-  double size = values.size();
+  double size = (double)values.size();
   if(size == 0)
     return 0;
 

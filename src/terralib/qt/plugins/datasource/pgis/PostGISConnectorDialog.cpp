@@ -25,6 +25,8 @@
 
 // TerraLib
 #include "../../../../core/translator/Translator.h"
+#include "../../../../core/uri/URI.h"
+#include "../../../../core/utils/URI.h"
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
@@ -85,7 +87,7 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::set(const te::da::DataSource
 
   if(m_datasource.get() != 0)
   {
-    setConnectionInfo(m_datasource->getConnInfo());
+    setConnectionInfo(m_datasource->getConnInfoAsString());
 
     m_ui->m_datasourceTitleLineEdit->setText(QString::fromUtf8(m_datasource->getTitle().c_str()));
 
@@ -99,11 +101,10 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::openPushButtonPressed()
   {
     // Check if driver is loaded
     if(te::da::DataSourceFactory::find("POSTGIS") == 0)
-      throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for PostgreSQL + PostGIS data sources!"));
+      throw te::qt::widgets::Exception(TE_TR("No data access driver loaded for PostgreSQL + PostGIS data sources!"));
 
     // Perform connection
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
-    ds->setConnectionInfo(getConnectionInfo(true));
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS", getConnectionInfo(true));
     ds->open();
     m_driver.reset(ds.release());
 
@@ -168,12 +169,11 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::testPushButtonPressed()
       throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for PostgreSQL + PostGIS data sources!"));
 
     // Perform connection
-    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("POSTGIS"));
-
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS", getConnectionInfo(true));
     if(ds.get() == 0)
       throw te::qt::widgets::Exception(TE_TR("Could not open PostgreSQL + PostGIS database!"));
 
-    ds->setConnectionInfo(getConnectionInfo(true));
+    //ds->setConnectionInfo(getConnectionInfo(true));
     ds->open();
 
     QMessageBox::information(this,
@@ -196,157 +196,143 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::testPushButtonPressed()
   }
 }
 
-std::map<std::string, std::string> te::qt::plugins::pgis::PostGISConnectorDialog::getConnectionInfo(bool getPrivateKeys) const
+const std::string te::qt::plugins::pgis::PostGISConnectorDialog::getConnectionInfo(bool getPrivateKeys) const
 {
-  std::map<std::string, std::string> connInfo;
+  QString qstr; // Auxiliary string used to hold temporary data
 
-// get host
-  QString qstr = m_ui->m_hostNameLineEdit->text().trimmed();
-  
-  if(!qstr.isEmpty())
-    connInfo["PG_HOST"] = qstr.toUtf8().data();
+  std::string strURI = "pgsql://"; // The base of the URI
 
-// get port
-  qstr = m_ui->m_portLineEdit->text().trimmed();
-  
-  if(!qstr.isEmpty())
-    connInfo["PG_PORT"] = qstr.toUtf8().data();
-
-// get dbname
-  qstr = m_ui->m_databaseComboBox->currentText().trimmed();
-  
-  if(!qstr.isEmpty())
-    connInfo["PG_DB_NAME"] = qstr.toUtf8().data();
-
-// get client encoding
-  connInfo["PG_CLIENT_ENCODING"] = te::core::CharEncoding::getEncodingName(te::core::EncodingType::UTF8);
-  
-// get user
+  // get user
   qstr = m_ui->m_userNameLineEdit->text().trimmed();
-  
-  if(!qstr.isEmpty())
-    connInfo["PG_USER"] = qstr.toUtf8().data();
+  strURI += qstr.toUtf8().data();
+  strURI += ":";
 
+  //get password
   if(getPrivateKeys)
   {
-  // get password
     qstr = m_ui->m_passwordLineEdit->text().trimmed();
-  
-    if(!qstr.isEmpty())
-      connInfo["PG_PASSWORD"] = qstr.toUtf8().data();
+    strURI += qstr.toUtf8().data();
+    strURI += "@";
   }
 
-// get table info
+  //get host
+  qstr = m_ui->m_hostNameLineEdit->text().trimmed();
+  strURI += qstr.isEmpty() ? "localhost" : qstr.toUtf8().data();
+  strURI += ":";
+
+  //get port
+  qstr = m_ui->m_portLineEdit->text().trimmed();
+  strURI += qstr.isEmpty() ? "5432" : qstr.toUtf8().data();
+  strURI += "/";
+
+  //get db name 
+  qstr = m_ui->m_databaseComboBox->currentText().trimmed();
+  strURI += qstr.toUtf8().data();
+
+  //query section
+  strURI += "?";
+
   qstr = m_ui->m_tablesToHideLineEdit->text().trimmed();
+  if (!qstr.isEmpty())
+  {
+    strURI += "PG_HIDE_TABLES=";
+    strURI += qstr.toUtf8().data();
+    strURI += "&";
+  }
 
-  if(!qstr.isEmpty())
-    connInfo["PG_HIDE_TABLES"] = qstr.toUtf8().data();
+  strURI += "PG_CONNECT_TIMEOUT=";
+  qstr = qstr.isEmpty() ? "4" : m_ui->m_connectTimeoutSpinBox->text().trimmed();
+  strURI += qstr.toUtf8().data();
 
-  connInfo["PG_HIDE_SPATIAL_METADATA_TABLES"] = m_ui->m_hideMetadataTablesCheckBox->isChecked() ? "TRUE" : "FALSE";
+  // get MaxPoolSize
+  strURI += "&PG_MAX_POOL_SIZE=";
+  qstr = qstr.isEmpty() ? "4" : m_ui->m_maxPoolSizeSpinBox->text().trimmed();
+  strURI += qstr.toUtf8().data();
 
-  connInfo["PG_HIDE_RASTER_TABLES"] = m_ui->m_hideRasterTablesCheckBox->isChecked() ? "TRUE" : "FALSE";
+  // get MinPoolSize
+  strURI += "&PG_MIN_POOL_SIZE=";
+  qstr = qstr.isEmpty() ? "2" : m_ui->m_minPoolSizeSpinBox->text().trimmed();
+  strURI += qstr.toUtf8().data();
 
-// get connect_timeout
-  qstr = m_ui->m_connectTimeoutSpinBox->text().trimmed();
+  // hide spatial metadata tables?
+  strURI += "&PG_HIDE_SPATIAL_METADATA_TABLES=";
+  strURI += m_ui->m_hideMetadataTablesCheckBox->isChecked() ? "TRUE" : "FALSE";
   
-  if(!qstr.isEmpty())
-    connInfo["PG_CONNECT_TIMEOUT"] = qstr.toUtf8().data();
+  // hide raster tables?
+  strURI += "&PG_HIDE_RASTER_TABLES=";
+  strURI += m_ui->m_hideRasterTablesCheckBox->isChecked() ? "TRUE" : "FALSE";
 
-// get MinPoolSize
-  qstr = m_ui->m_minPoolSizeSpinBox->text().trimmed();
-  
-  if(!qstr.isEmpty())
-    connInfo["PG_MIN_POOL_SIZE"] = qstr.toUtf8().data();
-
-// get MaxPoolSize
-  qstr = m_ui->m_maxPoolSizeSpinBox->text().trimmed();
-  
-  if(!qstr.isEmpty())
-    connInfo["PG_MAX_POOL_SIZE"] = qstr.toUtf8().data();
-
-// get options
   qstr = m_ui->m_optionsLineEdit->text().trimmed();
-  
   if(!qstr.isEmpty())
-    connInfo["PG_OPTIONS"] = qstr.toUtf8().data();
+  {
+    strURI += "&PG_OPTIONS=";
+    strURI += qstr.toUtf8().data();
+  }
 
-  return connInfo;
+  return strURI;
 }
 
-void te::qt::plugins::pgis::PostGISConnectorDialog::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
+void te::qt::plugins::pgis::PostGISConnectorDialog::setConnectionInfo(const std::string& connInfo)
 {
-  std::map<std::string, std::string>::const_iterator it = connInfo.find("PG_HOST");
-  std::map<std::string, std::string>::const_iterator itend = connInfo.end();
+  te::core::URI uri(connInfo);
+  std::map<std::string, std::string> kvp = te::core::Expand(uri.query());
+  std::map<std::string, std::string>::const_iterator it = kvp.begin();
+  std::map<std::string, std::string>::const_iterator itend = kvp.end();
 
-  if(it != itend)
+  it = kvp.find("PG_HOST_ADDR");
+  if (it != itend && !it->second.empty())
     m_ui->m_hostNameLineEdit->setText(QString::fromUtf8(it->second.c_str()));
 
-  it = connInfo.find("PG_HOST_ADDR");
+  std::string port = uri.port();
+  if(!port.empty())
+    m_ui->m_portLineEdit->setText(QString::fromUtf8(port.c_str()));
 
-  if(it != itend)
-    m_ui->m_hostNameLineEdit->setText(QString::fromUtf8(it->second.c_str()));
-
-  it = connInfo.find("PG_PORT");
-
-  if(it != itend)
-    m_ui->m_portLineEdit->setText(QString::fromUtf8(it->second.c_str()));
-
-  it = connInfo.find("PG_DB_NAME");
-
-  if(it != itend)
+  std::string dbName = uri.path().substr(1, uri.path().length());
+  if(!dbName.empty())
   {
-    int pos = m_ui->m_databaseComboBox->findText(QString::fromUtf8(it->second.c_str()));
+    int pos = m_ui->m_databaseComboBox->findText(QString::fromUtf8(dbName.c_str()));
 
     if(pos != -1)
       m_ui->m_databaseComboBox->setCurrentIndex(pos);
     else
     {
-      m_ui->m_databaseComboBox->addItem(QString::fromUtf8(it->second.c_str()));
+      m_ui->m_databaseComboBox->addItem(QString::fromUtf8(dbName.c_str()));
       m_ui->m_databaseComboBox->setCurrentIndex(0);
     }
   }
 
-  it = connInfo.find("PG_USER");
+  std::string user = uri.user();
+  if(!user.empty())
+    m_ui->m_userNameLineEdit->setText(QString::fromUtf8(user.c_str()));
 
-  if(it != itend)
-    m_ui->m_userNameLineEdit->setText(QString::fromUtf8(it->second.c_str()));
+  std::string pass = uri.password();
+  if (!pass.empty())
+    m_ui->m_passwordLineEdit->setText(QString::fromUtf8(pass.c_str()));
 
-  it = connInfo.find("PG_PASSWORD");
-
-  if(it != itend)
-    m_ui->m_passwordLineEdit->setText(QString::fromUtf8(it->second.c_str()));
-
-  it = connInfo.find("PG_CONNECT_TIMEOUT");
-
-  if(it != itend)
+  it = kvp.find("PG_CONNECT_TIMEOUT");
+  if (it != itend && !it->second.empty())
     m_ui->m_connectTimeoutSpinBox->setValue(boost::lexical_cast<int>(it->second.c_str()));
-
-  it = connInfo.find("PG_MIN_POOL_SIZE");
-
-  if(it != itend)
+  
+  it = kvp.find("PG_MIN_POOL_SIZE");
+  if (it != itend && !it->second.empty())
     m_ui->m_minPoolSizeSpinBox->setValue(boost::lexical_cast<int>(it->second.c_str()));
 
-  it = connInfo.find("PG_MAX_POOL_SIZE");
-
-  if(it != itend)
+  it = kvp.find("PG_MAX_POOL_SIZE");
+  if (it != itend && !it->second.empty())
     m_ui->m_maxPoolSizeSpinBox->setValue(boost::lexical_cast<int>(it->second.c_str()));
 
-  it = connInfo.find("PG_OPTIONS");
-
-  if(it != itend)
+  it = kvp.find("PG_OPTIONS");
+  if (it != itend && !it->second.empty())
     m_ui->m_optionsLineEdit->setText(QString::fromUtf8(it->second.c_str()));
 
-  it = connInfo.find("PG_HIDE_SPATIAL_METADATA_TABLES");
+  it = kvp.find("PG_HIDE_SPATIAL_METADATA_TABLES");
+    m_ui->m_hideMetadataTablesCheckBox->setChecked((it != itend && !it->second.empty()) && (boost::to_upper_copy(it->second) == "TRUE"));
 
-  m_ui->m_hideMetadataTablesCheckBox->setChecked((it != itend) && (boost::to_upper_copy(it->second) == "TRUE"));
+  it = kvp.find("PG_HIDE_RASTER_TABLES");
+    m_ui->m_hideRasterTablesCheckBox->setChecked((it != itend && !it->second.empty()) && (boost::to_upper_copy(it->second) == "TRUE"));
 
-  it = connInfo.find("PG_HIDE_RASTER_TABLES");
-
-  m_ui->m_hideRasterTablesCheckBox->setChecked((it != itend) && (boost::to_upper_copy(it->second) == "TRUE"));
-
-  it = connInfo.find("PG_HIDE_TABLES");
-
-  if(it != itend)
+  it = kvp.find("PG_HIDE_TABLES");
+  if(it != itend && !it->second.empty())
     m_ui->m_tablesToHideLineEdit->setText(QString::fromUtf8(it->second.c_str()));
 }
 
@@ -360,7 +346,7 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::passwordLineEditEditingFinis
   if(m_ui->m_userNameLineEdit->text() != "" || m_ui->m_passwordLineEdit->text() != "")
   {
     try{
-      std::map<std::string, std::string> dsInfo = getConnectionInfo(true);
+       std::string connInfo = getConnectionInfo(true);
 
       //get current informations
       std::string curDb = "";
@@ -371,7 +357,7 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::passwordLineEditEditingFinis
       m_ui->m_databaseComboBox->clear();
 
       // Get DataSources
-      std::vector<std::string> dbNames = te::da::DataSource::getDataSourceNames("POSTGIS", dsInfo);
+      std::vector<std::string> dbNames = te::da::DataSource::getDataSourceNames("POSTGIS", connInfo);
 
       if(!dbNames.empty())
       {

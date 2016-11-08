@@ -38,9 +38,9 @@ static const std::string regex_host = "(?<HOST_TYPE>[^\\]\\[:/?#@!$&'()*+,;=]+)"
 
 static const std::string regex_port = "(:(?<PORT_TYPE>[0-9]{1,5}))?";
 
-static const std::string regex_path = "(?<PATH_TYPE>[^\\]\\[:?#!$&'()*+,;=]+)?";
+static const std::string regex_path = "(?<PATH_TYPE>[^\\]\\[?#!$&'()*+,;=]+)?";
 
-static const std::string regex_query = "(\\?(?<QUERY_TYPE>[^\\]\\[/?#@!$'()*+,]+)?)?";
+static const std::string regex_query = "(\\?(?<QUERY_TYPE>[^\\]\\[?#@!$'()*+,]+)?)?";
 
 static const std::string regex_fragment = "(#(?<FRAGMENT_TYPE>.+))?";
 

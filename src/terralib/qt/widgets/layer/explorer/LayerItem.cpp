@@ -7,6 +7,8 @@
 
 #include "../../se/SymbologyPreview.h"
 
+#include "../../../../core/uri/URI.h"
+#include "../../../../core/utils/URI.h"
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../../maptools/DataSetLayer.h"
 #include "../../../../maptools/DataSetAdapterLayer.h"
@@ -35,24 +37,36 @@ QString GetTooltip(te::map::AbstractLayerPtr l)
   const std::string& id = l->getDataSourceId();
 
   te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(id);
-  const std::map<std::string, std::string>& connInfo = info->getConnInfo();
+  const te::core::URI& connInfo = info->getConnInfo();
 
   QString toolTip = QObject::tr("Connection Info") + ":\n";
 
-  std::size_t i = 0;
-  std::map<std::string, std::string>::const_iterator it;
-  for(it = connInfo.begin(); it != connInfo.end(); ++it)
+  toolTip += QObject::tr("Scheme: ") + (connInfo.scheme() + "\n").c_str();
+
+  if(!connInfo.user().empty())
+    toolTip += QObject::tr("User: ") + (connInfo.user() + "\n").c_str();
+
+  if(!connInfo.host().empty())
+  toolTip += QObject::tr("Host: ") + (connInfo.host() + "\n").c_str();
+
+  if(!connInfo.port().empty())
+    toolTip += QObject::tr("Port: ") + (connInfo.port() + "\n").c_str();
+
+  if(!connInfo.path().empty())
+    toolTip += QObject::tr("Path: ") + (connInfo.path() + "\n").c_str();
+
+  std::map<std::string, std::string> kvp = te::core::Expand(connInfo.query());
+  std::map<std::string, std::string>::iterator itBegin = kvp.begin();
+  std::map<std::string, std::string>::iterator itEnd = kvp.end();
+
+  while (itBegin != itEnd)
   {
-    toolTip += it->first.c_str();
+    toolTip += itBegin->first.c_str();
     toolTip += ": ";
-    toolTip += it->second.c_str();
-    ++i;
-
-    if(i != connInfo.size())
-      toolTip += "\n";
+    toolTip += itBegin->second.c_str();
+    toolTip += "\n";
+    ++itBegin;
   }
-
-  toolTip += '\n';
 
   toolTip += QObject::tr("SRID: ");
   toolTip += QString::number(l->getSRID());

@@ -39,18 +39,23 @@
 
 te::st::STDataLoaderImpl* te::st::STDataLoaderImplFactory::make(const std::string& dsType)
 {
+  return te::common::AbstractFactory<STDataLoaderImpl, std::string>::make(te::st::Globals::sm_loaderFromMemDSIdentifier);
+}
+
+te::st::STDataLoaderImpl* te::st::STDataLoaderImplFactory::make(const std::string& dsType, const std::string& connInfo)
+{
   //use the factory only to create a data source
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make(dsType);
-  if(ds.get()==0)
+  std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make(dsType, connInfo);
+  if (ds.get() == 0)
     throw Exception(TE_TR("ST Loader: Could not find a data source!"));
-  
-  std::string loaderType = te::st::Globals::sm_loaderFromMemDSIdentifier; 
+
+  std::string loaderType = te::st::Globals::sm_loaderFromMemDSIdentifier;
 
   //TO DO: olhar o capabilities do Query - spatial and temporal.
-  const te::da::QueryCapabilities& qcpb = ds->getCapabilities().getQueryCapabilities(); 
-  if(qcpb.supportsSpatialSQLDialect())
+  const te::da::QueryCapabilities& qcpb = ds->getCapabilities().getQueryCapabilities();
+  if (qcpb.supportsSpatialSQLDialect())
     loaderType = te::st::Globals::sm_loaderFromDSIdentifier;
-      
+
   return te::common::AbstractFactory<STDataLoaderImpl, std::string>::make(loaderType);
 }
 

@@ -33,10 +33,7 @@ namespace te
 {
   namespace gdal
   {
-    inline te::da::DataSource* Build()
-    {
-      return new DataSource;
-    }
+    te::da::DataSource* Build(const te::core::URI& uri);
   }   // end namespace gdal
 }     // end namespace te
 

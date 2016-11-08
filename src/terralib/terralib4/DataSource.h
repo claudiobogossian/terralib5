@@ -42,15 +42,13 @@ namespace terralib4
   {
     public:
 
-      DataSource();
+      DataSource(const std::string& connInfo);
+
+      DataSource(const te::core::URI& uri);
 
       ~DataSource();
 
       std::string getType() const;
-
-      const std::map<std::string, std::string>& getConnectionInfo() const;
-
-      void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
 
       std::auto_ptr<te::da::DataSourceTransactor> getTransactor();
 
@@ -84,18 +82,17 @@ namespace terralib4
 
     protected:
 
-      void create(const std::map<std::string, std::string>& dsInfo);
+      void create(const std::string& dsInfo);
 
-      void drop(const std::map<std::string, std::string>& dsInfo);
+      void drop(const std::string& dsInfo);
 
-      bool exists(const std::map<std::string, std::string>& dsInfo);
+      bool exists(const std::string& dsInfo);
 
-      std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& dsInfo);
+      std::vector<std::string> getDataSourceNames(const std::string& dsInfo);
 
     private:
 
       TeDatabase* m_db;
-      std::map<std::string, std::string> m_dbInfo;
 
       static te::da::DataSourceCapabilities sm_capabilities;
       static te::da::SQLDialect* sm_dialect;

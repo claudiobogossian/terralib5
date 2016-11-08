@@ -80,14 +80,14 @@ namespace te
 
           \param g            Inpput graph
           \param e            Expression tha defines a query
-          \param dsInfo       Container with data source information
+          \param dsInfo       The necessary information to access the data source
           \param graphType    Attribute used to define the output graph type
           \param gInfo        Container with graph generation parameters
 
           \return True if the graph was correctly generated and false in other case.
 
         */
-        bool build(te::graph::AbstractGraph* g, te::da::Expression* eEdge, te::da::Expression* eVertex, const std::map<std::string, std::string>& dsInfo, const std::string& graphType, const std::map<std::string, std::string>& gInfo);
+        bool build(te::graph::AbstractGraph* g, te::da::Expression* eEdge, te::da::Expression* eVertex, const std::string& dsInfo, const std::string& graphType, const std::map<std::string, std::string>& gInfo);
 
         //@}
     };

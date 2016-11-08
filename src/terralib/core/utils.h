@@ -29,5 +29,6 @@
 
 // TerraLIb
 #include "utils/Platform.h"
+#include "utils/URI.h"
 
 #endif // __TERRALIB_CORE_UTILS_H__

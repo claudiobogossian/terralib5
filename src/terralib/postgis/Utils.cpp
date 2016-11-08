@@ -26,6 +26,8 @@
 // TerraLib
 #include "../common/HexUtils.h"
 #include "../core/translator/Translator.h"
+#include "../core/uri/URI.h"
+#include "../core/utils/URI.h"
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../datatype/ByteArray.h"
@@ -352,66 +354,58 @@ void te::pgis::Convert2TerraLib(PGresult* result,
   }
 }
 
-std::string te::pgis::MakeConnectionStr(const std::map<std::string, std::string>& dsInfo)
+std::string te::pgis::MakeConnectionStr(const te::core::URI& connInfo)
 {
-  std::map<std::string, std::string>::const_iterator it = dsInfo.find("PG_HOST");
-  std::map<std::string, std::string>::const_iterator it_end = dsInfo.end();
-  std::string connInfo;
+  std::string connStr, aux;
+  std::map<std::string, std::string> kvp = te::core::Expand(connInfo.query());
+  std::map<std::string, std::string>::const_iterator it = kvp.begin();
+  std::map<std::string, std::string>::const_iterator itend = kvp.end();
 
-  if(it != it_end)
-    connInfo += " host = " + it->second;
+  aux = connInfo.host();
+  if (!aux.empty())
+    connStr += " host = " + aux;
 
-  it = dsInfo.find("PG_HOST_ADDR");
+  it = kvp.find("PG_HOST_ADDR");
+  if (it != itend && !it->second.empty())
+    connStr += " hostaddr = " + it->second;
 
-  if(it != it_end)
-    connInfo += " hostaddr = " + it->second;
+  aux = connInfo.port();
+  if (!aux.empty())
+    connStr += " port = " + aux;
 
-  it = dsInfo.find("PG_PORT");
+  aux = connInfo.path().substr(1, connInfo.path().length());
+  if (!aux.empty())
+    connStr += " dbname = " + aux;
 
-  if(it != it_end)
-    connInfo += " port = " + it->second;
+  aux = connInfo.user();
+  if (!aux.empty())
+    connStr += " user = " + aux;
 
-  it = dsInfo.find("PG_DB_NAME");
+  aux = connInfo.password();
+  if (!aux.empty())
+    connStr += " password = " + aux;
 
-  if(it != it_end)
-    connInfo += " dbname = " + it->second;
+  it = kvp.find("PG_CONNECT_TIMEOUT");
+  if (it != itend && !it->second.empty())
+    connStr += " connect_timeout = " + it->second;
 
-  it = dsInfo.find("PG_USER");
+  it = kvp.find("PG_OPTIONS");
+  if (it != itend && !it->second.empty())
+    connStr += " options = " + it->second;
 
-  if(it != it_end)
-    connInfo += " user = " + it->second;
+  it = kvp.find("PG_SSL_MODE");
+  if (it != itend && !it->second.empty())
+    connStr += " sslmode = " + it->second;
 
-  it = dsInfo.find("PG_PASSWORD");
+  it = kvp.find("PG_KRBSRVNAME");
+  if (it != itend && !it->second.empty())
+    connStr += " krbsrvname = " + it->second;
 
-  if((it != it_end) && (!it->second.empty()))
-    connInfo += " password = " +  it->second;
+  it = kvp.find("PG_GSSLIB");
+  if (it != itend && !it->second.empty())
+    connStr += " gsslib = " + it->second;
 
-  it = dsInfo.find("PG_CONNECT_TIMEOUT");
-
-  if(it != it_end)
-    connInfo += " connect_timeout = " + it->second;
-
-  it = dsInfo.find("PG_OPTIONS");
-
-  if(it != it_end)
-    connInfo += " options = " + it->second;
-
-  it = dsInfo.find("PG_SSL_MODE");
-
-  if(it != it_end)
-    connInfo += " sslmode = " + it->second;
-
-  it = dsInfo.find("PG_KRBSRVNAME");
-
-  if(it != it_end)
-    connInfo += " krbsrvname = " + it->second;
-
-  it = dsInfo.find("PG_GSSLIB");
-
-  if(it != it_end)
-    connInfo += " gsslib = " + it->second;
-
-  return connInfo;
+  return connStr;
 }
 
 void te::pgis::SplitTableName(const std::string& fullName, const std::string* defaultSchema, std::string& schemaName, std::string& tableName)

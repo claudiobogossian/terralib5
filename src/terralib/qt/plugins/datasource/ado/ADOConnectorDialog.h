@@ -89,9 +89,9 @@ namespace te
 
           protected:
 
-            std::map<std::string, std::string> getConnectionInfo(bool getPrivateKeys) const;
+            const std::string getConnectionInfo(bool getPrivateKeys) const;
 
-            void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
+            void setConnectionInfo(const std::string& connInfo);
 
           private:
 

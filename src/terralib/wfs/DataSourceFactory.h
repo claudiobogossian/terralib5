@@ -33,10 +33,7 @@ namespace te
 {
   namespace wfs
   {
-    inline te::da::DataSource* Build()
-    {
-      return new DataSource;
-    }
+    te::da::DataSource* Build(const te::core::URI& uri);
   }   // end namespace wfs
 }     // end namespace te
 

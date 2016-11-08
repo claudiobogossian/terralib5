@@ -288,7 +288,7 @@ void te::vp::MergeDialog::onOkPushButtonClicked()
     aParams->setSpecificParams(specificParams);
 
     te::da::DataSourcePtr auxSource;
-    std::map<std::string, std::string> ogrDsinfo;
+    std::string ogrDsinfo("file://");
     boost::filesystem::path ogrUri;
 
     if (m_toFile)
@@ -305,10 +305,9 @@ void te::vp::MergeDialog::onOkPushButtonClicked()
       if (idx != std::string::npos)
         outputdataset = outputdataset.substr(0, idx);
 
-      ogrDsinfo["URI"] = ogrUri.string();
+      ogrDsinfo += ogrUri.string();
 
-      auxSource.reset(te::da::DataSourceFactory::make("OGR").release());
-      auxSource->setConnectionInfo(ogrDsinfo);
+      auxSource.reset(te::da::DataSourceFactory::make("OGR", ogrDsinfo).release());
       auxSource->open();
 
       if (auxSource->dataSetExists(outputdataset))

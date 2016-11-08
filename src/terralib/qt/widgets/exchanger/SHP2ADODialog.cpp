@@ -183,7 +183,7 @@ void te::qt::widgets::SHP2ADODialog::onOkPushButtonClicked()
     std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(dataset.get(), converter));
 
      if(dataset->moveBeforeFirst())
-       targetDSPtr->add(dsTypeResult->getName(), dsAdapter.get(), targetDSPtr->getConnectionInfo());
+       targetDSPtr->add(dsTypeResult->getName(), dsAdapter.get(), nopt);
 
     QMessageBox::information(this, tr("Exchanger"), tr("Layer exported successfully."));
   }

@@ -19,11 +19,11 @@
 #include <string>
 #include <vector>
 
-std::auto_ptr<te::da::DataSource> GetPostGISConnection();
+std::unique_ptr<te::da::DataSource> GetPostGISConnection();
 
 void ObjectId()
 {
-  std::auto_ptr<te::da::DataSource> ds = GetPostGISConnection();
+  std::unique_ptr<te::da::DataSource> ds = GetPostGISConnection();
   if (!ds.get())
     return;
   
@@ -75,7 +75,7 @@ void ObjectId()
 
 void ObjectId_query()
 {
-  std::auto_ptr<te::da::DataSource> ds = GetPostGISConnection();
+  std::unique_ptr<te::da::DataSource> ds = GetPostGISConnection();
   if (!ds.get())
     return;
 

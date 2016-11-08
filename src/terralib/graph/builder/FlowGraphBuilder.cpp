@@ -67,7 +67,7 @@ te::graph::FlowGraphBuilder::~FlowGraphBuilder()
 }
 
 bool te::graph::FlowGraphBuilder::build(const std::string& shapeFileName, const std::string& linkColumn, const int& srid, const std::string& csvFileName, const int& fromIdx, const int& toIdx, const int& weightIdx,
-  const std::map<std::string, std::string>& dsInfo, const std::string& graphType, const std::map<std::string, std::string>& gInfo)
+  const std::string& dsInfo, const std::string& graphType, const std::map<std::string, std::string>& gInfo)
 {
   //create output graph
   m_graph.reset(te::graph::AbstractGraphFactory::make(graphType, dsInfo, gInfo));
@@ -96,16 +96,13 @@ int  te::graph::FlowGraphBuilder::getEdgeId()
   return id;
 }
 
-std::auto_ptr<te::da::DataSource> te::graph::FlowGraphBuilder::getDataSource(const std::string fileName)
+std::unique_ptr<te::da::DataSource> te::graph::FlowGraphBuilder::getDataSource(const std::string fileName)
 {
   // Creates and connects data source
-  std::map<std::string, std::string> connInfo;
-  connInfo["URI"] = fileName;
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
-  ds->setConnectionInfo(connInfo);
+  std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", ("file://" + fileName));
   ds->open();
 
-  return ds;
+  return std::move(ds);
 }
 
 std::auto_ptr<te::da::DataSet> te::graph::FlowGraphBuilder::getDataSet(te::da::DataSource* ds)
@@ -131,7 +128,7 @@ boost::ptr_vector<te::dt::Property> te::graph::FlowGraphBuilder::getProperties(t
 bool te::graph::FlowGraphBuilder::createVertexObjects(const std::string& shapeFileName, const std::string& linkColumn, const int& srid)
 {
  //get data source
-  std::auto_ptr<te::da::DataSource> ds = getDataSource(shapeFileName);
+  std::unique_ptr<te::da::DataSource> ds = getDataSource(shapeFileName);
 
   if(ds.get() == 0)
   {
@@ -200,7 +197,7 @@ bool te::graph::FlowGraphBuilder::createVertexObjects(const std::string& shapeFi
 
     Vertex* v = new Vertex(id);
     
-    v->setAttributeVecSize(properties.size() - 1);
+    v->setAttributeVecSize((int)properties.size() - 1);
 
     int shift = 0;
 

@@ -166,7 +166,7 @@ int te::pgis::DataSet::getPropertyDataType(std::size_t i) const
 
 std::string te::pgis::DataSet::getPropertyName(std::size_t i) const
 {
-  return PQfname(m_result, i);
+  return PQfname(m_result, (int)i);
 }
 
 std::string te::pgis::DataSet::getDatasetNameOfProperty(std::size_t i) const
@@ -271,19 +271,19 @@ bool te::pgis::DataSet::isAfterEnd() const
 
 char te::pgis::DataSet::getChar(std::size_t i) const
 {
-  char cval = *(PQgetvalue(m_result, m_i, i));
+  char cval = *(PQgetvalue(m_result, m_i, (int)i));
   return cval;
 }
 
 unsigned char te::pgis::DataSet::getUChar(std::size_t i) const
 {
-  unsigned char cval = *(PQgetvalue(m_result, m_i, i));
+  unsigned char cval = *(PQgetvalue(m_result, m_i, (int)i));
   return cval;
 }
 
 boost::int16_t te::pgis::DataSet::getInt16(std::size_t i) const
 {
-  short int ival = *((short int*)(PQgetvalue(m_result, m_i, i)));
+  short int ival = *((short int*)(PQgetvalue(m_result, m_i, (int)i)));
 
 #if TE_MACHINE_BYTE_ORDER == TE_NDR
   te::common::SwapBytes(ival);
@@ -294,7 +294,7 @@ boost::int16_t te::pgis::DataSet::getInt16(std::size_t i) const
 
 boost::int32_t te::pgis::DataSet::getInt32(std::size_t i) const
 {
-  int ival = *((int*)(PQgetvalue(m_result, m_i, i)));
+  int ival = *((int*)(PQgetvalue(m_result, m_i, (int)i)));
 
 #if TE_MACHINE_BYTE_ORDER == TE_NDR
   te::common::SwapBytes(ival);
@@ -305,7 +305,7 @@ boost::int32_t te::pgis::DataSet::getInt32(std::size_t i) const
 
 boost::int64_t te::pgis::DataSet::getInt64(std::size_t i) const
 {
-  long long int ival = *((long long int*)(PQgetvalue(m_result, m_i, i)));
+  long long int ival = *((long long int*)(PQgetvalue(m_result, m_i, (int)i)));
 
 #if TE_MACHINE_BYTE_ORDER == TE_NDR
   te::common::SwapBytes(ival);
@@ -316,13 +316,13 @@ boost::int64_t te::pgis::DataSet::getInt64(std::size_t i) const
 
 bool te::pgis::DataSet::getBool(std::size_t i) const
 {
-  char bval = *(PQgetvalue(m_result, m_i, i));
+  char bval = *(PQgetvalue(m_result, m_i, (int)i));
   return bval != 0;
 }
 
 float te::pgis::DataSet::getFloat(std::size_t i) const
 {
-  float fval = *((float*)(PQgetvalue(m_result, m_i, i)));
+  float fval = *((float*)(PQgetvalue(m_result, m_i, (int)i)));
 
 #if TE_MACHINE_BYTE_ORDER == TE_NDR
   te::common::SwapBytes(fval);
@@ -333,7 +333,7 @@ float te::pgis::DataSet::getFloat(std::size_t i) const
 
 double te::pgis::DataSet::getDouble(std::size_t i) const
 {
-  double dval = *((double*)(PQgetvalue(m_result, m_i, i)));
+  double dval = *((double*)(PQgetvalue(m_result, m_i, (int)i)));
 
 #if TE_MACHINE_BYTE_ORDER == TE_NDR
   te::common::SwapBytes(dval);
@@ -344,7 +344,7 @@ double te::pgis::DataSet::getDouble(std::size_t i) const
 
 std::string te::pgis::DataSet::getNumeric(std::size_t i) const
 {
-  char* val = PQgetvalue(m_result, m_i, i);
+  char* val = PQgetvalue(m_result, m_i, (int)i);
 
 // get number of groups of 2 bytes used to represent the numeric number
 // each 2 bytes represents 4 digits (ex: 2345678.87654 needs 4 groups. 2 to integer and 2 to decimals)
@@ -454,22 +454,22 @@ std::string te::pgis::DataSet::getNumeric(std::size_t i) const
 
 std::string te::pgis::DataSet::getString(std::size_t i) const
 {
-  std::string value(PQgetvalue(m_result, m_i, i));
+  std::string value(PQgetvalue(m_result, m_i, (int)i));
   return value;
 }
 
 std::auto_ptr<te::dt::ByteArray> te::pgis::DataSet::getByteArray(std::size_t i) const
 {
-  int size = PQgetlength(m_result, m_i, i);
+  int size = PQgetlength(m_result, m_i, (int)i);
 
   te::dt::ByteArray* b = new te::dt::ByteArray(size);
-  b->copy(PQgetvalue(m_result, m_i, i), size);
+  b->copy(PQgetvalue(m_result, m_i, (int)i), size);
   return std::auto_ptr<te::dt::ByteArray>(b);
 }
 
 std::auto_ptr<te::gm::Geometry> te::pgis::DataSet::getGeometry(std::size_t i) const
 {
-  return std::auto_ptr<te::gm::Geometry>(EWKBReader::read(PQgetvalue(m_result, m_i, i)));
+  return std::auto_ptr<te::gm::Geometry>(EWKBReader::read(PQgetvalue(m_result, m_i, (int)i)));
 }
 
 std::auto_ptr<te::rst::Raster> te::pgis::DataSet::getRaster(std::size_t /*i*/) const
@@ -479,7 +479,7 @@ std::auto_ptr<te::rst::Raster> te::pgis::DataSet::getRaster(std::size_t /*i*/) c
 
 std::auto_ptr<te::dt::DateTime> te::pgis::DataSet::getDateTime(std::size_t i) const
 {
-  Oid tid = PQftype(m_result, i);
+  Oid tid = PQftype(m_result, (int)i);
   boost::int64_t ival = 0;
   int iz;
   double dval;
@@ -505,7 +505,7 @@ std::auto_ptr<te::dt::DateTime> te::pgis::DataSet::getDateTime(std::size_t i) co
       {
         ival = getInt32(i);
 
-        return std::auto_ptr<te::dt::DateTime>(Internal2Date(ival));
+        return std::auto_ptr<te::dt::DateTime>(Internal2Date((long)ival));
       }
 
     case PG_TIMESTAMP_TYPE:
@@ -530,7 +530,7 @@ std::auto_ptr<te::dt::DateTime> te::pgis::DataSet::getDateTime(std::size_t i) co
         }
         else
         {
-          char* c = (char*)PQgetvalue(m_result, m_i, i);
+          char* c = (char*)PQgetvalue(m_result, m_i, (int)i);
           dval = *((double*)c);
           c += 8;
           iz = *((int*)c);
@@ -559,7 +559,7 @@ std::auto_ptr<te::dt::DateTime> te::pgis::DataSet::getDateTime(std::size_t i) co
         }
         else
         {
-          char* c = (char*)PQgetvalue(m_result, m_i, i);
+          char* c = (char*)PQgetvalue(m_result, m_i, (int)i);
           dval = *((double*)c);
           c += 8;
           iz = *((int*)c);
@@ -586,7 +586,7 @@ std::auto_ptr<te::dt::DateTime> te::pgis::DataSet::getDateTime(std::size_t i) co
 
 std::auto_ptr<te::dt::Array> te::pgis::DataSet::getArray(std::size_t i) const
 {
-  char* value = PQgetvalue(m_result, m_i, i);
+  char* value = PQgetvalue(m_result, m_i, (int)i);
 
   int ndim = *((int*)value);
   value += sizeof(int);
@@ -825,5 +825,5 @@ std::auto_ptr<te::dt::Array> te::pgis::DataSet::getArray(std::size_t i) const
 
 bool te::pgis::DataSet::isNull(std::size_t i) const
 {
-  return PQgetisnull(m_result, m_i, i) == 1;
+  return PQgetisnull(m_result, m_i, (int)i) == 1;
 }

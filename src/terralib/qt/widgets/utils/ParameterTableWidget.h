@@ -65,6 +65,8 @@ namespace te
           void add(const std::string& name, const std::string& value);
 
           std::map<std::string, std::string> getMap() const;
+          
+          const std::string getParameters() const;
 
         protected slots:
 

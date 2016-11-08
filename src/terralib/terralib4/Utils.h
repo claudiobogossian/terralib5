@@ -115,7 +115,7 @@ namespace terralib4
 
     \return A TerraLib 4.x database params.
   */
-  std::auto_ptr<TeDatabaseFactoryParams> Convert2T4DatabaseParams(const std::map<std::string, std::string>& dsInfo);
+  std::auto_ptr<TeDatabaseFactoryParams> Convert2T4DatabaseParams(const std::string& dsInfo);
 
   te::rst::RasterProperty* Convert2T5(TeRasterParams& rparams);
 

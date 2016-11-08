@@ -110,6 +110,27 @@ std::map<std::string, std::string> te::qt::widgets::ParameterTableWidget::getMap
   return kvpairs;
 }
 
+const std::string te::qt::widgets::ParameterTableWidget::getParameters() const
+{
+  std::string parameters;
+
+  if (m_ui->m_paramTableWidget->columnCount() < 2)
+    throw Exception(TE_TR("Can not get key-value pairs from a table with less than 2 columns!"));
+
+  int nrows = m_ui->m_paramTableWidget->rowCount();
+
+  for (int i = 0; i < nrows; ++i)
+  {
+    QTableWidgetItem* itemName = m_ui->m_paramTableWidget->item(i, 0);
+
+    QTableWidgetItem* itemValue = m_ui->m_paramTableWidget->item(i, 1);
+
+    parameters += std::string(itemName->text().toUtf8().data()) + "=" + std::string(itemValue->text().toUtf8().data()) + "&";
+  }
+  
+  return parameters;
+}
+
 void te::qt::widgets::ParameterTableWidget::addToolButtonPressed()
 {
   std::auto_ptr<ParameterDialog> pdialog(new ParameterDialog(this));

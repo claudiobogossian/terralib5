@@ -41,6 +41,8 @@
 
 namespace te
 {
+  namespace core { class URI; }
+
   namespace da
   {
     class DataSource;
@@ -58,9 +60,11 @@ namespace te
     {
       public:
 
-        typedef boost::function<DataSource* ()> FactoryFnctType;
+        typedef boost::function<DataSource* (const te::core::URI& uri)> FactoryFnctType;
 
-        static std::auto_ptr<DataSource> make(const std::string& dsType);
+        static std::unique_ptr<DataSource> make(const std::string& driver, const te::core::URI& connInfo);
+
+        static std::unique_ptr<DataSource> make(const std::string& driver, const std::string& connInfo);
 
         static void add(const std::string& dsType, FactoryFnctType f);
 
@@ -72,7 +76,6 @@ namespace te
 
         static std::map<std::string, FactoryFnctType> sm_factories;
     };
-
   }   // end namespace da
 }     // end namespace te
 

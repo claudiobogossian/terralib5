@@ -549,9 +549,10 @@ void te::core::PluginManager::recursiveUnload(const std::string& plugin_name)
 
 void te::core::PluginManager::clear()
 {
-  for(auto it = m_pimpl->plugins.rbegin(); it != m_pimpl->plugins.rend(); ++it)
+  std::vector<te::core::PluginInfo> v_pInfo = getLoadedPlugins();
+  for(auto it = v_pInfo.rbegin(); it != v_pInfo.rend(); ++it)
   {
-    std::string plugin_name = (*it)->info().name;
+    std::string plugin_name = it->name;
     remove(plugin_name);
   }
 

@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+
 #include "../../../../common/STLUtils.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
@@ -276,11 +277,9 @@ void te::qt::widgets::SaveSelectedObjectsWidget::onTargetFileToolButtonPressed()
   //create new data source
   boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
-  std::map<std::string, std::string> dsInfo;
-  dsInfo["URI"] = uri.string();
+  const std::string dsInfo("file://" + uri.string());
 
-  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
-  ds->setConnectionInfo(dsInfo);
+  std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", dsInfo);
   ds->open();
 
   boost::uuids::basic_random_generator<boost::mt19937> gen;

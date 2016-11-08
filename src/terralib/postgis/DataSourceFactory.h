@@ -33,10 +33,7 @@ namespace te
 {
   namespace pgis
   {
-    inline te::da::DataSource* Build()
-    {
-      return new DataSource;
-    }
+    te::da::DataSource* Build(const te::core::URI& uri);
   }   // end namespace pgis
 }     // end namespace te
 

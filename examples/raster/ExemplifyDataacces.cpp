@@ -30,11 +30,10 @@ void DataSetTypePersistence()
     dstp->add(rstp);
 
     // access a datasource to persist it
-    std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = TERRALIB_DATA_DIR "/geotiff";
+    std::string connInfo("file://");
+    connInfo += TERRALIB_DATA_DIR "/geotiff";
 
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
-    ds->setConnectionInfo(connInfo);
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", connInfo);
     ds->open();
 
     std::auto_ptr<te::da::DataSourceTransactor> tr = ds->getTransactor();
@@ -77,11 +76,10 @@ void DataSet()
     dstp->add(rstp);
 
 // access a datasource to persist it
-    std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = TERRALIB_DATA_DIR "/geotiff";
+    std::string connInfo("file://");
+    connInfo += TERRALIB_DATA_DIR "/geotiff";
 
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
-    ds->setConnectionInfo(connInfo);
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", connInfo);
     ds->open();
 
     std::auto_ptr<te::da::DataSourceTransactor> tr = ds->getTransactor();
@@ -123,11 +121,10 @@ void DataSetPersistence()
   try
   {
     std::cout << "=== Example DataSetPersistence === " << std::endl;
-    std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = TERRALIB_DATA_DIR "/geotiff";
+    std::string connInfo("file://");
+    connInfo += TERRALIB_DATA_DIR "/geotiff";
 
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
-    ds->setConnectionInfo(connInfo);
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", connInfo);
     ds->open();
 
     std::auto_ptr<te::da::DataSourceTransactor> tr = ds->getTransactor();
@@ -163,17 +160,16 @@ void DataSource()
   try
   {
     std::cout << "=== Example Data Source === " << std::endl;
-    std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = TERRALIB_DATA_DIR "/geotiff";
+    std::string connInfo("file://");
+    connInfo += TERRALIB_DATA_DIR "/geotiff";
 
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
-    ds->setConnectionInfo(connInfo);
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL", connInfo);
     ds->open();
 
     std::auto_ptr<te::da::DataSourceTransactor> transactor = ds->getTransactor();
     std::vector<std::string> datasets = transactor->getDataSetNames();
 
-    std::cout << "List of raster datasets in " << connInfo["URI"] << ":";
+    std::cout << "List of raster datasets in " << connInfo << ":";
     for(size_t i = 0; i < datasets.size(); ++i)
     {
       std::auto_ptr<te::da::DataSet> ds = transactor->getDataSet(datasets[i]);

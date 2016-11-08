@@ -58,7 +58,7 @@ std::auto_ptr<te::st::ObservationDataSet>
 te::st::STDataLoader::getDataSet(const te::st::ObservationDataSetInfo& info, 
                                  te::common::TraverseType travType)
 {
-  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType(), info.getDataSourceInfo().getConnInfoAsString()));
   return impl->getDataSet(info, travType);
 }
 
@@ -66,7 +66,7 @@ std::auto_ptr<te::st::ObservationDataSet>
 te::st::STDataLoader::getDataSet(const te::st::ObservationDataSetInfo& info, const te::gm::Envelope& e,
                                  te::gm::SpatialRelation r, te::common::TraverseType travType)
 {
-  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType(), info.getDataSourceInfo().getConnInfoAsString()));
   return impl->getDataSet(info, e, r, travType);
 }
         
@@ -74,7 +74,7 @@ std::auto_ptr<te::st::ObservationDataSet>
 te::st::STDataLoader::getDataSet(const te::st::ObservationDataSetInfo& info, const te::gm::Geometry& geom, 
                                  te::gm::SpatialRelation r, te::common::TraverseType travType)
 {
-  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType(), info.getDataSourceInfo().getConnInfoAsString()));
   return impl->getDataSet(info, geom, r, travType);
 }
 
@@ -83,7 +83,7 @@ te::st::STDataLoader::getDataSet(const te::st::ObservationDataSetInfo& info,
                                  const te::dt::DateTime& dt, te::dt::TemporalRelation r,
                                  te::common::TraverseType travType)
 {
-  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType(), info.getDataSourceInfo().getConnInfoAsString()));
   return impl->getDataSet(info, dt, r, travType);
 }
 
@@ -95,7 +95,7 @@ te::st::STDataLoader::getDataSet(const te::st::ObservationDataSetInfo& info,
                                  te::gm::SpatialRelation sr,
                                  te::common::TraverseType travType)
 {
-  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType(), info.getDataSourceInfo().getConnInfoAsString()));
   return impl->getDataSet(info, dt, tr, e, sr, travType); 
 }
 
@@ -105,21 +105,21 @@ te::st::STDataLoader::getDataSet(const te::st::ObservationDataSetInfo& info,
                                  const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
                                  te::common::TraverseType travType)
 {
-  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType(), info.getDataSourceInfo().getConnInfoAsString()));
   return impl->getDataSet(info, geom, sr, dt, tr, travType);
 }
 
 void te::st::STDataLoader::getInfo( const te::st::TrajectoryDataSetInfo& input, 
                              std::vector<te::st::TrajectoryDataSetInfo>& output)
 {
-  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(input.getObservationDataSetInfo().getDataSourceInfo().getType()));
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(input.getObservationDataSetInfo().getDataSourceInfo().getType(), input.getObservationDataSetInfo().getDataSourceInfo().getConnInfoAsString()));
   return impl->getInfo(input, output); 
 }
 
 std::auto_ptr<te::st::TrajectoryDataSet> 
 te::st::STDataLoader::getDataSet(const te::st::TrajectoryDataSetInfo& info, te::common::TraverseType travType)
 {
-  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType()));
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType(), info.getObservationDataSetInfo().getDataSourceInfo().getConnInfoAsString()));
   return impl->getDataSet(info, travType); 
 }
 
@@ -128,7 +128,7 @@ te::st::STDataLoader::getDataSet(const TrajectoryDataSetInfo& info,
                              const te::gm::Geometry& geom, te::gm::SpatialRelation r,
                              te::common::TraverseType travType)
 {
-  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType()));
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType(), info.getObservationDataSetInfo().getDataSourceInfo().getConnInfoAsString()));
   return impl->getDataSet(info, travType); 
 }
 
@@ -136,7 +136,7 @@ std::auto_ptr<te::st::TrajectoryDataSet>
 te::st::STDataLoader::getDataSet(const TrajectoryDataSetInfo& info, const te::gm::Envelope& e, te::gm::SpatialRelation r,               
                                 te::common::TraverseType travType)
 {
-  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType()));
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType(), info.getObservationDataSetInfo().getDataSourceInfo().getConnInfoAsString()));
   return impl->getDataSet(info, e, r, travType); 
 }
 
@@ -145,7 +145,7 @@ te::st::STDataLoader::getDataSet(const TrajectoryDataSetInfo& info,
                                  const te::dt::DateTime& dt, te::dt::TemporalRelation r,
                                  te::common::TraverseType travType)
 {
-  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType()));
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType(), info.getObservationDataSetInfo().getDataSourceInfo().getConnInfoAsString()));
   return impl->getDataSet(info, dt, r, travType); 
 }
 
@@ -157,7 +157,7 @@ te::st::STDataLoader::getDataSet(const TrajectoryDataSetInfo& info,
                                  te::gm::SpatialRelation sr,
                                  te::common::TraverseType travType)
 {
-  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType()));
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType(), info.getObservationDataSetInfo().getDataSourceInfo().getConnInfoAsString()));
   return impl->getDataSet(info, dt, tr, e, sr, travType); 
 }
 
@@ -166,7 +166,7 @@ te::st::STDataLoader::getDataSet(const TrajectoryDataSetInfo& info,
                                  const te::gm::Geometry& geom, te::gm::SpatialRelation sr,
                                  const te::dt::DateTime& dt, te::dt::TemporalRelation tr, te::common::TraverseType travType)
 {
-  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType()));
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType(), info.getObservationDataSetInfo().getDataSourceInfo().getConnInfoAsString()));
   return impl->getDataSet(info, geom, sr, dt, tr, travType);
 }
 
@@ -174,14 +174,14 @@ te::st::STDataLoader::getDataSet(const TrajectoryDataSetInfo& info,
 void te::st::STDataLoader::getInfo( const te::st::TimeSeriesDataSetInfo& input, 
                               std::vector<te::st::TimeSeriesDataSetInfo>& output)
 {
-  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(input.getObservationDataSetInfo().getDataSourceInfo().getType()));
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(input.getObservationDataSetInfo().getDataSourceInfo().getType(), input.getObservationDataSetInfo().getDataSourceInfo().getConnInfoAsString()));
   return impl->getInfo(input, output);
 }
 
 std::auto_ptr<te::st::TimeSeriesDataSet> 
 te::st::STDataLoader::getDataSet(const te::st::TimeSeriesDataSetInfo& info, te::common::TraverseType travType)
 {
-  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType()));
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType(), info.getObservationDataSetInfo().getDataSourceInfo().getConnInfoAsString()));
   return impl->getDataSet(info, travType);
 }
 
@@ -190,7 +190,7 @@ te::st::STDataLoader::getDataSet(const te::st::TimeSeriesDataSetInfo& info,
                                  const te::dt::DateTime& dt, te::dt::TemporalRelation r,
                                  te::common::TraverseType travType)
 {
-  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType()));
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType(), info.getObservationDataSetInfo().getDataSourceInfo().getConnInfoAsString()));
   return impl->getDataSet(info, dt, r, travType);
 }
 
@@ -199,7 +199,7 @@ te::st::STDataLoader::getDataSet(const te::st::TimeSeriesDataSetInfo& info, cons
                           te::gm::SpatialRelation r,
                           te::common::TraverseType travType)
 {
-  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType()));
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType(), info.getObservationDataSetInfo().getDataSourceInfo().getConnInfoAsString()));
   return impl->getDataSet(info, e, r, travType);
 }
         
@@ -208,7 +208,7 @@ te::st::STDataLoader::getDataSet(const te::st::TimeSeriesDataSetInfo& info, cons
                           te::gm::SpatialRelation r,
                           te::common::TraverseType travType)
 {
-  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType()));
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType(), info.getObservationDataSetInfo().getDataSourceInfo().getConnInfoAsString()));
   return impl->getDataSet(info, geom, r, travType);
 }
 
@@ -220,7 +220,7 @@ te::st::STDataLoader::getDataSet(const te::st::TimeSeriesDataSetInfo& info,
                                             te::gm::SpatialRelation sr,
                                             te::common::TraverseType travType)
 {
-  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType()));
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType(), info.getObservationDataSetInfo().getDataSourceInfo().getConnInfoAsString()));
   return impl->getDataSet(info, dt, tr, e, sr, travType);
 }
 
@@ -230,7 +230,7 @@ te::st::STDataLoader::getDataSet(const te::st::TimeSeriesDataSetInfo& info,
                           const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
                           te::common::TraverseType travType)
 {
-  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType()));
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType(), info.getObservationDataSetInfo().getDataSourceInfo().getConnInfoAsString()));
   return impl->getDataSet(info, geom, sr, dt, tr, travType);
 }
 
@@ -346,35 +346,35 @@ te::st::STDataLoader::getCoverage(const PointCoverageDataSetInfo& info,
 std::auto_ptr<te::dt::DateTimePeriod> 
 te::st::STDataLoader::getTemporalExtent(const te::st::ObservationDataSetInfo& info)
 {
-  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType(), info.getDataSourceInfo().getConnInfoAsString()));
   return impl->getTemporalExtent(info);
 }
 
 std::auto_ptr<te::dt::DateTimePeriod> 
 te::st::STDataLoader::getTemporalExtent(const te::st::TrajectoryDataSetInfo& info)
 {
-  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType()));
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType(), info.getObservationDataSetInfo().getDataSourceInfo().getConnInfoAsString()));
   return impl->getTemporalExtent(info);
 }
 
 std::auto_ptr<te::dt::DateTimePeriod> 
 te::st::STDataLoader::getTemporalExtent(const te::st::TimeSeriesDataSetInfo& info)
 {
-  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType()));
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType(), info.getObservationDataSetInfo().getDataSourceInfo().getConnInfoAsString()));
   return impl->getTemporalExtent(info);
 }
 
 te::gm::Envelope 
 te::st::STDataLoader::getSpatialExtent(const te::st::ObservationDataSetInfo& info)
 {
-  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType(), info.getDataSourceInfo().getConnInfoAsString()));
   return impl->getSpatialExtent(info);
 }
 
 te::gm::Envelope 
 te::st::STDataLoader::getSpatialExtent(const te::st::TrajectoryDataSetInfo& info)
 {
-  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType()));
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType(), info.getObservationDataSetInfo().getDataSourceInfo().getConnInfoAsString()));
   return impl->getSpatialExtent(info);
 }
 
@@ -382,7 +382,7 @@ void te::st::STDataLoader::initialize()
 {
   if(te::st::STDataLoader::sm_STDataLoaderInitialized == true)
     return;
-  te::da::DataSourceManager::getInstance().make(te::st::Globals::sm_STMemoryDataSourceId, "STMEMORY");
+  te::da::DataSourceManager::getInstance().make(te::st::Globals::sm_STMemoryDataSourceId, "STMEMORY", "memory:");
   te::st::STDataLoader::sm_STDataLoaderInitialized = true;
 }
 

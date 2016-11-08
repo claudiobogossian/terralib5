@@ -33,7 +33,7 @@ void CreateLDDGraph(bool draw)
   std::string graphType = te::graph::Globals::sm_graphFactoryDefaultObject;
 
 // connection info
-  std::map<std::string, std::string> connInfo;
+  std::string connInfo("memory:");
 
 // graph information
   std::map<std::string, std::string> graphInfo;

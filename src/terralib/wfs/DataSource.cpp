@@ -41,10 +41,17 @@ te::da::DataSourceCapabilities te::wfs::DataSource::sm_capabilities;
 
 te::da::SQLDialect* te::wfs::DataSource::sm_dialect(0);
 
-te::wfs::DataSource::DataSource()
-  : te::da::DataSource(),
+te::wfs::DataSource::DataSource(const std::string& connInfo)
+  : te::da::DataSource(connInfo),
     m_ogrDS(0),
     m_isOpened(false)
+{
+}
+
+te::wfs::DataSource::DataSource(const te::core::URI& uri)
+  : te::da::DataSource(uri),
+  m_ogrDS(0),
+  m_isOpened(false)
 {
 }
 
@@ -56,16 +63,6 @@ te::wfs::DataSource::~DataSource()
 std::string te::wfs::DataSource::getType() const
 {
   return TE_WFS_DRIVER_IDENTIFIER;
-}
-
-const std::map<std::string, std::string>& te::wfs::DataSource::getConnectionInfo() const
-{
-  return m_connectionInfo;
-}
-
-void te::wfs::DataSource::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
-{
-  m_connectionInfo = connInfo;
 }
 
 std::auto_ptr<te::da::DataSourceTransactor> te::wfs::DataSource::getTransactor()
@@ -83,8 +80,7 @@ void te::wfs::DataSource::open()
 
   verifyConnectionInfo();
 
-  //m_ogrDS = OGRSFDriverRegistrar::Open(m_connectionInfo.find("URI")->second.c_str());
-  m_ogrDS = (GDALDataset*)GDALOpenEx(m_connectionInfo.find("URI")->second.c_str(), GDAL_OF_READONLY, NULL, NULL, NULL);
+  m_ogrDS = (GDALDataset*)GDALOpenEx(m_uri.uri().c_str(), GDAL_OF_READONLY, NULL, NULL, NULL);
 
   if(m_ogrDS == 0)
     throw Exception(TE_TR("Could not open the WFS data source!"));
@@ -110,21 +106,16 @@ bool te::wfs::DataSource::isOpened() const
 
 bool te::wfs::DataSource::isValid() const
 {
-  if(m_connectionInfo.empty())
+  if (m_isOpened)
+    return true;
+
+  verifyConnectionInfo();
+
+  GDALDataset* gds = static_cast<GDALDataset*>(GDALOpenEx(m_uri.uri().c_str(), GDAL_OF_READONLY, NULL, NULL, NULL));
+  if (gds == 0)
     return false;
 
-  std::map<std::string, std::string>::const_iterator it = m_connectionInfo.find("URI");
-  if(it == m_connectionInfo.end())
-    return false;
-
-  //OGRDataSource* ds = OGRSFDriverRegistrar::Open(it->second.c_str());
-  GDALDataset* ds = (GDALDataset*)GDALOpenEx(it->second.c_str(), GDAL_OF_READONLY, NULL, NULL, NULL);
-
-  if(ds == 0)
-    return false;
-
-  //OGRDataSource::DestroyDataSource(ds);
-  GDALClose(ds);
+  GDALClose(gds);
 
   return true;
 }
@@ -166,49 +157,50 @@ const std::vector<te::wfs::WFSLayerInfo>& te::wfs::DataSource::getLayersInfo()
   return m_layersInfo;
 }
 
-void te::wfs::DataSource::create(const std::map<std::string, std::string>& /*dsInfo*/)
+void te::wfs::DataSource::create(const std::string& connInfo)
 {
   throw Exception(TE_TR("The create() method is not supported by the WFS driver!"));
 }
 
-void te::wfs::DataSource::drop(const std::map<std::string, std::string>& /*dsInfo*/)
+void te::wfs::DataSource::drop(const std::string& connInfo)
 {
   throw Exception(TE_TR("The drop() method is not supported by the WFS driver!"));
 }
 
-bool te::wfs::DataSource::exists(const std::map<std::string, std::string>& dsInfo)
+bool te::wfs::DataSource::exists(const std::string& connInfo)
 {
-  if(dsInfo.empty())
+  if (connInfo.empty())
     return false;
 
-  std::map<std::string, std::string>::const_iterator it = dsInfo.find("URI");
-  if(it == dsInfo.end())
+  const te::core::URI aux(connInfo);
+  if (!aux.isValid())
     return false;
 
-  //OGRDataSource* ds = OGRSFDriverRegistrar::Open(it->second.c_str());
-  GDALDataset* ds = (GDALDataset*)GDALOpenEx(it->second.c_str(), GDAL_OF_READONLY, NULL, NULL, NULL);
-  if (ds == 0)
+  std::string path = aux.path();
+  if (path.empty())
     return false;
 
-  //OGRDataSource::DestroyDataSource(ds);
-  GDALClose(ds);
+  GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.c_str(), GA_ReadOnly));
+  if (gds == 0)
+    return false;
+
+  GDALClose(gds);
 
   return true;
 }
 
-std::vector<std::string> te::wfs::DataSource::getDataSourceNames(const std::map<std::string, std::string>& /*dsInfo*/)
+std::vector<std::string> te::wfs::DataSource::getDataSourceNames(const std::string& /*connInfo*/)
 {
   return std::vector<std::string>();
 }
 
 void te::wfs::DataSource::verifyConnectionInfo() const
 {
-  if(m_connectionInfo.empty())
-    throw Exception(TE_TR("The connection information is empty!"));
+  if (!m_uri.isValid())
+    throw Exception(TE_TR("The connection information is invalid!"));
 
-  std::map<std::string, std::string>::const_iterator it = m_connectionInfo.find("URI");
-  if(it == m_connectionInfo.end())
-    throw Exception(TE_TR("The connection information is invalid. Missing URI parameter!"));
+  if (m_uri.path().empty())
+    throw Exception(TE_TR("The connection information is invalid. Missing the path parameter!"));
 }
 
 void te::wfs::DataSource::buildLayersInfo()

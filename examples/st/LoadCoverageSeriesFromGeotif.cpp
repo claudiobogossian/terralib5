@@ -16,9 +16,7 @@ std::auto_ptr<te::st::CoverageSeries> LoadCoverageSeriesFromGeotif()
   {     
     //Indicates the data source
     te::da::DataSourceInfo dsinfo;
-
-    std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = TERRALIB_DATA_DIR "/st/coverage/geotif";
+    const std::string connInfo("file://" TERRALIB_DATA_DIR "/st/coverage/geotif");
     dsinfo.setConnInfo(connInfo);
     dsinfo.setType("GDAL");
 

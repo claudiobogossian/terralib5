@@ -509,7 +509,7 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
 
     std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
 
-    std::map<std::string, std::string> dsinfo;
+    std::string dsinfo("file://");
     boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
     if (m_toFile)
@@ -521,10 +521,9 @@ void te::mnt::TINGenerationDialog::onOkPushButtonClicked()
       if (idx != std::string::npos)
         outputdataset = outputdataset.substr(0, idx);
 
-      dsinfo["URI"] = uri.string();
+      dsinfo += uri.string();
 
-      te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
-      dsOGR->setConnectionInfo(dsinfo);
+      te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR", dsinfo).release());
       dsOGR->open();
 
       if (dsOGR->dataSetExists(outputdataset))

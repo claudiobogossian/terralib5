@@ -27,6 +27,8 @@
 #include "../common/STLUtils.h"
 #include "../common/StringUtils.h"
 #include "../core/translator/Translator.h"
+#include "../core/uri/URI.h"
+#include "../core/utils/URI.h"
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/dataset/CheckConstraint.h"
@@ -50,8 +52,8 @@
 te::da::DataSourceCapabilities te::stmem::DataSource::sm_capabilities;
 const te::da::SQLDialect te::stmem::DataSource::sm_dialect;
 
-te::stmem::DataSource::DataSource()
-  : m_connInfo(),
+te::stmem::DataSource::DataSource(const std::string& connInfo)
+  : te::da::DataSource(connInfo), 
     m_datasets(),
     m_schemas(),
     m_maxdatasets(TE_STMEMORY_DRIVER_MAX_DATASETS),
@@ -60,6 +62,18 @@ te::stmem::DataSource::DataSource()
     m_transactor(0)
 {
 }
+
+te::stmem::DataSource::DataSource(const te::core::URI& uri)
+  : te::da::DataSource(uri),
+  m_datasets(),
+  m_schemas(),
+  m_maxdatasets(TE_STMEMORY_DRIVER_MAX_DATASETS),
+  m_isOpened(false),
+  m_deepCopy(false),
+  m_transactor(0)
+{
+}
+
 
 te::stmem::DataSource::~DataSource()
 {
@@ -87,16 +101,6 @@ std::string te::stmem::DataSource::getType() const
   return Globals::sm_driverIdentifier;
 }
 
-const std::map<std::string, std::string>& te::stmem::DataSource::getConnectionInfo() const 
-{
-  return m_connInfo;
-}
-
-void te::stmem::DataSource::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
-{
-  m_connInfo = connInfo;
-}
-
 std::auto_ptr<te::da::DataSourceTransactor> te::stmem::DataSource::getTransactor()
 {
   return std::auto_ptr<te::da::DataSourceTransactor>(new Transactor(this));
@@ -109,16 +113,18 @@ void te::stmem::DataSource::open()
 
   m_transactor.reset(new Transactor(this));
 
-// check if it is required a different dataset limit
-  std::map<std::string, std::string>::const_iterator it = m_connInfo.find("MAX_DATASETS");
+  std::map<std::string, std::string> kvp = te::core::Expand(m_uri.query());
+  std::map<std::string, std::string>::const_iterator it = kvp.begin();
+  std::map<std::string, std::string>::const_iterator itend = kvp.end();
 
-  if(it != m_connInfo.end())
+// check if it is required a different dataset limit
+  it = kvp.find("MAX_DATASETS");
+  if(it != itend && !it->second.empty())
     m_maxdatasets = boost::lexical_cast<std::size_t>(it->second);
 
 // check operation mode
-  it = m_connInfo.find("OPERATION_MODE");
-
-  if((it != m_connInfo.end()) && (te::common::Convert2UCase(it->second) == "NON-SHARED"))
+  it = kvp.find("OPERATION_MODE");
+  if((it != itend && !it->second.empty()) && (te::common::Convert2UCase(it->second) == "NON-SHARED"))
     m_deepCopy = true;
  
   m_isOpened = true;
@@ -213,22 +219,22 @@ te::stmem::DataSource::getTemporalExtent(const std::string& name)
 }
 
 ///protected Methods
-void te::stmem::DataSource::create(const std::map<std::string, std::string>& /*dsInfo*/) 
+void te::stmem::DataSource::create(const std::string& connInfo /*dsInfo*/)
 {
   return;
 }
 
-void te::stmem::DataSource::drop(const std::map<std::string, std::string>& /*dsInfo*/) 
+void te::stmem::DataSource::drop(const std::string& connInfo /*dsInfo*/)
 {
   return;
 }
 
-bool te::stmem::DataSource::exists(const std::map<std::string, std::string>& /*dsInfo*/) 
+bool te::stmem::DataSource::exists(const std::string& connInfo /*dsInfo*/)
 {
   return false;
 }
 
-std::vector<std::string> te::stmem::DataSource::getDataSourceNames(const std::map<std::string, std::string>& /*dsInfo*/) 
+std::vector<std::string> te::stmem::DataSource::getDataSourceNames(const std::string& connInfo /*dsInfo*/)
 {
   return std::vector<std::string>();
 }

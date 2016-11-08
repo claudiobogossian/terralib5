@@ -25,6 +25,8 @@
 
 // TerraLib
 #include "../../../../core/translator/Translator.h"
+#include "../../../../core/uri/URI.h"
+#include "../../../../core/utils/URI.h"
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
@@ -86,7 +88,7 @@ void te::qt::plugins::ogr::OGRConnectorDialog::set(const te::da::DataSourceInfoP
 
   if(m_datasource.get() != 0)
   {
-    setConnectionInfo(m_datasource->getConnInfo());
+    setConnectionInfo(m_datasource->getConnInfoAsString());
 
     m_ui->m_datasourceTitleLineEdit->setText(QString::fromUtf8(m_datasource->getTitle().c_str()));
 
@@ -98,19 +100,15 @@ void te::qt::plugins::ogr::OGRConnectorDialog::openPushButtonPressed()
 {
   try
   {
-// check if driver is loaded
+    // check if driver is loaded
     if(te::da::DataSourceFactory::find("OGR") == 0)
       throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for OGR data sources!"));
 
-// get data source connection info based on form data
-    std::map<std::string, std::string> dsInfo;
-
-    getConnectionInfo(dsInfo);
+    // get data source connection info based on form data
+   const std::string dsInfo = getConnectionInfo();
 
 // perform connection
-    //m_driver.reset(te::da::DataSourceFactory::open("OGR", dsInfo));
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
-    ds->setConnectionInfo(dsInfo);
+    std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", dsInfo);
     ds->open();
     m_driver.reset(ds.release());
 
@@ -193,18 +191,12 @@ void te::qt::plugins::ogr::OGRConnectorDialog::testPushButtonPressed()
 {
   try
   {
-// check if driver is loaded
+    // check if driver is loaded
     if(te::da::DataSourceFactory::find("OGR") == 0)
       throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for OGR data sources!"));
 
-// get data source connection info based on form data
-    std::map<std::string, std::string> dsInfo;
-
-    getConnectionInfo(dsInfo);
-
-// perform connection
-    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("OGR"));
-    ds->setConnectionInfo(dsInfo);
+    // perform connection
+    std::unique_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("OGR", getConnectionInfo()));
     ds->open();
 
     if(ds.get() == 0)
@@ -270,36 +262,38 @@ void te::qt::plugins::ogr::OGRConnectorDialog::searchFeatureToolButtonPressed()
   }
 }
 
-void te::qt::plugins::ogr::OGRConnectorDialog::getConnectionInfo(std::map<std::string, std::string>& connInfo) const
+const std::string te::qt::plugins::ogr::OGRConnectorDialog::getConnectionInfo() const
 {
-  connInfo.clear();
+  QString qstr; // Auxiliary string used to hold temporary data
 
-  QString qstr = m_ui->m_featureRepoLineEdit->text().trimmed();
+  std::string strURI = "file://"; // The base of the URI
+
+  qstr = m_ui->m_featureRepoLineEdit->text().trimmed();
   
   if(qstr.isEmpty())
     throw te::qt::widgets::Exception(TE_TR("Please select a feature file first!"));
   
-  connInfo["URI"] = qstr.toUtf8().data();
+  strURI += qstr.toUtf8().data();
+
+  return strURI;
 }
 
-void te::qt::plugins::ogr::OGRConnectorDialog::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
+void te::qt::plugins::ogr::OGRConnectorDialog::setConnectionInfo(const std::string& connInfo)
 {
-  std::map<std::string, std::string>::const_iterator it = connInfo.find("URI");
-  std::map<std::string, std::string>::const_iterator itend = connInfo.end();
+  const te::core::URI uri(connInfo);
 
-  if(it != itend)
+  std::string path = uri.host() + uri.path();
+  std::map<std::string, std::string> kvp = te::core::Expand(uri.query());
+  std::map<std::string, std::string>::const_iterator it;
+
+  if(!path.empty())
   {
     m_ui->m_featureRepoLineEdit->setText(it->second.c_str());
-    m_ui->m_dirRadioButton->setChecked(true);
-    return;
-  }
 
-  it = connInfo.find("SOURCE");
-
-  if(it != itend)
-  {
-    m_ui->m_featureRepoLineEdit->setText(it->second.c_str());
-    m_ui->m_fileRadioButton->setChecked(true);
+    if(boost::filesystem::is_directory(path))
+      m_ui->m_dirRadioButton->setChecked(true);
+    else if(boost::filesystem::is_regular_file(path))
+      m_ui->m_fileRadioButton->setChecked(true);
   }
 }
 

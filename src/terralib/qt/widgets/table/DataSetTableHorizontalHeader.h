@@ -52,16 +52,16 @@ namespace te
 
       struct LinkTableInfo
       {
-        std::string m_dataSourceId;                     //!< Data Source Id.
-        std::string m_dataSourceType;                   //!< Data Source Type.
-        std::map<std::string, std::string> m_connInfo;  //!< Data Source Connection Info.
-        std::string m_layerId;                          //!< Layer Id.
-        std::string m_layerName;                        //!< Layer Name.
-        std::string m_layerTitle;                       //!< Layer Title.
-        std::string m_layerType;                        //!< Layer Type.
-        size_t m_fieldNumber;                           //!< Field Number.
-        std::string m_fieldName;                        //!< Field Name.
-        size_t m_fieldType;                             //!< Field Type.
+        std::string m_dataSourceId;    //!< Data Source Id.
+        std::string m_dataSourceType;  //!< Data Source Type.
+        std::string m_connInfo;      //!< Data Source Connection Info.
+        std::string m_layerId;         //!< Layer Id.
+        std::string m_layerName;       //!< Layer Name.
+        std::string m_layerTitle;      //!< Layer Title.
+        std::string m_layerType;       //!< Layer Type.
+        size_t m_fieldNumber;          //!< Field Number.
+        std::string m_fieldName;       //!< Field Name.
+        size_t m_fieldType;            //!< Field Type.
       };
       
       class DataSetTableHorizontalHeader : public QHeaderView
@@ -173,14 +173,14 @@ namespace te
           te::da::DataSourcePtr GetDataSource(const te::map::AbstractLayer* layer);
 
         protected:
-          DataSetTableView* m_view;                       //!< data set table view pointer.
-          bool  m_doDragDrop;                             //!< True: do drag and drop. False: do not drag and drop.
-          bool  m_acceptDrop;                             //!< True: accept drop. False: not accept drop.
-          const te::map::AbstractLayer* m_layer;          //!< To get information for drag and drop.
-          te::da::DataSet* m_dset;                        //!< To get information for drag and drop.
-          LinkTableInfo m_firstLinkInfo;                  //!< First link info.
-          LinkTableInfo m_secondLinkInfo;                 //!< Second link info.
-          std::map<std::string, std::string> m_connInfo;  //!< connection info used for QMimeData.
+          DataSetTableView* m_view;               //!< data set table view pointer.
+          bool  m_doDragDrop;                     //!< True: do drag and drop. False: do not drag and drop.
+          bool  m_acceptDrop;                     //!< True: accept drop. False: not accept drop.
+          const te::map::AbstractLayer* m_layer;  //!< To get information for drag and drop.
+          te::da::DataSet* m_dset;                //!< To get information for drag and drop.
+          LinkTableInfo m_firstLinkInfo;          //!< First link info.
+          LinkTableInfo m_secondLinkInfo;         //!< Second link info.
+          std::string m_connInfo;                 //!< connection info used for QMimeData.
       };
       
     } // namespace widgets

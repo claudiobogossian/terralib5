@@ -50,11 +50,8 @@ void CreateMSTGraph(bool draw);
 /*! \brief Auxiliar functions for load a raster. */
 std::auto_ptr<te::rst::Raster> OpenRaster(const std::string& pathName, const int& srid);
 
-/*! \brief Auxiliar functions for load a data source. */
-std::auto_ptr<te::da::DataSource> OpenDataSource(std::map<std::string, std::string> connInfo, std::string dsType);
-
 /*! \brief Auxiliar functions for load a org data source. */
-std::auto_ptr<te::da::DataSource> OpenOGRDataSource(const std::string& pathName);
+std::unique_ptr<te::da::DataSource> OpenOGRDataSource(const std::string& pathName);
 
 /*! \brief Auxiliar functions used to get a dataset extent. */
 std::auto_ptr<te::gm::Envelope> getDataSetExtent(te::da::DataSource* ds, std::string dataSetName);

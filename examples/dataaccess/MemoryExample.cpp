@@ -16,12 +16,13 @@ void MemoryExample()
     std::string data_dir = TERRALIB_DATA_DIR;
     
     // creates a datasource in memory
-    std::auto_ptr<te::da::DataSource> dsMem = te::da::DataSourceFactory::make("MEM");
+    std::unique_ptr<te::da::DataSource> dsMem = te::da::DataSourceFactory::make("MEM", "memory:");
 
     // creates a datasettype, named "SoilMeasures", in the memory datasource
     std::string dsName("SoilMeasures");
     te::da::DataSetType* dType  = CreateDataSetTypeInMemory(dsName);
-    dsMem->createDataSet(dType,std::map<std::string, std::string>());                       // no specific options
+    std::map<std::string, std::string> options;
+    dsMem->createDataSet(dType, options);  // no specific options
     
     // check point: datasettype was created and can be retrieved from datasource
     std::auto_ptr<te::da::DataSetType> dType_ret = dsMem->getDataSetType(dsName);
@@ -35,7 +36,7 @@ void MemoryExample()
     PrintDataSet(dsName, dSet);
 
     // adds the dataset to datasource
-    dsMem->add(dsName,dSet,std::map<std::string, std::string>()); // no special options
+    dsMem->add(dsName,dSet, options);
     
     // check point: retrieve the dataset from datasource
     std::auto_ptr<te::da::DataSet> ds_ret = dsMem->getDataSet(dsName);

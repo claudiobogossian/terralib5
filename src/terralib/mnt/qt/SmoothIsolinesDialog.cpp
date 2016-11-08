@@ -260,7 +260,7 @@ void te::mnt::SmoothIsolinesDialog::onOkPushButtonClicked()
       throw te::common::Exception(TE_TR("Define a name for the resulting layer."));
 
     std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toUtf8().data();
-    std::map<std::string, std::string> outdsinfo;
+    std::string outdsinfo ("file://");
     boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toUtf8().data());
 
     if (m_toFile)
@@ -272,15 +272,14 @@ void te::mnt::SmoothIsolinesDialog::onOkPushButtonClicked()
       if (idx != std::string::npos)
         outputdataset = outputdataset.substr(0, idx);
 
-      outdsinfo["URI"] = uri.string();
+      outdsinfo += uri.string();
     }
 
     Smooth *iso = new te::mnt::Smooth();
     iso->setInput(inDataSource, inDsetName, inDsetType);
     if (m_toFile)
     {
-      te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR").release());
-      dsOGR->setConnectionInfo(outdsinfo);
+      te::da::DataSourcePtr dsOGR(te::da::DataSourceFactory::make("OGR", outdsinfo).release());
       dsOGR->open();
 
       if (dsOGR->dataSetExists(outputdataset))

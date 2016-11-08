@@ -27,6 +27,8 @@
 #include "../common/Enums.h"
 #include "../common/STLUtils.h"
 #include "../core/translator/Translator.h"
+#include "../core/uri/URI.h"
+#include "../core/utils/URI.h"
 #include "../dataaccess/datasource/ConnectionPoolManager.h"
 #include "Connection.h"
 #include "ConnectionPool.h"
@@ -86,17 +88,18 @@ void te::pgis::ConnectionPool::initialize()
     throw Exception(TE_TR("The connection pool is already initialized!"));
 
 // check for pool parameters...
-  const std::map<std::string, std::string>& connInfo = m_pImpl->m_ds->getConnectionInfo();
+  const te::core::URI& connInfo = m_pImpl->m_ds->getConnectionInfo();
+  std::map<std::string, std::string> kvp = te::core::Expand(connInfo.query());
+  std::map<std::string, std::string>::const_iterator it = kvp.begin();
+  std::map<std::string, std::string>::const_iterator itend = kvp.end();
 
-  std::map<std::string, std::string>::const_iterator itend = connInfo.end();
-
-  std::map<std::string, std::string>::const_iterator it = connInfo.find("PG_INITIAL_POOL_SIZE");
+  it = kvp.find("PG_INITIAL_POOL_SIZE");
   m_pImpl->m_initialPoolSize = (it != itend && !it->second.empty()) ? atoi(it->second.c_str()) : PGIS_DEFAULT_INITIAL_POOL_SIZE;
   
-  it = connInfo.find("PG_MIN_POOL_SIZE");
+  it = kvp.find("PG_MIN_POOL_SIZE");
   m_pImpl->m_minPoolSize = (it != itend && !it->second.empty()) ? atoi(it->second.c_str()) : PGIS_DEFAULT_MIN_POOL_SIZE;
   
-  it = connInfo.find("PG_MAX_POOL_SIZE");
+  it = kvp.find("PG_MAX_POOL_SIZE");
   m_pImpl->m_maxPoolSize = (it != itend && !it->second.empty()) ? atoi(it->second.c_str()) : PGIS_DEFAULT_MAX_POOL_SIZE;
 
 // assure valid values for pool parameters
@@ -108,7 +111,7 @@ void te::pgis::ConnectionPool::initialize()
   else if(m_pImpl->m_initialPoolSize < m_pImpl->m_minPoolSize)
     m_pImpl->m_initialPoolSize = m_pImpl->m_minPoolSize;
 
-  it = connInfo.find("PG_MAX_IDLE_TIME");
+  it = kvp.find("PG_MAX_IDLE_TIME");
   m_pImpl->m_maxIdleTime = (it != itend && !it->second.empty()) ? atoi(it->second.c_str()) : PGIS_DEFAULT_MAX_IDLE_TIME;
 
   m_pImpl->m_cencoding = te::core::CharEncoding::getEncodingName(m_pImpl->m_ds->getEncoding());
