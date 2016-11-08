@@ -63,18 +63,18 @@ std::unique_ptr<te::da::DataSource> GetPostGISConnection()
     std::cout << "Datasource " << host << "/" <<  path << " can not be used!\nMake sure to have the correct connection parameters\n";
     std::cout << "Error: " << e.what() << std::endl;
     ds.reset();
-    return std::move(ds);
+    return ds;
   }
   catch(...)
   {
     std::cout << "Datasource " << host << "/" << path << " can not be used!\nMake sure to have the correct connection parameters\n";
     ds.reset();
-    return std::move(ds);
+    return ds;
   }
   
   std::cout << "Using datasource " << host << "/" <<  path << std::endl;
   ds->close();
-  return std::move(ds);
+  return ds;
 }
 
 void PostGISExample()

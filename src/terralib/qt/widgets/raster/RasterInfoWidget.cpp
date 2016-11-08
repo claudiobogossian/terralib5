@@ -166,7 +166,7 @@ std::unique_ptr<te::da::DataSource> te::qt::widgets::RasterInfoWidget::getDataSo
   std::unique_ptr< te::da::DataSource > dsPtr(te::da::DataSourceFactory::make("GDAL", connInfoRaster));
   dsPtr->open();
 
-  return std::move(dsPtr);
+  return dsPtr;
 }
 
 std::string te::qt::widgets::RasterInfoWidget::getName() const

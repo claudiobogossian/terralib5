@@ -102,7 +102,7 @@ std::unique_ptr<te::da::DataSource> te::graph::FlowGraphBuilder::getDataSource(c
   std::unique_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR", ("file://" + fileName));
   ds->open();
 
-  return std::move(ds);
+  return ds;
 }
 
 std::auto_ptr<te::da::DataSet> te::graph::FlowGraphBuilder::getDataSet(te::da::DataSource* ds)

@@ -48,7 +48,7 @@ std::unique_ptr<te::da::DataSource> te::da::DataSourceFactory::make(const std::s
     ds.reset(sm_factories[driver](connInfo));
   }
 
-  return std::move(ds);
+  return ds;
 }
 
 std::unique_ptr<te::da::DataSource> te::da::DataSourceFactory::make(const std::string& driver, const std::string& connInfo)
