@@ -360,15 +360,7 @@ const unsigned char* te::ogr::DataSet::getWKB() const
     m_wkbArray = new unsigned char[m_wkbArraySize];
   }
 
-  geom->exportToWkb(wkbNDR, m_wkbArray);
-
-// 2.5D geometries have a special code!
-  if(geom->getGeometryType() & 0x80000000)
-  {
-    unsigned int newcode = 0x0FFFFFFF & geom->getGeometryType();
-    newcode += 1000;
-    memcpy(m_wkbArray + 1, &newcode, sizeof(unsigned int));
-  }
+  geom->exportToWkb(wkbNDR, m_wkbArray, wkbVariantIso);
 
   OGRGeometryFactory::destroyGeometry(geom);
 
