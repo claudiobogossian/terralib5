@@ -29,7 +29,7 @@ te::map::DataSetLayerPtr createLayer(te::da::DataSourcePtr source, te::da::DataS
   if (dataset.get() == 0)
   {
     std::cout << "Can not convert a NULL dataset to a layer!" << std::endl;
-    return false;
+    return 0;
   }
 
   boost::uuids::uuid u = gen();
