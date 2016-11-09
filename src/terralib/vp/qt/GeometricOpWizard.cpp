@@ -1,6 +1,7 @@
 /*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+    This file is part of the TerraLib - a Framework for building GIS enabled
+   applications.
 
     TerraLib is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -20,10 +21,11 @@
 /*!
   \file terralib/vp/qt/GeometricOpWizard.cpp
 
-  \brief A Qt dialog that allows users to run the basic geographic operations defined by VP module.
+  \brief A Qt dialog that allows users to run the basic geographic operations
+  defined by VP module.
 */
 
-// TerraLib 
+// TerraLib
 #include "../Enums.h"
 #include "../../core/filesystem/FileSystem.h"
 #include "../../core/logger/Logger.h"
@@ -37,6 +39,8 @@
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
 #include "../../dataaccess/utils/Utils.h"
+
+#include "../../geometry/GeometryProperty.h"
 
 #include "../../maptools/AbstractLayer.h"
 
@@ -55,7 +59,6 @@
 #include "../GeometricOp.h"
 #include "../GeometricOpMemory.h"
 #include "../GeometricOpQuery.h"
-//#include "Utils.h"
 
 // STL
 #include <cassert>
@@ -68,17 +71,17 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-te::vp::GeometricOpWizard::GeometricOpWizard(QWidget* parent)
-  : QWizard(parent)
+te::vp::GeometricOpWizard::GeometricOpWizard(QWidget* parent) : QWizard(parent)
 {
-  //configure the wizard
+  // configure the wizard
   this->setWizardStyle(QWizard::ModernStyle);
   this->setWindowTitle(tr("Geometric Operation"));
 
   this->setOption(QWizard::HaveHelpButton, true);
   this->setOption(QWizard::HelpButtonOnRight, false);
 
-  te::qt::widgets::HelpPushButton* helpButton = new te::qt::widgets::HelpPushButton(this);
+  te::qt::widgets::HelpPushButton* helpButton =
+      new te::qt::widgets::HelpPushButton(this);
 
   this->setButton(QWizard::HelpButton, helpButton);
 
@@ -89,14 +92,14 @@ te::vp::GeometricOpWizard::GeometricOpWizard(QWidget* parent)
 
 te::vp::GeometricOpWizard::~GeometricOpWizard()
 {
-
 }
 
 bool te::vp::GeometricOpWizard::validateCurrentPage()
 {
-  if(currentPage() ==  m_layerSearchPage.get())
+  if(currentPage() == m_layerSearchPage.get())
   {
-    std::list<te::map::AbstractLayerPtr> list = m_layerSearchPage->getSearchWidget()->getSelecteds();
+    std::list<te::map::AbstractLayerPtr> list =
+        m_layerSearchPage->getSearchWidget()->getSelecteds();
 
     if(list.empty() == false)
     {
@@ -107,11 +110,23 @@ bool te::vp::GeometricOpWizard::validateCurrentPage()
       std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
       std::vector<te::dt::Property*> vecProp = dsType->getProperties();
       std::vector<std::string> vecPropName;
-      
+
       for(std::size_t i = 0; i < vecProp.size(); ++i)
       {
         if(vecProp[i]->getType() != te::dt::GEOMETRY_TYPE)
+        {
           vecPropName.push_back(vecProp[i]->getName());
+        }
+        else
+        {
+          te::gm::GeometryProperty* geomProperty =
+              dynamic_cast<te::gm::GeometryProperty*>(vecProp[i]->clone());
+
+          m_geomOpOutputPage->setInputGeometryType(
+              geomProperty->getGeometryType());
+
+          delete geomProperty;
+        }
       }
 
       m_geomOpOutputPage->setAttributes(vecPropName);
@@ -119,22 +134,22 @@ bool te::vp::GeometricOpWizard::validateCurrentPage()
 
     return m_layerSearchPage->isComplete();
   }
-  else if(currentPage() ==  m_geomOpOutputPage.get())
+  else if(currentPage() == m_geomOpOutputPage.get())
   {
     if(!m_geomOpOutputPage->getToFile())
     {
       if(!m_geomOpOutputPage->getDsInfoPtr())
       {
-        QMessageBox::information(this, 
-                                "Basic Geographic Operation", 
-                                "Set the output data source before execute the operation.");
+        QMessageBox::information(
+            this, tr("Geometric Operation"),
+            tr("Set the output data source before execute the operation."));
         return false;
       }
       if(m_geomOpOutputPage->getOutDsName() == "")
       {
-        QMessageBox::information(this, 
-                                "Basic Geographic Operation", 
-                                "Set a Name for the output dataset before execute the operation.");
+        QMessageBox::information(this, tr("Geometric Operation"),
+                                 tr("Set a Name for the output dataset before "
+                                    "execute the operation."));
         return false;
       }
     }
@@ -145,7 +160,8 @@ bool te::vp::GeometricOpWizard::validateCurrentPage()
   return true;
 }
 
-void te::vp::GeometricOpWizard::setList(std::list<te::map::AbstractLayerPtr>& layerList)
+void te::vp::GeometricOpWizard::setList(
+    std::list<te::map::AbstractLayerPtr>& layerList)
 {
   m_layerSearchPage->getSearchWidget()->setList(layerList);
   m_layerSearchPage->getSearchWidget()->filterOnlyByGeom();
@@ -177,7 +193,7 @@ void te::vp::GeometricOpWizard::addPages()
   addPage(m_geomOpPage.get());
   addPage(m_geomOpOutputPage.get());
 
-  //for contrast only one layer can be selected
+  // for contrast only one layer can be selected
   m_layerSearchPage->getSearchWidget()->enableMultiSelection(false);
 }
 
@@ -185,18 +201,20 @@ bool te::vp::GeometricOpWizard::execute()
 {
   bool result;
 
-// progress
+  // progress
   te::qt::widgets::ProgressViewerDialog v(this);
   int id = te::common::ProgressManager::getInstance().addViewer(&v);
 
   try
   {
-    te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_inLayer.get());
-    te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
-    
+    te::map::DataSetLayer* dsLayer =
+        dynamic_cast<te::map::DataSetLayer*>(m_inLayer.get());
+    te::da::DataSourcePtr inDataSource =
+        te::da::GetDataSource(dsLayer->getDataSourceId(), true);
+
     m_ops.clear();
 
-    //Params
+    // Params
     if(m_geomOpOutputPage->hasConvexHull())
       m_ops.push_back(te::vp::CONVEX_HULL);
 
@@ -215,23 +233,24 @@ bool te::vp::GeometricOpWizard::execute()
     if(m_geomOpOutputPage->hasPerimeter())
       m_ops.push_back(te::vp::PERIMETER);
 
-// Verify if it has at least one operation checked.
-    if (m_ops.empty())
+    // Verify if it has at least one operation checked.
+    if(m_ops.empty())
     {
-      QMessageBox::information(this, "Geographic Operation", "Check at least one operation.");
+      QMessageBox::information(this, tr("Geometric Operation"),
+                               tr("Check at least one operation."));
       return false;
     }
 
-// get the selected properties of input layer
+    // get the selected properties of input layer
     std::vector<std::string> geoProps = m_geomOpPage->getSelectedProps();
 
     std::string outputdataset = m_geomOpOutputPage->getOutDsName();
     std::vector<std::string> outputDSetNames;
 
-//get the selected property if the operation is by attribute
+    // get the selected property if the operation is by attribute
     m_attribute = m_geomOpOutputPage->getAttribute();
 
-// Verify output datasource
+    // Verify output datasource
     if(m_geomOpOutputPage->getToFile())
     {
       boost::filesystem::path uri(m_geomOpOutputPage->getPath());
@@ -240,10 +259,15 @@ bool te::vp::GeometricOpWizard::execute()
 
       if(m_geomOpOutputPage->hasConvexHull())
       {
-        boost::filesystem::path uri_file(m_geomOpOutputPage->getPath() + "/" + outputdataset + "_convex_hull.shp");
-        if (te::core::FileSystem::exists(uri_file.string()))
+        boost::filesystem::path uri_file(m_geomOpOutputPage->getPath() + "/" +
+                                         outputdataset + "_convex_hull.shp");
+        if(te::core::FileSystem::exists(uri_file.string()))
         {
-          QMessageBox::information(this, "Geographic Operation", "The convex hull output file already exists. Remove it or select a new name and try again.");
+          QMessageBox::information(
+              this, tr("Geometric Operation"),
+              tr("The convex hull output file already "
+                 "exists. Remove it or select a new name and "
+                 "try again."));
           return false;
         }
 
@@ -251,10 +275,15 @@ bool te::vp::GeometricOpWizard::execute()
       }
       if(m_geomOpOutputPage->hasCentroid())
       {
-        boost::filesystem::path uri_file(m_geomOpOutputPage->getPath() + "/" + outputdataset + "_centroid.shp");
-        if (te::core::FileSystem::exists(uri_file.string()))
+        boost::filesystem::path uri_file(m_geomOpOutputPage->getPath() + "/" +
+                                         outputdataset + "_centroid.shp");
+        if(te::core::FileSystem::exists(uri_file.string()))
         {
-          QMessageBox::information(this, "Geographic Operation", "The centroid output file already exists. Remove it or select a new name and try again.");
+          QMessageBox::information(
+              this, tr("Geometric Operation"),
+              tr("The centroid output file already exists. "
+                 "Remove it or select a new name and try "
+                 "again."));
           return false;
         }
 
@@ -262,10 +291,14 @@ bool te::vp::GeometricOpWizard::execute()
       }
       if(m_geomOpOutputPage->hasMBR())
       {
-        boost::filesystem::path uri_file(m_geomOpOutputPage->getPath() + "/" + outputdataset + "_mbr.shp");
-        if (te::core::FileSystem::exists(uri_file.string()))
+        boost::filesystem::path uri_file(m_geomOpOutputPage->getPath() + "/" +
+                                         outputdataset + "_mbr.shp");
+        if(te::core::FileSystem::exists(uri_file.string()))
         {
-          QMessageBox::information(this, "Geographic Operation", "The mbr output file already exists. Remove it or select a new name and try again.");
+          QMessageBox::information(
+              this, tr("Geometric Operation"),
+              tr("The mbr output file already exists. Remove "
+                 "it or select a new name and try again."));
           return false;
         }
 
@@ -273,10 +306,14 @@ bool te::vp::GeometricOpWizard::execute()
       }
       if(!ops_selected)
       {
-        boost::filesystem::path uri_file(m_geomOpOutputPage->getPath() + "/" + outputdataset + ".shp");
-        if (te::core::FileSystem::exists(uri_file.string()))
+        boost::filesystem::path uri_file(m_geomOpOutputPage->getPath() + "/" +
+                                         outputdataset + ".shp");
+        if(te::core::FileSystem::exists(uri_file.string()))
         {
-          QMessageBox::information(this, "Geographic Operation", "Output file already exists. Remove it or select a new name and try again.");
+          QMessageBox::information(
+              this, tr("Geometric Operation"),
+              tr("Output file already exists. Remove it or "
+                 "select a new name and try again."));
           return false;
         }
       }
@@ -288,17 +325,25 @@ bool te::vp::GeometricOpWizard::execute()
 
       std::string dsinfo("file://");
       dsinfo += uri.string();
-
       std::unique_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR", dsinfo);
       dsOGR->open();
-      if (dsOGR->dataSetExists(outputdataset))
+      if(dsOGR->dataSetExists(outputdataset))
       {
-        QMessageBox::information(this, "Basic Geographic Operation", "There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again.");
+        QMessageBox::information(
+            this, tr("Geometric Operation"),
+            tr("There is already a dataset with the requested name in the "
+               "output "
+               "data source. Remove it or select a new name and try again."));
         return false;
       }
 
-      std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(dsLayer->getSchema().get(), dsOGR->getCapabilities(), dsOGR->getEncoding()));
-      te::da::AssociateDataSetTypeConverterSRID(converter.get(), dsLayer->getSRID());
+      std::unique_ptr<te::da::DataSetTypeConverter> converter(
+          new te::da::DataSetTypeConverter(dsLayer->getSchema().get(),
+                                           dsOGR->getCapabilities(),
+                                           dsOGR->getEncoding()));
+
+      te::da::AssociateDataSetTypeConverterSRID(converter.get(),
+                                                dsLayer->getSRID());
 
       this->setCursor(Qt::WaitCursor);
 
@@ -306,9 +351,11 @@ bool te::vp::GeometricOpWizard::execute()
       te::vp::GeometricOp* geomOp = 0;
 
       // select a strategy based on the capabilities of the input datasource
-      const te::da::DataSourceCapabilities dsCapabilities = inDataSource->getCapabilities();
+      const te::da::DataSourceCapabilities dsCapabilities =
+          inDataSource->getCapabilities();
 
-      if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
+      if(dsCapabilities.supportsPreparedQueryAPI() &&
+         dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
       {
         geomOp = new te::vp::GeometricOpQuery();
       }
@@ -317,23 +364,22 @@ bool te::vp::GeometricOpWizard::execute()
         geomOp = new te::vp::GeometricOpMemory();
       }
 
-      geomOp->setInput(inDataSource, dsLayer->getDataSetName(), converter);
+      geomOp->setInput(inDataSource, dsLayer->getDataSetName(), std::move(converter));
       geomOp->setOutput(std::move(dsOGR), outputdataset);
-      geomOp->setParams(geoProps, 
-                        m_ops, 
-                        m_geomOpOutputPage->getObjectStrategy(), 
-                        m_attribute, 
-                        m_geomOpOutputPage->hasOutputLayer());
+      geomOp->setParams(geoProps, m_ops,
+                        m_geomOpOutputPage->getObjectStrategy(), m_attribute);
 
-      if (!geomOp->paramsAreValid())
+      if(!geomOp->paramsAreValid())
         result = false;
       else
         result = geomOp->run();
 
-      if (!result)
+      if(!result)
       {
         this->setCursor(Qt::ArrowCursor);
-        QMessageBox::information(this, "Geometric Operation", "Error: could not generate the operation, check the log file.");
+        QMessageBox::information(
+            this, tr("Geometric Operation"),
+            tr("Error: could not generate the operation, check the log file."));
         return false;
       }
 
@@ -345,7 +391,7 @@ bool te::vp::GeometricOpWizard::execute()
       boost::uuids::basic_random_generator<boost::mt19937> gen;
       boost::uuids::uuid u = gen();
       std::string id = boost::uuids::to_string(u);
-      
+
       te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
       ds->setConnInfo(dsinfo);
       ds->setTitle(uri.stem().string());
@@ -353,8 +399,10 @@ bool te::vp::GeometricOpWizard::execute()
       ds->setType("OGR");
       ds->setDescription(uri.string());
       ds->setId(id);
-      
-      te::da::DataSourcePtr newds = te::da::DataSourceManager::getInstance().get(id, "OGR", ds->getConnInfo());
+
+      te::da::DataSourcePtr newds =
+          te::da::DataSourceManager::getInstance().get(id, "OGR",
+                                                       ds->getConnInfo());
       newds->open();
       te::da::DataSourceInfoManager::getInstance().add(ds);
       m_outputDatasource = ds;
@@ -365,29 +413,41 @@ bool te::vp::GeometricOpWizard::execute()
       std::unique_ptr<te::da::DataSource> trgDs = te::da::DataSourceFactory::make(m_outputDatasource->getType(), m_outputDatasource->getConnInfo());
       trgDs->open();
 
-      if (!trgDs.get())
+      if(!trgDs.get())
       {
-        QMessageBox::information(this, "Geometric Operation", "The selected output datasource can not be accessed.");
-        return false;
-      }
-      
-      if (trgDs->dataSetExists(outputdataset))
-      {
-        QMessageBox::information(this, "Geometric Operation", "Dataset already exists. Remove it or select a new name and try again.");
+        QMessageBox::information(
+            this, tr("Geometric Operation"),
+            tr("The selected output datasource can not be accessed."));
         return false;
       }
 
-      std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(dsLayer->getSchema().get(), trgDs->getCapabilities(), trgDs->getEncoding()));
-      te::da::AssociateDataSetTypeConverterSRID(converter.get(), dsLayer->getSRID());
+      if(trgDs->dataSetExists(outputdataset))
+      {
+        QMessageBox::information(
+            this, tr("Geometric Operation"),
+            tr("Dataset already exists. Remove it or select "
+               "a new name and try again."));
+        return false;
+      }
+
+      std::unique_ptr<te::da::DataSetTypeConverter> converter(
+          new te::da::DataSetTypeConverter(dsLayer->getSchema().get(),
+                                           trgDs->getCapabilities(),
+                                           trgDs->getEncoding()));
+
+      te::da::AssociateDataSetTypeConverterSRID(converter.get(),
+                                                dsLayer->getSRID());
 
       this->setCursor(Qt::WaitCursor);
 
       te::vp::GeometricOp* geomOp = 0;
-      
-      // select a strategy based on the capabilities of the input datasource
-      const te::da::DataSourceCapabilities dsCapabilities = inDataSource->getCapabilities();
 
-      if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
+      // select a strategy based on the capabilities of the input datasource
+      const te::da::DataSourceCapabilities dsCapabilities =
+          inDataSource->getCapabilities();
+
+      if(dsCapabilities.supportsPreparedQueryAPI() &&
+         dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
       {
         geomOp = new te::vp::GeometricOpQuery();
       }
@@ -396,23 +456,22 @@ bool te::vp::GeometricOpWizard::execute()
         geomOp = new te::vp::GeometricOpMemory();
       }
 
-      geomOp->setInput(inDataSource, dsLayer->getDataSetName(), converter);
+      geomOp->setInput(inDataSource, dsLayer->getDataSetName(), std::move(converter));
       geomOp->setOutput(std::move(trgDs), outputdataset);
-      geomOp->setParams(geoProps,
-                        m_ops,
-                        m_geomOpOutputPage->getObjectStrategy(),
-                        m_attribute,
-                        m_geomOpOutputPage->hasOutputLayer());
+      geomOp->setParams(geoProps, m_ops,
+                        m_geomOpOutputPage->getObjectStrategy(), m_attribute);
 
-      if (!geomOp->paramsAreValid())
+      if(!geomOp->paramsAreValid())
         result = false;
       else
         result = geomOp->run();
 
-      if (!result)
+      if(!result)
       {
         this->setCursor(Qt::ArrowCursor);
-        QMessageBox::information(this, "Geometric Operation", "Error: could not generate the operation.");
+        QMessageBox::information(
+            this, tr("Geometric Operation"),
+            tr("Error: could not generate the operation."));
         return false;
       }
 
@@ -421,10 +480,11 @@ bool te::vp::GeometricOpWizard::execute()
       delete geomOp;
     }
 
-// creating a layer for the result
-    te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outputDatasource->getId());
-    
-    //force to close database connection to refresh dataSets.
+    // creating a layer for the result
+    te::da::DataSourcePtr outDataSource =
+        te::da::GetDataSource(m_outputDatasource->getId());
+
+    // force to close database connection to refresh dataSets.
     outDataSource->close();
     outDataSource->open();
 
@@ -432,7 +492,8 @@ bool te::vp::GeometricOpWizard::execute()
 
     for(std::size_t i = 0; i < outputDSetNames.size(); ++i)
     {
-      te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outputDSetNames[i]).release());
+      te::da::DataSetTypePtr dt(
+          outDataSource->getDataSetType(outputDSetNames[i]).release());
       if(dt)
         m_outLayer.push_back(converter(dt));
     }
@@ -440,7 +501,7 @@ bool te::vp::GeometricOpWizard::execute()
   catch(const std::exception& e)
   {
     this->setCursor(Qt::ArrowCursor);
-    QMessageBox::information(this, "Greographic Operation", e.what());
+    QMessageBox::information(this, tr("Greographic Operation"), e.what());
 
 #ifdef TERRALIB_LOGGER_ENABLED
     std::string str = "Greographic Operation - ";

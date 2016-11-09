@@ -52,7 +52,8 @@ namespace te
     /*!
       \class GeometricWizardPage
 
-      \brief This class is GUI used to define the basic geometric operator parameters for the VP operation.
+      \brief This class is GUI used to define the basic geometric operator
+      parameters for the VP operation.
     */
     class TEVPEXPORT GeometricOpWizardPage : public QWizardPage
     {
@@ -65,14 +66,14 @@ namespace te
         ~GeometricOpWizardPage();
 
       public:
+       /*!
+         \brief This method is used to set the selected layer for segmenter
+         operation
 
-        /*!
-          \brief This method is used to set the selected layer for segmenter operation
-            
-          \param layer The layer ptr 
+         \param layer The layer ptr
 
-          \note This layer MUST HAVE a valid geometry object.
-        */
+         \note This layer MUST HAVE a valid geometry object.
+       */
         void setLayer(te::map::AbstractLayerPtr layer);
 
         te::map::AbstractLayerPtr getLayer();

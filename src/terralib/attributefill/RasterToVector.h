@@ -1,6 +1,7 @@
 /*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+    This file is part of the TerraLib - a Framework for building GIS enabled
+   applications.
 
     TerraLib is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -19,16 +20,16 @@
 
 /*!
  \file RasterToVector.h
- 
+
  \brief Raster to Vector processing.
- 
+
  \ingroup attributefill
  */
 
 #ifndef __TERRALIB_ATTRIBUTEFILL_INTERNAL_RASTER_TO_VECTOR_H
 #define __TERRALIB_ATTRIBUTEFILL_INTERNAL_RASTER_TO_VECTOR_H
 
-//Terralib
+// Terralib
 
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
@@ -41,7 +42,6 @@
 #include "../raster/Raster.h"
 #include "../rp/Texture.h"
 #include "../statistics/core/Enums.h"
-
 
 #include "Config.h"
 
@@ -57,11 +57,12 @@ namespace te
   {
     class TEATTRIBUTEFILLEXPORT RasterToVector
     {
-    public:
-      
+     public:
       RasterToVector();
-      
-      ~RasterToVector() {}
+
+      ~RasterToVector()
+      {
+      }
 
       void setInput(te::rst::Raster* inRaster,
                     te::da::DataSourcePtr inVectorDsrc,
@@ -71,8 +72,7 @@ namespace te
 
       void setParams(std::vector<unsigned int> bands,
                      std::vector<te::stat::StatisticalSummary> statSum,
-                     bool texture,
-                     bool readAll);
+                     bool texture, bool readAll);
 
       void setOutput(te::da::DataSourcePtr outDsrc, std::string dsName);
 
@@ -80,18 +80,21 @@ namespace te
 
       bool run();
 
-    protected:
+     protected:
+      void getPixelDistinct(rst::Raster& inputRaster,
+                            unsigned int inputRasterBand,
+                            std::vector<double>& values);
 
-      std::vector<std::set<int> > getPixelDistinct(te::rst::Raster* rst, std::vector<unsigned int> bands);
-
-      std::auto_ptr<te::da::DataSetType> getDataSetType(std::vector<std::set<int> > pixelDistinct = std::vector<std::set<int> >());
+      std::auto_ptr<te::da::DataSetType> getDataSetType(
+          std::vector<std::vector<double> > pixelDistinct =
+              std::vector<std::vector<double> >());
 
       std::vector<te::rp::Texture> getTexture(te::rst::Raster* rst,
-                                              te::gm::Geometry* geom,
-                                              int band,
+                                              te::gm::Geometry* geom, int band,
                                               bool readAll = false);
 
-      bool save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType);
+      bool save(std::auto_ptr<te::mem::DataSet> result,
+                std::auto_ptr<te::da::DataSetType> outDsType);
 
       te::rst::Raster* m_inRaster;
       te::da::DataSourcePtr m_inVectorDsrc;
@@ -109,4 +112,4 @@ namespace te
     };
   }
 }
-#endif // __TERRALIB_ATTRIBUTEFILL_INTERNAL_RASTER_TO_VECTOR_H
+#endif  // __TERRALIB_ATTRIBUTEFILL_INTERNAL_RASTER_TO_VECTOR_H

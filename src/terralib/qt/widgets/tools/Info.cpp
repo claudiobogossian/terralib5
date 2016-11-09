@@ -144,7 +144,8 @@ void te::qt::widgets::Info::setLayers(const std::list<te::map::AbstractLayerPtr>
   m_layers = layers;
 }
 
-void te::qt::widgets::Info::getInfo(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& e)
+void te::qt::widgets::Info::getInfo(const te::map::AbstractLayerPtr& layer,
+                                    const te::gm::Envelope& e)
 {
   if(layer->getVisibility() != te::map::VISIBLE)
     return;
@@ -183,15 +184,19 @@ void te::qt::widgets::Info::getInfo(const te::map::AbstractLayerPtr& layer, cons
 
       if(spatialPropertyName.empty())
         gp = te::da::GetFirstGeomProperty(ls.get());
-     else
-        gp = dynamic_cast<te::gm::GeometryProperty*>(ls->getProperty(spatialPropertyName));
+      else
+        gp = dynamic_cast<te::gm::GeometryProperty*>(
+            ls->getProperty(spatialPropertyName));
 
       assert(gp);
 
       // Retrieves the data from layer
-      std::auto_ptr<te::da::DataSet> dataset(layer->getData(gp->getName(), &reprojectedEnvelope, te::gm::INTERSECTS).release());
+      std::unique_ptr<te::da::DataSet> dataset(
+          layer->getData(gp->getName(), &reprojectedEnvelope,
+                         te::gm::INTERSECTS).release());
 
-      getGeometryInfo(layerItem, dataset.get(), layer->getGeomPropertyName(), reprojectedEnvelope, layer->getSRID(), needRemap);
+      getGeometryInfo(layerItem, dataset.get(), layer->getGeomPropertyName(),
+                      reprojectedEnvelope, layer->getSRID(), needRemap);
     }
 
     if(ls->hasRaster())
@@ -201,12 +206,15 @@ void te::qt::widgets::Info::getInfo(const te::map::AbstractLayerPtr& layer, cons
       if(spatialPropertyName.empty())
         rp = te::da::GetFirstRasterProperty(ls.get());
       else
-        rp = dynamic_cast<te::rst::RasterProperty*>(ls->getProperty(spatialPropertyName));
+        rp = dynamic_cast<te::rst::RasterProperty*>(
+            ls->getProperty(spatialPropertyName));
 
       assert(rp);
 
       // Retrieves the data from layer
-      std::auto_ptr<te::da::DataSet> dataset(layer->getData(rp->getName(), &reprojectedEnvelope, te::gm::INTERSECTS).release());
+      std::unique_ptr<te::da::DataSet> dataset(
+          layer->getData(rp->getName(), &reprojectedEnvelope,
+                         te::gm::INTERSECTS).release());
 
       if(!dataset->moveNext())
         return;
@@ -214,10 +222,12 @@ void te::qt::widgets::Info::getInfo(const te::map::AbstractLayerPtr& layer, cons
       std::auto_ptr<te::rst::Raster> raster(dataset->getRaster(rp->getName()));
       assert(raster.get());
 
-      getRasterInfo(layerItem, raster.get(), reprojectedEnvelope, layer->getSRID(), needRemap);
+      getRasterInfo(layerItem, raster.get(), reprojectedEnvelope,
+                    layer->getSRID(), needRemap);
     }
 
-    layerItem->childCount() != 0 ? m_infoWidget->addTopLevelItem(layerItem) : delete layerItem;
+    layerItem->childCount() != 0 ? m_infoWidget->addTopLevelItem(layerItem)
+                                 : delete layerItem;
   }
   catch(...)
   {
@@ -226,28 +236,46 @@ void te::qt::widgets::Info::getInfo(const te::map::AbstractLayerPtr& layer, cons
   }
 }
 
-void te::qt::widgets::Info::getGeometryInfo(QTreeWidgetItem* layerItem, te::da::DataSet* dataset, const std::string& geomPropertyName, const te::gm::Envelope& e, int srid, bool needRemap)
+void te::qt::widgets::Info::getGeometryInfo(QTreeWidgetItem* layerItem,
+                                            te::da::DataSet* dataset,
+                                            const std::string& geomPropertyName,
+                                            const te::gm::Envelope& e, int srid,
+                                            bool needRemap)
 {
-  // Generates a geometry from the given extent. It will be used to refine the results
-  std::auto_ptr<te::gm::Geometry> geometryFromEnvelope(te::gm::GetGeomFromEnvelope(&e, srid));
+  // Generates a geometry from the given extent. It will be used to refine the
+  // results
+  std::auto_ptr<te::gm::Geometry> geometryFromEnvelope(
+      te::gm::GetGeomFromEnvelope(&e, srid));
 
   // The restriction point. It will be used to refine the results
   te::gm::Coord2D center = e.getCenter();
   te::gm::Point point(center.x, center.y, srid);
 
   std::size_t gpos = std::string::npos;
-  geomPropertyName.empty() ? gpos = te::da::GetFirstPropertyPos(dataset, te::dt::GEOMETRY_TYPE): gpos = te::da::GetPropertyPos(dataset, geomPropertyName);
+  geomPropertyName.empty()
+      ? gpos = te::da::GetFirstPropertyPos(dataset, te::dt::GEOMETRY_TYPE)
+      : gpos = te::da::GetPropertyPos(dataset, geomPropertyName);
 
   while(dataset->moveNext())
   {
-    std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gpos));
+    std::unique_ptr<te::gm::Geometry> g(dataset->getGeometry(gpos));
 
     if(g.get() == 0)
       continue;
 
+    te::gm::TopologyValidationError err;
+    bool isValid = te::gm::CheckValidity(g.get(), err);
+    if(!isValid)
+    {
+      QString message = tr("Invalid geometry: ") + err.m_message.c_str();
+      QMessageBox::warning(m_display, tr("Information"), message);
+      return;
+    }
+
     g->setSRID(srid);
 
-    if(g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get()))
+    if(g->contains(&point) || g->crosses(geometryFromEnvelope.get()) ||
+       geometryFromEnvelope->contains(g.get()))
     {
       // Feature found! Building the list of property values...
       for(std::size_t i = 0; i < dataset->getNumProperties(); ++i)
