@@ -60,18 +60,15 @@ if(TERRALIB_MOD_XML_ENABLED)
   target_link_libraries(terralib_mod_ws_ogc_wms_dataaccess terralib_mod_common
                                                            terralib_mod_dataaccess
                                                            terralib_mod_datatype
-														   terralib_mod_maptools
-                                                           
+                                                           terralib_mod_maptools
                                                            terralib_mod_ws_core
                                                            terralib_mod_ws_ogc_wms_client
-                                                           terralib_mod_xml
-                                                           ${GDAL_LIBRARY})
+                                                           terralib_mod_xml)
 else()
   target_link_libraries(terralib_mod_ws_ogc_wms_dataaccess terralib_mod_common
                                                            terralib_mod_dataaccess
                                                            terralib_mod_datatype
-														   terralib_mod_maptools
-                                                           
+                                                           terralib_mod_maptools
                                                            terralib_mod_ws_core
                                                            terralib_mod_ws_ogc_wms_client
                                                            ${GDAL_LIBRARY})
