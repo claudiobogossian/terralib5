@@ -70,8 +70,7 @@ else()
                                                            terralib_mod_datatype
                                                            terralib_mod_maptools
                                                            terralib_mod_ws_core
-                                                           terralib_mod_ws_ogc_wms_client
-                                                           ${GDAL_LIBRARY})
+                                                           terralib_mod_ws_ogc_wms_client)
 endif()
 
 set_target_properties(terralib_mod_ws_ogc_wms_dataaccess
