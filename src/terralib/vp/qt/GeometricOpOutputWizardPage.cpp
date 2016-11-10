@@ -1,6 +1,7 @@
 /*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+    This file is part of the TerraLib - a Framework for building GIS enabled
+   applications.
 
     TerraLib is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -32,9 +33,11 @@
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/Utils.h"
 #include "../../qt/widgets/utils/DoubleListWidget.h"
+
+#include "../../geometry/Geometry.h"
+
 #include "GeometricOpOutputWizardPage.h"
 #include "ui_GeometricOpOutputWizardPageForm.h"
-//#include "VectorProcessingConfig.h"
 
 // Qt
 #include <QFileDialog>
@@ -47,19 +50,21 @@
 // STL
 #include <memory>
 
-te::vp::GeometricOpOutputWizardPage::GeometricOpOutputWizardPage(QWidget* parent)
-  : QWizardPage(parent),
-    m_ui(new Ui::GeometricOpOutputWizardPageForm),
-    m_toFile(false)
+te::vp::GeometricOpOutputWizardPage::GeometricOpOutputWizardPage(
+    QWidget* parent)
+    : QWizardPage(parent),
+      m_ui(new Ui::GeometricOpOutputWizardPageForm),
+      m_toFile(false)
 {
-// setup controls
+  // setup controls
   m_ui->setupUi(this);
 
-// configure page
+  // configure page
   this->setTitle(tr("Output Layer Attributes"));
-  this->setSubTitle(tr("Choose the output parameters that compose the output layer."));
+  this->setSubTitle(
+      tr("Choose the output parameters that compose the output layer."));
 
-// icons
+  // icons
   QSize iconSize(32, 32);
 
   m_ui->m_convexHullCheckBox->setIconSize(iconSize);
@@ -82,15 +87,20 @@ te::vp::GeometricOpOutputWizardPage::GeometricOpOutputWizardPage(QWidget* parent
 
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 
-  connect(m_ui->m_attributesComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onAttributeComboBoxChanged(int)));
-  connect(m_ui->m_allObjectsRadioButton, SIGNAL(toggled(bool)), this, SLOT(onAllObjectsToggled()));
-  connect(m_ui->m_simpleRadioButton, SIGNAL(toggled(bool)), this, SLOT(onSimpleOperationToggled()));
-  connect(m_ui->m_byAttributesRadioButton, SIGNAL(toggled(bool)), this, SLOT(onAttributeOperationToggled()));
-  connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
-  connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
-  
-  onAllObjectsToggled();
+  connect(m_ui->m_attributesComboBox, SIGNAL(currentIndexChanged(int)), this,
+          SLOT(onAttributeComboBoxChanged(int)));
+  connect(m_ui->m_byObjectRadioButton, SIGNAL(toggled(bool)), this,
+          SLOT(onAllObjectsToggled()));
+  connect(m_ui->m_allLayerRadioButton, SIGNAL(toggled(bool)), this,
+          SLOT(onAllLayerOperationToggled()));
+  connect(m_ui->m_byAttributeRadioButton, SIGNAL(toggled(bool)), this,
+          SLOT(onAttributeOperationToggled()));
+  connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this,
+          SLOT(onTargetDatasourceToolButtonPressed()));
+  connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,
+          SLOT(onTargetFileToolButtonPressed()));
 
+  onAllLayerOperationToggled();
 }
 
 te::vp::GeometricOpOutputWizardPage::~GeometricOpOutputWizardPage()
@@ -132,31 +142,76 @@ std::string te::vp::GeometricOpOutputWizardPage::getAttribute()
   return m_attribute;
 }
 
-void te::vp::GeometricOpOutputWizardPage::setAttributes(std::vector<std::string> attributes)
+void te::vp::GeometricOpOutputWizardPage::setInputGeometryType(
+    te::gm::GeomType type)
+{
+  switch(type)
+  {
+    case te::gm::PointType:
+    case te::gm::PointMType :
+    case te::gm::PointZType :
+    case te::gm::PointZMType :
+    case te::gm::PointKdType :
+    case te::gm::MultiPointType:
+    case te::gm::MultiPointMType :
+    case te::gm::MultiPointZType :
+    case te::gm::MultiPointZMType :
+      m_ui->m_areaCheckBox->setEnabled(false);
+      m_ui->m_lineCheckBox->setEnabled(false);
+      m_ui->m_perimeterCheckBox->setEnabled(false);
+      m_ui->m_byObjectRadioButton->setEnabled(false);
+      m_ui->m_byAttributeRadioButton->setEnabled(false);
+      m_ui->m_byAttributeRadioButton->setChecked(true);
+      break;
+    case te::gm::LineStringType:
+    case te::gm::LineStringMType:
+    case te::gm::LineStringZType:
+    case te::gm::LineStringZMType:
+    case te::gm::MultiLineStringType:
+    case te::gm::MultiLineStringMType:
+    case te::gm::MultiLineStringZType:
+    case te::gm::MultiLineStringZMType:
+      m_ui->m_areaCheckBox->setEnabled(false);
+      m_ui->m_lineCheckBox->setEnabled(true);
+      m_ui->m_perimeterCheckBox->setEnabled(false);
+      m_ui->m_byObjectRadioButton->setEnabled(true);
+      m_ui->m_byAttributeRadioButton->setEnabled(true);
+      m_ui->m_byObjectRadioButton->setChecked(true);
+      break;
+    default:
+      m_ui->m_areaCheckBox->setEnabled(true);
+      m_ui->m_lineCheckBox->setEnabled(false);
+      m_ui->m_perimeterCheckBox->setEnabled(true);
+      m_ui->m_byObjectRadioButton->setEnabled(true);
+      m_ui->m_byAttributeRadioButton->setEnabled(true);
+      m_ui->m_byObjectRadioButton->setChecked(true);
+      break;
+  }
+}
+
+void te::vp::GeometricOpOutputWizardPage::setAttributes(
+    std::vector<std::string> attributes)
 {
   m_ui->m_attributesComboBox->clear();
 
   for(std::size_t i = 0; i < attributes.size(); ++i)
   {
-    m_ui->m_attributesComboBox->addItem(QString::fromUtf8(attributes[i].c_str()));
+    m_ui->m_attributesComboBox->addItem(
+        QString::fromUtf8(attributes[i].c_str()));
   }
 }
 
-te::vp::GeometricOpObjStrategy te::vp::GeometricOpOutputWizardPage::getObjectStrategy()
+te::vp::GeometricOpObjStrategy
+te::vp::GeometricOpOutputWizardPage::getObjectStrategy()
 {
-  if(m_ui->m_allObjectsRadioButton->isChecked())
+  if(m_ui->m_byObjectRadioButton->isChecked())
     return te::vp::ALL_OBJ;
-  if(m_ui->m_simpleRadioButton->isChecked())
+  if(m_ui->m_allLayerRadioButton->isChecked())
     return te::vp::AGGREG_OBJ;
-  if(m_ui->m_byAttributesRadioButton->isChecked())
+  if(m_ui->m_byAttributeRadioButton->isChecked())
     return te::vp::AGGREG_BY_ATTRIBUTE;
 
   return te::vp::ALL_OBJ;
-}
-
-bool te::vp::GeometricOpOutputWizardPage::hasOutputLayer()
-{
-  return true;
 }
 
 std::string te::vp::GeometricOpOutputWizardPage::getOutDsName()
@@ -181,7 +236,7 @@ std::string te::vp::GeometricOpOutputWizardPage::getPath()
 
 void te::vp::GeometricOpOutputWizardPage::onAttributeComboBoxChanged(int index)
 {
-  if(m_ui->m_byAttributesRadioButton->isChecked())
+  if(m_ui->m_byAttributeRadioButton->isChecked())
     m_attribute = m_ui->m_attributesComboBox->itemText(index).toUtf8().data();
   else
     m_attribute = "";
@@ -193,7 +248,7 @@ void te::vp::GeometricOpOutputWizardPage::onAllObjectsToggled()
   onAttributeComboBoxChanged(0);
 }
 
-void te::vp::GeometricOpOutputWizardPage::onSimpleOperationToggled()
+void te::vp::GeometricOpOutputWizardPage::onAllLayerOperationToggled()
 {
   m_ui->m_attributesComboBox->setEnabled(false);
   onAttributeComboBoxChanged(0);
@@ -221,7 +276,7 @@ void te::vp::GeometricOpOutputWizardPage::onTargetDatasourceToolButtonPressed()
   m_ui->m_repositoryLineEdit->setText(QString(it->get()->getTitle().c_str()));
 
   m_outputDatasource = *it;
-  
+
   m_toFile = false;
 }
 
@@ -229,9 +284,12 @@ void te::vp::GeometricOpOutputWizardPage::onTargetFileToolButtonPressed()
 {
   m_ui->m_newLayerNameLineEdit->clear();
   m_ui->m_repositoryLineEdit->clear();
-  
-  QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), te::qt::widgets::GetFilePathFromSettings("vp_geomOp"), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-  
+
+  QString dir = QFileDialog::getExistingDirectory(
+      this, tr("Open Directory"),
+      te::qt::widgets::GetFilePathFromSettings("vp_geomOp"),
+      QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
   if(dir.isEmpty() == false)
   {
     m_path = dir.replace(QRegExp("\\\\"), "/").toUtf8().data();

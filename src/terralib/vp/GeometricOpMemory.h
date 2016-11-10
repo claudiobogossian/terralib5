@@ -29,24 +29,11 @@
 #define __TERRALIB_VP_INTERNAL_GEOMETRIC_OP_MEMORY_H
 
 //Terralib
-#include "../common/Exception.h"
-#include "../datatype/Property.h"
-#include "../dataaccess/dataset/DataSetType.h"
 #include "../geometry/Geometry.h"
 #include "../memory/DataSet.h"
-#include "../statistics/core/Enums.h"
 
 #include "GeometricOp.h"
-#include "Config.h"
-#include "Enums.h"
 #include "Exception.h"
-
-
-// STL
-#include <map>
-#include <memory>
-#include <string>
-#include <vector>
 
 namespace te
 {

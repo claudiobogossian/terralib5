@@ -1,6 +1,7 @@
 /*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+    This file is part of the TerraLib - a Framework for building GIS enabled
+   applications.
 
     TerraLib is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -41,7 +42,10 @@
 #include <QWizardPage>
 
 // Forward declaration
-namespace Ui { class GeometricOpOutputWizardPageForm; }
+namespace Ui
+{
+  class GeometricOpOutputWizardPageForm;
+}
 
 namespace te
 {
@@ -50,75 +54,74 @@ namespace te
     /*!
       \class GeometricOpOutputWizardPage
 
-      \brief This class is GUI used to define the basic geometric operator parameters for the VP operation.
+      \brief This class is GUI used to define the basic geometric operator
+      parameters for the VP operation.
     */
     class TEVPEXPORT GeometricOpOutputWizardPage : public QWizardPage
     {
       Q_OBJECT
 
-      public:
+     public:
+      GeometricOpOutputWizardPage(QWidget* parent = 0);
 
-        GeometricOpOutputWizardPage(QWidget* parent = 0);
+      ~GeometricOpOutputWizardPage();
 
-        ~GeometricOpOutputWizardPage();
+     public:
+      bool hasConvexHull();
 
-      public:
+      bool hasCentroid();
 
-        bool hasConvexHull();
+      bool hasMBR();
 
-        bool hasCentroid();
+      bool hasArea();
 
-        bool hasMBR();
+      bool hasLine();
 
-        bool hasArea();
+      bool hasPerimeter();
 
-        bool hasLine();
+      std::string getAttribute();
 
-        bool hasPerimeter();
+      void setInputGeometryType(te::gm::GeomType type);
 
-        std::string getAttribute();
+      void setAttributes(std::vector<std::string> attributes);
 
-        void setAttributes(std::vector<std::string> attributes);
+      te::vp::GeometricOpObjStrategy getObjectStrategy();
 
-        te::vp::GeometricOpObjStrategy getObjectStrategy();
+      std::string getOutDsName();
 
-        std::string getOutDsName();
+      bool getToFile();
 
-        bool hasOutputLayer();
+      te::da::DataSourceInfoPtr getDsInfoPtr();
 
-        bool getToFile();
+      std::string getPath();
 
-        te::da::DataSourceInfoPtr getDsInfoPtr();
+     public slots:
 
-        std::string getPath();
+      void onAllObjectsToggled();
 
-      public slots:
+      void onAllLayerOperationToggled();
 
-        void onAllObjectsToggled();
+      void onAttributeOperationToggled();
 
-        void onSimpleOperationToggled();
+      void onAttributeComboBoxChanged(int index);
 
-        void onAttributeOperationToggled();
+      void onTargetDatasourceToolButtonPressed();
 
-        void onAttributeComboBoxChanged(int index);
+      void onTargetFileToolButtonPressed();
 
-        void onTargetDatasourceToolButtonPressed();
+     private:
+      std::auto_ptr<Ui::GeometricOpOutputWizardPageForm> m_ui;
 
-        void onTargetFileToolButtonPressed();
-
-      private:
-
-        std::auto_ptr<Ui::GeometricOpOutputWizardPageForm> m_ui;
-
-        te::da::DataSourceInfoPtr m_outputDatasource;                 //!< DataSource information.
-        std::string m_dsName;
-        bool m_toFile;
-        std::string m_attribute;
-        std::string m_path;
-
+      te::da::DataSourceInfoPtr
+          m_outputDatasource;  //!< DataSource information.
+      std::string m_dsName;
+      bool m_toFile;
+      te::gm::GeomType m_inputGeomType;
+      std::string m_attribute;
+      std::string m_path;
     };
 
-  }   // end namespace qt
-}     // end namespace te
+  }  // end namespace qt
+}  // end namespace te
 
 #endif  // __TERRALIB_VP_INTERNAL_GEOMETRICOPOUTPUTWIZARDPAGE_H

@@ -1,6 +1,7 @@
 /*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+    This file is part of the TerraLib - a Framework for building GIS enabled
+   applications.
 
     TerraLib is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -23,7 +24,7 @@
   \brief Geometric Operation Vector Processing functions.
 */
 
-//Terralib
+// Terralib
 
 #include "../BuildConfig.h"
 #include "../common/progress/TaskProgress.h"
@@ -33,12 +34,6 @@
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetAdapter.h"
 
-#include "../datatype/Property.h"
-#include "../datatype/SimpleProperty.h"
-#include "../datatype/StringProperty.h"
-
-#include "../dataaccess/query/Avg.h"
-#include "../dataaccess/query/Count.h"
 #include "../dataaccess/query/DataSetName.h"
 #include "../dataaccess/query/Expression.h"
 #include "../dataaccess/query/Field.h"
@@ -47,8 +42,6 @@
 #include "../dataaccess/query/FromItem.h"
 #include "../dataaccess/query/GroupBy.h"
 #include "../dataaccess/query/GroupByItem.h"
-#include "../dataaccess/query/Literal.h"
-#include "../dataaccess/query/LiteralBool.h"
 #include "../dataaccess/query/LiteralInt32.h"
 #include "../dataaccess/query/PropertyName.h"
 #include "../dataaccess/query/Select.h"
@@ -60,45 +53,29 @@
 #include "../dataaccess/query/ST_Perimeter.h"
 #include "../dataaccess/query/ST_SetSRID.h"
 #include "../dataaccess/query/ST_Union.h"
-#include "../dataaccess/query/Variance.h"
 #include "../dataaccess/utils/Utils.h"
 
 #include "../geometry/Geometry.h"
 #include "../geometry/GeometryCollection.h"
 #include "../geometry/GeometryProperty.h"
-#include "../geometry/Utils.h"
 
 #include "../memory/DataSet.h"
 #include "../memory/DataSetItem.h"
 
-#include "../statistics/core/SummaryFunctions.h"
-#include "../statistics/core/StringStatisticalSummary.h"
-#include "../statistics/core/NumericStatisticalSummary.h"
-
 #include "GeometricOpQuery.h"
-#include "Config.h"
-#include "Exception.h"
 #include "Utils.h"
 
-// STL
-#include <map>
-#include <math.h>
-#include <string>
-#include <vector>
-
-// BOOST
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string.hpp>
-
 te::vp::GeometricOpQuery::GeometricOpQuery()
-{}
+{
+}
 
 te::vp::GeometricOpQuery::~GeometricOpQuery()
-{}
+{
+}
 
 bool te::vp::GeometricOpQuery::run() throw(te::common::Exception)
 {
-// get the geometric operation and/or tabular operation. 
+  // get the geometric operation and/or tabular operation.
   std::vector<int> opGeom;
   std::vector<int> opTab;
   std::vector<te::da::DataSetType*> dsTypeVec;
@@ -126,160 +103,168 @@ bool te::vp::GeometricOpQuery::run() throw(te::common::Exception)
         opTab.push_back(te::vp::PERIMETER);
         break;
       default:
-        {
+      {
 #ifdef TERRALIB_LOGGER_ENABLED
-          TE_CORE_LOG_DEBUG("vp", "Geometric Operation - The operation is not valid.");
-#endif //TERRALIB_LOGGER_ENABLED
-        }
+        TE_CORE_LOG_DEBUG("vp",
+                          "Geometric Operation - The operation is not valid.");
+#endif  // TERRALIB_LOGGER_ENABLED
+      }
     }
   }
 
-  if(m_outputLayer)
-  {
-    bool hasMultiGeomColumns = false;
-    bool result = false;
+  bool hasMultiGeomColumns = false;
+  bool result = false;
 
-    switch(m_objStrategy)
+  switch(m_objStrategy)
+  {
+    case te::vp::ALL_OBJ:
     {
-      case te::vp::ALL_OBJ:
+      if(hasMultiGeomColumns)  // Condição se o DataSource suporta mais de uma
+                               // soluna geometrica...
+      {
+        dsTypeVec.push_back(
+            te::vp::GeometricOp::GetDataSetType(te::vp::ALL_OBJ, true));
+      }
+      else
+      {
+        if(opGeom.size() > 0)
         {
-          if(hasMultiGeomColumns) //Condição se o DataSource suporta mais de uma soluna geometrica...
-          {
-            dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(te::vp::ALL_OBJ, true));
-          }
-          else
-          {
-            if(opGeom.size() > 0)
-            {
-              for(std::size_t i = 0; i < opGeom.size(); ++i)
-                dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(te::vp::ALL_OBJ, false, opGeom[i]));
-            }
-            else
-            {
-              dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(te::vp::ALL_OBJ, false));
-            }
-          }
-
-          for(std::size_t dsTypePos = 0; dsTypePos < dsTypeVec.size(); ++dsTypePos)
-          {
-            m_outDsetNameVec.push_back(dsTypeVec[dsTypePos]->getName());
-
-            std::auto_ptr<te::da::DataSetType> outDataSetType(dsTypeVec[dsTypePos]);
-            std::auto_ptr<te::mem::DataSet> outDataSet(SetAllObjects(dsTypeVec[dsTypePos], opTab, opGeom));
-
-            te::vp::Save(m_outDsrc.get(), outDataSet.get(), outDataSetType.get());
-            result = true;
-
-            if(!result)
-              return result;
-          }
+          for(std::size_t i = 0; i < opGeom.size(); ++i)
+            dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(
+                te::vp::ALL_OBJ, false, opGeom[i]));
         }
-        break;
-      case te::vp::AGGREG_OBJ:
+        else
         {
-          if(hasMultiGeomColumns) //Condição se o DataSource suporta mais de uma coluna geometrica...
-          {
-            dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(te::vp::AGGREG_OBJ, true));
-          }
-          else
-          {
-            if(opGeom.size() > 0)
-            {
-              for(std::size_t i = 0; i < opGeom.size(); ++i)
-                dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(te::vp::AGGREG_OBJ, false, opGeom[i]));
-            }
-            else
-            {
-              dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(te::vp::AGGREG_OBJ, false));
-            }
-          }
-
-          for(std::size_t dsTypePos = 0; dsTypePos < dsTypeVec.size(); ++dsTypePos)
-          {
-            m_outDsetNameVec.push_back(dsTypeVec[dsTypePos]->getName());
-
-            std::auto_ptr<te::da::DataSetType> outDataSetType(dsTypeVec[dsTypePos]);
-            std::auto_ptr<te::mem::DataSet> outDataSet(SetAggregObj(dsTypeVec[dsTypePos], opTab, opGeom));
-            try
-            {
-              te::vp::Save(m_outDsrc.get(), outDataSet.get(), outDataSetType.get());
-              result = true;
-            }
-            catch(...)
-            {
-              result = false;
-            }
-            if(!result)
-              return result;
-          }
+          dsTypeVec.push_back(
+              te::vp::GeometricOp::GetDataSetType(te::vp::ALL_OBJ, false));
         }
-        break;
-      case te::vp::AGGREG_BY_ATTRIBUTE:
-        {
-          if(hasMultiGeomColumns) //Condição se o DataSource suporta mais de uma coluna geometrica...
-          {
-            dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(te::vp::AGGREG_BY_ATTRIBUTE, true));
-          }
-          else
-          {
-            if(opGeom.size() > 0)
-            {
-              for(std::size_t i = 0; i < opGeom.size(); ++i)
-                dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(te::vp::AGGREG_BY_ATTRIBUTE, false, opGeom[i]));
-            }
-            else
-            {
-              dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(te::vp::AGGREG_BY_ATTRIBUTE, false));
-            }
-          }
+      }
 
-          for(std::size_t dsTypePos = 0; dsTypePos < dsTypeVec.size(); ++dsTypePos)
-          {
-            m_outDsetNameVec.push_back(dsTypeVec[dsTypePos]->getName());
+      for(std::size_t dsTypePos = 0; dsTypePos < dsTypeVec.size(); ++dsTypePos)
+      {
+        m_outDsetNameVec.push_back(dsTypeVec[dsTypePos]->getName());
 
-            std::auto_ptr<te::da::DataSetType> outDataSetType(dsTypeVec[dsTypePos]);
-            std::auto_ptr<te::mem::DataSet> outDataSet(SetAggregByAttribute(dsTypeVec[dsTypePos], opTab, opGeom));
-            try
-            {
-              te::vp::Save(m_outDsrc.get(), outDataSet.get(), outDataSetType.get());
-              result = true;
-            }
-            catch(...)
-            {
-              result = false;
-            }
-            if(!result)
-              return result;
-          }
-        }
-        break;
-      default:
-        {
-#ifdef TERRALIB_LOGGER_ENABLED
-          TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Strategy Not found!");
-#endif //TERRALIB_LOGGER_ENABLED
-        }
-        return false;
+        std::unique_ptr<te::da::DataSetType> outDataSetType(
+            dsTypeVec[dsTypePos]);
+        std::unique_ptr<te::mem::DataSet> outDataSet(
+            SetAllObjects(dsTypeVec[dsTypePos], opTab, opGeom));
+
+        te::vp::Save(m_outDsrc.get(), outDataSet.get(), outDataSetType.get());
+        result = true;
+
+        if(!result)
+          return result;
+      }
     }
-    
-    return result;
+    break;
+    case te::vp::AGGREG_OBJ:
+    {
+      if(hasMultiGeomColumns)  // Condição se o DataSource suporta mais de uma
+                               // coluna geometrica...
+      {
+        dsTypeVec.push_back(
+            te::vp::GeometricOp::GetDataSetType(te::vp::AGGREG_OBJ, true));
+      }
+      else
+      {
+        if(opGeom.size() > 0)
+        {
+          for(std::size_t i = 0; i < opGeom.size(); ++i)
+            dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(
+                te::vp::AGGREG_OBJ, false, opGeom[i]));
+        }
+        else
+        {
+          dsTypeVec.push_back(
+              te::vp::GeometricOp::GetDataSetType(te::vp::AGGREG_OBJ, false));
+        }
+      }
 
-  }
-  else
-  {
-    //Descobrir se o DataSource suporta adição de mais de uma coluna geometrica.
-    return false;
+      for(std::size_t dsTypePos = 0; dsTypePos < dsTypeVec.size(); ++dsTypePos)
+      {
+        m_outDsetNameVec.push_back(dsTypeVec[dsTypePos]->getName());
+
+        std::unique_ptr<te::da::DataSetType> outDataSetType(
+            dsTypeVec[dsTypePos]);
+        std::unique_ptr<te::mem::DataSet> outDataSet(
+            SetAggregObj(dsTypeVec[dsTypePos], opTab, opGeom));
+        try
+        {
+          te::vp::Save(m_outDsrc.get(), outDataSet.get(), outDataSetType.get());
+          result = true;
+        }
+        catch(...)
+        {
+          result = false;
+        }
+        if(!result)
+          return result;
+      }
+    }
+    break;
+    case te::vp::AGGREG_BY_ATTRIBUTE:
+    {
+      if(hasMultiGeomColumns)  // Condição se o DataSource suporta mais de uma
+                               // coluna geometrica...
+      {
+        dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(
+            te::vp::AGGREG_BY_ATTRIBUTE, true));
+      }
+      else
+      {
+        if(opGeom.size() > 0)
+        {
+          for(std::size_t i = 0; i < opGeom.size(); ++i)
+            dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(
+                te::vp::AGGREG_BY_ATTRIBUTE, false, opGeom[i]));
+        }
+        else
+        {
+          dsTypeVec.push_back(te::vp::GeometricOp::GetDataSetType(
+              te::vp::AGGREG_BY_ATTRIBUTE, false));
+        }
+      }
+
+      for(std::size_t dsTypePos = 0; dsTypePos < dsTypeVec.size(); ++dsTypePos)
+      {
+        m_outDsetNameVec.push_back(dsTypeVec[dsTypePos]->getName());
+
+        std::unique_ptr<te::da::DataSetType> outDataSetType(
+            dsTypeVec[dsTypePos]);
+        std::unique_ptr<te::mem::DataSet> outDataSet(
+            SetAggregByAttribute(dsTypeVec[dsTypePos], opTab, opGeom));
+        try
+        {
+          te::vp::Save(m_outDsrc.get(), outDataSet.get(), outDataSetType.get());
+          result = true;
+        }
+        catch(...)
+        {
+          result = false;
+        }
+        if(!result)
+          return result;
+      }
+    }
+    break;
+    default:
+    {
+#ifdef TERRALIB_LOGGER_ENABLED
+      TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Strategy Not found!");
+#endif  // TERRALIB_LOGGER_ENABLED
+    }
+      return false;
   }
 
-  return false;
+  return result;
 }
 
-te::mem::DataSet* te::vp::GeometricOpQuery::SetAllObjects(te::da::DataSetType* dsType,
-                                                          std::vector<int> tabVec,
-                                                          std::vector<int> geoVec)
+te::mem::DataSet* te::vp::GeometricOpQuery::SetAllObjects(
+    te::da::DataSetType* dsType, std::vector<int> tabVec,
+    std::vector<int> geoVec)
 {
-  std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(dsType));
-  std::auto_ptr<te::da::DataSet> inDset = m_inDsrc->getDataSet(m_inDsetName);
+  std::unique_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(dsType));
+  std::unique_ptr<te::da::DataSet> inDset = m_inDsrc->getDataSet(m_inDsetName);
   std::size_t geom_pos = te::da::GetFirstSpatialPropertyPos(inDset.get());
 
   te::da::Fields* fields = new te::da::Fields;
@@ -305,41 +290,44 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAllObjects(te::da::DataSetType* d
       switch(tabVec[tabPos])
       {
         case te::vp::AREA:
-          {
-            ex = new te::da::ST_Area(te::da::PropertyName(name));
-            f = new te::da::Field(*ex, "area");
-            fields->push_back(f);
-          }
-          break;
+        {
+          ex = new te::da::ST_Area(te::da::PropertyName(name));
+          f = new te::da::Field(*ex, "area");
+          fields->push_back(f);
+        }
+        break;
         case te::vp::LINE:
-          {
-            ex = new te::da::ST_Length(te::da::PropertyName(name));
-            f = new te::da::Field(*ex, "line_length");
-            fields->push_back(f);
-          }
-          break;
+        {
+          ex = new te::da::ST_Length(te::da::PropertyName(name));
+          f = new te::da::Field(*ex, "line_length");
+          fields->push_back(f);
+        }
+        break;
         case te::vp::PERIMETER:
-          {
-            ex = new te::da::ST_Perimeter(te::da::PropertyName(name));
-            f = new te::da::Field(*ex, "perimeter");
-            fields->push_back(f);
-          }
-          break;
+        {
+          ex = new te::da::ST_Perimeter(te::da::PropertyName(name));
+          f = new te::da::Field(*ex, "perimeter");
+          fields->push_back(f);
+        }
+        break;
         default:
-          {
+        {
 #ifdef TERRALIB_LOGGER_ENABLED
-            TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Invalid field to add in query.");
-#endif //TERRALIB_LOGGER_ENABLED
-          }
+          TE_CORE_LOG_DEBUG(
+              "vp", "Geometric Operation - Invalid field to add in query.");
+#endif  // TERRALIB_LOGGER_ENABLED
+        }
       }
     }
   }
 
+  std::unique_ptr<te::da::DataSetType> dsTypeSource(
+      m_inDsrc->getDataSetType(m_inDsetName));
 
-  std::auto_ptr<te::da::DataSetType>dsTypeSource(m_inDsrc->getDataSetType(m_inDsetName));
-
-  te::gm::GeometryProperty* geomPropertySource = te::da::GetFirstGeomProperty(dsTypeSource.get());
-  te::gm::GeometryProperty* geomPropertyLayer = te::da::GetFirstGeomProperty(dsType);
+  te::gm::GeometryProperty* geomPropertySource =
+      te::da::GetFirstGeomProperty(dsTypeSource.get());
+  te::gm::GeometryProperty* geomPropertyLayer =
+      te::da::GetFirstGeomProperty(dsType);
 
   if(geoVec.size() > 0)
   {
@@ -352,74 +340,81 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAllObjects(te::da::DataSetType* d
       switch(geoVec[geoPos])
       {
         case te::vp::CONVEX_HULL:
+        {
+          std::size_t pos = dsType->getPropertyPosition("convex_hull");
+          if(pos < outDSet->getNumProperties() && pos > 0)
           {
-            std::size_t pos = dsType->getPropertyPosition("convex_hull");
-            if( pos < outDSet->getNumProperties() && pos > 0)
+            if(geomPropertySource->getSRID() != geomPropertyLayer->getSRID())
             {
-              if (geomPropertySource->getSRID() != geomPropertyLayer->getSRID())
-              {
-                te::da::LiteralInt32* srid = new te::da::LiteralInt32(geomPropertyLayer->getSRID());
-                ex_geom = new te::da::ST_SetSRID(new te::da::PropertyName(name), srid);
-              }
-              else
-              {
-                ex_geom = new te::da::PropertyName(name);
-              }
-              
-              ex_operation = new te::da::ST_ConvexHull(*ex_geom);
-              f_geom = new te::da::Field(*ex_operation, "convex_hull");
-              fields->push_back(f_geom);
+              te::da::LiteralInt32* srid =
+                  new te::da::LiteralInt32(geomPropertyLayer->getSRID());
+              ex_geom =
+                  new te::da::ST_SetSRID(new te::da::PropertyName(name), srid);
             }
+            else
+            {
+              ex_geom = new te::da::PropertyName(name);
+            }
+
+            ex_operation = new te::da::ST_ConvexHull(*ex_geom);
+            f_geom = new te::da::Field(*ex_operation, "convex_hull");
+            fields->push_back(f_geom);
           }
-          break;
+        }
+        break;
         case te::vp::CENTROID:
+        {
+          std::size_t pos = dsType->getPropertyPosition("centroid");
+          if(pos < outDSet->getNumProperties() && pos > 0)
           {
-            std::size_t pos = dsType->getPropertyPosition("centroid");
-            if( pos < outDSet->getNumProperties() && pos > 0)
+            if(geomPropertySource->getSRID() != geomPropertyLayer->getSRID())
             {
-              if (geomPropertySource->getSRID() != geomPropertyLayer->getSRID())
-              {
-                te::da::LiteralInt32* srid = new te::da::LiteralInt32(geomPropertyLayer->getSRID());
-                ex_geom = new te::da::ST_SetSRID(new te::da::PropertyName(name), srid);
-              }
-              else
-              {
-                ex_geom = new te::da::PropertyName(name);
-              }
-
-              ex_operation = new te::da::ST_Centroid(*ex_geom);
-              f_geom = new te::da::Field(*ex_operation, "centroid");
-              fields->push_back(f_geom);
+              te::da::LiteralInt32* srid =
+                  new te::da::LiteralInt32(geomPropertyLayer->getSRID());
+              ex_geom =
+                  new te::da::ST_SetSRID(new te::da::PropertyName(name), srid);
             }
+            else
+            {
+              ex_geom = new te::da::PropertyName(name);
+            }
+
+            ex_operation = new te::da::ST_Centroid(*ex_geom);
+            f_geom = new te::da::Field(*ex_operation, "centroid");
+            fields->push_back(f_geom);
           }
-          break;
+        }
+        break;
         case te::vp::MBR:
+        {
+          std::size_t pos = dsType->getPropertyPosition("mbr");
+          if(pos < outDSet->getNumProperties() && pos > 0)
           {
-            std::size_t pos = dsType->getPropertyPosition("mbr");
-            if( pos < outDSet->getNumProperties() && pos > 0)
+            if(geomPropertySource->getSRID() != geomPropertyLayer->getSRID())
             {
-              if (geomPropertySource->getSRID() != geomPropertyLayer->getSRID())
-              {
-                te::da::LiteralInt32* srid = new te::da::LiteralInt32(geomPropertyLayer->getSRID());
-                ex_geom = new te::da::ST_SetSRID(new te::da::PropertyName(name), srid);
-              }
-              else
-              {
-                ex_geom = new te::da::PropertyName(name);
-              }
-
-              ex_operation = new te::da::ST_Envelope(*ex_geom);
-              f_geom = new te::da::Field(*ex_operation, "mbr");
-              fields->push_back(f_geom);
+              te::da::LiteralInt32* srid =
+                  new te::da::LiteralInt32(geomPropertyLayer->getSRID());
+              ex_geom =
+                  new te::da::ST_SetSRID(new te::da::PropertyName(name), srid);
             }
+            else
+            {
+              ex_geom = new te::da::PropertyName(name);
+            }
+
+            ex_operation = new te::da::ST_Envelope(*ex_geom);
+            f_geom = new te::da::Field(*ex_operation, "mbr");
+            fields->push_back(f_geom);
           }
-          break;
+        }
+        break;
         default:
-          {
+        {
 #ifdef TERRALIB_LOGGER_ENABLED
-            TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Invalid field to add in query.");
-#endif //TERRALIB_LOGGER_ENABLED
-          }
+          TE_CORE_LOG_DEBUG(
+              "vp", "Geometric Operation - Invalid field to add in query.");
+#endif  // TERRALIB_LOGGER_ENABLED
+        }
       }
     }
   }
@@ -427,9 +422,10 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAllObjects(te::da::DataSetType* d
   {
     te::da::Expression* ex_geom;
 
-    if (geomPropertySource->getSRID() != geomPropertyLayer->getSRID())
+    if(geomPropertySource->getSRID() != geomPropertyLayer->getSRID())
     {
-      te::da::LiteralInt32* srid = new te::da::LiteralInt32(geomPropertyLayer->getSRID());
+      te::da::LiteralInt32* srid =
+          new te::da::LiteralInt32(geomPropertyLayer->getSRID());
       ex_geom = new te::da::ST_SetSRID(new te::da::PropertyName(name), srid);
     }
     else
@@ -441,15 +437,16 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAllObjects(te::da::DataSetType* d
     fields->push_back(f_prop);
   }
 
-  te::da::FromItem* fromItem = new te::da::DataSetName(m_converter->getResult()->getName());
+  te::da::FromItem* fromItem =
+      new te::da::DataSetName(m_converter->getResult()->getName());
   te::da::From* from = new te::da::From;
   from->push_back(fromItem);
 
   te::da::Select select(fields, from);
-    
-  std::auto_ptr<te::da::DataSet> dsQuery = m_inDsrc->query(select);
 
-  if (dsQuery->isEmpty())
+  std::unique_ptr<te::da::DataSet> dsQuery = m_inDsrc->query(select);
+
+  if(dsQuery->isEmpty())
     return 0;
 
   SetOutputDSet(dsQuery.get(), outDSet.get());
@@ -457,16 +454,16 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAllObjects(te::da::DataSetType* d
   return outDSet.release();
 }
 
-te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregObj( te::da::DataSetType* dsType,
-                                                          std::vector<int> tabVec,
-                                                          std::vector<int> geoVec)
+te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregObj(
+    te::da::DataSetType* dsType, std::vector<int> tabVec,
+    std::vector<int> geoVec)
 {
-  std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(dsType));
-  
-  std::auto_ptr<te::da::DataSet> inDset = m_inDsrc->getDataSet(m_inDsetName);
+  std::unique_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(dsType));
+
+  std::unique_ptr<te::da::DataSet> inDset = m_inDsrc->getDataSet(m_inDsetName);
   std::size_t geom_pos = te::da::GetFirstSpatialPropertyPos(inDset.get());
   std::string name = inDset->getPropertyName(geom_pos);
-  
+
   te::da::Fields* fields = new te::da::Fields;
 
   if(tabVec.size() > 0)
@@ -479,44 +476,50 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregObj( te::da::DataSetType* d
       switch(tabVec[tabPos])
       {
         case te::vp::AREA:
-          {
-            te::da::Expression* e_union = new te::da::ST_Union(te::da::PropertyName(name));
-            ex = new te::da::ST_Area(*e_union);
-            f = new te::da::Field(*ex, "area");
-            fields->push_back(f);
-          }
-          break;
+        {
+          te::da::Expression* e_union =
+              new te::da::ST_Union(te::da::PropertyName(name));
+          ex = new te::da::ST_Area(*e_union);
+          f = new te::da::Field(*ex, "area");
+          fields->push_back(f);
+        }
+        break;
         case te::vp::LINE:
-          {
-            te::da::Expression* e_union = new te::da::ST_Union(te::da::PropertyName(name));
-            ex = new te::da::ST_Length(*e_union);
-            f = new te::da::Field(*ex, "line_length");
-            fields->push_back(f);
-          }
-          break;
+        {
+          te::da::Expression* e_union =
+              new te::da::ST_Union(te::da::PropertyName(name));
+          ex = new te::da::ST_Length(*e_union);
+          f = new te::da::Field(*ex, "line_length");
+          fields->push_back(f);
+        }
+        break;
         case te::vp::PERIMETER:
-          {
-            te::da::Expression* e_union = new te::da::ST_Union(te::da::PropertyName(name));
-            ex = new te::da::ST_Perimeter(*e_union);
-            f = new te::da::Field(*ex, "perimeter");
-            fields->push_back(f);
-          }
-          break;
+        {
+          te::da::Expression* e_union =
+              new te::da::ST_Union(te::da::PropertyName(name));
+          ex = new te::da::ST_Perimeter(*e_union);
+          f = new te::da::Field(*ex, "perimeter");
+          fields->push_back(f);
+        }
+        break;
         default:
-          {
+        {
 #ifdef TERRALIB_LOGGER_ENABLED
-            TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Invalid field to add in query.");
-#endif //TERRALIB_LOGGER_ENABLED
-          }
+          TE_CORE_LOG_DEBUG(
+              "vp", "Geometric Operation - Invalid field to add in query.");
+#endif  // TERRALIB_LOGGER_ENABLED
+        }
       }
     }
   }
 
+  std::unique_ptr<te::da::DataSetType> dsTypeSource(
+      m_inDsrc->getDataSetType(m_inDsetName));
 
-  std::auto_ptr<te::da::DataSetType>dsTypeSource(m_inDsrc->getDataSetType(m_inDsetName));
-
-  te::gm::GeometryProperty* geomPropertySource = te::da::GetFirstGeomProperty(dsTypeSource.get());
-  te::gm::GeometryProperty* geomPropertyLayer = te::da::GetFirstGeomProperty(dsType);
+  te::gm::GeometryProperty* geomPropertySource =
+      te::da::GetFirstGeomProperty(dsTypeSource.get());
+  te::gm::GeometryProperty* geomPropertyLayer =
+      te::da::GetFirstGeomProperty(dsType);
 
   if(geoVec.size() > 0)
   {
@@ -529,77 +532,84 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregObj( te::da::DataSetType* d
       switch(geoVec[geoPos])
       {
         case te::vp::CONVEX_HULL:
+        {
+          std::size_t pos = dsType->getPropertyPosition("convex_hull");
+          if(pos < outDSet->getNumProperties() && pos > 0)
           {
-            std::size_t pos = dsType->getPropertyPosition("convex_hull");
-            if( pos < outDSet->getNumProperties() && pos > 0)
+            if(geomPropertySource->getSRID() != geomPropertyLayer->getSRID())
             {
-              if (geomPropertySource->getSRID() != geomPropertyLayer->getSRID())
-              {
-                te::da::LiteralInt32* srid = new te::da::LiteralInt32(geomPropertyLayer->getSRID());
-                ex_geom = new te::da::ST_SetSRID(new te::da::PropertyName(name), srid);
-              }
-              else
-              {
-                ex_geom = new te::da::PropertyName(name);
-              }
-
-              te::da::Expression* e_union = new te::da::ST_Union(*ex_geom);
-              ex_operation = new te::da::ST_ConvexHull(*e_union);
-              f_geom = new te::da::Field(*ex_operation, "convex_hull");
-              fields->push_back(f_geom);
+              te::da::LiteralInt32* srid =
+                  new te::da::LiteralInt32(geomPropertyLayer->getSRID());
+              ex_geom =
+                  new te::da::ST_SetSRID(new te::da::PropertyName(name), srid);
             }
+            else
+            {
+              ex_geom = new te::da::PropertyName(name);
+            }
+
+            te::da::Expression* e_union = new te::da::ST_Union(*ex_geom);
+            ex_operation = new te::da::ST_ConvexHull(*e_union);
+            f_geom = new te::da::Field(*ex_operation, "convex_hull");
+            fields->push_back(f_geom);
           }
-          break;
+        }
+        break;
         case te::vp::CENTROID:
+        {
+          std::size_t pos = dsType->getPropertyPosition("centroid");
+          if(pos < outDSet->getNumProperties() && pos > 0)
           {
-            std::size_t pos = dsType->getPropertyPosition("centroid");
-            if( pos < outDSet->getNumProperties() && pos > 0)
+            if(geomPropertySource->getSRID() != geomPropertyLayer->getSRID())
             {
-              if (geomPropertySource->getSRID() != geomPropertyLayer->getSRID())
-              {
-                te::da::LiteralInt32* srid = new te::da::LiteralInt32(geomPropertyLayer->getSRID());
-                ex_geom = new te::da::ST_SetSRID(new te::da::PropertyName(name), srid);
-              }
-              else
-              {
-                ex_geom = new te::da::PropertyName(name);
-              }
-
-              te::da::Expression* e_union = new te::da::ST_Union(*ex_geom);
-              ex_operation = new te::da::ST_Centroid(*e_union);
-              f_geom = new te::da::Field(*ex_operation, "centroid");
-              fields->push_back(f_geom);
+              te::da::LiteralInt32* srid =
+                  new te::da::LiteralInt32(geomPropertyLayer->getSRID());
+              ex_geom =
+                  new te::da::ST_SetSRID(new te::da::PropertyName(name), srid);
             }
+            else
+            {
+              ex_geom = new te::da::PropertyName(name);
+            }
+
+            te::da::Expression* e_union = new te::da::ST_Union(*ex_geom);
+            ex_operation = new te::da::ST_Centroid(*e_union);
+            f_geom = new te::da::Field(*ex_operation, "centroid");
+            fields->push_back(f_geom);
           }
-          break;
+        }
+        break;
         case te::vp::MBR:
+        {
+          std::size_t pos = dsType->getPropertyPosition("mbr");
+          if(pos < outDSet->getNumProperties() && pos > 0)
           {
-            std::size_t pos = dsType->getPropertyPosition("mbr");
-            if( pos < outDSet->getNumProperties() && pos > 0)
+            if(geomPropertySource->getSRID() != geomPropertyLayer->getSRID())
             {
-              if (geomPropertySource->getSRID() != geomPropertyLayer->getSRID())
-              {
-                te::da::LiteralInt32* srid = new te::da::LiteralInt32(geomPropertyLayer->getSRID());
-                ex_geom = new te::da::ST_SetSRID(new te::da::PropertyName(name), srid);
-              }
-              else
-              {
-                ex_geom = new te::da::PropertyName(name);
-              }
-
-              te::da::Expression* e_union = new te::da::ST_Union(*ex_geom);
-              ex_operation = new te::da::ST_Envelope(*e_union);
-              f_geom = new te::da::Field(*ex_operation, "mbr");
-              fields->push_back(f_geom);
+              te::da::LiteralInt32* srid =
+                  new te::da::LiteralInt32(geomPropertyLayer->getSRID());
+              ex_geom =
+                  new te::da::ST_SetSRID(new te::da::PropertyName(name), srid);
             }
+            else
+            {
+              ex_geom = new te::da::PropertyName(name);
+            }
+
+            te::da::Expression* e_union = new te::da::ST_Union(*ex_geom);
+            ex_operation = new te::da::ST_Envelope(*e_union);
+            f_geom = new te::da::Field(*ex_operation, "mbr");
+            fields->push_back(f_geom);
           }
-          break;
+        }
+        break;
         default:
-          {
+        {
 #ifdef TERRALIB_LOGGER_ENABLED
-          TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Invalid field to add in query.");
-#endif //TERRALIB_LOGGER_ENABLED
-          }
+          TE_CORE_LOG_DEBUG(
+              "vp", "Geometric Operation - Invalid field to add in query.");
+#endif  // TERRALIB_LOGGER_ENABLED
+        }
       }
     }
   }
@@ -607,10 +617,12 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregObj( te::da::DataSetType* d
   {
     te::da::Expression* e_union;
 
-    if (geomPropertySource->getSRID() != geomPropertyLayer->getSRID())
+    if(geomPropertySource->getSRID() != geomPropertyLayer->getSRID())
     {
-      te::da::LiteralInt32* srid = new te::da::LiteralInt32(geomPropertyLayer->getSRID());
-      e_union = new te::da::ST_Union(new te::da::ST_SetSRID(new te::da::PropertyName(name), srid));
+      te::da::LiteralInt32* srid =
+          new te::da::LiteralInt32(geomPropertyLayer->getSRID());
+      e_union = new te::da::ST_Union(
+          new te::da::ST_SetSRID(new te::da::PropertyName(name), srid));
     }
     else
     {
@@ -621,15 +633,16 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregObj( te::da::DataSetType* d
     fields->push_back(f_prop);
   }
 
-  te::da::FromItem* fromItem = new te::da::DataSetName(m_converter->getResult()->getName());
+  te::da::FromItem* fromItem =
+      new te::da::DataSetName(m_converter->getResult()->getName());
   te::da::From* from = new te::da::From;
   from->push_back(fromItem);
 
   te::da::Select select(fields, from);
 
-  std::auto_ptr<te::da::DataSet> dsQuery = m_inDsrc->query(select);
+  std::unique_ptr<te::da::DataSet> dsQuery = m_inDsrc->query(select);
 
-  if (dsQuery->isEmpty())
+  if(dsQuery->isEmpty())
     return 0;
 
   SetOutputDSet(dsQuery.get(), outDSet.get());
@@ -637,15 +650,15 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregObj( te::da::DataSetType* d
   return outDSet.release();
 }
 
-te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregByAttribute( te::da::DataSetType* dsType,
-                                                                  std::vector<int> tabVec,
-                                                                  std::vector<int> geoVec)
+te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregByAttribute(
+    te::da::DataSetType* dsType, std::vector<int> tabVec,
+    std::vector<int> geoVec)
 {
-  std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(dsType));
-  std::auto_ptr<te::da::DataSet> inDset = m_inDsrc->getDataSet(m_inDsetName);
+  std::unique_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(dsType));
+  std::unique_ptr<te::da::DataSet> inDset = m_inDsrc->getDataSet(m_inDsetName);
   std::size_t geom_pos = te::da::GetFirstSpatialPropertyPos(inDset.get());
   std::string name = inDset->getPropertyName(geom_pos);
-  
+
   te::da::Fields* fields = new te::da::Fields;
 
   te::da::Field* f_aggreg = new te::da::Field(m_attribute);
@@ -661,44 +674,50 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregByAttribute( te::da::DataSe
       switch(tabVec[tabPos])
       {
         case te::vp::AREA:
-          {
-            te::da::Expression* e_union = new te::da::ST_Union(te::da::PropertyName(name));
-            ex = new te::da::ST_Area(*e_union);
-            f = new te::da::Field(*ex, "area");
-            fields->push_back(f);
-          }
-          break;
+        {
+          te::da::Expression* e_union =
+              new te::da::ST_Union(te::da::PropertyName(name));
+          ex = new te::da::ST_Area(*e_union);
+          f = new te::da::Field(*ex, "area");
+          fields->push_back(f);
+        }
+        break;
         case te::vp::LINE:
-          {
-            te::da::Expression* e_union = new te::da::ST_Union(te::da::PropertyName(name));
-            ex = new te::da::ST_Length(*e_union);
-            f = new te::da::Field(*ex, "line_length");
-            fields->push_back(f);
-          }
-          break;
+        {
+          te::da::Expression* e_union =
+              new te::da::ST_Union(te::da::PropertyName(name));
+          ex = new te::da::ST_Length(*e_union);
+          f = new te::da::Field(*ex, "line_length");
+          fields->push_back(f);
+        }
+        break;
         case te::vp::PERIMETER:
-          {
-            te::da::Expression* e_union = new te::da::ST_Union(te::da::PropertyName(name));
-            ex = new te::da::ST_Perimeter(*e_union);
-            f = new te::da::Field(*ex, "perimeter");
-            fields->push_back(f);
-          }
-          break;
+        {
+          te::da::Expression* e_union =
+              new te::da::ST_Union(te::da::PropertyName(name));
+          ex = new te::da::ST_Perimeter(*e_union);
+          f = new te::da::Field(*ex, "perimeter");
+          fields->push_back(f);
+        }
+        break;
         default:
         {
 #ifdef TERRALIB_LOGGER_ENABLED
-          TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Invalid field to add in query.");
-#endif //TERRALIB_LOGGER_ENABLED
+          TE_CORE_LOG_DEBUG(
+              "vp", "Geometric Operation - Invalid field to add in query.");
+#endif  // TERRALIB_LOGGER_ENABLED
         }
       }
     }
   }
 
+  std::unique_ptr<te::da::DataSetType> dsTypeSource(
+      m_inDsrc->getDataSetType(m_inDsetName));
 
-  std::auto_ptr<te::da::DataSetType>dsTypeSource(m_inDsrc->getDataSetType(m_inDsetName));
-
-  te::gm::GeometryProperty* geomPropertySource = te::da::GetFirstGeomProperty(dsTypeSource.get());
-  te::gm::GeometryProperty* geomPropertyLayer = te::da::GetFirstGeomProperty(dsType);
+  te::gm::GeometryProperty* geomPropertySource =
+      te::da::GetFirstGeomProperty(dsTypeSource.get());
+  te::gm::GeometryProperty* geomPropertyLayer =
+      te::da::GetFirstGeomProperty(dsType);
 
   if(geoVec.size() > 0)
   {
@@ -711,77 +730,84 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregByAttribute( te::da::DataSe
       switch(geoVec[geoPos])
       {
         case te::vp::CONVEX_HULL:
+        {
+          std::size_t pos = dsType->getPropertyPosition("convex_hull");
+          if(pos < outDSet->getNumProperties() && pos > 0)
           {
-            std::size_t pos = dsType->getPropertyPosition("convex_hull");
-            if( pos < outDSet->getNumProperties() && pos > 0)
+            if(geomPropertySource->getSRID() != geomPropertyLayer->getSRID())
             {
-              if (geomPropertySource->getSRID() != geomPropertyLayer->getSRID())
-              {
-                te::da::LiteralInt32* srid = new te::da::LiteralInt32(geomPropertyLayer->getSRID());
-                ex_geom = new te::da::ST_SetSRID(new te::da::PropertyName(name), srid);
-              }
-              else
-              {
-                ex_geom = new te::da::PropertyName(name);
-              }
-
-              te::da::Expression* e_union = new te::da::ST_Union(*ex_geom);
-              ex_operation = new te::da::ST_ConvexHull(*e_union);
-              f_geom = new te::da::Field(*ex_operation, "convex_hull");
-              fields->push_back(f_geom);
+              te::da::LiteralInt32* srid =
+                  new te::da::LiteralInt32(geomPropertyLayer->getSRID());
+              ex_geom =
+                  new te::da::ST_SetSRID(new te::da::PropertyName(name), srid);
             }
+            else
+            {
+              ex_geom = new te::da::PropertyName(name);
+            }
+
+            te::da::Expression* e_union = new te::da::ST_Union(*ex_geom);
+            ex_operation = new te::da::ST_ConvexHull(*e_union);
+            f_geom = new te::da::Field(*ex_operation, "convex_hull");
+            fields->push_back(f_geom);
           }
-          break;
+        }
+        break;
         case te::vp::CENTROID:
+        {
+          std::size_t pos = dsType->getPropertyPosition("centroid");
+          if(pos < outDSet->getNumProperties() && pos > 0)
           {
-            std::size_t pos = dsType->getPropertyPosition("centroid");
-            if( pos < outDSet->getNumProperties() && pos > 0)
+            if(geomPropertySource->getSRID() != geomPropertyLayer->getSRID())
             {
-              if (geomPropertySource->getSRID() != geomPropertyLayer->getSRID())
-              {
-                te::da::LiteralInt32* srid = new te::da::LiteralInt32(geomPropertyLayer->getSRID());
-                ex_geom = new te::da::ST_SetSRID(new te::da::PropertyName(name), srid);
-              }
-              else
-              {
-                ex_geom = new te::da::PropertyName(name);
-              }
-
-              te::da::Expression* e_union = new te::da::ST_Union(*ex_geom);
-              ex_operation = new te::da::ST_Centroid(*e_union);
-              f_geom = new te::da::Field(*ex_operation, "centroid");
-              fields->push_back(f_geom);
+              te::da::LiteralInt32* srid =
+                  new te::da::LiteralInt32(geomPropertyLayer->getSRID());
+              ex_geom =
+                  new te::da::ST_SetSRID(new te::da::PropertyName(name), srid);
             }
+            else
+            {
+              ex_geom = new te::da::PropertyName(name);
+            }
+
+            te::da::Expression* e_union = new te::da::ST_Union(*ex_geom);
+            ex_operation = new te::da::ST_Centroid(*e_union);
+            f_geom = new te::da::Field(*ex_operation, "centroid");
+            fields->push_back(f_geom);
           }
-          break;
+        }
+        break;
         case te::vp::MBR:
+        {
+          std::size_t pos = dsType->getPropertyPosition("mbr");
+          if(pos < outDSet->getNumProperties() && pos > 0)
           {
-            std::size_t pos = dsType->getPropertyPosition("mbr");
-            if( pos < outDSet->getNumProperties() && pos > 0)
+            if(geomPropertySource->getSRID() != geomPropertyLayer->getSRID())
             {
-              if (geomPropertySource->getSRID() != geomPropertyLayer->getSRID())
-              {
-                te::da::LiteralInt32* srid = new te::da::LiteralInt32(geomPropertyLayer->getSRID());
-                ex_geom = new te::da::ST_SetSRID(new te::da::PropertyName(name), srid);
-              }
-              else
-              {
-                ex_geom = new te::da::PropertyName(name);
-              }
-
-              te::da::Expression* e_union = new te::da::ST_Union(*ex_geom);
-              ex_operation = new te::da::ST_Envelope(*e_union);
-              f_geom = new te::da::Field(*ex_operation, "mbr");
-              fields->push_back(f_geom);
+              te::da::LiteralInt32* srid =
+                  new te::da::LiteralInt32(geomPropertyLayer->getSRID());
+              ex_geom =
+                  new te::da::ST_SetSRID(new te::da::PropertyName(name), srid);
             }
+            else
+            {
+              ex_geom = new te::da::PropertyName(name);
+            }
+
+            te::da::Expression* e_union = new te::da::ST_Union(*ex_geom);
+            ex_operation = new te::da::ST_Envelope(*e_union);
+            f_geom = new te::da::Field(*ex_operation, "mbr");
+            fields->push_back(f_geom);
           }
-          break;
+        }
+        break;
         default:
-          {
+        {
 #ifdef TERRALIB_LOGGER_ENABLED
-            TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Invalid field to add in query.");
-#endif //TERRALIB_LOGGER_ENABLED
-          }
+          TE_CORE_LOG_DEBUG(
+              "vp", "Geometric Operation - Invalid field to add in query.");
+#endif  // TERRALIB_LOGGER_ENABLED
+        }
       }
     }
   }
@@ -789,10 +815,12 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregByAttribute( te::da::DataSe
   {
     te::da::Expression* e_union;
 
-    if (geomPropertySource->getSRID() != geomPropertyLayer->getSRID())
+    if(geomPropertySource->getSRID() != geomPropertyLayer->getSRID())
     {
-      te::da::LiteralInt32* srid = new te::da::LiteralInt32(geomPropertyLayer->getSRID());
-      e_union = new te::da::ST_Union(new te::da::ST_SetSRID(new te::da::PropertyName(name), srid));
+      te::da::LiteralInt32* srid =
+          new te::da::LiteralInt32(geomPropertyLayer->getSRID());
+      e_union = new te::da::ST_Union(
+          new te::da::ST_SetSRID(new te::da::PropertyName(name), srid));
     }
     else
     {
@@ -803,7 +831,8 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregByAttribute( te::da::DataSe
     fields->push_back(f_prop);
   }
 
-  te::da::FromItem* fromItem = new te::da::DataSetName(m_converter->getResult()->getName());
+  te::da::FromItem* fromItem =
+      new te::da::DataSetName(m_converter->getResult()->getName());
   te::da::From* from = new te::da::From;
   from->push_back(fromItem);
 
@@ -812,12 +841,12 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregByAttribute( te::da::DataSe
   te::da::GroupBy* groupBy = new te::da::GroupBy();
   te::da::GroupByItem* e_groupBy = new te::da::GroupByItem(m_attribute);
   groupBy->push_back(e_groupBy);
-  
+
   select.setGroupBy(groupBy);
 
-  std::auto_ptr<te::da::DataSet> dsQuery = m_inDsrc->query(select);
+  std::unique_ptr<te::da::DataSet> dsQuery = m_inDsrc->query(select);
 
-  if (dsQuery->isEmpty())
+  if(dsQuery->isEmpty())
     return 0;
 
   SetOutputDSet(dsQuery.get(), outDSet.get());
@@ -825,19 +854,16 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregByAttribute( te::da::DataSe
   return outDSet.release();
 }
 
-void te::vp::GeometricOpQuery::SetOutputDSet( te::da::DataSet* inDataSet,
-                                              te::mem::DataSet* outDataSet)
+void te::vp::GeometricOpQuery::SetOutputDSet(te::da::DataSet* inDataSet,
+                                             te::mem::DataSet* outDataSet)
 {
   std::size_t numProps = inDataSet->getNumProperties();
-
   int pk = 0;
-  
-  bool geomFlag = true;
 
   inDataSet->moveBeforeFirst();
   while(inDataSet->moveNext())
   {
-    geomFlag = true;
+    bool geomFlag = true;
 
     te::mem::DataSetItem* dItem = new te::mem::DataSetItem(outDataSet);
 
@@ -849,103 +875,93 @@ void te::vp::GeometricOpQuery::SetOutputDSet( te::da::DataSet* inDataSet,
       switch(type)
       {
         case te::dt::INT16_TYPE:
-          dItem->setInt16(i+1, inDataSet->getInt16(i));
+          dItem->setInt16(i + 1, inDataSet->getInt16(i));
           break;
         case te::dt::INT32_TYPE:
-          dItem->setInt32(i+1, inDataSet->getInt32(i));
+          dItem->setInt32(i + 1, inDataSet->getInt32(i));
           break;
         case te::dt::INT64_TYPE:
-          dItem->setInt64(i+1, inDataSet->getInt64(i));
+          dItem->setInt64(i + 1, inDataSet->getInt64(i));
           break;
         case te::dt::DOUBLE_TYPE:
-          dItem->setDouble(i+1, inDataSet->getDouble(i));
+          dItem->setDouble(i + 1, inDataSet->getDouble(i));
           break;
         case te::dt::STRING_TYPE:
-          dItem->setString(i+1, inDataSet->getString(i));
+          dItem->setString(i + 1, inDataSet->getString(i));
           break;
         case te::dt::GEOMETRY_TYPE:
-          {
-            std::string inPropName = inDataSet->getPropertyName(i);
+        {
+          std::string inPropName = inDataSet->getPropertyName(i);
+          std::unique_ptr<te::gm::Geometry> geom(
+              inDataSet->getGeometry(i).release());
 
-            if(inPropName == "convex_hull")
-            {
-              te::gm::Geometry* geom = inDataSet->getGeometry(i).release();
-              if(geom->isValid())
-              {
-                if(geom->getGeomTypeId() == te::gm::PolygonType)
-                  dItem->setGeometry("convex_hull", geom);
-                else
-                  geomFlag = false;
-              }
-            }
-            else if(inPropName == "centroid")
-            {
-              te::gm::Geometry* geom = inDataSet->getGeometry(i).release();
-              if(geom->isValid())
-                dItem->setGeometry("centroid", geom);
-            }
-            else if(inPropName == "mbr")
-            {
-              te::gm::Geometry* geom = inDataSet->getGeometry(i).release();
-              if(geom->isValid())
-              {
-                if(geom->getGeomTypeId() == te::gm::PolygonType)
-                  dItem->setGeometry("mbr", geom);
-                else
-                  geomFlag = false;
-              }
-            }
+          if(inPropName == "convex_hull")
+          {
+            if(geom->getGeomTypeId() == te::gm::PolygonType)
+              dItem->setGeometry("convex_hull", geom.release());
             else
-            {
-              te::gm::Geometry* geom = inDataSet->getGeometry(i).release();
+              geomFlag = false;
+          }
+          else if(inPropName == "centroid")
+          {
+            dItem->setGeometry("centroid", geom.release());
+          }
+          else if(inPropName == "mbr")
+          {
+            if(geom->getGeomTypeId() == te::gm::PolygonType)
+              dItem->setGeometry("mbr", geom.release());
+            else
+              geomFlag = false;
+          }
+          else
+          {
+            te::gm::GeometryCollection* teGeomColl =
+                new te::gm::GeometryCollection(
+                    0, te::gm::GeometryCollectionType, geom->getSRID());
 
-              switch(geom->getGeomTypeId())
+            switch(geom->getGeomTypeId())
+            {
+              case te::gm::PointType:
+              case te::gm::PointMType:
+              case te::gm::PointZType:
+              case te::gm::PointZMType:
+              case te::gm::LineStringType:
+              case te::gm::LineStringMType:
+              case te::gm::LineStringZType:
+              case te::gm::LineStringZMType:
+              case te::gm::PolygonType:
+              case te::gm::PolygonMType:
+              case te::gm::PolygonZType:
+              case te::gm::PolygonZMType:
               {
-                case te::gm::PointType:
-                  {
-                    te::gm::GeometryCollection* teGeomColl = new te::gm::GeometryCollection(1, te::gm::MultiPointType, geom->getSRID());
-                    if(geom->isValid())
-                    {
-                      teGeomColl->setGeometryN(0, geom);
-                      dItem->setGeometry(i+1, teGeomColl);
-                    }
-                  }
-                  break;
-                case te::gm::LineStringType:
-                  {
-                    te::gm::GeometryCollection* teGeomColl = new te::gm::GeometryCollection(1, te::gm::MultiLineStringType, geom->getSRID());
-                    if(geom->isValid())
-                    {
-                      teGeomColl->setGeometryN(0, geom);
-                      dItem->setGeometry(i+1, teGeomColl);
-                    }
-                  }
-                  break;
-                case te::gm::PolygonType:
-                  {
-                    te::gm::GeometryCollection* teGeomColl = new te::gm::GeometryCollection(1, te::gm::MultiPolygonType, geom->getSRID());
-                    if(geom->isValid())
-                    {
-                      teGeomColl->setGeometryN(0, geom);
-                      dItem->setGeometry(i+1, teGeomColl);
-                    }
-                  }
-                  break;
-                default:
-                  {
-                    dItem->setGeometry(i+1, geom);
-                  }
-                  break;
+                if(geom->isValid())
+                  teGeomColl->add(geom.release());
+              }
+              break;
+              default:
+              {
+#ifdef TERRALIB_LOGGER_ENABLED
+                TE_CORE_LOG_DEBUG("vp",
+                                  "Geometric Operation - Could not insert the "
+                                  "geometry in collection.");
+#endif  // TERRALIB_LOGGER_ENABLED
               }
             }
+
+            if(teGeomColl->getNumGeometries() != 0)
+              dItem->setGeometry(i + 1, teGeomColl);
+            else
+              dItem->setGeometry(i + 1, geom.release());
           }
-          break;
+        }
+        break;
         default:
-          {
+        {
 #ifdef TERRALIB_LOGGER_ENABLED
-            TE_CORE_LOG_DEBUG("vp", "Geometric Operation - Property type not found.");
-#endif //TERRALIB_LOGGER_ENABLED
-          }
+          TE_CORE_LOG_DEBUG("vp",
+                            "Geometric Operation - Property type not found.");
+#endif  // TERRALIB_LOGGER_ENABLED
+        }
       }
     }
     if(geomFlag)

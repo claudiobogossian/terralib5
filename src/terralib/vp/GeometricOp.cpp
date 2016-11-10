@@ -18,57 +18,40 @@
  */
 
 /*!
- \file GeneralOp.cpp
+ \file GeometricOp.cpp
  */
 
-#include "../common/StringUtils.h"
-
-#include "../dataaccess/dataset/DataSet.h"
-#include "../dataaccess/dataset/DataSetAdapter.h"
-#include "../dataaccess/dataset/DataSetType.h"
-#include "../dataaccess/datasource/DataSource.h"
-#include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/utils/Utils.h"
-
-#include "../datatype/Property.h"
-#include "../datatype/StringProperty.h"
-
 #include "../geometry/GeometryProperty.h"
-
-#include "../statistics/core/Utils.h"
 
 #include "GeometricOp.h"
 
-#include <sstream>
-
 te::vp::GeometricOp::GeometricOp()
-  : m_outputLayer(false)
 {
 }
 
-void te::vp::GeometricOp::setInput(te::da::DataSourcePtr inDsrc,
-                                  std::string inDsetName,
-                                  std::auto_ptr<te::da::DataSetTypeConverter> converter)
+void te::vp::GeometricOp::setInput(
+    te::da::DataSourcePtr inDsrc, std::string inDsetName,
+    std::unique_ptr<te::da::DataSetTypeConverter> converter)
 {
   m_inDsrc = inDsrc;
   m_inDsetName = inDsetName;
-  m_converter = converter;
+  m_converter = std::move(converter);
 }
 
-void te::vp::GeometricOp::setParams(std::vector<std::string> selectedProps, 
-                                  std::vector<te::vp::GeometricOperation> operations,
-                                  te::vp::GeometricOpObjStrategy objStrategy,
-                                  std::string attribute,
-                                  bool outputLayer)
+void te::vp::GeometricOp::setParams(
+    std::vector<std::string> selectedProps,
+    std::vector<te::vp::GeometricOperation> operations,
+    te::vp::GeometricOpObjStrategy objStrategy, std::string attribute)
 {
   m_selectedProps = selectedProps;
   m_operations = operations;
   m_objStrategy = objStrategy;
   m_attribute = attribute;
-  m_outputLayer = outputLayer;
 }
 
-void te::vp::GeometricOp::setOutput(std::unique_ptr<te::da::DataSource> outDsrc, std::string dsname)
+void te::vp::GeometricOp::setOutput(std::unique_ptr<da::DataSource> outDsrc,
+                                    std::string dsname)
 {
   m_outDsrc = std::move(outDsrc);
   m_outDsetName = dsname;
@@ -93,9 +76,9 @@ std::vector<std::string> te::vp::GeometricOp::GetOutputDSetNames()
   return m_outDsetNameVec;
 }
 
-te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObjStrategy geomOpStrategy,
-                                                          bool multiGeomColumns,
-                                                          int geomOp)
+te::da::DataSetType* te::vp::GeometricOp::GetDataSetType(
+    te::vp::GeometricOpObjStrategy geomOpStrategy, bool multiGeomColumns,
+    int geomOp)
 {
   te::da::DataSetType* dsType = 0;
 
@@ -109,11 +92,13 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
           dsType->setTitle(m_outDsetName + "_convex_hull");
 
           // Primary key
-          te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(m_outDsetName + "_id", te::dt::INT32_TYPE);
+          te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(
+              m_outDsetName + "_id", te::dt::INT32_TYPE);
           pkProperty->setAutoNumber(true);
           dsType->add(pkProperty);
 
-          te::da::PrimaryKey* pk = new te::da::PrimaryKey(m_outDsetName + "_convex_hull_pk", dsType);
+          te::da::PrimaryKey* pk =
+              new te::da::PrimaryKey(m_outDsetName + "_convex_hull_pk", dsType);
           pk->add(pkProperty);
           dsType->setPrimaryKey(pk);
 
@@ -125,11 +110,13 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
           dsType->setTitle(m_outDsetName + "_centroid");
 
           // Primary key
-          te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(m_outDsetName + "_id", te::dt::INT32_TYPE);
+          te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(
+              m_outDsetName + "_id", te::dt::INT32_TYPE);
           pkProperty->setAutoNumber(true);
           dsType->add(pkProperty);
 
-          te::da::PrimaryKey* pk = new te::da::PrimaryKey(m_outDsetName + "_centroid_pk", dsType);
+          te::da::PrimaryKey* pk =
+              new te::da::PrimaryKey(m_outDsetName + "_centroid_pk", dsType);
           pk->add(pkProperty);
           dsType->setPrimaryKey(pk);
 
@@ -141,11 +128,13 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
           dsType->setTitle(m_outDsetName + "_mbr");
 
           // Primary key
-          te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(m_outDsetName + "_id", te::dt::INT32_TYPE);
+          te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(
+              m_outDsetName + "_id", te::dt::INT32_TYPE);
           pkProperty->setAutoNumber(true);
           dsType->add(pkProperty);
 
-          te::da::PrimaryKey* pk = new te::da::PrimaryKey(m_outDsetName + "_mbr_pk", dsType);
+          te::da::PrimaryKey* pk =
+              new te::da::PrimaryKey(m_outDsetName + "_mbr_pk", dsType);
           pk->add(pkProperty);
           dsType->setPrimaryKey(pk);
 
@@ -159,11 +148,13 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
     dsType->setTitle(m_outDsetName);
 
     // Primary key
-    te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(m_outDsetName + "_id", te::dt::INT32_TYPE);
+    te::dt::SimpleProperty* pkProperty =
+        new te::dt::SimpleProperty(m_outDsetName + "_id", te::dt::INT32_TYPE);
     pkProperty->setAutoNumber(true);
     dsType->add(pkProperty);
 
-    te::da::PrimaryKey* pk = new te::da::PrimaryKey(m_outDsetName + "_res_pk", dsType);
+    te::da::PrimaryKey* pk =
+        new te::da::PrimaryKey(m_outDsetName + "_res_pk", dsType);
     pk->add(pkProperty);
     dsType->setPrimaryKey(pk);
   }
@@ -173,7 +164,8 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
   {
       for(std::size_t i = 0; i < m_selectedProps.size(); ++i)
       {
-        te::dt::Property* prop = m_converter->getResult()->getProperty(m_selectedProps[i])->clone();
+        te::dt::Property* prop =
+            m_converter->getResult()->getProperty(m_selectedProps[i])->clone();
         prop->setParent(0);
         dsType->add(prop);
       }
@@ -181,7 +173,8 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
 
   if(geomOpStrategy == te::vp::AGGREG_BY_ATTRIBUTE)
   {
-    te::dt::Property* prop = m_converter->getResult()->getProperty(m_attribute)->clone();
+    te::dt::Property* prop =
+        m_converter->getResult()->getProperty(m_attribute)->clone();
     prop->setParent(0);
     dsType->add(prop);
   }
@@ -193,19 +186,22 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
     {
       case te::vp::AREA:
         {
-          te::dt::SimpleProperty* area = new te::dt::SimpleProperty("area", te::dt::DOUBLE_TYPE);
+          te::dt::SimpleProperty* area =
+              new te::dt::SimpleProperty("area", te::dt::DOUBLE_TYPE);
           dsType->add(area);
         }
         break;
       case te::vp::LINE:
         {
-          te::dt::SimpleProperty* line = new te::dt::SimpleProperty("line_length", te::dt::DOUBLE_TYPE);
+          te::dt::SimpleProperty* line =
+              new te::dt::SimpleProperty("line_length", te::dt::DOUBLE_TYPE);
           dsType->add(line);
         }
         break;
       case te::vp::PERIMETER:
         {
-          te::dt::SimpleProperty* perimeter = new te::dt::SimpleProperty("perimeter", te::dt::DOUBLE_TYPE);
+          te::dt::SimpleProperty* perimeter =
+              new te::dt::SimpleProperty("perimeter", te::dt::DOUBLE_TYPE);
           dsType->add(perimeter);
         }
         break;
@@ -215,7 +211,8 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
   }
   
 //  Geometry property.
-  te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(m_converter->getResult());
+  te::gm::GeometryProperty* gp =
+      te::da::GetFirstGeomProperty(m_converter->getResult());
 
   if(multiGeomColumns)
   {
@@ -226,7 +223,8 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
       {
         case te::vp::CONVEX_HULL:
           {
-            te::gm::GeometryProperty* convGeom = new te::gm::GeometryProperty("convex_hull");
+            te::gm::GeometryProperty* convGeom =
+                new te::gm::GeometryProperty("convex_hull");
             convGeom->setGeometryType(te::gm::PolygonType);
             convGeom->setSRID(gp->getSRID());
             dsType->add(convGeom);
@@ -235,7 +233,8 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
           break;
         case te::vp::CENTROID:
           {
-            te::gm::GeometryProperty* centroidGeom = new te::gm::GeometryProperty("centroid");
+            te::gm::GeometryProperty* centroidGeom =
+                new te::gm::GeometryProperty("centroid");
             centroidGeom->setGeometryType(te::gm::PointType);
             centroidGeom->setSRID(gp->getSRID());
             dsType->add(centroidGeom);
@@ -244,7 +243,8 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
           break;
         case te::vp::MBR:
           {
-            te::gm::GeometryProperty* mbrGeom = new te::gm::GeometryProperty("mbr");
+            te::gm::GeometryProperty* mbrGeom =
+                new te::gm::GeometryProperty("mbr");
             mbrGeom->setGeometryType(te::gm::PolygonType);
             mbrGeom->setSRID(gp->getSRID());
             dsType->add(mbrGeom);
@@ -266,11 +266,39 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
         case te::gm::PointType:
           geometry->setGeometryType(te::gm::MultiPointType);
           break;
+        case te::gm::PointMType:
+          geometry->setGeometryType(te::gm::MultiPointMType);
+          break;
+        case te::gm::PointZType:
+          geometry->setGeometryType(te::gm::MultiPointZType);
+          break;
+        case te::gm::PointZMType:
+          geometry->setGeometryType(te::gm::MultiPointZMType);
+          break;
         case te::gm::LineStringType:
           geometry->setGeometryType(te::gm::MultiLineStringType);
           break;
+        case te::gm::LineStringMType:
+          geometry->setGeometryType(te::gm::MultiLineStringMType);
+          break;
+        case te::gm::LineStringZType:
+          geometry->setGeometryType(te::gm::MultiLineStringZType);
+          break;
+        case te::gm::LineStringZMType:
+          geometry->setGeometryType(te::gm::MultiLineStringZMType);
+          break;
         case te::gm::PolygonType:
           geometry->setGeometryType(te::gm::MultiPolygonType);
+          break;
+        case te::gm::PolygonZType:
+          geometry->setGeometryType(te::gm::MultiPolygonZType);
+          break;
+        case te::gm::PolygonMType:
+          geometry->setGeometryType(te::gm::MultiPolygonMType);
+          break;
+        case te::gm::PolygonZMType:
+          geometry->setGeometryType(te::gm::MultiPolygonZMType);
+          break;
         default:
           geometry->setGeometryType(gp->getGeometryType());
       }
@@ -286,7 +314,8 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
     {
       case te::vp::CONVEX_HULL:
         {
-          te::gm::GeometryProperty* geometry = new te::gm::GeometryProperty("convex_hull");
+          te::gm::GeometryProperty* geometry =
+              new te::gm::GeometryProperty("convex_hull");
           geometry->setGeometryType(te::gm::PolygonType);
           geometry->setSRID(gp->getSRID());
           dsType->add(geometry);
@@ -295,7 +324,8 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
         break;
       case te::vp::CENTROID:
         {
-          te::gm::GeometryProperty* geometry = new te::gm::GeometryProperty("centroid");
+          te::gm::GeometryProperty* geometry =
+              new te::gm::GeometryProperty("centroid");
           geometry->setGeometryType(te::gm::PointType);
           geometry->setSRID(gp->getSRID());
           dsType->add(geometry);
@@ -304,7 +334,8 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
         break;
       case te::vp::MBR:
         {
-          te::gm::GeometryProperty* geometry = new te::gm::GeometryProperty("mbr");
+          te::gm::GeometryProperty* geometry =
+              new te::gm::GeometryProperty("mbr");
           geometry->setGeometryType(te::gm::PolygonType);
           geometry->setSRID(gp->getSRID());
           dsType->add(geometry);
@@ -326,11 +357,39 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
         case te::gm::PointType:
           geometry->setGeometryType(te::gm::MultiPointType);
           break;
+        case te::gm::PointMType:
+          geometry->setGeometryType(te::gm::MultiPointMType);
+          break;
+        case te::gm::PointZType:
+          geometry->setGeometryType(te::gm::MultiPointZType);
+          break;
+        case te::gm::PointZMType:
+          geometry->setGeometryType(te::gm::MultiPointZMType);
+          break;
         case te::gm::LineStringType:
           geometry->setGeometryType(te::gm::MultiLineStringType);
           break;
+        case te::gm::LineStringMType:
+          geometry->setGeometryType(te::gm::MultiLineStringMType);
+          break;
+        case te::gm::LineStringZType:
+          geometry->setGeometryType(te::gm::MultiLineStringZType);
+          break;
+        case te::gm::LineStringZMType:
+          geometry->setGeometryType(te::gm::MultiLineStringZMType);
+          break;
         case te::gm::PolygonType:
           geometry->setGeometryType(te::gm::MultiPolygonType);
+          break;
+        case te::gm::PolygonZType:
+          geometry->setGeometryType(te::gm::MultiPolygonZType);
+          break;
+        case te::gm::PolygonMType:
+          geometry->setGeometryType(te::gm::MultiPolygonMType);
+          break;
+        case te::gm::PolygonZMType:
+          geometry->setGeometryType(te::gm::MultiPolygonZMType);
+          break;
         default:
           geometry->setGeometryType(gp->getGeometryType());
       }
