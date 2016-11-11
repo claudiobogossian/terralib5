@@ -34,6 +34,7 @@
 #include "../../../raster/Raster.h"
 #include "../../../rp/Classifier.h"
 #include "../../../rp/ClassifierMAPStrategy.h"
+#include "../../../rp/ClassifierEDStrategy.h"
 #include "../../../rp/ClassifierSAMStrategy.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #endif
@@ -74,7 +75,8 @@ namespace te
             CLASSIFIER_KMEANS,
             CLASSIFIER_MAP,
             CLASSIFIER_EM,
-            CLASSIFIER_SAM
+            CLASSIFIER_SAM,
+            CLASSIFIER_ED
           };
 
         public:
@@ -115,6 +117,8 @@ namespace te
           void listBands();
 
           te::rp::ClassifierMAPStrategy::Parameters::MClassesSamplesCTPtr getMAPSamples(te::cl::ROISet* rs, te::rst::Raster* raster);
+
+          te::rp::ClassifierEDStrategy::Parameters::MClassesSamplesCTPtr getEDSamples(te::cl::ROISet* rs, te::rst::Raster* raster);
 
           te::rp::ClassifierSAMStrategy::ClassesSamplesTPtr getSAMSamples(te::cl::ROISet* rs, te::rst::Raster* raster);
 

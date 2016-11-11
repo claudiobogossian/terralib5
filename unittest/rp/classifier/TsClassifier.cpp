@@ -305,6 +305,101 @@ BOOST_AUTO_TEST_CASE(MAP_test)
   delete rin;
 }
 
+BOOST_AUTO_TEST_CASE(ED_test)
+{
+  /* First open the input image */
+
+  std::map<std::string, std::string> rinfo;
+  rinfo["URI"] = TERRALIB_DATA_DIR"/geotiff/cbers2b_rgb342_crop.tif";
+
+  te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
+
+  /* Create output raster info */
+
+  std::map<std::string, std::string> orinfo;
+  orinfo["URI"] = "terralib_unittest_rp_Classifier_ED_Test.tif";
+
+  /* Defining the classes samples */
+
+  te::rp::ClassifierEDStrategy::Parameters::ClassSampleT sampleC1_1;
+  sampleC1_1.push_back( 20 );
+  sampleC1_1.push_back( 190 );
+  sampleC1_1.push_back( 50 );
+
+  te::rp::ClassifierEDStrategy::Parameters::ClassSampleT sampleC1_2;
+  sampleC1_2.push_back( 143 );
+  sampleC1_2.push_back( 242 );
+  sampleC1_2.push_back( 174 );
+
+  te::rp::ClassifierEDStrategy::Parameters::ClassSampleT sampleC1_3;
+  sampleC1_3.push_back( 81 );
+  sampleC1_3.push_back( 226 );
+  sampleC1_3.push_back( 112 );
+
+  te::rp::ClassifierEDStrategy::Parameters::ClassSamplesContainerT class1Samples;
+  class1Samples.push_back( sampleC1_1 );
+  class1Samples.push_back( sampleC1_2 );
+  class1Samples.push_back( sampleC1_3 );
+
+  te::rp::ClassifierEDStrategy::Parameters::ClassSampleT sampleC2_1;
+  sampleC2_1.push_back( 255 );
+  sampleC2_1.push_back( 226 );
+  sampleC2_1.push_back( 245 );
+
+  te::rp::ClassifierEDStrategy::Parameters::ClassSampleT sampleC2_2;
+  sampleC2_2.push_back( 168 );
+  sampleC2_2.push_back( 138 );
+  sampleC2_2.push_back( 122 );
+
+  te::rp::ClassifierEDStrategy::Parameters::ClassSampleT sampleC2_3;
+  sampleC2_3.push_back( 179 );
+  sampleC2_3.push_back( 167 );
+  sampleC2_3.push_back( 153 );
+
+  te::rp::ClassifierEDStrategy::Parameters::ClassSamplesContainerT class2Samples;
+  class2Samples.push_back( sampleC2_1 );
+  class2Samples.push_back( sampleC2_2 );
+  class2Samples.push_back( sampleC2_3 );
+
+  te::rp::ClassifierEDStrategy::Parameters::MClassesSamplesCTPtr allClassesSamples(new te::rp::ClassifierEDStrategy::Parameters::MClassesSamplesCT());
+  allClassesSamples->insert(te::rp::ClassifierEDStrategy::Parameters::MClassesSamplesCT::value_type(1, class1Samples));
+  allClassesSamples->insert(te::rp::ClassifierEDStrategy::Parameters::MClassesSamplesCT::value_type(2, class2Samples));
+
+  /* Define classification parameters */
+
+  /* Input parameters */
+
+  te::rp::Classifier::InputParameters algoInputParameters;
+  algoInputParameters.m_inputRasterPtr = rin;
+  algoInputParameters.m_inputRasterBands.push_back(0);
+  algoInputParameters.m_inputRasterBands.push_back(1);
+  algoInputParameters.m_inputRasterBands.push_back(2);
+
+  /* Link specific parameters with chosen implementation */
+
+  te::rp::ClassifierEDStrategy::Parameters classifierparameters;
+  classifierparameters.m_trainSamplesPtr = allClassesSamples;
+
+  algoInputParameters.m_strategyName = "ed";
+  algoInputParameters.setClassifierStrategyParams(classifierparameters);
+
+  /* Output parameters */
+
+  te::rp::Classifier::OutputParameters algoOutputParameters;
+  algoOutputParameters.m_rInfo = orinfo;
+  algoOutputParameters.m_rType = "GDAL";
+
+  /* Execute the algorithm */
+
+  te::rp::Classifier algorithmInstance;
+
+  BOOST_CHECK( algorithmInstance.initialize(algoInputParameters) );
+  BOOST_CHECK( algorithmInstance.execute(algoOutputParameters) );
+
+  /* Clean up */
+  delete rin;
+}
+
 BOOST_AUTO_TEST_CASE(EM_test)
 {
   /* First open the input image */

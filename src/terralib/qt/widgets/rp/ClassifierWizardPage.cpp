@@ -32,6 +32,7 @@
 #include "../../../raster/Raster.h"
 #include "../../../raster/PositionIterator.h"
 #include "../../../rp/ClassifierEMStrategy.h"
+#include "../../../rp/ClassifierEDStrategy.h"
 #include "../../../rp/ClassifierKMeansStrategy.h"
 #include "../../../rp/ClassifierISOSegStrategy.h"
 #include "../classification/ROIManagerDialog.h"
@@ -73,11 +74,13 @@ te::qt::widgets::ClassifierWizardPage::ClassifierWizardPage(QWidget* parent)
   this->setSubTitle(tr("Select the type of classifier and set their specific parameters."));
 
   //configure roi manager
+
   m_roiMngDlg.reset(new te::qt::widgets::ROIManagerDialog(this, Qt::Tool));
 
   //connects
   connect(m_ui->m_acquireToolButton, SIGNAL(toggled(bool)), this, SLOT(showROIManager(bool)));
   connect(m_ui->m_samAcquireToolButton, SIGNAL(toggled(bool)), this, SLOT(showROIManager(bool)));
+  connect(m_ui->m_edAcquireToolButton, SIGNAL(toggled(bool)), this, SLOT(showROIManager(bool)));
   connect(m_roiMngDlg.get(), SIGNAL(roiManagerClosed()), this, SLOT(onROIManagerClosed()));
   connect(m_ui->m_classifierTypeComboBox, SIGNAL(activated(int)), this, SIGNAL(completeChanged()));
   connect(m_ui->m_inputRasterBandsListWidget, SIGNAL(itemSelectionChanged()), this, SIGNAL(completeChanged()));
@@ -86,6 +89,7 @@ te::qt::widgets::ClassifierWizardPage::ClassifierWizardPage(QWidget* parent)
 
   m_ui->m_acquireToolButton->setIcon(QIcon::fromTheme("wand"));
   m_ui->m_samAcquireToolButton->setIcon(QIcon::fromTheme("wand"));
+  m_ui->m_edAcquireToolButton->setIcon(QIcon::fromTheme("wand"));
 }
 
 te::qt::widgets::ClassifierWizardPage::~ClassifierWizardPage()
@@ -111,6 +115,11 @@ bool te::qt::widgets::ClassifierWizardPage::isComplete() const
   else if(type == CLASSIFIER_SAM)
   {
     if(m_ui->m_samTableWidget->rowCount() == 0)
+      return false;
+  }
+  else if(type == CLASSIFIER_ED)
+  {
+    if(m_ui->m_edTableWidget->rowCount() == 0)
       return false;
   }
 
@@ -259,6 +268,19 @@ te::rp::Classifier::InputParameters te::qt::widgets::ClassifierWizardPage::getIn
 
     algoInputParams.setClassifierStrategyParams(classifierparameters);
   }
+  else if(type == CLASSIFIER_ED)
+  {
+    algoInputParams.m_strategyName = "ed";
+
+    std::unique_ptr<te::da::DataSet> ds = m_layer->getData();
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
+    std::unique_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
+
+    te::rp::ClassifierEDStrategy::Parameters classifierparameters;
+    classifierparameters.m_trainSamplesPtr = getEDSamples(m_roiMngDlg->getWidget()->getROISet(), inputRst.get());
+
+    algoInputParams.setClassifierStrategyParams(classifierparameters);
+  }
 
   //get bands
   QList<QListWidgetItem*> selectedBands = m_ui->m_inputRasterBandsListWidget->selectedItems();
@@ -297,6 +319,7 @@ void te::qt::widgets::ClassifierWizardPage::fillClassifierTypes()
   m_ui->m_classifierTypeComboBox->addItem(tr("MAP - Maximum a Posteriori Probability"), CLASSIFIER_MAP);
   m_ui->m_classifierTypeComboBox->addItem(tr("EM - Expectation Maximization"), CLASSIFIER_EM);
   m_ui->m_classifierTypeComboBox->addItem(tr("SAM - Spectral Angle Mapper"), CLASSIFIER_SAM);
+  m_ui->m_classifierTypeComboBox->addItem(tr("ED - Euclidean Distance"), CLASSIFIER_ED);
 }
 
 void te::qt::widgets::ClassifierWizardPage::listBands()
@@ -374,6 +397,56 @@ te::rp::ClassifierMAPStrategy::Parameters::MClassesSamplesCTPtr te::qt::widgets:
   return mcsctPtr;
 }
 
+te::rp::ClassifierEDStrategy::Parameters::MClassesSamplesCTPtr te::qt::widgets::ClassifierWizardPage::getEDSamples(te::cl::ROISet* rs, te::rst::Raster* raster)
+{
+  te::rp::ClassifierEDStrategy::Parameters::MClassesSamplesCTPtr mcsctPtr(new te::rp::ClassifierEDStrategy::Parameters::MClassesSamplesCT());
+
+  std::map<std::string, te::cl::ROI*> roiSetMap = rs->getROISet();
+  std::map<std::string, te::cl::ROI*>::iterator it = roiSetMap.begin();
+
+  int count = 1;
+
+  //iterate roi set
+  while(it != roiSetMap.end())
+  {
+    std::map<std::string, te::gm::Polygon*> roiMap = it->second->getPolygons();
+    std::map<std::string, te::gm::Polygon*>::iterator itPoly = roiMap.begin();
+
+    te::rp::ClassifierEDStrategy::Parameters::ClassSamplesContainerT csct;
+
+    //iterate roi
+    while(itPoly != roiMap.end())
+    {
+      te::gm::Polygon* p = itPoly->second;
+
+      te::rst::PolygonIterator<double> itRaster = te::rst::PolygonIterator<double>::begin(raster, p);
+      te::rst::PolygonIterator<double> itRasterEnd = te::rst::PolygonIterator<double>::end(raster, p);
+
+      //iterate polygon
+      while (itRaster != itRasterEnd)
+      {
+        te::rp::ClassifierEDStrategy::Parameters::ClassSampleT cst;
+
+        raster->getValues(itRaster.getColumn(), itRaster.getRow(), cst);
+
+        csct.push_back(cst);
+
+        ++itRaster;
+      }
+
+      ++itPoly;
+    }
+
+    mcsctPtr->insert(te::rp::ClassifierEDStrategy::Parameters::MClassesSamplesCT::value_type(count, csct));
+
+    ++count;
+
+    ++it;
+  }
+
+  return mcsctPtr;
+}
+
 te::rp::ClassifierSAMStrategy::ClassesSamplesTPtr te::qt::widgets::ClassifierWizardPage::getSAMSamples(te::cl::ROISet* rs, te::rst::Raster* raster)
 {
   te::rp::ClassifierSAMStrategy::ClassesSamplesTPtr cstPtr(new te::rp::ClassifierSAMStrategy::ClassesSamplesT());
@@ -436,6 +509,7 @@ void te::qt::widgets::ClassifierWizardPage::onROIManagerClosed()
 {
   m_ui->m_acquireToolButton->setChecked(false);
   m_ui->m_samAcquireToolButton->setChecked(false);
+  m_ui->m_edAcquireToolButton->setChecked(false);
 }
 
 void te::qt::widgets::ClassifierWizardPage::setMapDisplay(te::qt::widgets::MapDisplay* mapDisplay)
@@ -558,6 +632,55 @@ void te::qt::widgets::ClassifierWizardPage::onRoiSetChanged(te::cl::ROISet* rs)
     }
 
     m_ui->m_samTableWidget->resizeColumnsToContents();
+  }
+  else if(type == CLASSIFIER_ED)
+  {
+    m_ui->m_edTableWidget->setRowCount(0);
+
+    if(!rs)
+      return;
+
+    std::map<std::string, te::cl::ROI*> roiSetMap = rs->getROISet();
+    std::map<std::string, te::cl::ROI*>::iterator it = roiSetMap.begin();
+
+    //iterate roi set
+    while(it != roiSetMap.end())
+    {
+      //get roi info
+      te::cl::ROI* r = it->second;
+
+      std::string label = r->getLabel();
+
+      std::size_t samples = r->getPolygons().size();
+      QString samplesNum;
+      samplesNum.setNum(samples);
+
+      QColor color(r->getColor().c_str());
+
+      //add table entry
+      int newrow = m_ui->m_edTableWidget->rowCount();
+      m_ui->m_edTableWidget->insertRow(newrow);
+
+      QPixmap pix(16,16);
+      pix.fill(color);
+      QIcon icon(pix);
+
+      QTableWidgetItem* itemColor = new QTableWidgetItem(icon, "");
+      itemColor->setFlags(Qt::ItemIsEnabled);
+      m_ui->m_edTableWidget->setItem(newrow, 0, itemColor);
+
+      QTableWidgetItem* itemLabel = new QTableWidgetItem(QString::fromStdString(label));
+      itemLabel->setFlags(Qt::ItemIsEnabled);
+      m_ui->m_edTableWidget->setItem(newrow, 1, itemLabel);
+
+      QTableWidgetItem* itemSamples = new QTableWidgetItem(samplesNum);
+      itemSamples->setFlags(Qt::ItemIsEnabled);
+      m_ui->m_edTableWidget->setItem(newrow, 2, itemSamples);
+
+      ++it;
+    }
+
+    m_ui->m_edTableWidget->resizeColumnsToContents();
   }
 
   emit completeChanged();

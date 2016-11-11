@@ -39,6 +39,7 @@
 #include "rp/ClassifierISOSegStrategy.h"
 #include "rp/ClassifierKMeansStrategy.h"
 #include "rp/ClassifierMAPStrategy.h"
+#include "rp/ClassifierEDStrategy.h"
 #include "rp/ClassifierSAMStrategy.h"
 #include "rp/ClassifierStrategyFactory.h"
 #include "rp/ClassifierStrategy.h"
